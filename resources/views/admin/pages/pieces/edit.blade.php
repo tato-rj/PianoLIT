@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('head')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.css">
+<link rel="stylesheet" href="{{ mix('css/vendor/cropper/cropper.min.css') }}">
 @endsection
 
 @section('content')
@@ -76,6 +76,6 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.js"></script>
+<script src="{{ mix('js/vendor/cropper.min.js') }}"></script>
 <script src="{{ mix('js/views/admin-piece-editor.js') }}"></script>
 @endsection

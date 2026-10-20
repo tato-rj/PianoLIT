@@ -66,6 +66,8 @@ for (const [source, target] of [
     ['resources/fonts/escore/LibreBodoni-Bold.ttf', 'fonts/escore/LibreBodoni-Bold.ttf'],
     ['resources/fonts/escore/OFL.txt', 'fonts/escore/OFL.txt'],
     ['node_modules/flag-icon-css/css/flag-icon.min.css', 'css/vendor/flag-icon/flag-icon.min.css'],
+    ['node_modules/cropperjs/dist/cropper.min.js', 'js/vendor/cropper.min.js'],
+    ['node_modules/cropperjs/dist/cropper.min.css', 'css/vendor/cropper/cropper.min.css'],
 ]) assert(fs.readFileSync(path.join(root, source)).equals(fs.readFileSync(path.join(publicRoot, target))), 'Changed copy: ' + target);
 
 // Fonts, SVG arrows and score fonts must still resolve after Sass URL rewriting.
@@ -79,4 +81,4 @@ for (const file of entryPoints.filter(file => file.endsWith('.css'))) {
     }
 }
 require('./brand-icons')(root, manifest);
-console.log(`Passed: ${requiredAssets.size} Laravel asset paths, ${versioned} final-content hashes, JavaScript syntax, ${copied + 5} exact copies and CSS asset URLs.`);
+console.log(`Passed: ${requiredAssets.size} Laravel asset paths, ${versioned} final-content hashes, JavaScript syntax, ${copied + 7} exact copies and CSS asset URLs.`);
