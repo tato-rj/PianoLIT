@@ -64,7 +64,7 @@
 			<div class="mb-5 d-apart">
 				<div>
 					<div class="d-inline-block align-middle me-3">
-						<img src="{{asset('images/brand/app-icon.svg')}}" class="rounded-circle" width="50">
+						<img src="{{asset(mix('images/brand/app-icon.svg'))}}" class="rounded-circle" width="50">
 					</div>
 					<div class="d-inline-block align-middle" style="max-width: 320px; line-height: 1.12">
 						<div style="font-size: .9rem"><strong>PianoLIT Team</strong></div>

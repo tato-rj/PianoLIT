@@ -1,1 +1,1 @@
-<div class="cursor-pointer play-clip {{$audio ? 'text-success' : 'text-muted opacity-4'}}" title="{{$audio ? 'Click to play' : 'No audio available'}}" data-src="{{$audio}}">@icon('circle-play', ['mr' => 0])</div>
+@include('admin.components.table-action', ['tableAction' => ['label' => $audio ? 'Click to play' : 'No audio available', 'icon' => 'circle-play', 'iconOnly' => true, 'class' => 'play-clip', 'attributes' => ['data-src' => $audio, 'disabled' => !$audio]]])

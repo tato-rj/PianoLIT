@@ -1,13 +1,6 @@
 <div class="text-end">
 @if($item->hasContent())
-@button([
-	'label' => 'Details',
-	'styles' => [
-		'size' => 'sm',
-		'theme' => 'grey'
-		],
-	'classes' => 'rounded',
-	'data' => ['toggle' => 'modal', 'target' => '#details-modal-'.$item->id]])
+@include('admin.components.table-action', ['tableAction' => ['label' => 'Details', 'attributes' => ['data-bs-toggle' => 'modal', 'data-bs-target' => '#details-modal-'.$item->id]]])
 
 @component('components.modal', ['id' => 'details-modal-'.$item->id, 'header' => 'Review'])
 @slot('body')
@@ -20,14 +13,7 @@
 @endcomponent
 @endif
 
-@button([
-	'label' => \App\Support\Icon::render('trash-2', ['mr' => 2]) . 'Delete',
-	'styles' => [
-		'size' => 'sm',
-		'theme' => 'red'
-		],
-	'classes' => 'rounded',
-	'data' => ['toggle' => 'modal', 'target' => '#delete-modal-'.$item->id]])
+@include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'iconOnly' => false, 'attributes' => ['data-bs-toggle' => 'modal', 'data-bs-target' => '#delete-modal-'.$item->id]]])
 
 @component('components.modal', ['id' => 'delete-modal-'.$item->id, 'header' => 'Delete this review'])
 @slot('body')
@@ -36,7 +22,7 @@
 	@csrf
     Are you sure you want to do this?
     <p class="text-danger"><small>This action cannot be undone</small></p>
-	@submit(['label' => 'Yes, delete this review', 'size' => 'sm', 'theme' => 'red'])
+	@include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'type' => 'submit', 'label' => 'Yes, delete this review', 'iconOnly' => false]])
 </form>
 @endslot
 @endcomponent

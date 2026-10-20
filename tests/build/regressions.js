@@ -78,4 +78,5 @@ for (const file of entryPoints.filter(file => file.endsWith('.css'))) {
         assert(fs.existsSync(target), file + ': broken CSS URL ' + url);
     }
 }
+require('./brand-icons')(root, manifest);
 console.log(`Passed: ${requiredAssets.size} Laravel asset paths, ${versioned} final-content hashes, JavaScript syntax, ${copied + 5} exact copies and CSS asset URLs.`);

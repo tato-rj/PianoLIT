@@ -18,7 +18,7 @@
   <div class="bg-light h-100 w-100">
     <div class="d-flex flex-center flex-wrap credits" style="height: 100%">
       <div>
-        <a target="_blank" href="{{route('home')}}"><img src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 20%; width: 50px"></a>
+        <a target="_blank" href="{{route('home')}}"><img src="{{asset(mix('images/brand/app-icon.svg'))}}" style="border-radius: 20%; width: 50px"></a>
       </div>
       <div class="mx-4 text-center my-3">
         <p class="m-0" style="font-size: 86%">CHECKOUT THE <strong>PIANOLIT</strong> APP ON THE APP STORE</p>

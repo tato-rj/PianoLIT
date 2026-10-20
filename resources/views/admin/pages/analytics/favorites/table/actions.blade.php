@@ -1,5 +1,5 @@
 <div class="text-end">
-	<button class="btn btn-outline-secondary btn-sm" {{$item->favorites_count == 0 ? 'disabled' : null}} data-bs-target="#view-pieces-{{$item->id}}" data-bs-toggle="modal">@icon('eye') View pieces</button>
+	@include('admin.components.table-action', ['tableAction' => ['label' => 'View pieces', 'icon' => 'eye', 'attributes' => ['disabled' => $item->favorites_count == 0, 'data-bs-target' => '#view-pieces-'.$item->id, 'data-bs-toggle' => 'modal']]])
 
 	@component('components.modal', ['id' => 'view-pieces-'.$item->id, 'header' => 'Folder pieces'])
 	@slot('body')

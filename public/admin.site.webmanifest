@@ -1,16 +1,19 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "PianoLIT Admin",
+    "short_name": "PianoLIT Admin",
+    "description": "PianoLIT administration.",
     "icons": [
         {
-            "src": "/admin-android-chrome-192x192.png",
+            "src": "/admin-android-chrome-192x192.png?v=06540e9f03a9bdc5",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
-            "src": "/admin-android-chrome-512x512.png",
+            "src": "/admin-android-chrome-512x512.png?v=9da5c68928923db7",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         }
     ],
     "theme_color": "#ffffff",

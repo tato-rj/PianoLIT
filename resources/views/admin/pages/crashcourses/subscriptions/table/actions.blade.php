@@ -2,26 +2,11 @@
   @component('components.datatable.actions', ['actions' => []])
 
 	@if(! $item->isCompleted && ! $item->isCancelled)
-    <a href="#"
-      data-url="{{route('admin.crashcourses.subscriptions.resend', $item)}}"
-    data-action="resend the last lesson to {{$item->email}}"
-      title="Resend last lesson" data-bs-toggle="modal" data-bs-target="#confirm-modal" class="text-nowrap btn btn-sm btn-outline-secondary me-2">
-      @icon('rotate-cw', ['mr' => 2])Resend
-    </a>
+    @include('admin.components.table-action', ['tableAction' => ['label' => 'Resend', 'icon' => 'rotate-cw', 'attributes' => ['data-url' => route('admin.crashcourses.subscriptions.resend', $item), 'data-action' => 'resend the last lesson to '.$item->email, 'data-bs-toggle' => 'modal', 'data-bs-target' => '#confirm-modal']]])
 
-	<a href="#"
-		data-url="{{route('admin.crashcourses.subscriptions.next', $item)}}"
-		data-action="send the next lesson to {{$item->email}}"
-		title="Send next lesson" data-bs-toggle="modal" data-bs-target="#confirm-modal" class="text-nowrap btn btn-sm btn-outline-secondary me-2">
-        @icon('forward', ['mr' => 2])Send next
-	</a>
+	@include('admin.components.table-action', ['tableAction' => ['label' => 'Send next', 'icon' => 'forward', 'attributes' => ['data-url' => route('admin.crashcourses.subscriptions.next', $item), 'data-action' => 'send the next lesson to '.$item->email, 'data-bs-toggle' => 'modal', 'data-bs-target' => '#confirm-modal']]])
 
-	<a href="#"
-		data-url="{{route('admin.crashcourses.subscriptions.cancel', $item)}}"
-		data-action="stop {{$item->first_name}}'s subscription"
-		title="Stop subscription" data-bs-toggle="modal" data-bs-target="#confirm-modal" class="text-nowrap btn btn-sm btn-danger">
-        @icon('circle-stop', ['mr' => 2])Stop
-	</a>
+	@include('admin.components.table-action', ['tableAction' => ['label' => 'Stop', 'icon' => 'circle-stop', 'attributes' => ['data-url' => route('admin.crashcourses.subscriptions.cancel', $item), 'data-action' => 'stop '.$item->first_name."'s subscription", 'data-bs-toggle' => 'modal', 'data-bs-target' => '#confirm-modal']]])
 	@endif
 
   @endcomponent

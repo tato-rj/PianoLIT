@@ -24,12 +24,12 @@
                     <div class="d-flex align-items-center">
                         @toggle(['toggle' => $sending[$key], 'autoToggle' => false, 'name' => 'enabled', 'inputValue' => '1', 'ariaLabel' => 'Automatic sending: '.$email['name'], 'submitOnChange' => true])
                     </div>
-                    <noscript><button class="btn btn-sm btn-outline-secondary" type="submit">Save</button></noscript>
+                    <noscript>@include('admin.components.table-action', ['tableAction' => ['type' => 'submit', 'label' => 'Save']])</noscript>
                 </form>
             </td>
             <td><div class="admin-emails__actions">
-                <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.emails.preview', $key) }}" target="_blank" rel="noopener noreferrer" aria-label="Preview {{ $email['name'] }} in browser (opens a new tab)">@icon('eye')Preview</a>
-                <button class="btn btn-sm btn-primary" type="submit" form="email-preview-send" name="email_key" value="{{ $key }}" aria-label="Send preview of {{ $email['name'] }}">@icon('mail')Preview</button>
+                @include('admin.components.table-action', ['tableAction' => ['url' => route('admin.emails.preview', $key), 'label' => 'Preview', 'icon' => 'eye', 'attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer', 'aria-label' => 'Preview '.$email['name'].' in browser (opens a new tab)']]])
+                @include('admin.components.table-action', ['tableAction' => ['type' => 'submit', 'label' => 'Preview', 'icon' => 'mail', 'attributes' => ['form' => 'email-preview-send', 'name' => 'email_key', 'value' => $key, 'aria-label' => 'Send preview of '.$email['name']]]])
             </div></td>
         </tr>
         @endforeach

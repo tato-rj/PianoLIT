@@ -11,6 +11,7 @@
         "prod": "npm run production",
         "production": "mix --production",
         "icons": "node scripts/build-icons.js",
+        "brand:icons": "python3 scripts/build-brand-icons.py",
         "preproduction": "npm run icons",
         "postproduction": "npm run test:css && npm run test:build",
         "predevelopment": "npm run icons",

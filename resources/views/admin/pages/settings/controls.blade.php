@@ -1,5 +1,5 @@
 <section class="design-system__section" id="ds-buttons" aria-labelledby="ds-buttons-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">05 / ACTIONS</span><h2 id="ds-buttons-title">Buttons</h2><p>Hover, press or tab to a button to inspect its current state. These samples do not save or submit anything.</p></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">06 / ACTIONS</span><h2 id="ds-buttons-title">Buttons</h2><p>Hover, press or tab to a button to inspect its current state. These samples do not save or submit anything.</p></header>
   <div class="design-system__grid">
     @foreach(['primary' => 'Primary', 'secondary' => 'Secondary', 'outline-primary' => 'Outline primary', 'outline-secondary' => 'Outline secondary', 'success' => 'Success', 'danger' => 'Danger', 'light' => 'Light', 'dark' => 'Dark'] as $variant => $label)
       @component('admin.pages.settings.sample', ['label' => $label, 'usage' => '.btn .btn-'.$variant, 'properties' => 'font-size,line-height,padding,color,background-color,border,border-radius,box-shadow'])
@@ -30,7 +30,7 @@
 </section>
 
 <section class="design-system__section" id="ds-inputs" aria-labelledby="ds-inputs-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">06 / FORMS</span><h2 id="ds-inputs-title">Inputs & selection</h2><p>Shared form fields with their real focus, validation and disabled styles. Values stay on this page.</p></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">07 / FORMS</span><h2 id="ds-inputs-title">Inputs & selection</h2><p>Shared form fields with their real focus, validation and disabled styles. Values stay on this page.</p></header>
   <div class="design-system__grid">
     @foreach(['sm' => 'Small', '' => 'Default', 'lg' => 'Large'] as $size => $label)
       @component('admin.pages.settings.sample', ['label' => $label.' input', 'usage' => '@input · components.form.input'.($size ? ' · .form-control-'.$size : '')])

@@ -4,7 +4,7 @@
         <label class="form-check-label" for="{{ $id }}-all">Select this page</label>
     </div>
     <span class="text-muted" role="status" data-bulk-count>0 selected</span>
-    <button type="button" class="btn btn-sm btn-danger" data-bulk-open disabled data-bs-toggle="modal" data-bs-target="#{{ $id }}-modal">@icon('trash-2')Delete selected</button>
+    @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'label' => 'Delete selected', 'iconOnly' => false, 'attributes' => ['data-bulk-open' => true, 'disabled' => true, 'data-bs-toggle' => 'modal', 'data-bs-target' => '#'.$id.'-modal']]])
 </div>
 @component('components.modal', ['id' => $id.'-modal', 'header' => 'Delete selected '.e($label), 'centered' => true])
     @slot('body')
@@ -17,8 +17,8 @@
             @method('DELETE')
         @endif
             <div class="d-flex flex-wrap justify-content-end gap-2">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="{{ ($preview ?? false) ? 'button' : 'submit' }}" class="btn btn-danger" data-bulk-submit disabled>Delete selected</button>
+                @include('admin.components.table-action', ['tableAction' => ['label' => 'Cancel', 'attributes' => ['data-bs-dismiss' => 'modal']]])
+                @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'type' => ($preview ?? false) ? 'button' : 'submit', 'label' => 'Delete selected', 'iconOnly' => false, 'attributes' => ['data-bulk-submit' => true, 'disabled' => true]]])
             </div>
         @if($preview ?? false)</div>@else</form>@endif
     @endslot

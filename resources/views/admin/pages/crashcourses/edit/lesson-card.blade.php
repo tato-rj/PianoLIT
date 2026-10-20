@@ -15,17 +15,11 @@
     <div class="d-flex justify-content-between">
       <div class="">
         @include('admin.pages.crashcourses.lessons.actions', ['id' => $lesson->id])
-        <a href="{{route('admin.crashcourses.lessons.edit', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-warning">
-          @icon('square-pen', ['mr' => 2])Edit
-        </a>
-        <a href="{{route('admin.crashcourses.lessons.duplicate', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-green">
-          @icon('copy', ['mr' => 2])Duplicate
-        </a>
+        @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.crashcourses.lessons.edit', compact(['crashcourse', 'lesson']))]])
+        @include('admin.components.table-action', ['tableAction' => ['url' => route('admin.crashcourses.lessons.duplicate', compact(['crashcourse', 'lesson'])), 'label' => 'Duplicate', 'icon' => 'copy']])
       </div>
       <div>
-        <a href="#" data-url="{{route('admin.crashcourses.lessons.destroy', compact(['crashcourse', 'lesson']))}}" title="Delete" data-bs-toggle="modal" data-bs-target="#delete-modal" class="delete btn btn-sm btn-danger">
-          @icon('trash-2', ['mr' => 2])Delete
-        </a>
+        @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'iconOnly' => false, 'class' => 'delete', 'attributes' => ['data-url' => route('admin.crashcourses.lessons.destroy', compact(['crashcourse', 'lesson'])), 'data-bs-toggle' => 'modal', 'data-bs-target' => '#delete-modal']]])
       </div>
     </div>
   </div>

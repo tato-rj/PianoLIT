@@ -19,6 +19,17 @@ class AdminDesignSystemTest extends ReviewTestCase
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
+        $this->assertSame('ds-brand', $xpath->query('//section[contains(@class, "design-system__section")]')->item(0)->getAttribute('id'));
+        $this->assertSame('#ds-brand', $xpath->query('//nav[@aria-label="Design system sections"]/a')->item(0)->getAttribute('href'));
+        $this->assertSame(8, $xpath->query('//*[@id="ds-brand"]//*[@data-ds-sample]')->length);
+        foreach (['app-icon.svg', 'admin-icon.svg', 'app-icon-ios-1024.png', 'icon-rounded.png', 'icon-rounded-margin.png'] as $file) {
+            $this->assertSame(1, $xpath->query('//*[@id="ds-brand"]//a[@download and @href="'.asset(mix('images/brand/'.$file)).'"]')->length);
+        }
+        foreach (['', 'admin-'] as $prefix) {
+            foreach (['favicon-16x16.png', 'favicon-32x32.png', 'favicon.ico', 'safari-pinned-tab.svg', 'apple-touch-icon.png', 'android-chrome-192x192.png', 'android-chrome-512x512.png', 'mstile-150x150.png'] as $file) {
+                $this->assertSame(1, $xpath->query('//*[@id="ds-brand"]//a[@download and @href="'.asset(mix($prefix.$file)).'"]')->length);
+            }
+        }
         $this->assertSame(1, $xpath->query('//*[@id="ds-account-tabs" and @data-tab-navigation]')->length);
         $frame = $xpath->query('//*[@data-tab-navigation-frame][.//*[@id="ds-account-tabs"]]')->item(0);
         $this->assertNotNull($frame, 'The shared component encloses its menu and panes for atomic first render.');
@@ -46,5 +57,27 @@ class AdminDesignSystemTest extends ReviewTestCase
         $ids = [];
         foreach ($xpath->query('//*[@id]') as $element) $ids[] = $element->getAttribute('id');
         $this->assertCount(count(array_unique($ids)), $ids, 'Gallery IDs must be unique for tabs, modals and labels.');
+    }
+
+    public function test_browser_metadata_and_standalone_login_use_the_matching_versioned_brand()
+    {
+        foreach ([false, true] as $admin) {
+            $html = view('components.brand-theme', compact('admin'))->render();
+            $prefix = $admin ? 'admin-' : '';
+            foreach (['favicon.ico', 'favicon-32x32.png', 'favicon-16x16.png', 'apple-touch-icon.png', 'safari-pinned-tab.svg'] as $file) {
+                $this->assertStringContainsString(asset(mix($prefix.$file)), $html);
+                $this->assertStringContainsString('?id=', (string) mix($prefix.$file));
+            }
+            $metadataPrefix = $admin ? 'admin.' : '';
+            $this->assertStringContainsString(asset(mix($metadataPrefix.'site.webmanifest')), $html);
+            $this->assertStringContainsString(asset(mix($metadataPrefix.'browserconfig.xml')), $html);
+            $this->assertStringContainsString(asset(mix('images/brand/'.($admin ? 'admin' : 'app').'-icon.svg')), $html);
+            $this->assertStringContainsString('name="theme-color" content="'.($admin ? '#ffffff' : '#0055fe').'"', $html);
+            $this->assertStringNotContainsString('favicon-32x32.png"', $html, 'All browser artwork should have a version query.');
+        }
+        $this->get(route('admin.login.show'))->assertOk()
+            ->assertSee(asset(mix('images/brand/admin-icon.svg')), false)
+            ->assertSee(asset(mix('admin-favicon.ico')), false)
+            ->assertDontSee('images/brand/app-icon.svg', false);
     }
 }

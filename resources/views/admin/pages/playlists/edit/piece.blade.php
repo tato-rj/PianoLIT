@@ -4,12 +4,6 @@
 
 @slot('actions')
   @include('admin.components.play', ['audio' => storage($piece->audio_path)])
-  <div class="mx-2">
-    @if($piece->is_public_domain)        
-    <a href="{{storage($piece->score_path)}}" target="_blank" class="{{$piece->lookup('score_path')}}">@icon('file-text', ['mr' => 0])</a>
-    @else
-    <a href="{{$piece->score_url}}" target="_blank" class="test-success">@icon('globe', ['mr' => 0])</a>
-    @endif
-  </div>
+  @include('admin.components.table-action', ['tableAction' => ['url' => $piece->is_public_domain ? (string) storage($piece->score_path) : (string) $piece->score_url, 'label' => 'View score', 'icon' => $piece->is_public_domain ? 'file-text' : 'globe', 'iconOnly' => true, 'class' => 'mx-2', 'attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer']]])
 @endslot
 @endcomponent

@@ -5,7 +5,7 @@
   <form method="POST">
     @csrf
     @method('DELETE')
-    <button type="submit" class="btn btn-sm d-block w-100 btn-danger">Yes, I am sure</button>
+    @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'type' => 'submit', 'label' => 'Yes, I am sure', 'iconOnly' => false, 'class' => 'd-block w-100']])
   </form>
 @endslot
 @endcomponent

@@ -9,6 +9,6 @@
 	@icon('contact-round', ['mr' => 0, 'size' => '2x'])
 </div>
 @endif
-<img src="{{asset(isset($admin) && $admin ? 'images/brand/admin-icon.svg' : 'images/brand/app-icon.svg')}}" alt="PianoLIT icon" class="mb-{{$mb ?? null}} {{$classes ?? null}} {{$impostor ? 'opacity-4' : null}} shadow" style="border-radius: 20%; width: {{$size ?? '60px'}};
+<img src="{{asset(mix(isset($admin) && $admin ? 'images/brand/admin-icon.svg' : 'images/brand/app-icon.svg'))}}" alt="PianoLIT icon" class="mb-{{$mb ?? null}} {{$classes ?? null}} {{$impostor ? 'opacity-4' : null}} shadow" style="border-radius: 20%; width: {{$size ?? '60px'}};
 ">
 </div>

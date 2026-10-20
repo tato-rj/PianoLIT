@@ -20,13 +20,13 @@
   <div class="admin-page-actions">
     @isset($slot){{$slot}}@endisset
     @isset($action['url'])
-    <a href="{{$action['url']}}" class="btn btn-sm btn-primary">@icon('plus'){{$action['label']}}</a>
+    <a href="{{$action['url']}}" class="btn btn-sm btn-dark">@icon('plus'){{$action['label']}}</a>
     @endisset
     @isset($action['external_link'])
-    <a href="{{$action['external_link']}}" target="_blank" rel="noopener" class="btn btn-sm btn-primary">@icon('external-link'){{$action['label']}}</a>
+    <a href="{{$action['external_link']}}" target="_blank" rel="noopener" class="btn btn-sm btn-dark">@icon('external-link'){{$action['label']}}</a>
     @endisset
     @isset($action['modal'])
-    <button type="button" data-bs-toggle="modal" data-bs-target="#{{$action['modal']}}" class="btn btn-sm btn-primary">@icon('plus'){{$action['label']}}</button>
+    <button type="button" data-bs-toggle="modal" data-bs-target="#{{$action['modal']}}" class="btn btn-sm btn-dark">@icon('plus'){{$action['label']}}</button>
     @endisset
   </div>
   @endif

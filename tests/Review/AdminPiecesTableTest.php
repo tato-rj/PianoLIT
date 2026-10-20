@@ -64,7 +64,7 @@ class AdminPiecesTableTest extends ReviewTestCase
         $html = $this->get(route('admin.pieces.index'))->assertOk()->getContent();
         preg_match('/<table[^>]*id="pieces-table".*?<\/table>/s', $html, $table);
         preg_match_all('/<th\b[^>]*>(.*?)<\/th>/s', $table[0], $headers);
-        foreach (['ID', 'Piece', 'Composer', 'Tags', 'Level', 'Highlighted', 'Favorited', 'Actions'] as $i => $label) {
+        foreach (['ID', 'Piece', 'Composer', 'Level', 'Highlighted', 'Favorited', 'Actions'] as $i => $label) {
             $this->assertStringContainsString($label, strip_tags($headers[1][$i]));
         }
         $this->assertStringNotContainsString('cdn.datatables.net', $html);

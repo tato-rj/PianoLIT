@@ -14,6 +14,29 @@ Edit `resources/sass/shared/_tokens.scss`, then run `npm run production`.
 It contains the existing Sass palette and the CSS custom properties used by the
 public website, web app and admin. Commit the rebuilt CSS and Mix manifest together.
 
+## PianoLIT brand icons
+
+The first Design System section, **PianoLIT icons**, previews and downloads the
+approved blue user and white admin artwork, browser icons, Apple/Android
+home-screen icons, Windows tiles, Safari masks, rounded/QR artwork and the iOS
+export. UI previews use the shared `@brandIcon` component and the actual exports.
+The two SVG masters live in `resources/images/brand/`; keep their six evenly
+spaced black keys, as explicitly requested by Arthur.
+
+Run `npm run brand:icons` with ImageMagick 7 installed after changing either
+master, then run `npm run production`. The generator retains the legacy email
+and QR image dimensions. `app-icon-ios-1024.png` is a 1024 × 1024 RGB PNG with
+no transparency or baked corner mask; installing it in the native iOS app is a
+separate release task. Apple/Android/Windows exports are also opaque squares so
+their platform can apply its own mask. Browser PNG/ICO exports retain rounding.
+
+`components.brand-theme` supplies the shared user/admin browser metadata.
+All runtime artwork uses content-versioned URLs from `scripts/brand-assets.js`;
+the web manifests and Windows configs also version their nested icon URLs.
+Regenerate and deploy the images, metadata, views and Mix manifest together.
+An existing installed home-screen shortcut may require removal and re-adding
+because its icon refresh is controlled by the device.
+
 ## Change standard rounded corners
 
 ```scss
@@ -29,6 +52,16 @@ Images and divs opt into these rules through their existing rounded classes.
 `--radius-sm` controls `.rounded-sm` and its directional variants. Existing pill/circle and
 square utility precedence is retained. Custom score tools, Match cards, decorative
 shapes, email templates and standalone policy documents keep their own layouts.
+
+## Admin table actions
+
+Render row actions through `admin.components.table-action`. Edit uses the shared
+small yellow button with a square-pen icon and Edit label. Delete uses red with
+a trash icon; other actions use black. The Users directory and the Design
+System's Table actions specimen use the same component. Preserve accessible
+names, forms, modal confirmation, disabled states and route parameters. Legacy
+DataTables action partials delegate to the same renderer. See `ADMIN_TABLES.md`
+for its options and compatibility rules.
 
 ## Form controls
 
@@ -58,8 +91,11 @@ sync without introducing table-specific field styles.
 
 All admin table and directory filters use `admin.components.filters.form`,
 `filters.fields` and `filters.button`, including visit sorting, analytics,
-composer/folder directories and the shared table component. Use a dark **Apply
-filters** action; Reverse order and Clear use the component's secondary option.
+composer/folder directories and the shared table component. Use the shared `.btn.btn-dark` for **Apply
+filters** and page-header actions such as Add a new piece; Reverse order and Clear
+use `.btn.btn-secondary`. Their normal, hover, focus, pressed and disabled states
+come from the same button rules. Filter styling supplies only layout and sizing
+to align with fields, without separate colors, borders or corner styles.
 Do not define page-specific filter markup or button/field finishes. The form
 composes `@input` / `@select`, optional custom widgets and shared actions.
 `field-control-sizing` from `shared/_field-sizing.scss` aligns actions with fields:

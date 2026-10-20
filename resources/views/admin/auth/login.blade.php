@@ -10,6 +10,7 @@
     <style type="text/css">
 
     </style>
+    @include('admin.layouts.html.theme')
 </head>
 <body>
     <div class="container">
@@ -18,7 +19,7 @@
                 <form class="form-horizontal" method="POST" action="{{ route('admin.login.submit') }}">
                     @csrf
                     <div class="mb-4 text-center">
-                        <img class="w-100 mb-2" src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 50%; vertical-align: sub; max-width: 100px">
+                        @brandIcon(['admin' => true, 'size' => '100px', 'mb' => 2])
                         <h4 class="text-dark">Login</h4>
                     </div>
 

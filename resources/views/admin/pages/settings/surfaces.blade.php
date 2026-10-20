@@ -1,5 +1,5 @@
 <section class="design-system__section" id="ds-spacing" aria-labelledby="ds-spacing-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">03 / RHYTHM</span><h2 id="ds-spacing-title">Spacing</h2><p>The shared five-step scale for padding, margins and gaps.</p></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">04 / RHYTHM</span><h2 id="ds-spacing-title">Spacing</h2><p>The shared five-step scale for padding, margins and gaps.</p></header>
   <div class="design-system__spacing">
     @foreach(range(1, 5) as $step)
       <div data-ds-sample data-ds-compact data-ds-label="Spacing {{ $step }}" data-ds-properties="width">
@@ -14,7 +14,7 @@
 </section>
 
 <section class="design-system__section" id="ds-surfaces" aria-labelledby="ds-surfaces-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">04 / SHAPE & DEPTH</span><h2 id="ds-surfaces-title">Borders & shadows</h2><p>Corner radii and elevations used by containers, controls and overlays.</p></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">05 / SHAPE & DEPTH</span><h2 id="ds-surfaces-title">Borders & shadows</h2><p>Corner radii and elevations used by containers, controls and overlays.</p></header>
   <div class="design-system__grid">
     @foreach(['radius' => 'Container', 'radius-sm' => 'Small container', 'radius-button' => 'Button', 'radius-input' => 'Input', 'radius-dropdown' => 'Dropdown', 'radius-pill' => 'Pill', 'radius-circle' => 'Circle'] as $token => $label)
       @component('admin.pages.settings.sample', ['label' => $label, 'usage' => '--'.$token, 'properties' => 'border,border-radius'])

@@ -1,1 +1,1 @@
-<a href="{{$action}}" title="Edit" class="text-muted me-2">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
+@include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => $action]])

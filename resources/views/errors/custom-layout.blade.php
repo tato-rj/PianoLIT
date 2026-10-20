@@ -17,12 +17,13 @@
                 font-family: Nunito, sans-serif;
             }
         </style>
+        @include('components.brand-theme', ['admin' => request()->getHost() === 'admin.'.config('app.short_url')])
     </head>
     <body class="container py-6">
         <section class="row">
             <div class="col-lg-6 col-md-8 col-10 mx-auto text-center">
                 <div class="mb-4">
-                    @brandIcon
+                    @brandIcon(['admin' => request()->getHost() === 'admin.'.config('app.short_url')])
                 </div>
                 
                 <div class="mb-4">

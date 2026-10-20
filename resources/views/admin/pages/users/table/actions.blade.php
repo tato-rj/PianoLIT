@@ -1,8 +1,4 @@
 <div class="d-flex justify-content-end align-items-center gap-2">
-    <a href="{{ route('admin.users.show', $item) }}" class="btn btn-warning btn-sm text-nowrap">
-        @icon('square-pen', ['mr' => 2])Edit
-    </a>
-    <a href="{{ route('impersonate', $item) }}" class="btn btn-dark btn-sm" title="Impersonate user" aria-label="Impersonate user" target="_blank" rel="noopener noreferrer">
-        @icon('hat-glasses', ['mr' => 0])
-    </a>
+    @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.users.show', $item)]])
+    @include('admin.components.table-action', ['tableAction' => ['url' => route('impersonate', $item), 'label' => 'Impersonate user', 'icon' => 'hat-glasses', 'iconOnly' => true, 'attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer']]])
 </div>

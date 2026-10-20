@@ -7,24 +7,5 @@
     <div class="cursor-pointer badge rounded-pill bg-{{strtolower($item->level->name)}}">{{ucfirst($item->level->name)}}</div>
   </td>
 
-  <td class="d-flex justify-content-end align-items-center">
-    @include('admin.components.play', ['audio' => storage($item->audio_path)])
-    <div class="ms-2">
-      @if($item->is_public_domain)
-      <a href="{{storage($item->score_path)}}" target="_blank" class="{{$item->lookup('score_path')}}">@icon('file-text', ['mr' => 0])</a>
-      @else
-      <a href="{{$item->score_url}}" target="_blank" class="test-success">@icon('globe', ['mr' => 0])</a>
-      @endif
-    </div>
-    <div class="ms-2">
-      <a href="{{route('webapp.pieces.show', $item->id)}}" target="_blank" class="text-warning" rel="noopener noreferrer">@icon('eye', ['mr' => 0])</a>
-    </div>
-    <div>
-      <div class="text-primary cursor-pointer add-piece ms-2" data-id="{{$item->id}}">@icon('circle-plus', ['mr' => 0])
-        <div style="display: none;">
-          @include('admin.pages.playlists.edit.piece', ['piece' => $item])
-        </div>
-      </div>
-    </div>
-  </td>
+  <td>@include('admin.pages.playlists.edit.table.actions')</td>
 </tr>

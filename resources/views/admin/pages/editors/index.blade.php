@@ -20,8 +20,9 @@
           <div>
             <strong>{{$editor->name}} | <small>{{$editor->pieces_count}} {{str_plural('piece', $editor->pieces_count)}} - joined on {{$editor->created_at->toFormattedDateString()}}</small></strong>
           </div>
-          <div class="text-end text-brand">
-            <a href="{{route('admin.editors.edit', $editor->id)}}">edit</a> | <a href="" data-name="{{$editor->name}}" data-url="{{route('admin.editors.destroy', $editor->id)}}" data-bs-toggle="modal" data-bs-target="#delete-modal" class="delete">delete</a>
+          <div class="d-flex flex-nowrap align-items-center gap-2">
+            @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.editors.edit', $editor->id)]])
+            @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'class' => 'delete', 'attributes' => ['data-name' => $editor->name, 'data-url' => route('admin.editors.destroy', $editor->id), 'data-bs-toggle' => 'modal', 'data-bs-target' => '#delete-modal']]])
           </div>
         </div>
       </div>

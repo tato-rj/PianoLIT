@@ -46,7 +46,7 @@
                     <input type="hidden" name="subscriberId" value="{{ $item->id }}">
                     <input type="hidden" name="enabled" value="0">
                     @toggle(['toggle' => (bool) $item->list_subscribed, 'autoToggle' => false, 'name' => 'enabled', 'inputValue' => '1', 'ariaLabel' => 'Subscribe '.$item->email.' to '.$list->name, 'submitOnChange' => true])
-                    <noscript><button type="submit" class="btn btn-sm btn-outline-secondary">Save</button></noscript>
+                    <noscript>@include('admin.components.table-action', ['tableAction' => ['type' => 'submit', 'label' => 'Save']])</noscript>
                 </form>
             </td>
         </tr>

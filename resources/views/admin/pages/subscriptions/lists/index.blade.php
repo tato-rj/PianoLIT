@@ -22,11 +22,11 @@
             <td>{{ number_format($list->subscribers_count) }}</td>
             <td class="text-nowrap">@if($list->last_sent_at)<time datetime="{{ $list->last_sent_at->toIso8601String() }}">{{ $list->last_sent_at->format('M j, Y · g:i a') }}</time>@else<span class="text-muted">Never sent</span>@endif</td>
             <td><div class="d-flex flex-nowrap gap-2 text-nowrap">
-                <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.subscriptions.lists.edit', $list) }}">@icon('pencil')Edit</a>
+                @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.subscriptions.lists.edit', $list)]])
                 @if($templates->exists($list) && ($list->name !== \App\EmailList::FREE_PICK || $hasFreePick))
-                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#list-send-{{ $list->id }}">@icon('mail')Send email</button>
+                    @include('admin.components.table-action', ['tableAction' => ['label' => 'Send email', 'icon' => 'mail', 'attributes' => ['data-bs-toggle' => 'modal', 'data-bs-target' => '#list-send-'.$list->id]]])
                 @else
-                    <button type="button" class="btn btn-sm btn-primary" disabled title="{{ $templates->exists($list) ? 'Choose a current free pick before sending' : 'The email template for this list is missing' }}">@icon('mail')Send email</button>
+                    @include('admin.components.table-action', ['tableAction' => ['label' => 'Send email', 'icon' => 'mail', 'attributes' => ['disabled' => true, 'title' => $templates->exists($list) ? 'Choose a current free pick before sending' : 'The email template for this list is missing']]])
                 @endif
             </div></td>
         </tr>

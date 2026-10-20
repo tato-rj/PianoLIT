@@ -6,7 +6,7 @@
 				<div class="d-flex d-apart mb-3">
 					<div>
 						<div>
-							<img class="animated fadeInLeft" src="{{asset('images/brand/app-icon.svg')}}" alt="PianoLIT icon" style="border-radius: 20%; width: 26px; display: none;">
+							<img class="animated fadeInLeft" src="{{asset(mix('images/brand/app-icon.svg'))}}" alt="PianoLIT icon" style="border-radius: 20%; width: 26px; display: none;">
 							<span class="ms-1 text-muted">
 								@if(request('search'))
 									Search results for

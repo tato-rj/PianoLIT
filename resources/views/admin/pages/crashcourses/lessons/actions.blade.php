@@ -1,6 +1,4 @@
-<a href="#" data-bs-toggle="modal" data-bs-target="#lesson-{{$lesson->id}}-preview-modal" class="btn btn-sm btn-outline-dark me-2">
-@icon('eye', ['mr' => 2])Preview
-</a>
+@include('admin.components.table-action', ['tableAction' => ['label' => 'Preview', 'icon' => 'eye', 'attributes' => ['data-bs-toggle' => 'modal', 'data-bs-target' => '#lesson-'.$lesson->id.'-preview-modal']]])
 
 <div class="modal fade" id="lesson-{{$lesson->id}}-preview-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -21,10 +19,10 @@
               'name' => 'email',
               'bag' => 'default',
               'asterisk' => true])
-            <button type="submit" class="btn btn-sm d-block w-100 btn-default">Send preview</button>
+            @include('admin.components.table-action', ['tableAction' => ['type' => 'submit', 'label' => 'Send preview', 'class' => 'd-block w-100']])
           </form>
 
-          <a href="{{route('admin.crashcourses.lessons.preview', compact(['crashcourse', 'lesson']))}}" id="preview-url" target="_blank" class="btn btn-outline-secondary d-block w-100 btn-sm px-3 me-2">Or just preview in the browser</a>
+          @include('admin.components.table-action', ['tableAction' => ['url' => route('admin.crashcourses.lessons.preview', compact(['crashcourse', 'lesson'])), 'label' => 'Or just preview in the browser', 'class' => 'd-block w-100', 'attributes' => ['id' => 'preview-url', 'target' => '_blank', 'rel' => 'noopener noreferrer']]])
         </div>
       </div>
     </div>

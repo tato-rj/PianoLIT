@@ -118,6 +118,22 @@
         margin-bottom: 7px;
         font-size: var(--font-size-sm);
     }
+    // Gallery layout for the real artwork, with no CSS copies of the icon.
+    .design-system__brand-preview {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        min-height: 160px;
+        padding: 16px;
+        border-radius: var(--radius-sm);
+        background: var(--color-surface-subtle);
+    }
+    .design-system__brand-preview img {
+        max-width: 100%;
+        object-fit: contain;
+    }
     @import 'design-system-editor';
     // Typography comparison rows.
     .design-system__type-scale {

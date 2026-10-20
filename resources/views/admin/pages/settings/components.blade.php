@@ -1,5 +1,5 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">07 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
     @component('admin.pages.settings.sample', ['label' => 'Page loading', 'usage' => 'admin.components.page-loading', 'properties' => 'height,background-color'])
       @include('admin.components.page-loading', ['preview' => true])
@@ -71,7 +71,7 @@
 </section>
 
 <section class="design-system__section" id="ds-tables" aria-labelledby="ds-tables-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / ADMINISTRATION</span><h2 id="ds-tables-title">Tables</h2><p>The reusable admin table, shown with fictional data. Directory pages use 12 results per page by default.</p><code>admin.components.table · resources/sass/admin/_tables.scss</code></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">09 / ADMINISTRATION</span><h2 id="ds-tables-title">Tables</h2><p>The reusable admin table, shown with fictional data. Directory pages use 12 results per page by default.</p><code>admin.components.table · resources/sass/admin/_tables.scss</code></header>
   <div data-ds-sample data-ds-label="Table" data-ds-properties="padding,background-color,border,border-radius">
     <div data-ds-preview>
       @component('admin.components.table', ['id' => 'ds-example-table', 'label' => 'Design system sample accounts', 'title' => 'Membership directory', 'description' => 'Sample content', 'items' => collect(['member', 'trial', 'ended']), 'columns' => [['label' => 'Select', 'hidden' => true], 'Account', 'Plan', 'Status']])
@@ -91,6 +91,13 @@
   </div>
   <p class="design-system__note">Table card values are measured from the shared component. Filters and pagination use the same styles on live directory pages.</p>
   <div class="design-system__grid">
+    @component('admin.pages.settings.sample', ['label' => 'Table actions', 'usage' => 'admin.components.table-action', 'properties' => 'font-size,padding,color,background-color,border,border-radius'])
+      <div class="d-flex flex-wrap align-items-center gap-2" data-ds-preview>
+        @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit']])
+        @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete']])
+        @include('admin.components.table-action', ['tableAction' => ['label' => 'Other action', 'icon' => 'hat-glasses', 'iconOnly' => true]])
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Admin filter', 'usage' => 'admin.components.filters.form · fields · button', 'properties' => 'font-size,padding,border,border-radius,background-color'])
       @include('admin.components.filters.form', [
         'id' => 'ds-table-filters', 'label' => 'Sample table filters', 'preview' => true, 'fields' => [['type' => 'search', 'name' => 'ds_table_search', 'label' => 'Search accounts', 'placeholder' => 'Name or email', 'designSystemPreview' => true]],
@@ -104,7 +111,7 @@
 </section>
 
 <section class="design-system__section" id="ds-icons" aria-labelledby="ds-icons-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">09 / ICONOGRAPHY</span><h2 id="ds-icons-title">Icons</h2><p>Lucide SVG icons inherit text color and size. The shared stroke width is <span data-ds-token="--icon-stroke-width"></span>.</p></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">10 / ICONOGRAPHY</span><h2 id="ds-icons-title">Icons</h2><p>Lucide SVG icons inherit text color and size. The shared stroke width is <span data-ds-token="--icon-stroke-width"></span>.</p></header>
   <div class="design-system__icon-grid">
     @foreach(['music', 'search', 'heart', 'bookmark', 'play', 'pause', 'download', 'upload', 'pencil', 'trash', 'plus', 'x', 'check', 'chevron-right', 'users', 'settings', 'bell', 'circle-help'] as $icon)
       <div>@icon($icon, ['mr' => 0, 'classes' => 'icon-size-xl'])<code>{{ $icon }}</code></div>

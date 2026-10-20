@@ -443,6 +443,7 @@
             }
             {!! file_get_contents(resource_path('sass/shared/_focus.scss')) !!}
         </style>
+        @include('components.brand-theme', ['admin' => request()->getHost() === 'admin.'.config('app.short_url')])
     </head>
     <body class="antialiased font-sans">
         <div class="md:flex min-h-screen">

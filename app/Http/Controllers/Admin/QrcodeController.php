@@ -11,7 +11,7 @@ class QrcodeController extends Controller
     public function download()
     {
         $url = url()->previous();
-        $logo = asset('images/brand/icon-rounded-margin.png');
+        $logo = asset(mix('images/brand/icon-rounded-margin.png'));
         $format = 'png';
         $filename = 'QR-pianolit.' . $format;
 // return $url;

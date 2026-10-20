@@ -62,39 +62,17 @@
     }
 }
 
-// Shared Apply/Reverse/Clear actions, extracted from the Users table.
-.admin-filter-button {
+// Filter actions use the shared button variants; keep only field-aligned sizing.
+.btn.admin-filter-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    border: 1px solid #181e22;
     padding-left: 18px;
     padding-right: 18px;
-    border-radius: 24px;
-    background: #181e22;
-    color: #fff;
-    cursor: pointer;
     text-align: center;
     white-space: nowrap;
     @include field-control-sizing;
-    &:hover {
-        color: #fff;
-        background: #354139;
-    }
-    &:disabled {
-        opacity: .65;
-        cursor: default;
-    }
-    &--secondary {
-        border-color: var(--field-border);
-        background: var(--field-background);
-        color: var(--field-text);
-        &:hover {
-            background: var(--field-disabled-background);
-            color: var(--field-text);
-        }
-    }
 }
 
 // Date and multiple-choice controls share native select field styling.

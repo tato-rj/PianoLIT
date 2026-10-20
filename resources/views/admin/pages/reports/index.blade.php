@@ -38,7 +38,7 @@
             @foreach(['delivered_count', 'failed_count', 'opens_count', 'clicks_count'] as $metric)
                 <td class="text-nowrap"><span class="admin-table__primary">{{ percentage($report->$metric, $report->emails_count) }}%</span><small title="{{ number_format($report->$metric) }} emails">{{ number_format($report->$metric) }}</small></td>
             @endforeach
-            <td><a class="btn btn-sm btn-outline-secondary text-nowrap" href="{{ route('admin.subscriptions.reports.show', $report->list_id) }}">@icon('eye')View report</a></td>
+            <td>@include('admin.components.table-action', ['tableAction' => ['url' => route('admin.subscriptions.reports.show', $report->list_id), 'label' => 'View report', 'icon' => 'eye']])</td>
         </tr>
         @endforeach
     @endcomponent

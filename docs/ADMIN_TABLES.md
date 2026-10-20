@@ -108,7 +108,36 @@ The shared form owns wrapping, spacing, labels, search width and responsive
 layout in `admin/_filter-controls.scss`. `@input`, `@select` and `.form-control`
 own field appearance; custom date/multiple-choice triggers use the same native
 select arrow mixin and field tokens. All Apply actions share the same button
-component and sizing. Remove old local filter styles when migrating consumers.
+component and sizing. Page-header actions and primary filter actions both use
+`.btn.btn-dark`; secondary filters use `.btn.btn-secondary`. Filter Sass owns
+only layout/field alignment, so hover, keyboard focus, pressed and disabled
+colors all come from the shared button variant. Remove old local filter styles when migrating consumers.
+
+## Table action buttons
+
+Use `admin.components.table-action` for row actions and destructive confirmation
+buttons. The Users directory is the visual reference: `kind: edit` renders the
+shared small yellow button with the square-pen icon and Edit label; `kind: delete`
+renders a red trash button; all other actions use the black button. Icon-only
+buttons keep a descriptive accessible name and title. Delete buttons default to
+icon-only; set `iconOnly: false` for a visible label or confirmation. Place the
+Pieces Delete control immediately after Edit, before its other actions.
+
+Pass one `tableAction` array: optional `kind`, `url` for a link, `type` for a
+button (default button), `label`, `icon`, `iconOnly`, `class`, and trusted
+`attributes`. Attribute values are escaped, true renders a boolean attribute,
+and false/null omit it. Preserve each action's form association, method, CSRF,
+modal target, data attributes, disabled state, route and permissions. Keep
+POST/PATCH/DELETE actions in their existing forms or confirmation dialogs;
+button standardization does not authorize adding mutations or changing flows.
+New-tab links retain `rel="noopener noreferrer"`. The legacy
+`components.datatable.actions.*` renderers delegate to this same component;
+legacy tables keep their existing loaders and scripts.
+
+The Design System's Table actions specimen uses the component in inert button
+form. Use existing Bootstrap/PianoLIT button tokens; no per-table color, sizing
+or radius overrides. This action standard does not restyle status controls,
+filters, pagination or native details/disclosure controls.
 
 ## Queries and navigation
 
@@ -200,15 +229,13 @@ LIKE wildcards are escaped. The former Rankings column displays highlight dates
 and is now labeled Highlighted. Favorite counts retain analytics exclusions.
 Piece titles open the web app in a new tab, while Edit keeps the admin editor.
 
-Tag/level buttons open the shared modal with shared checkbox/radio controls.
-The browser discards stale loads, provides load retry, serializes saves and
-restores controls/selections after errors. Level replacement validates tag types,
-locks the piece and checks the submitted prior level, then detaches/attaches in a
-transaction. A stale prior level returns 409. Ordinary tag edits cannot remove
-core level/period/length tags. Freepick, creation-date and confirmed deletion
+Piece titles use the shared `clamp-2` utility with the full title available on
+hover. The Tags column and its visible sort choices were removed on October 19;
+levels display their names as plain text and retain difficulty sorting. The
+index no longer renders or loads quick-edit dialogs/scripts. Existing admin
+quick-edit routes and the prior authenticated admin-only Ajax response remain
+available for compatibility. Freepick, creation-date and confirmed deletion
 actions remain available. Deletion validates return filters and clamps the page.
-The prior authenticated admin-only Ajax response remains available for existing
-callers; the redesigned page loads no DataTables assets or initialization.
 Public/mobile serialization and media delivery remain unchanged.
 
 ## Appearance and verification

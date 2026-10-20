@@ -1,5 +1,5 @@
 <section class="design-system__section" id="ds-colors" aria-labelledby="ds-colors-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">02 / PALETTE</span><h2 id="ds-colors-title">Colors</h2><p>Brand, semantic and utility palettes, followed by the softer tones used in folders and feature cards.</p></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">03 / PALETTE</span><h2 id="ds-colors-title">Colors</h2><p>Brand, semantic and utility palettes, followed by the softer tones used in folders and feature cards.</p></header>
   @foreach([
     'Brand & interaction' => ['primary', 'primary-hover', 'primary-active', 'primary-disabled', 'primary-soft'],
     'Text & surfaces' => ['text', 'text-muted', 'text-dark', 'surface', 'surface-subtle', 'surface-dark', 'border', 'dropdown-border'],

@@ -1,5 +1,5 @@
 <section class="design-system__section" id="ds-typography" aria-labelledby="ds-typography-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">01 / FOUNDATIONS</span><h2 id="ds-typography-title">Typography</h2><p>System fonts for everyday reading, Poppins for headings, and a serif stack for editorial accents.</p></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">02 / FOUNDATIONS</span><h2 id="ds-typography-title">Typography</h2><p>System fonts for everyday reading, Poppins for headings, and a serif stack for editorial accents.</p></header>
   <div class="design-system__grid">
     @foreach(['body' => ['System sans', '--font-family-body'], 'heading' => ['Poppins', '--font-family-heading'], 'serif' => ['Editorial serif', '--font-family-serif']] as $family => $font)
       @component('admin.pages.settings.sample', ['label' => $font[0], 'usage' => $font[1], 'properties' => 'font-family,font-size,font-weight,line-height,letter-spacing'])

@@ -62,7 +62,7 @@ class AdminPageHeadersTest extends ReviewTestCase
     {
         $this->actingAs(create(Admin::class), 'admin');
         [$xpath, $header] = $this->header($this->get(route('admin.ebooks.index'))->assertOk()->getContent());
-        $this->assertSame(route('admin.ebooks.create'), $xpath->query('.//a[contains(@class, "btn-primary")]', $header)[0]->getAttribute('href'));
+        $this->assertSame(route('admin.ebooks.create'), $xpath->query('.//a[contains(@class, "btn-dark")]', $header)[0]->getAttribute('href'));
         [$xpath, $header] = $this->header($this->get(route('admin.ebooks.topics.index'))->assertOk()->getContent());
         $this->assertSame(1, $xpath->query('.//button[@type="button" and @data-bs-target="#add-modal"]', $header)->length);
         $this->assertSame(1, $xpath->query('//*[@id="add-modal"]')->length);

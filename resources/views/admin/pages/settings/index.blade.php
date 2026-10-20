@@ -26,12 +26,13 @@
     </div>
 
     <nav class="design-system__nav" aria-label="Design system sections">
-      @foreach(['typography' => 'Typography', 'colors' => 'Colors', 'spacing' => 'Spacing', 'surfaces' => 'Borders & shadows', 'buttons' => 'Buttons', 'inputs' => 'Inputs', 'components' => 'Components', 'tables' => 'Tables', 'icons' => 'Icons'] as $anchor => $label)
+      @foreach(['brand' => 'PianoLIT icons', 'typography' => 'Typography', 'colors' => 'Colors', 'spacing' => 'Spacing', 'surfaces' => 'Borders & shadows', 'buttons' => 'Buttons', 'inputs' => 'Inputs', 'components' => 'Components', 'tables' => 'Tables', 'icons' => 'Icons'] as $anchor => $label)
         <a href="#ds-{{ $anchor }}">{{ $label }}</a>
       @endforeach
     </nav>
     <noscript><p class="design-system__note">Enable JavaScript to see and edit computed CSS values. All visual samples remain available below.</p></noscript>
 
+    @include('admin.pages.settings.brand')
     @include('admin.pages.settings.typography')
     @include('admin.pages.settings.colors')
     @include('admin.pages.settings.surfaces')

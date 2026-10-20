@@ -1,20 +1,11 @@
-  <div class="d-flex justify-content-end align-items-center">
+<div class="d-flex flex-nowrap justify-content-end align-items-center gap-2">
     @include('admin.components.play', ['audio' => storage($item->audio_path)])
-    <div class="ms-2">
-      @if($item->is_public_domain)
-      <a href="{{storage($item->score_path)}}" target="_blank" class="{{$item->lookup('score_path')}}">@icon('file-text', ['mr' => 0])</a>
-      @else
-      <a href="{{$item->score_url}}" target="_blank" class="test-success">@icon('globe', ['mr' => 0])</a>
-      @endif
-    </div>
-    <div class="ms-2">
-      <a href="{{route('webapp.pieces.show', $item->id)}}" target="_blank" class="text-warning" rel="noopener noreferrer">@icon('eye', ['mr' => 0])</a>
-    </div>
-    <div>
-      <div class="text-primary cursor-pointer add-piece ms-2" data-id="{{$item->id}}">@icon('circle-plus', ['mr' => 0])
+    @include('admin.components.table-action', ['tableAction' => ['url' => $item->is_public_domain ? (string) storage($item->score_path) : (string) $item->score_url, 'label' => 'View score', 'icon' => $item->is_public_domain ? 'file-text' : 'globe', 'iconOnly' => true, 'attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer']]])
+    @include('admin.components.table-action', ['tableAction' => ['url' => route('webapp.pieces.show', $item->id), 'label' => 'View piece', 'icon' => 'eye', 'iconOnly' => true, 'attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer']]])
+    <div class="add-piece" data-id="{{ $item->id }}">
+        @include('admin.components.table-action', ['tableAction' => ['label' => 'Add piece', 'icon' => 'circle-plus', 'iconOnly' => true]])
         <div style="display: none;">
-          @include('admin.pages.playlists.edit.piece', ['piece' => $item])
+            @include('admin.pages.playlists.edit.piece', ['piece' => $item])
         </div>
-      </div>
     </div>
-  </div>
+</div>

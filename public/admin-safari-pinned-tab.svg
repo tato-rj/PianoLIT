@@ -1,15 +1,13 @@
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
- "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
- width="1239.000000pt" height="1239.000000pt" viewBox="0 0 1239.000000 1239.000000"
- preserveAspectRatio="xMidYMid meet">
-<metadata>
-Created by potrace 1.11, written by Peter Selinger 2001-2013
-</metadata>
-<g transform="translate(0.000000,1239.000000) scale(0.100000,-0.100000)"
-fill="#000000" stroke="none">
-<path d="M0 6195 l0 -6195 6190 0 6190 0 0 6195 0 6195 -6190 0 -6190 0 0
--6195z"/>
-</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>PianoLIT pinned tab</title><g fill="#000"><path fill-rule="evenodd" d="M128 112h256q24 0 24 24v150h104v90H0v-90h104V136q0-24 24-24z M128 148q0-7 7-9 61-20 121 5v152q-60-25-121-5-7 2-7-6z M256 144q60-25 121-5 7 2 7 9v137q0 8-7 6-61-20-121 5z"/><path xmlns="http://www.w3.org/2000/svg" d="M155 168q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M155 206q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M155 244q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M283 168q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M283 206q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M283 244q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
+  <path xmlns="http://www.w3.org/2000/svg" d="M55 376h36v79q0 9-9 9H64q-9 0-9-9z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M128 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M201 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M275 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M348 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M421 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
+  </g></svg>
