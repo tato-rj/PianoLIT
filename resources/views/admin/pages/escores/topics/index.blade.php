@@ -4,7 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', [
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'eScores', 'url' => route('admin.escores.index')]],
       'icon' => 'shopping-cart', 
       'title' => 'eScore Topics', 
       'subtitle' => 'Manage the topics used by eScores.',

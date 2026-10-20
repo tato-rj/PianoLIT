@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 @section('content')
 <div class="content-wrapper"><div class="container-fluid ua">
-    @include('admin.components.page.title', ['title' => 'User analytics', 'subtitle' => 'Recorded visits, page views and user activity.'])
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'User analytics', 'url' => route('admin.analytics.users')]], 'breadcrumbLabel' => 'Activity', 'title' => 'User analytics', 'subtitle' => 'Recorded visits, page views and user activity.'])
     @include('admin.pages.analytics.users.nav', ['active' => 'activity'])
     @include('admin.pages.analytics.users.filters')
     <div class="ua-metrics {{ $iosOnly ? 'ua-metrics-three' : ($appActivity ? 'ua-metrics-six' : '') }}">

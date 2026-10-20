@@ -2,7 +2,7 @@
     $recentlySent = $list->last_sent_at && $list->last_sent_at->gt(now()->subDay());
     $sendDisabled = !$list->subscribers_count || $recentlySent;
 @endphp
-@component('components.modal', ['id' => 'list-send-'.$list->id, 'header' => 'Send '.$list->name.' email', 'centered' => true, 'options' => ['footer' => ['raw' => true]], 'show' => ($errors->has('email') || old('email') !== null) ? true : null])
+@component('components.modal', ['id' => 'list-send-'.$list->id, 'header' => 'Send '.e($list->name).' email', 'centered' => true, 'options' => ['footer' => ['raw' => true]], 'show' => (($errors->has('email') || old('email') !== null) && is_scalar(old('preview_list_id')) && (string) old('preview_list_id') === (string) $list->id) ? true : null])
     @slot('body')
         <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
             <h6 class="mb-0">Preview</h6>
@@ -21,7 +21,7 @@
                 <span class="text-muted">@icon('users', ['mr' => 0, 'classes' => 'icon-size-lg'])</span>
                 <div>
                     <strong class="d-block">{{ number_format($list->subscribers_count) }} {{ str_plural('subscriber', $list->subscribers_count) }}</strong>
-                    <span class="small text-muted">Will receive the current free pick.</span>
+                    <span class="small text-muted">{{ $list->name === \App\EmailList::FREE_PICK ? 'Will receive the current free pick.' : 'Will receive this list’s email.' }}</span>
                 </div>
             </div>
             @if($recentlySent)

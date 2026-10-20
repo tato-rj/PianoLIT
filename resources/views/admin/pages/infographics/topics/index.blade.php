@@ -4,7 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', [
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'Infographics', 'url' => route('admin.infographs.index')]],
       'icon' => 'pencil-ruler', 
       'title' => 'Infographic Topics', 
       'subtitle' => 'Manage the topics used by infographics.',

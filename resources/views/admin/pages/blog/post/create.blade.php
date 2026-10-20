@@ -18,7 +18,7 @@
       'theme' => 'create',
       'title' => 'New blog post',
       'subtitle' => 'Use this page to create a new post.',
-      'back' => ['view all posts' => route('admin.posts.index')]
+      'breadcrumbs' => [['label' => 'Posts', 'url' => route('admin.posts.index')]]
     ])
 
       <form id="create-post" class="row my-3" method="POST" action="{{route('admin.posts.store')}}" autocomplete="off" enctype="multipart/form-data">

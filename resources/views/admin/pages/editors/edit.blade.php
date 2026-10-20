@@ -4,7 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', [
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'Editors', 'url' => route('admin.editors.index')]],
       'title' => $editor->id === auth('admin')->id() ? 'My profile' : 'Edit profile',
       'subtitle' => 'Profile details and contributions for '.$editor->name.'.'
     ])

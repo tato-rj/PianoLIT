@@ -4,7 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">    
-    @include('admin.components.page.title', [
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'Posts', 'url' => route('admin.posts.index')]],
       'icon' => 'newspaper', 
       'title' => 'Blog Topics', 
       'subtitle' => 'Manage the topics used by blog posts.',

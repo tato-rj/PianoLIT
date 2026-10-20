@@ -41,7 +41,7 @@
       'theme' => 'edit',
       'title' => $ebook->title,
       'subtitle' => 'Use this page to edit this eBook.',
-      'back' => ['view all eBooks' => route('admin.ebooks.index')]
+      'breadcrumbs' => [['label' => 'eBooks', 'url' => route('admin.ebooks.index')]]
     ])
 
     <div class="row">

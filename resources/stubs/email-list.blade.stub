@@ -1,0 +1,7 @@
+@component('mail::message', ['subscription' => $subscription, 'list' => $list])
+# {{ $list->name }}
+
+{{ $list->description }}
+
+@include('mail::signature')
+@endcomponent

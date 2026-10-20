@@ -15,7 +15,7 @@
       'theme' => 'edit',
       'title' => 'Edit ' . $piece->name,
       'subtitle' => 'Use this page to edit this piece.',
-      'back' => ['view all pieces' => route('admin.pieces.index')]
+      'breadcrumbs' => [['label' => 'Pieces', 'url' => route('admin.pieces.index')]]
     ])
     <div class="row mb-3">
       <div class="col-12 text-end">

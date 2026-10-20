@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 @section('content')
 <div class="content-wrapper"><div class="container-fluid ua">
-    @include('admin.components.page.title', ['title' => 'User analytics', 'subtitle' => 'Registered accounts and recorded activity.'])
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'User analytics', 'url' => route('admin.analytics.users')]], 'breadcrumbLabel' => 'People', 'title' => 'User analytics', 'subtitle' => 'Registered accounts and recorded activity.'])
     @include('admin.pages.analytics.users.nav', ['active' => 'people'])
     @component('admin.components.filters.form', ['id' => 'people-filters', 'label' => 'People filters'])
         @input(['bag' => 'default', 'id' => 'people-search', 'name' => 'search', 'type' => 'search', 'label' => 'Find someone', 'placeholder' => 'Name or email', 'value' => request('search'), 'limit' => 160, 'required' => false, 'grid' => 'admin-filter-search'])

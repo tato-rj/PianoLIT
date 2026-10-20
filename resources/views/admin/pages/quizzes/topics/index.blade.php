@@ -4,7 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', [
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'Quizzes', 'url' => route('admin.quizzes.index')]],
       'icon' => 'circle-help',
       'title' => 'Quiz Topics', 
       'subtitle' => 'Manage the topics used by quizzes.',

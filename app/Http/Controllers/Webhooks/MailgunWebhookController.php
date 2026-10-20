@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Webhooks;
 use Illuminate\Http\Request;
 use App\Http\Middleware\Webhooks\MailgunWebhook;
 use App\Http\Controllers\Controller;
-use App\EmailLog;
+use App\Services\MailgunEvents;
 
 class MailgunWebhookController extends Controller
 {
@@ -14,35 +14,20 @@ class MailgunWebhookController extends Controller
         $this->middleware(MailgunWebhook::class);
     }
 
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, MailgunEvents $events)
     {
-        $data = $request->get('event-data');
-
-        $message_id = $data['message']['headers']['message-id'];
-
-        if ($email = EmailLog::where('message_id', $message_id)->first()) {
-            if (\App\Activity\ExcludedAccounts::email($email->recipient)) return response(200);
-            if ($data['event'] === 'opened') {
-                $email->increment($data['event']);
-                $email->update(['unique_opened' => 1]);
-            }
-
-            if ($data['event'] === 'clicked') {
-                $email->increment($data['event']);
-                $email->update(['unique_clicked' => 1]);
-            }
-
-            if ($data['event'] === 'delivered') {
-                $email->update(["{$data['event']}_at" => now()]);
-                $email->update(['unique_delivered' => 1]);
-            }
-
-            if ($data['event'] === 'failed') {
-                $email->update(["{$data['event']}_at" => now()]);
-                $email->update(['unique_failed' => 1]);
-            }
+        $payload = $request->attributes->get('mailgun_payload');
+        abort_unless(is_array($payload['event-data'] ?? null), 422, 'Invalid Mailgun event.');
+        try {
+            $event = $events->normalize($payload['event-data']);
+            if ($event === null) return response('', 200);
+            $result = $events->apply($event, false, false, $payload['signature']['token']);
+        } catch (\InvalidArgumentException $exception) {
+            abort(422, 'Invalid Mailgun event.');
         }
-
-        return response(200);
+        // Ordinary transactional mail is not part of campaign tracking. Never
+        // guess its campaign from its recipient or subject.
+        abort_if($result['status'] === 'ambiguous', 503, 'Email tracking record is ambiguous.');
+        return response('', 200);
     }
 }

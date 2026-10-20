@@ -40,9 +40,13 @@ class EmailList extends PianoLit
 
 	public function mailable($list_id, $subscription = null)
 	{
-        abort_unless($this->name === self::FREE_PICK, 404);
+        if ($this->name === self::FREE_PICK) {
+            return new \App\Mail\FreePickEmail($list_id, $subscription);
+        }
 
-        return new \App\Mail\FreePickEmail($list_id, $subscription);
+        abort_unless(app(\App\Services\Admin\EmailListTemplates::class)->exists($this), 422, 'The email template for this list is missing.');
+
+        return new \App\Mail\EmailListEmail($this, $list_id, $subscription);
 	}
 
     public function subscribers()

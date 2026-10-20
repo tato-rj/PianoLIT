@@ -16,7 +16,7 @@
       'theme' => 'create',
       'title' => 'New Crash Course',
       'subtitle' => 'Use this page to create a new course.',
-      'back' => ['view all courses' => route('admin.crashcourses.index')]
+      'breadcrumbs' => [['label' => 'Crash courses', 'url' => route('admin.crashcourses.index')]]
     ])
 
       <form id="create-quiz" class="row" method="POST" action="{{route('admin.crashcourses.store')}}" autocomplete="off" enctype="multipart/form-data">

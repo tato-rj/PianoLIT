@@ -1,10 +1,9 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'Create Freepick list', 'centered' => true, 'show' => $errors->has('description') ? true : null])
+@component('components.modal', ['id' => 'add-modal', 'header' => 'Create a new list', 'centered' => true, 'show' => $errors->has('name') || $errors->has('description') || old('name') !== null ? true : null])
     @slot('body')
         <form method="POST" action="{{ route('admin.subscriptions.lists.store') }}" disable-on-submit>
             @csrf
-            <input type="hidden" name="name" value="{{ \App\EmailList::FREE_PICK }}">
-            <p>Send the weekly free pick to your subscribers.</p>
-            @textarea(['bag' => 'default', 'id' => 'list-description', 'name' => 'description', 'label' => 'Description', 'rows' => 3, 'limit' => 2000, 'value' => 'Weekly emails showcasing our free pick, its tutorials and the story behind the music.'])
+            @input(['bag' => 'default', 'id' => 'list-name', 'name' => 'name', 'label' => 'List name', 'limit' => 100, 'placeholder' => 'e.g. Practice tips', 'autocomplete' => 'off'])
+            @textarea(['bag' => 'default', 'id' => 'list-description', 'name' => 'description', 'label' => 'Description', 'rows' => 3, 'limit' => 255])
             <button class="btn btn-primary" type="submit">@icon('plus')Create list</button>
         </form>
     @endslot

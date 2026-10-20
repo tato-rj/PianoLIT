@@ -17,7 +17,7 @@
       'theme' => 'create',
       'title' => 'New eScore',
       'subtitle' => 'Use this page to edit this eScore.',
-      'back' => ['view all eScores' => route('admin.escores.index')]
+      'breadcrumbs' => [['label' => 'eScores', 'url' => route('admin.escores.index')]]
     ])
 
       <form id="create-ebook" class="row my-3" method="POST" action="{{route('admin.escores.store')}}" autocomplete="off" enctype="multipart/form-data">

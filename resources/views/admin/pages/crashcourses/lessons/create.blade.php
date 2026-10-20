@@ -13,7 +13,7 @@
       'theme' => 'create',
       'title' => 'New lesson',
       'subtitle' => 'Use this page to create a new lesson for the course '.$crashcourse->title.'.',
-      'back' => ['back to the course' => route('admin.crashcourses.edit', $crashcourse)]
+      'breadcrumbs' => [['label' => 'Crash courses', 'url' => route('admin.crashcourses.index')], ['label' => $crashcourse->title, 'url' => route('admin.crashcourses.edit', $crashcourse)]]
     ])
 
     <div class="row mb-4">

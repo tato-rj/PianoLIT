@@ -16,7 +16,7 @@
       'theme' => 'create',
       'title' => 'New quiz',
       'subtitle' => 'Use this page to create a new quiz.',
-      'back' => ['view all quizzes' => route('admin.quizzes.index')]
+      'breadcrumbs' => [['label' => 'Quizzes', 'url' => route('admin.quizzes.index')]]
     ])
 
       <form id="create-quiz" class="row my-3" method="POST" action="{{route('admin.quizzes.store')}}" autocomplete="off" enctype="multipart/form-data">

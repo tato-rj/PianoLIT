@@ -4,7 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">    
-    @include('admin.components.page.title', [
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'Crash courses', 'url' => route('admin.crashcourses.index')]],
       'icon' => 'graduation-cap', 
       'title' => 'Crash Course Topics', 
       'subtitle' => 'Manage the topics used by crash courses.',

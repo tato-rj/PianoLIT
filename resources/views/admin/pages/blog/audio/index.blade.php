@@ -33,7 +33,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'newspaper', 'title' => 'Blog Audio', 'subtitle' => 'Manage the audio used by blog posts.'])
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'Posts', 'url' => route('admin.posts.index')]], 'icon' => 'newspaper', 'title' => 'Blog Audio', 'subtitle' => 'Manage the audio used by blog posts.'])
     <div class="row mb-3">
       <div class="col-12">
         <form action="{{route('admin.posts.audio.store')}}" class="dropzone" id="filesDropzone"></form>

@@ -1,4 +1,9 @@
 <header class="admin-page-header" id="page-title">
+  @include('admin.components.breadcrumb', ['items' => array_merge(
+      request()->routeIs('admin.home') && $title === 'Overview' ? [] : [['label' => 'Overview', 'url' => route('admin.home')]],
+      $breadcrumbs ?? [],
+      [['label' => $breadcrumbLabel ?? $title]]
+  )])
   <div class="admin-page-header-row">
     <div class="admin-page-heading">
       <h1 class="admin-page-title">{{$title}}<span class="admin-heading-dot" aria-hidden="true">.</span></h1>
@@ -11,7 +16,7 @@
     </div>
   </div>
 
-  @if((isset($slot) && trim((string) $slot) !== '') || isset($action['url']) || isset($action['external_link']) || isset($action['modal']) || !empty($back))
+  @if((isset($slot) && trim((string) $slot) !== '') || isset($action['url']) || isset($action['external_link']) || isset($action['modal']))
   <div class="admin-page-actions">
     @isset($slot){{$slot}}@endisset
     @isset($action['url'])
@@ -22,11 +27,6 @@
     @endisset
     @isset($action['modal'])
     <button type="button" data-bs-toggle="modal" data-bs-target="#{{$action['modal']}}" class="btn btn-sm btn-primary">@icon('plus'){{$action['label']}}</button>
-    @endisset
-    @isset($back)
-      @foreach($back as $label => $url)
-      <a href="{{$url}}" class="btn btn-sm btn-secondary">@icon('circle-arrow-left'){{$label}}</a>
-      @endforeach
     @endisset
   </div>
   @endif

@@ -3,18 +3,18 @@
 @section('content')
 <div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', [
-        'title' => 'Email Lists', 'subtitle' => 'Manage Freepick subscribers and send the weekly free pick.',
-        'action' => $lists->isEmpty() ? ['label' => 'Create Freepick list', 'modal' => 'add-modal'] : null,
+        'title' => 'Email Lists', 'subtitle' => 'Manage your email lists and subscribers.',
+        'action' => ['label' => 'Create a new list', 'modal' => 'add-modal'],
     ])
 
-    @if(!$hasFreePick)
+    @if(!$hasFreePick && $lists->contains('name', \App\EmailList::FREE_PICK))
         <div class="alert alert-warning" role="status">Choose a current free pick in Pieces before previewing or sending an email.</div>
     @endif
 
     @component('admin.components.table', [
-        'id' => 'email-lists', 'label' => 'Email lists', 'items' => $lists,
+        'id' => 'email-lists', 'label' => 'Email lists', 'items' => $lists, 'pageSizes' => [],
         'columns' => ['List', 'Subscribers', 'Last sent', 'Actions'],
-        'emptyTitle' => 'No email list yet', 'emptyDescription' => 'Create the Freepick list to start collecting subscribers.',
+        'emptyTitle' => 'No email list yet', 'emptyDescription' => 'Create a list to start collecting subscribers.',
     ])
         @foreach($lists as $list)
         <tr>
@@ -23,10 +23,10 @@
             <td class="text-nowrap">@if($list->last_sent_at)<time datetime="{{ $list->last_sent_at->toIso8601String() }}">{{ $list->last_sent_at->format('M j, Y · g:i a') }}</time>@else<span class="text-muted">Never sent</span>@endif</td>
             <td><div class="d-flex flex-nowrap gap-2 text-nowrap">
                 <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.subscriptions.lists.edit', $list) }}">@icon('pencil')Edit</a>
-                @if($hasFreePick)
+                @if($templates->exists($list) && ($list->name !== \App\EmailList::FREE_PICK || $hasFreePick))
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#list-send-{{ $list->id }}">@icon('mail')Send email</button>
                 @else
-                    <button type="button" class="btn btn-sm btn-primary" disabled title="Choose a current free pick before sending">@icon('mail')Send email</button>
+                    <button type="button" class="btn btn-sm btn-primary" disabled title="{{ $templates->exists($list) ? 'Choose a current free pick before sending' : 'The email template for this list is missing' }}">@icon('mail')Send email</button>
                 @endif
             </div></td>
         </tr>
@@ -35,7 +35,7 @@
 </div></div>
 
 @foreach($lists as $list)
-    @if($hasFreePick) @include('admin.pages.subscriptions.lists.send') @endif
+    @if($templates->exists($list) && ($list->name !== \App\EmailList::FREE_PICK || $hasFreePick)) @include('admin.pages.subscriptions.lists.send') @endif
 @endforeach
-@if($lists->isEmpty()) @include('admin.pages.subscriptions.lists.create') @endif
+@include('admin.pages.subscriptions.lists.create')
 @endsection

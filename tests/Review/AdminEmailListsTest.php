@@ -44,7 +44,7 @@ class AdminEmailListsTest extends ReviewTestCase
         $this->admin(); $list = $this->list(); $this->piece();
         $list->add(Subscription::create(['email' => 'reader@example.test']));
         $page = $this->get(route('admin.subscriptions.lists.index'))->assertOk()->assertSee('Never sent')
-            ->assertDontSee('cdn.datatables.net')->assertDontSee('Create a new list');
+            ->assertDontSee('cdn.datatables.net')->assertSee('Create a new list');
         $xpath = $this->xpath($page);
         $this->assertCount(1, $xpath->query('//section[contains(@class,"admin-table")]//table[@id="email-lists"]/tbody/tr'));
         $this->assertCount(0, $xpath->query('//section[contains(@class,"admin-table")]//h2'));
@@ -72,7 +72,7 @@ class AdminEmailListsTest extends ReviewTestCase
         $this->post(route('admin.subscriptions.lists.send-to', $list), ['email' => 'reader@example.test'])->assertSessionHas('error');
         Queue::assertNothingPushed(); Mail::assertNothingSent();
         $list->delete();
-        $page = $this->get(route('admin.subscriptions.lists.index'))->assertOk()->assertSee('No email list yet')->assertSee('Create Freepick list');
+        $page = $this->get(route('admin.subscriptions.lists.index'))->assertOk()->assertSee('No email list yet')->assertSee('Create a new list');
     }
 
     public function test_subscriber_editor_searches_sorts_filters_and_paginates_in_sql_without_loading_membership_collections()
@@ -148,12 +148,10 @@ class AdminEmailListsTest extends ReviewTestCase
         Mail::assertNothingSent(); Queue::assertNothingPushed();
     }
 
-    public function test_only_freepick_can_be_created_or_renamed_and_deleted_templates_cannot_be_dispatched()
+    public function test_freepick_cannot_be_renamed_and_missing_templates_cannot_be_dispatched()
     {
         $this->admin(); $this->withExceptionHandling();
-        foreach (['Newsletter', 'Latest Tutorials', 'Share Piece', ['Free Pick']] as $name) {
-            $this->postJson(route('admin.subscriptions.lists.store'), ['name' => $name, 'description' => 'Description'])->assertUnprocessable();
-        }
+        $this->postJson(route('admin.subscriptions.lists.store'), ['name' => ['Free Pick'], 'description' => 'Description'])->assertUnprocessable();
         $this->post(route('admin.subscriptions.lists.store'), ['name' => EmailList::FREE_PICK, 'description' => 'Weekly picks'])->assertRedirect();
         $list = EmailList::freepick();
         $this->postJson(route('admin.subscriptions.lists.store'), ['name' => EmailList::FREE_PICK, 'description' => 'Duplicate'])->assertUnprocessable();
@@ -161,11 +159,12 @@ class AdminEmailListsTest extends ReviewTestCase
         $this->assertSame(EmailList::FREE_PICK, $list->fresh()->name);
         foreach (['Newsletter', 'Latest Tutorials'] as $name) {
             $retired = EmailList::create(['name' => $name, 'description' => 'Historical list']);
-            $this->getJson(route('admin.subscriptions.lists.preview', $retired))->assertNotFound();
-            $this->postJson(route('admin.subscriptions.lists.send', $retired))->assertNotFound();
-            $this->postJson(route('admin.subscriptions.lists.send-to', $retired), ['email' => 'reader@example.test'])->assertNotFound();
+            $this->getJson(route('admin.subscriptions.lists.preview', $retired))->assertUnprocessable();
+            $this->postJson(route('admin.subscriptions.lists.send', $retired))->assertUnprocessable();
+            $this->postJson(route('admin.subscriptions.lists.send-to', $retired), ['email' => 'reader@example.test'])->assertUnprocessable();
         }
-        $this->get(route('admin.subscriptions.lists.index'))->assertDontSee('Historical list');
+        $page = $this->get(route('admin.subscriptions.lists.index'))->assertOk();
+        $this->assertCount(2, $this->xpath($page)->query('//table[@id="email-lists"]//button[@disabled and @title="The email template for this list is missing"]'));
     }
 
     public function test_freepick_preview_and_campaign_queue_the_existing_mail_and_preserve_send_cooldown()

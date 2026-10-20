@@ -8,7 +8,7 @@
       'theme' => 'edit',
       'title' => $pianist->name,
       'subtitle' => 'Use this page to edit this pianist.',
-      'back' => ['view all playists' => route('admin.pianists.index')]
+      'breadcrumbs' => [['label' => 'Pianists', 'url' => route('admin.pianists.index')]]
     ])
 
     <div class="row">

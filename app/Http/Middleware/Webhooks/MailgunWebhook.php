@@ -26,25 +26,29 @@ class MailgunWebhook
         abort(404);
     }
 
-    private function buildSignature($request)
-    {
-        return hash_hmac(
-            'sha256',
-            sprintf('%s%s', $request->input('timestamp'), $request->input('token')),
-            config('services.mailgun.secret')
-        );
-    }
-
     public function verify($request)
     {
-        $token = $request->input('signature.token');
-        $timestamp = $request->input('signature.timestamp');
-        $signature = $request->input('signature.signature');
+        // Read the body only; query parameters must never substitute signed fields.
+        $payload = $request->isJson() ? json_decode($request->getContent(), true) : $request->request->all();
+        if (! is_array($payload)) return false;
+        $token = data_get($payload, 'signature.token');
+        $timestamp = data_get($payload, 'signature.timestamp');
+        $signature = data_get($payload, 'signature.signature');
+        // Legacy accounts used their API secret for signing. An explicit signing
+        // key takes precedence, without changing the working sending credential.
+        $key = config('services.mailgun.webhook_signing_key') ?: config('services.mailgun.secret');
 
-        if (abs(time() - $timestamp) > 15) {
+        if (! is_string($key) || $key === '' || ! is_string($token) || strlen($token) < 1 || strlen($token) > 255
+            || ! (is_string($timestamp) || is_int($timestamp)) || ! ctype_digit((string) $timestamp)
+            || strlen((string) $timestamp) > 11 || ! is_string($signature) || ! preg_match('/\A[a-f0-9]{64}\z/i', $signature)) {
             return false;
         }
 
-        return hash_hmac('sha256', $timestamp . $token, config('services.mailgun.secret')) === $signature;
+        if ((int) $timestamp > time() + 300
+            || time() - (int) $timestamp > (int) config('services.mailgun.webhook_tolerance', 86400)) return false;
+
+        if (! hash_equals(hash_hmac('sha256', $timestamp.$token, $key), strtolower($signature))) return false;
+        $request->attributes->set('mailgun_payload', $payload);
+        return true;
     }
 }

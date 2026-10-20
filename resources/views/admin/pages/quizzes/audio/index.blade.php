@@ -33,7 +33,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'circle-help', 'title' => 'Quiz Audio', 'subtitle' => 'Manage the audio used by quizzes.'])
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'Quizzes', 'url' => route('admin.quizzes.index')]], 'icon' => 'circle-help', 'title' => 'Quiz Audio', 'subtitle' => 'Manage the audio used by quizzes.'])
 
     <div class="row mb-3">
       <div class="col-12">

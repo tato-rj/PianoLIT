@@ -2,35 +2,24 @@
 
 namespace App\Console\Commands;
 
-use App\EmailCampaignReport;
 use App\EmailLog;
+use App\Services\EmailCampaignReports;
 use Illuminate\Console\Command;
 
 class RebuildEmailCampaignReports extends Command
 {
-    protected $signature = 'email-reports:rebuild';
+    protected $signature = 'email-reports:rebuild {--campaign=* : Rebuild only these exact campaign IDs} {--dry-run}';
     protected $description = 'Rebuild the email campaign summaries used by the admin reports table.';
 
-    public function handle()
+    public function handle(EmailCampaignReports $rebuilder)
     {
-        EmailCampaignReport::truncate();
-
-        $reports = EmailLog::generate()->get();
-
-        foreach ($reports as $report) {
-            EmailCampaignReport::create([
-                'list_id' => $report->list_id,
-                'name' => $report->name,
-                'sent_at' => $report->sent_at,
-                'emails_count' => $report->emails_count,
-                'delivered_count' => $report->delivered_count,
-                'failed_count' => $report->failed_count,
-                'opens_count' => $report->opens_count,
-                'clicks_count' => $report->clicks_count,
-            ]);
+        $ids = $this->option('campaign') ?: EmailLog::whereNotNull('list_id')->distinct()->pluck('list_id')->all();
+        $count = 0;
+        foreach ($ids as $id) {
+            if ($rebuilder->rebuild($id, (bool) $this->option('dry-run')) !== null) $count++;
         }
 
-        $this->info('Rebuilt '.$reports->count().' email campaign reports.');
+        $this->info(($this->option('dry-run') ? 'Would rebuild ' : 'Rebuilt ').$count.' email campaign reports; historical snapshots without source rows were retained.');
 
         return 0;
     }

@@ -8,7 +8,7 @@
       'theme' => 'edit',
       'title' => 'Edit clip',
       'subtitle' => 'Use this page to edit this clip.',
-      'back' => ['view all clips' => route('admin.clips.index')]
+      'breadcrumbs' => [['label' => 'Video clips', 'url' => route('admin.clips.index')]]
     ])
 
     <div class="row">

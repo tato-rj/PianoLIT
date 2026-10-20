@@ -41,7 +41,7 @@
       'theme' => 'edit',
       'title' => $escore->title,
       'subtitle' => 'Use this page to edit this eScore.',
-      'back' => ['view all eScores' => route('admin.escores.index')]
+      'breadcrumbs' => [['label' => 'eScores', 'url' => route('admin.escores.index')]]
     ])
 
     <div class="row">

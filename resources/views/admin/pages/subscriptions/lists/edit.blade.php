@@ -4,7 +4,7 @@
 <div class="content-wrapper"><div class="container-fluid">
     @component('admin.components.page.title', [
         'title' => $list->name, 'subtitle' => number_format($list->subscribers_count).' '.str_plural('subscriber', $list->subscribers_count).' on this list.',
-        'back' => ['Email lists' => route('admin.subscriptions.lists.index')],
+        'breadcrumbs' => [['label' => 'Email lists', 'url' => route('admin.subscriptions.lists.index')]],
     ])
         <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.subscriptions.export', ['type' => 'txt', 'list_id' => $list->id]) }}" target="_blank" rel="noopener noreferrer">@icon('file-text')Export emails</a>
         <button type="button" class="btn btn-sm btn-outline-danger" data-url="{{ route('admin.subscriptions.lists.destroy', $list) }}" data-bs-toggle="modal" data-bs-target="#delete-modal">@icon('trash-2')Delete list</button>
@@ -14,7 +14,7 @@
         @csrf
         @method('PATCH')
         <input type="hidden" name="name" value="{{ $list->name }}">
-        @textarea(['bag' => 'default', 'id' => 'list-description', 'name' => 'description', 'label' => 'List description', 'value' => $list->description, 'rows' => 3, 'limit' => 2000])
+        @textarea(['bag' => 'default', 'id' => 'list-description', 'name' => 'description', 'label' => 'List description', 'value' => $list->description, 'rows' => 3, 'limit' => 255])
         @component('admin.components.table-save-actions', ['status' => 'Save the description after editing.'])
             <button type="submit" class="btn btn-primary">@icon('check')Save changes</button>
         @endcomponent

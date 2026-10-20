@@ -13,7 +13,7 @@
       'theme' => 'edit',
       'title' => $playlist->name, 
       'subtitle' => 'Use this page to edit this playlist.', 
-      'back' => ['view all playists' => route('admin.playlists.index')]
+      'breadcrumbs' => [['label' => 'Playlists', 'url' => route('admin.playlists.index')]]
     ])
 
 	    <div class="row mb-4">

@@ -111,29 +111,12 @@ class EmailListTest extends AppTest
         ]);
         $this->signIn();
 
-        $query = http_build_query([
-            'draw' => 1,
-            'start' => 0,
-            'length' => 1,
-            'search' => ['value' => 'free pick'],
-            'order' => [['column' => 3, 'dir' => 'desc']],
-            'columns' => [
-                ['data' => 'checkbox'],
-                ['data' => 'sent_at'],
-                ['data' => 'name'],
-                ['data' => 'emails_count'],
-            ],
-        ]);
-
-        $response = $this->get(route('admin.subscriptions.reports.index').'?'.$query, [
-            'X-Requested-With' => 'XMLHttpRequest',
-        ]);
-
-        $response->assertOk()
-            ->assertJsonPath('recordsTotal', 2)
-            ->assertJsonPath('recordsFiltered', 2)
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.emails_count', 2);
+        $response = $this->get(route('admin.subscriptions.reports.index', ['search' => 'free pick', 'sort' => 'emails_desc']));
+        $response->assertOk()->assertSee('Free Pick');
+        $reports = $response->viewData('reports');
+        $this->assertSame(2, $reports->total());
+        $this->assertSame(\App\Support\AdminPagination::PER_PAGE, $reports->perPage());
+        $this->assertSame(2, $reports->first()->emails_count);
     }
 
     /** @test */

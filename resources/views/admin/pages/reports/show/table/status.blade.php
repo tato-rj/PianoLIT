@@ -1,7 +1,7 @@
 @if($item->delivered_at)
-<span class="text-success">@icon('circle-check', ['mr' => 1])Delivered</span>
+    <span class="admin-table__badge admin-table__badge--green">Delivered</span>
 @elseif($item->failed_at)
-<span class="text-danger">@icon('circle-x', ['mr' => 1])Failed</span>
+    <span class="admin-table__badge admin-table__badge--red">Failed</span>
 @else
-<span class="text-muted">Unknown</span>
+    <span class="admin-table__badge admin-table__badge--muted">Unknown</span>
 @endif

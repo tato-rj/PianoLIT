@@ -8,7 +8,7 @@
 </div>
 @component('components.modal', ['id' => $id.'-modal', 'header' => 'Delete selected '.e($label), 'centered' => true])
     @slot('body')
-        <p>Delete <strong data-bulk-confirm-count="{{ $id }}-form">0</strong> selected {{ $label }}? This also removes them from email lists. This action cannot be undone.</p>
+        <p>Delete <strong data-bulk-confirm-count="{{ $id }}-form">0</strong> selected {{ $label }}? {{ $deleteDescription ?? 'This also removes them from email lists.' }} This action cannot be undone.</p>
         @if($preview ?? false)
         <div id="{{ $id }}-form" data-bulk-preview>
         @else

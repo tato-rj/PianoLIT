@@ -1,8 +1,7 @@
 @extends('admin.layouts.app')
 @section('content')
 <div class="content-wrapper"><div class="container-fluid ua">
-    @include('admin.components.page.title', ['title' => trim($user->full_name), 'subtitle' => 'Account details, visits and music activity.'])
-    <nav class="ua-breadcrumbs" aria-label="Breadcrumb"><a href="{{ route('admin.analytics.users') }}">User analytics</a><span>/</span><a href="{{ route('admin.analytics.users.people') }}">People</a><span>/</span><span aria-current="page">{{ $user->full_name }}</span></nav>
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'User analytics', 'url' => route('admin.analytics.users')], ['label' => 'People', 'url' => route('admin.analytics.users.people')]], 'title' => trim($user->full_name), 'subtitle' => 'Account details, visits and music activity.'])
     @php($source = optional($user->membership)->source)
     @php($status = $user->super_user ? 'Super user' : (!$source ? 'No membership' : ($user->hasActiveSubscription() ? ($source->isOnGracePeriod() ? 'Grace period' : ($source->isOnTrial() ? 'Trial' : 'Active')) : 'Expired or inactive')))
     <section class="ua-card ua-identity"><span class="ua-avatar ua-avatar-lg" aria-hidden="true">{{ mb_substr($user->first_name, 0, 1) }}</span><div><h2>{{ $user->full_name }}</h2><p>{{ $user->email }}</p><p class="ua-meta">Joined {{ $user->created_at->format('M j, Y') }} · {{ $user->origin ?: 'Signup platform not recorded' }} @if($user->location) · {{ implode(', ', array_filter([$user->location->cityName, $user->location->countryName])) }} @endif</p></div><span class="ua-badge">{{ $status }}</span></section>

@@ -8,7 +8,7 @@
       'theme' => 'edit',
       'title' => $composer->name,
       'subtitle' => 'Use this page to edit this composer.',
-      'back' => ['view all composers' => route('admin.composers.index')]
+      'breadcrumbs' => [['label' => 'Composers', 'url' => route('admin.composers.index')]]
     ])
 
     <div class="row">

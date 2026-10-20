@@ -1,14 +1,15 @@
 @extends('admin.layouts.app')
 @section('content')
 <div class="content-wrapper"><div class="container-fluid ua">
-    @include('admin.components.page.title', ['title' => 'Visit journey', 'subtitle' => 'Recorded pages and actions for this visit.'])
-    <div class="d-flex align-items-start justify-content-between gap-3">
-        <nav class="ua-breadcrumbs" aria-label="Breadcrumb"><a href="{{ route('admin.analytics.users') }}">User analytics</a><span>/</span>
-            @if($visit->account_id && $visit->first_name)<a href="{{ route('admin.analytics.users.profile', $visit->account_id) }}">{{ \App\Activity\Presentation::name($visit) }}</a><span>/</span>@endif
-            <span aria-current="page">Visit journey</span>
-        </nav>
+    @php
+        $journeyBreadcrumbs = [['label' => 'User analytics', 'url' => route('admin.analytics.users')]];
+        if ($visit->account_id && $visit->first_name) {
+            $journeyBreadcrumbs[] = ['label' => \App\Activity\Presentation::name($visit), 'url' => route('admin.analytics.users.profile', $visit->account_id)];
+        }
+    @endphp
+    @component('admin.components.page.title', ['breadcrumbs' => $journeyBreadcrumbs, 'title' => 'Visit journey', 'subtitle' => 'Recorded pages and actions for this visit.'])
         <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#delete-visit-modal" aria-label="Delete visit" title="Delete visit">@icon('trash-2', ['mr' => 0])</button>
-    </div>
+    @endcomponent
     <section class="ua-card ua-summary"><h2 class="ua-eyebrow">Visit summary</h2>@include('admin.pages.analytics.users.summary', ['summaryVisit' => $visit])<p>Last recorded activity: {{ \App\Activity\Time::date($visit, 'last_activity_at')->format('M j, g:i:s A') }}. No further activity recorded.</p></section>
     <section class="ua-card ua-identity">
         <span class="ua-avatar ua-avatar-lg" aria-hidden="true">{{ mb_substr(\App\Activity\Presentation::name($visit), 0, 1) }}</span>

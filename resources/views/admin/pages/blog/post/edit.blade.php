@@ -18,7 +18,7 @@
       'theme' => 'edit',
       'title' => $post->title,
       'subtitle' => 'Use this page to edit this post.',
-      'back' => ['view all posts' => route('admin.posts.index')]
+      'breadcrumbs' => [['label' => 'Posts', 'url' => route('admin.posts.index')]]
     ])
 
       <form class="row my-3" method="POST" action="{{route('admin.posts.update', $post->slug)}}" autocomplete="off" enctype="multipart/form-data">

@@ -10,7 +10,7 @@
         @include('admin.components.page.title', [
             'theme' => 'edit', 'title' => 'Sections · '.$tutorial->type,
             'subtitle' => $piece->name,
-            'back' => ['back to piece' => route('admin.pieces.edit', $piece)]
+            'breadcrumbs' => [['label' => 'Pieces', 'url' => route('admin.pieces.index')], ['label' => $piece->name, 'url' => route('admin.pieces.edit', $piece)]]
         ])
         <div class="row">
             <div class="col-lg-8 mx-auto">

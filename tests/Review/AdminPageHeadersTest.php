@@ -20,6 +20,9 @@ class AdminPageHeadersTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('.//a[@data-bs-target="#notifications-panel"]', $headers[0])->length);
         $this->assertSame(1, $xpath->query('//*[@id="admin-account-toggle"]')->length);
         $this->assertSame(0, $xpath->query('//*[@class="title-text"]')->length);
+        $this->assertCount(1, $xpath->query('.//nav[@aria-label="Breadcrumb"]', $headers[0]));
+        $this->assertCount(1, $xpath->query('.//nav[@aria-label="Breadcrumb"]//*[@aria-current="page" and not(self::a)]', $headers[0]));
+        $this->assertCount(0, $xpath->query('.//nav[@aria-label="Breadcrumb"]//a[contains(@class,"btn")]', $headers[0]));
 
         return [$xpath, $headers[0]];
     }
@@ -72,8 +75,9 @@ class AdminPageHeadersTest extends ReviewTestCase
         [$xpath, $header] = $this->header($response->getContent());
         $this->assertSame('Edit '.$piece->name.'.', $xpath->query('.//h1', $header)[0]->textContent);
         $this->assertSame(0, $xpath->query('.//unsafe', $header)->length);
-        $back = $xpath->query('.//a[contains(@class, "btn-secondary")]', $header);
-        $this->assertSame(route('admin.pieces.index'), $back[0]->getAttribute('href'));
+        $parent = $xpath->query('.//nav[@aria-label="Breadcrumb"]//a[normalize-space(.)="Pieces"]', $header);
+        $this->assertSame(route('admin.pieces.index'), $parent[0]->getAttribute('href'));
+        $this->assertCount(0, $xpath->query('.//a[contains(@class,"btn-secondary")]', $header));
         $this->assertSame(1, $xpath->query('//form[@id="edit-form"]//input[@name="_method" and @value="PATCH"]')->length);
 
         [$xpath, $header] = $this->header($this->get(route('admin.editors.index'))->assertOk()->getContent());
@@ -87,7 +91,39 @@ class AdminPageHeadersTest extends ReviewTestCase
     {
         $this->actingAs(create(Admin::class), 'admin');
         $this->get(route('admin.home'))->assertOk(); // Share the normal session/error view context.
-        $event = (object) ['emails_count' => 1, 'delivered_count' => 1, 'opens_count' => 0, 'clicks_count' => 0, 'list_id' => 7];
-        $this->header(view('admin.pages.reports.show.index', ['event' => $event])->render());
+        $event = (object) ['emails_count' => 1, 'delivered_count' => 1, 'failed_count' => 0, 'opens_count' => 0, 'clicks_count' => 0, 'list_id' => 'free-pick.7', 'name' => 'Free Pick', 'sent_at' => now()];
+        $this->header(view('admin.pages.reports.show.index', ['event' => $event, 'recipients' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 12), 'filters' => ['search' => '', 'sort' => 'date_desc', 'status' => 'all', 'per_page' => 12]])->render());
+    }
+
+    public function test_breadcrumbs_escape_labels_keep_explicit_destinations_and_do_not_link_the_current_page()
+    {
+        $html = view('admin.components.breadcrumb', ['items' => [
+            ['label' => 'Email lists', 'url' => route('admin.subscriptions.lists.index')],
+            ['label' => '<unsafe> & Free Pick', 'url' => 'https://unused.example'],
+        ]])->render();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(0, $xpath->query('//unsafe'));
+        $this->assertCount(1, $xpath->query('//nav//a'));
+        $this->assertSame(route('admin.subscriptions.lists.index'), $xpath->query('//nav//a')[0]->getAttribute('href'));
+        $this->assertSame('<unsafe> & Free Pick', $xpath->query('//*[@aria-current="page"]')[0]->textContent);
+        $this->assertCount(1, $xpath->query('//span[@aria-hidden="true"]'));
+    }
+
+    public function test_nested_lesson_breadcrumbs_keep_the_course_and_directory_destinations()
+    {
+        $this->actingAs(create(Admin::class), 'admin');
+        $course = Model::withoutEvents(function () {
+            return create(\App\CrashCourse\CrashCourse::class, ['title' => 'Rhythm <basics>']);
+        });
+        [$xpath, $header] = $this->header($this->get(route('admin.crashcourses.lessons.create', $course))->assertOk()->getContent());
+        $links = $xpath->query('.//nav[@aria-label="Breadcrumb"]//a', $header);
+        $this->assertSame([
+            route('admin.home'), route('admin.crashcourses.index'), route('admin.crashcourses.edit', $course),
+        ], array_map(function ($link) { return $link->getAttribute('href'); }, iterator_to_array($links)));
+        $this->assertSame('Rhythm <basics>', $links[2]->textContent);
+        $this->assertSame('New lesson', $xpath->query('.//*[@aria-current="page"]', $header)[0]->textContent);
+        $this->assertCount(0, $xpath->query('.//basics | .//a[contains(@class,"btn-secondary")]', $header));
     }
 }

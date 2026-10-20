@@ -117,10 +117,5 @@ class EmailLog extends PianoLit
         return $query->whereIn('list_id', $ids);
     }
 
-    public function scopeDatatable($query, $list)
-    {
-        return datatable($query->byList($list))->withBlade([
-            'status' => view('admin.pages.reports.show.table.status')
-        ])->withTime(['delivered_at', 'failed_at'])->make();
-    }
+
 }

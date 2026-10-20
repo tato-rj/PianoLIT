@@ -218,6 +218,27 @@ stylesheet precedence. Page templates request only their main bundle.
 `components.payment-card-fields` supplies the three Stripe-hosted mounts and native cardholder/postal fields. Pass a unique `prefix` and the initial `cardholder` value. Native fields use `@input` and shared labels; field layout lives in `components/_payment-card-fields.scss`. Checkout and Billing use this same component. Billing's editor uses `components.modal` at body level; its `data-deferred-card` form mounts after the modal is shown, focuses the card number once ready without overriding another user-selected field, and clears its draft after any dismissal while reusing the hosted fields on reopen. The dialog blocks dismissal during verification and temporarily releases its focus trap for Stripe's bank challenge, restoring it on failure. The existing verified SetupIntent flow remains responsible for saving the card.
 
 
+## Admin breadcrumbs
+
+Every admin page header renders `admin.components.breadcrumb` above its heading.
+The shared `admin.components.page.title` component adds the Overview link and the
+current page automatically. Supply `breadcrumbs` as an ordered array of parent
+`label` / `url` items, for example:
+
+```blade
+'breadcrumbs' => [['label' => 'Email lists', 'url' => route('admin.subscriptions.lists.index')]]
+```
+
+Nested editors include their directory and owning record before the current page.
+Use `breadcrumbLabel` when a tab or subpage needs a navigation label different
+from its heading. Breadcrumbs replace return/back buttons; create, export, delete
+and other actions remain in the header's action row. Use explicit named routes,
+never the previous URL. The last item is plain text with `aria-current="page"`;
+an ordered list, labeled navigation and hidden separators preserve its semantics.
+Labels are escaped, and long titles wrap on narrow screens. Shared styling lives
+in `admin/_shell.scss` and consumes the typography/color tokens. The Design
+System's Breadcrumbs specimen uses this same component.
+
 ## Admin page loading
 
 The admin layout embeds `admin.components.page-loading` first in the body so its small standalone controller runs before the page content and main bundle. The shared 3px bar uses `--color-primary`, advances below completion while loading, then fills and fades on the native window load event. Native navigation observation covers links, forms, refresh and history without intercepting them, ignores same-document changes/downloads, and resets on cancellation/failure or cached-page restoration. Older browsers use `beforeunload`, preserving unsaved-change prompts, with Escape to reset a stopped departure. This is estimated activity, not a byte percentage or a tracker for background AJAX work. Reduced-motion settings remove transitions; without JavaScript the bar remains hidden. The Design System Components specimen renders this same Blade component with `preview: true` in normal flow.

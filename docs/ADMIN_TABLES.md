@@ -157,6 +157,25 @@ other result pages, and individual deletion never reuses bulk selection. The
 Design System uses the same component with `preview: true`, which renders no
 submittable form and performs no deletion.
 
+Email Reports uses `App\Services\Admin\EmailReportsTable` for campaign-summary
+search, fixed count-based sorts and 12-row pagination. Percentages and underlying
+email counts remain visible together. The detail page uses
+`EmailReportRecipientsTable` for recipient search, delivery-status filters and
+pagination; its independent totals cover the entire mailing, including while a
+recipient filter is active. Both recipient rows and detail totals reuse
+`ExcludedAccounts` through `EmailLog::byList`. Summary cards count unique email
+activity; recipient opens/clicks retain their total event counts. Historical
+campaigns remain available after an email list is deleted, including direct
+reports whose summary has not been backfilled.
+
+Report deletion locks campaign summaries in a stable order and removes summaries
+and their delivery history transactionally. Bulk requests validate every selected
+mailing ID before deletion, preserve directory filters and clamp the page after
+removal. The shared bulk-delete component accepts `deleteDescription` for the
+specific consequence; its subscriber default remains unchanged. Reports supplies
+delivery/engagement-history copy, with page-bound native checkboxes and a separate
+confirmation form. Report pages no longer initialize DataTables.
+
 The Users query selects only required account fields and batches location and
 billing status, preserving super-user overrides without loading their billing.
 Its existing search also matches saved country names/codes, region names/codes

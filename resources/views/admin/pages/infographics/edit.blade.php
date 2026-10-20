@@ -11,7 +11,7 @@
       'theme' => 'edit',
       'title' => $infograph->title,
       'subtitle' => 'Use this page to edit this infographic.',
-      'back' => ['view all infographics' => route('admin.infographs.index')]
+      'breadcrumbs' => [['label' => 'Infographics', 'url' => route('admin.infographs.index')]]
     ])
 
 	<div class="row mb-5">

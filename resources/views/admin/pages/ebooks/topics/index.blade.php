@@ -4,7 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', [
+    @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'eBooks', 'url' => route('admin.ebooks.index')]],
       'icon' => 'shopping-cart', 
       'title' => 'eBook Topics', 
       'subtitle' => 'Manage the topics used by eBooks.',

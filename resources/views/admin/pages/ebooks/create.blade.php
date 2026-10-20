@@ -17,7 +17,7 @@
       'theme' => 'create',
       'title' => 'New eBook',
       'subtitle' => 'Use this page to create a new eBook.',
-      'back' => ['view all eBooks' => route('admin.ebooks.index')]
+      'breadcrumbs' => [['label' => 'eBooks', 'url' => route('admin.ebooks.index')]]
     ])
 
       <form id="create-ebook" class="row my-3" method="POST" action="{{route('admin.ebooks.store')}}" autocomplete="off" enctype="multipart/form-data">
