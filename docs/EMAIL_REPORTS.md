@@ -32,7 +32,56 @@ older campaign totals require separately attributable provider aggregates,
 exports or backups containing the actual events/counters. Domain-wide daily
 metrics also contain transactional mail and engagement with older campaigns;
 do not copy them into one campaign or invent missing recipient histories.
-Earlier nonzero reports remain stored locally.
+Earlier nonzero reports remain stored locally until the three-month cleanup
+described below.
+
+## Three-month local retention
+
+By Arthur's October 19 request, email reporting history is retained for three
+calendar months. The Laravel scheduler runs `email-reports:prune --execute` in
+the background at **03:00 America/New_York on the first of each month**, with
+overlap prevention. This becomes active when the code is deployed and the
+existing server cron continues invoking `php artisan schedule:run` every minute.
+Apply the Mailgun receipt-table migration below before enabling the command.
+No additional queue worker or database migration is introduced by retention.
+
+The cutoff is the run time minus three calendar months, without month-end
+overflow. Campaigns with `sent_at` strictly before that cutoff are removed from
+`email_campaign_reports`, along with all their `email_logs` and associated
+`mailgun_event_receipts`. A recent callback or summary rebuild does not extend
+an old campaign's lifetime. Recipient rows and deduplication receipts belonging
+to a retained campaign stay together, preserving its totals and replay handling.
+Logs without a campaign summary, including unassociated transactional-email
+tracking, expire by their own `created_at`. Orphaned event receipts left by
+manual deletion are also removed. Rows exactly at the cutoff remain until a
+later run. Monthly execution means history may remain for nearly four months
+between cleanups.
+
+The command changes only those three local email-history tables. It preserves
+email-list definitions, subscriber records and list memberships, accounts,+billing, activity history, saved music and annotations. It neither sends email
+nor calls or deletes anything in Mailgun. Expired local reports and recipient
+histories are permanently removed by the scheduled run; rebuilding summaries
+or receiving later provider callbacks cannot recreate their deleted source rows.
+
+Preview the current deletion counts without any writes:
+
+```sh
+php artisan email-reports:prune
+```
+
+To apply the same retention policy manually:
+
+```sh
+php artisan email-reports:prune --execute
+```
+
+`--batch` accepts 1–1,000 recipient rows (default 500). Each batch removes
+receipts and recipients transactionally; the final batch also removes its
+campaign summary. Earlier committed batches survive an interruption, and
+rerunning continues the cleanup. The command prints actual deletion totals.
+No cleanup has been executed against the normal or production database during
+development. Local tests use isolated in-memory SQLite; production MySQL and
+the server cron still need deployment verification.
 
 ## Deploy
 
