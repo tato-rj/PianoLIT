@@ -1,0 +1,23 @@
+{
+    "base_domain": "pianolit.com",
+    "deploy_user": "pianolit-deploy",
+    "php_fpm_user": "www-data",
+    "expected_ipv4": "REPLACE_WITH_SERVER_PUBLIC_IPV4",
+    "expected_ipv6": [],
+    "dns_resolvers": ["1.1.1.1", "8.8.8.8"],
+    "document_root": "/var/www/html/public",
+    "php_fpm_socket": "auto",
+    "php_fpm_socket_dir": "/run/php",
+    "sites_available": "/etc/nginx/sites-available",
+    "sites_enabled": "/etc/nginx/sites-enabled",
+    "template": "/etc/pianolit/laravel-http.nginx.tpl",
+    "state_dir": "/var/lib/pianolit-subdomains",
+    "nginx": "/usr/sbin/nginx",
+    "systemctl": "/usr/bin/systemctl",
+    "certbot": "/usr/bin/certbot",
+    "dig": "/usr/bin/dig",
+    "curl": "/usr/bin/curl",
+    "certbot_config_dir": "/etc/letsencrypt",
+    "certbot_account": "",
+    "certbot_email": ""
+}

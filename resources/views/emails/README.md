@@ -80,3 +80,11 @@ artwork rebuilding and deployment notes.
 Existing older emails may still use the shared Laravel components under
 `resources/views/vendor/mail/`. New custom components and theme views belong in
 this folder's `components/` tree, organized by HTML/plain text and email family.
+
+If a server reports `View [welcome.hero] not found` after the folder move, check
+that `components/html/welcome/` and its text counterparts were deployed and
+refresh the server's Laravel configuration cache. The application also registers
+these current component paths at runtime so older cached mail paths cannot hide
+them. Clearing configuration with `php artisan config:clear` from the server's
+Laravel root repairs the stale-cache case immediately; use the usual deployment
+process to rebuild caches and reload long-running workers.

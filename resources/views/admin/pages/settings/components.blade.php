@@ -57,6 +57,9 @@
     @component('admin.pages.settings.sample', ['label' => 'Pastel feature card · website / web app', 'usage' => '.pastel-card [data-pastel-color=mint]', 'properties' => 'color,background-color,border,border-radius'])
       <div class="pastel-card rounded p-4" data-pastel-color="mint" data-ds-preview><span class="pastel-card__tag">YOUR COLLECTION</span><h3 class="h5 mt-3">A little music, every day.</h3><p>A softer surface for folders and featured content.</p><button type="button" class="btn pastel-card__action">Open collection @icon('arrow-right', ['mr' => 0])</button></div>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Project link card', 'usage' => 'components.project-card · pastel-card', 'properties' => 'color,background-color,border,border-radius,box-shadow'])
+      @include('components.project-card', ['preview' => true, 'project' => ['key' => 'webapp', 'title' => 'Web app', 'description' => 'Find your next favorite piece.', 'destination' => 'my.pianolit', 'url' => route('webapp.discover'), 'color' => 'sky']])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Status badges', 'usage' => '.badge .rounded-pill .alert-{color}', 'properties' => 'font-size,padding,color,background-color,border-radius'])
       <div class="design-system__row"><span class="badge rounded-pill alert-green" data-ds-preview>Active</span><span class="badge rounded-pill alert-blue">Trial</span><span class="badge rounded-pill alert-orange">Pending</span><span class="badge rounded-pill alert-red">Ended</span></div>
     @endcomponent

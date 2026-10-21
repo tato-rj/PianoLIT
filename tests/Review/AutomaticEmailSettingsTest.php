@@ -225,7 +225,10 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
             $appUrls = array_map(function ($button) { return $button->getAttribute('href'); }, iterator_to_array($buttons));
             $this->assertSame($key !== 'account-welcome', in_array(route('webapp.discover'), $appUrls));
             $this->assertSame($key !== 'account-welcome-ios', in_array(config('app.stores.ios'), $appUrls));
-            foreach (['Welcome, Jamie.', 'Your music. Your way.', 'same', 'account', 'theory tools', 'quiz', 'blog', 'contact@pianolit.com'] as $copy) {
+            foreach ($xpath->query('//h2') as $heading) {
+                $this->assertStringContainsString($heading->textContent, $sample['text']);
+            }
+            foreach (['Welcome, Jamie.', 'same', 'account', 'theory tools', 'quiz', 'blog', 'contact@pianolit.com'] as $copy) {
                 $this->assertStringContainsString($copy, $sample['html']);
                 $this->assertStringContainsString($copy, $sample['text']);
             }

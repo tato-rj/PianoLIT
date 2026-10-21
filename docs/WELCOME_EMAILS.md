@@ -34,6 +34,15 @@ text and narrow-screen stacking. No JavaScript or CSS transform is needed in the
 received email. A cloned Markdown renderer prevents the welcome theme from
 carrying into the next ordinary email in a queue worker.
 
+`AppServiceProvider` registers the current email component folder when Laravel's
+Markdown renderer resolves, in addition to configured paths and the current
+legacy vendor-mail fallback. This keeps the moved components and welcome theme
+available if a deployed configuration cache still lists only the old folder.
+After deployment, refresh configuration caches and long-running workers through
+the normal release process. An immediate recovery for the observed
+`View [welcome.hero] not found` error is `php artisan config:clear` from the
+server's Laravel root, provided the matching component files are deployed.
+
 Regular actions use the same default primary-button dimensions and finish as the
 web app via `shared/_button-foundations.scss`: 11px × 21px padding, 22px line
 height, 1px border, 12px corners and the primary shadow. Email values are resolved

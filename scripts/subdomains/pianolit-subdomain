@@ -1,0 +1,525 @@
+#!/usr/bin/python3 -I
+"""Installed standalone as root; never import Laravel or application-owned code."""
+
+import argparse
+import fcntl
+import hashlib
+import ipaddress
+import json
+import os
+from pathlib import Path
+import pwd
+import re
+import signal
+import stat
+import subprocess
+import sys
+
+
+CONFIG = Path('/etc/pianolit/subdomains.json')
+LABEL = re.compile(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', re.ASCII)
+ENV = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin', 'HOME': '/root', 'LANG': 'C.UTF-8'}
+
+
+class DeploymentError(Exception):
+    pass
+
+
+def require(condition, message):
+    if not condition:
+        raise DeploymentError(message)
+
+
+def report(message):
+    print(message, flush=True)
+
+
+def interrupted(number, frame):
+    raise DeploymentError('Deployment interrupted by signal '+str(number)+'; retry the same name.')
+
+
+def validate_name(name):
+    require(LABEL.fullmatch(name) is not None,
+            'Invalid subdomain: use one lowercase DNS label, 1-63 letters/digits/hyphens, no edge hyphens.')
+
+
+def trusted(path):
+    """Reject writable ancestors and symlink escapes for root-executed inputs."""
+    path = Path(path)
+    for candidate in set([path, *path.parents, path.resolve(), *path.resolve().parents]):
+        info = candidate.lstat()
+        require(info.st_uid == 0 and (stat.S_ISLNK(info.st_mode) or info.st_mode & 0o022 == 0),
+                'Must be root-owned and not group/world writable: '+str(candidate))
+    return path
+
+
+def safe_path(value):
+    require(isinstance(value, str) and re.fullmatch(r'/[A-Za-z0-9_./-]+', value) is not None
+            and not any(part in ('.', '..') for part in value.split('/')),
+            'Invalid absolute path in root configuration: '+str(value))
+    return Path(value)
+
+
+def execute(arguments, timeout=60):
+    """No shell, no caller environment, no interactive stdin, bounded child time."""
+    try:
+        result = subprocess.run([str(item) for item in arguments], stdin=subprocess.DEVNULL,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                text=True, env=ENV, cwd='/', timeout=timeout, check=False)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise DeploymentError(str(arguments[0])+': '+str(error)) from error
+    if result.returncode != 0:
+        raise DeploymentError(str(arguments[0])+' failed (exit '+str(result.returncode)+'): '
+                              +(result.stderr or result.stdout).strip()[-3000:])
+    return result.stdout, result.stderr
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def certificate_directories(settings):
+    base = safe_path(settings['certbot_config_dir'])
+    return {'certbot_accounts_dir': str(base / 'accounts/acme-v02.api.letsencrypt.org/directory'),
+            'certbot_renewal_dir': str(base / 'renewal'),
+            'certbot_live_dir': str(base / 'live'), 'certbot_archive_dir': str(base / 'archive')}
+
+
+def sync_directory(path):
+    descriptor = os.open(str(path), os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def deployment_lock(path):
+    descriptor = os.open(str(path), os.O_RDONLY | os.O_NOFOLLOW)
+    lock = os.fdopen(descriptor, 'r')
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError as error:
+        lock.close()
+        raise DeploymentError('Another subdomain deployment is running; retry after it finishes.') from error
+    return lock
+
+
+def authorize_caller(settings):
+    require(sys.platform == 'linux' and os.geteuid() == 0, 'Run only on Ubuntu through the authorized sudo rule.')
+    caller = pwd.getpwnam(settings['deploy_user'])
+    fpm = pwd.getpwnam(settings['php_fpm_user'])
+    require(caller.pw_uid != 0 and caller.pw_uid != fpm.pw_uid and caller.pw_name != 'www-data',
+            'The deployment user must be a separate non-root, non-PHP-FPM account.')
+    require(os.environ.get('SUDO_USER') == caller.pw_name and os.environ.get('SUDO_UID') == str(caller.pw_uid),
+            'Only the configured deployment user may invoke this script through sudo.')
+
+
+class Deployment:
+    def __init__(self, settings, runner=execute, output=report):
+        self.c = settings
+        self.execute = runner
+        self.output = output
+        self.journal = None
+        self.created_site = None
+
+    def validate_settings(self):
+        c = self.c
+        c.update(certificate_directories(c))
+        domain = c['base_domain']
+        require(isinstance(domain, str) and len(domain) <= 189 and '.' in domain,
+                'base_domain must be a DNS domain with room for a 63-character label.')
+        for part in domain.split('.'):
+            validate_name(part)
+        require(ipaddress.ip_address(c['expected_ipv4']).version == 4, 'expected_ipv4 must be IPv4.')
+        c['expected_ipv4'] = str(ipaddress.IPv4Address(c['expected_ipv4']))
+        require(isinstance(c['expected_ipv6'], list), 'expected_ipv6 must be a list.')
+        c['expected_ipv6'] = [str(ipaddress.IPv6Address(ip)) for ip in c['expected_ipv6']]
+        require(isinstance(c['dns_resolvers'], list) and c['dns_resolvers'], 'Configure at least one DNS resolver.')
+        for resolver in c['dns_resolvers']:
+            ipaddress.ip_address(resolver)
+        for key in ('document_root', 'php_fpm_socket_dir', 'sites_available', 'sites_enabled',
+                    'template', 'state_dir', 'nginx', 'systemctl', 'certbot', 'dig', 'curl',
+                    'certbot_config_dir', 'certbot_accounts_dir', 'certbot_renewal_dir', 'certbot_live_dir', 'certbot_archive_dir'):
+            safe_path(c[key])
+        require(c['sites_available'] != c['sites_enabled'], 'Nginx directories must be distinct.')
+        require(Path(c['document_root'], 'index.php').is_file(), 'Laravel public/index.php was not found.')
+
+    def fpm_socket(self):
+        configured = self.c['php_fpm_socket']
+        directory = Path(self.c['php_fpm_socket_dir'])
+        if configured == 'auto':
+            # Ubuntu's alternatives-managed alias follows PHP upgrades. If it
+            # is absent, accept exactly one versioned socket, never the highest.
+            alias = directory / 'php-fpm.sock'
+            if alias.exists() and stat.S_ISSOCK(alias.stat().st_mode):
+                chosen = alias
+            else:
+                candidates = [p for p in directory.glob('php*-fpm.sock')
+                              if re.fullmatch(r'php[0-9]+\.[0-9]+-fpm\.sock', p.name)
+                              and stat.S_ISSOCK(p.stat().st_mode)]
+                require(len(candidates) == 1, 'Cannot select PHP-FPM: expected one versioned socket or '
+                        'php-fpm.sock alias; set php_fpm_socket explicitly when multiple versions are installed.')
+                chosen = candidates[0]
+        else:
+            chosen = safe_path(configured)
+        require(chosen.exists() and stat.S_ISSOCK(chosen.stat().st_mode), 'PHP-FPM socket not found: '+str(chosen))
+        self.output('PHP-FPM: '+str(chosen)+' -> '+str(chosen.resolve()))
+        return str(chosen)
+
+    def dns(self, domain):
+        addresses = set()
+        for resolver in self.c['dns_resolvers']:
+            for kind, version in (('A', 4), ('AAAA', 6)):
+                answer, _ = self.execute([self.c['dig'], '@'+resolver, '+time=3', '+tries=1',
+                                          '+noall', '+comments', '+answer', domain+'.', kind], 15)
+                require(re.search(r'\bstatus: NOERROR\b', answer) is not None,
+                        'DNS '+kind+' lookup failed at '+resolver+'; no changes made.')
+                values = set()
+                for line in answer.splitlines():
+                    if line.startswith(';'):
+                        continue
+                    fields = line.split()
+                    if len(fields) >= 5 and fields[3] == kind:
+                        address = ipaddress.ip_address(fields[4])
+                        require(address.version == version, 'Invalid DNS response.')
+                        values.add(str(address))
+                expected = {self.c['expected_ipv4']} if version == 4 else set(self.c['expected_ipv6'])
+                require((version == 6 or values) and values.issubset(expected),
+                        'DNS '+kind+' conflict at '+resolver+': found '+(', '.join(sorted(values)) or 'no addresses')
+                        +'; expected '+(', '.join(sorted(expected)) or 'no AAAA records')+'.')
+                addresses.update(values)
+        self.output('DNS verified on all configured resolvers: '+', '.join(sorted(addresses)))
+        return sorted(addresses)
+
+    def render(self, domain, fpm):
+        body = Path(self.c['template']).read_text()
+        for key, value in {'domain': domain, 'document_root': self.c['document_root'],
+                           'php_fpm_socket': fpm,
+                           'ipv6_listener': '    listen [::]:80;' if self.c['expected_ipv6'] else ''}.items():
+            require('{{'+key+'}}' in body, 'Missing template placeholder: '+key)
+            body = body.replace('{{'+key+'}}', value)
+        require('{{' not in body, 'Unknown template placeholder.')
+        directives = re.sub(r'#[^\n]*', '', body)
+        names = re.findall(r'\bserver_name\s+([^;]+);', directives)
+        require(len(names) == 1 and names[0].strip().strip('\"\x27') == domain
+                and re.search(r'\blisten\s+[^;]*\bdefault_server\b', directives) is None,
+                'Template must declare only the requested server_name and must not set default_server.')
+        require(re.search(r'\b(?:ssl_certificate\w*\s|listen\s+[^;]*(?:\b443\b|\bssl\b))', directives) is None,
+                'The initial template must be HTTP only, without certificate directives.')
+        require('# Managed by pianolit-subdomain: '+domain in body, 'Missing managed-site template marker.')
+        return body.encode()
+
+    def account_arguments(self):
+        c = self.c
+        directory = Path(c['certbot_accounts_dir'])
+        account = c['certbot_account']
+        if account:
+            require(re.fullmatch(r'[a-f0-9]{32}', account) is not None, 'Invalid Certbot account ID.')
+        else:
+            accounts = sorted(p.parent.name for p in directory.glob('*/regr.json'))
+            require(len(accounts) == 1, 'Expected one existing Certbot account; configure certbot_account if there are several.')
+            account = accounts[0]
+            require(re.fullmatch(r'[a-f0-9]{32}', account) is not None, 'Invalid existing Certbot account ID.')
+        registration = directory / account / 'regr.json'
+        require(registration.is_file() and (directory / account / 'private_key.json').is_file(),
+                'The configured existing Certbot account is missing; register it separately before provisioning.')
+        trusted(registration)
+        trusted(directory / account / 'private_key.json')
+        registered = json.loads(registration.read_text()).get('body', {}).get('contact', [])
+        email = c['certbot_email']
+        if email:
+            require(isinstance(email, str) and re.fullmatch(r'[A-Za-z0-9.!#$%&\x27*+/=?^_`{|}~-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}', email) is not None,
+                    'Invalid certbot_email in server configuration.')
+        require(email or any(isinstance(v, str) and v.startswith('mailto:') for v in registered),
+                'No registered account email found; configure certbot_email. Interactive registration is disabled.')
+        return ['--account', account] + (['--email', email] if email else [])
+
+    def nginx_test(self, require_site=False):
+        out, err = self.execute([self.c['nginx'], '-t'])
+        require('conflicting server name' not in out+err, 'Nginx reports conflicting server names; resolve them before retrying.')
+        if require_site:
+            out, _ = self.execute([self.c['nginx'], '-T'])
+            require('# Managed by pianolit-subdomain: '+self.journal['domain'] in out,
+                    'Nginx does not load this managed site. Check the sites-enabled include before retrying.')
+        self.output('Nginx configuration test passed.')
+
+    def check_other_sites(self, domain):
+        # Check effective includes (not just a filename) and disabled sites.
+        out, _ = self.execute([self.c['nginx'], '-T'])
+        texts = [out]
+        texts.extend(p.read_text() for p in Path(self.c['sites_available']).iterdir() if p.is_file())
+        for body in texts:
+            body = re.sub(r'#[^\n]*', '', body)
+            for names in re.findall(r'\bserver_name\s+([^;]+);', body):
+                require(domain not in [name.strip('\"\x27') for name in names.split()],
+                        'An existing Nginx site already declares '+domain+'; refusing to take it over.')
+
+    def save(self, new=False, **updates):
+        self.journal.update(updates)
+        path = self.state_path
+        temporary = path.with_suffix('.tmp')
+        descriptor = os.open(str(temporary), os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+        try:
+            with os.fdopen(descriptor, 'w') as stream:
+                json.dump(self.journal, stream, sort_keys=True)
+                stream.flush()
+                os.fsync(stream.fileno())
+            if new:
+                os.link(str(temporary), str(path))  # Atomic, exclusive reservation.
+            else:
+                os.replace(str(temporary), str(path))
+            sync_directory(path.parent)
+        finally:
+            if temporary.exists():
+                temporary.unlink()
+
+    def load_state(self, domain):
+        self.state_path = Path(self.c['state_dir']) / (domain+'.json')
+        temporary = self.state_path.with_suffix('.tmp')
+        # An interrupted atomic journal write is never a reason to replace a
+        # site. The previously fsynced journal is authoritative.
+        if temporary.exists():
+            require(self.state_path.exists() or (not os.path.lexists(str(self.available))
+                    and not os.path.lexists(str(self.enabled))),
+                    'Interrupted initial journal write with an existing site; root must inspect '+str(temporary))
+        if self.state_path.exists():
+            trusted(self.state_path)
+            self.journal = json.loads(self.state_path.read_text())
+            require(self.journal.get('domain') == domain
+                    and self.journal.get('available') == str(self.available)
+                    and self.journal.get('enabled') == str(self.enabled),
+                    'Journal does not match current server paths; root must review it.')
+            require(self.journal.get('phase') in ('prepared', 'http_active', 'certbot_started', 'complete_http', 'complete_https'),
+                    'Unknown journal phase; root review is required.')
+
+    def owned_site(self, allow_certbot=False, rollback=False):
+        if self.available.exists():
+            require(not self.available.is_symlink() and self.available.is_file(), 'Managed site path has changed type.')
+            info = self.available.stat()
+            if rollback and self.created_site == (info.st_dev, info.st_ino):
+                pass  # Also remove our own partially written file after a write failure.
+            elif allow_certbot:
+                require('# Managed by pianolit-subdomain: '+self.journal['domain'] in self.available.read_text(),
+                        'Managed site marker is missing; root must review the partial deployment.')
+            else:
+                require(digest(self.available) == self.journal['http_sha256'],
+                        'Managed HTTP configuration has changed; refusing to overwrite it. Root review is required.')
+        else:
+            require(not self.available.is_symlink(), 'Dangling site symlink already exists.')
+        if os.path.lexists(str(self.enabled)):
+            require(self.enabled.is_symlink() and os.readlink(str(self.enabled)) == str(self.available),
+                    'Enabled site is not the symlink created by this helper.')
+
+    def rollback_http(self):
+        self.owned_site(rollback=True)
+        if self.enabled.is_symlink():
+            self.enabled.unlink()
+        if self.available.exists():
+            self.available.unlink()
+        self.state_path.unlink()
+        self.output('Rolled back only the newly created HTTP site and symlink.')
+
+    def ensure_http(self, body):
+        try:
+            self.owned_site()
+            if not self.available.exists():
+                descriptor = os.open(str(self.available), os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o644)
+                info = os.fstat(descriptor)
+                self.created_site = (info.st_dev, info.st_ino)
+                with os.fdopen(descriptor, 'wb') as stream:
+                    stream.write(body)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+            if not os.path.lexists(str(self.enabled)):
+                os.symlink(str(self.available), str(self.enabled))
+            self.owned_site()
+            sync_directory(self.available.parent)
+            sync_directory(self.enabled.parent)
+            self.output('HTTP site and sites-enabled symlink are ready.')
+            self.nginx_test(require_site=True)
+        except (DeploymentError, OSError) as error:
+            try:
+                self.rollback_http()
+            except (DeploymentError, OSError) as rollback:
+                raise DeploymentError(str(error)+' Rollback stopped to preserve uncertain files: '+str(rollback)
+                                      +'. Root review is required.') from rollback
+            raise
+        try:
+            self.execute([self.c['systemctl'], 'reload', 'nginx'])
+        except DeploymentError as error:
+            try:
+                self.rollback_http()
+                self.nginx_test()
+                self.execute([self.c['systemctl'], 'reload', 'nginx'])
+            except (DeploymentError, OSError) as recovery:
+                raise DeploymentError('HTTP reload failed: '+str(error)+' Recovery also failed: '+str(recovery)
+                                      +'. Inspect Nginx before retrying.') from recovery
+            raise DeploymentError('HTTP reload failed; removed the new site and reloaded the prior configuration.')
+        self.save(phase='http_active')
+        self.output('Nginx reloaded with the validated HTTP site.')
+
+    def verify_https(self, domain, addresses):
+        for address in addresses:
+            address = '['+address+']' if ':' in address else address
+            base = [self.c['curl'], '-q', '--noproxy', '*', '--silent', '--show-error',
+                    '--head', '--connect-timeout', '10', '--max-time', '30', '--output', '/dev/null']
+            code, _ = self.execute(base + ['--proto', '=https', '--resolve', domain+':443:'+address,
+                                           '--write-out', '%{http_code}', 'https://'+domain+'/'], 40)
+            require(re.fullmatch(r'[234][0-9]{2}', code.strip()) is not None,
+                    'HTTPS verification failed for '+domain+' at '+address+' (HTTP '+code.strip()+').')
+            headers, _ = self.execute(base + ['--proto', '=http', '--resolve', domain+':80:'+address,
+                                              '--dump-header', '-', 'http://'+domain+'/'], 40)
+            require(re.search(r'^HTTP/\S+ 30[18]\b', headers, re.M) is not None
+                    and re.search(r'^location:\s*https://'+re.escape(domain)+r'/\s*$', headers, re.I | re.M) is not None,
+                    'HTTP-to-HTTPS redirect verification failed at '+address+'.')
+        self.output('HTTPS certificate/hostname and HTTP-to-HTTPS redirect verified on every resolved server IP.')
+
+    def run(self, name, dry_run=False, no_ssl=False):
+        validate_name(name)
+        self.validate_settings()
+        domain = name+'.'+self.c['base_domain']
+        self.available = Path(self.c['sites_available']) / domain
+        self.enabled = Path(self.c['sites_enabled']) / domain
+        self.load_state(domain)
+        if self.journal is None:
+            require(not os.path.lexists(str(self.available)) and not os.path.lexists(str(self.enabled)),
+                    'Site configuration or enabled path already exists; nothing will be overwritten: '+domain)
+        else:
+            self.owned_site(self.journal['phase'] in ('certbot_started', 'complete_https'))
+            require(self.journal['phase'] == 'prepared' or (self.available.is_file() and self.enabled.is_symlink()),
+                    'A previously active managed site/symlink is missing; root review is required.')
+            require(not (no_ssl and self.journal['phase'] == 'certbot_started'),
+                    'An SSL attempt is pending; retry without --no-ssl. No certificate/configuration will be removed.')
+
+        fpm = self.fpm_socket()
+        body = self.render(domain, fpm)
+        if self.journal is not None and self.available.exists() and self.journal['phase'] not in ('certbot_started', 'complete_https'):
+            # Never silently change an existing site when PHP/template settings change.
+            body = self.available.read_bytes()
+        if self.journal is not None and not self.available.exists():
+            require(self.journal['phase'] == 'prepared' and hashlib.sha256(body).hexdigest() == self.journal['http_sha256'],
+                    'Managed site is missing; root must inspect the journal before recreating it.')
+        addresses = self.dns(domain)
+        phase = self.journal['phase'] if self.journal else None
+        account = [] if no_ssl or phase == 'complete_https' else self.account_arguments()
+        if not no_ssl and (self.journal is None or self.journal['phase'] not in ('certbot_started', 'complete_https')):
+            require(not any(os.path.lexists(str(Path(self.c[key]) / (domain+suffix))) for key, suffix in
+                            (('certbot_renewal_dir', '.conf'), ('certbot_live_dir', ''), ('certbot_archive_dir', ''))),
+                    'A Certbot certificate lineage already exists; refusing to modify a pre-existing certificate.')
+        certbot = [self.c['certbot'], '--nginx', '-d', domain, '--redirect', '--non-interactive', '--agree-tos',
+                   '--config', '/dev/null', '--config-dir', self.c['certbot_config_dir'],
+                   '--cert-name', domain, '--keep-until-expiring'] + account
+
+        if dry_run:
+            self.output('DRY RUN: no file writes, Nginx tests/reloads or Certbot execution; DNS reads only.')
+            self.output('Site: '+str(self.available)+'; symlink: '+str(self.enabled))
+            self.output('Root-only deployment journal: '+str(self.state_path))
+            self.output('Existing managed phase: '+(self.journal['phase'] if self.journal else 'new site'))
+            self.output(self.available.read_text() if self.available.exists() else body.decode())
+            self.output('Plan: nginx -t baseline; clean an interrupted journal temporary file if present.')
+            if phase in (None, 'prepared'):
+                self.output('Then reject duplicate names for a new site; exclusively create missing HTTP site/link; nginx -t; reload nginx.')
+            if phase == 'complete_https':
+                self.output('Then verify existing HTTPS and HTTP redirect; no site/certificate changes or reloads.')
+            elif not no_ssl:
+                if phase == 'certbot_started':
+                    self.output('First verify the previous SSL attempt; if healthy, mark complete without requesting a certificate.')
+                self.output(('Otherwise execute argument array: ' if phase == 'certbot_started' else 'Then execute argument array: ')
+                            +json.dumps(certbot))
+                self.output('Then nginx -t; reload nginx; verify trusted HTTPS and HTTP redirect on every DNS address.')
+            else:
+                self.output('HTTP only: Certbot and HTTPS verification are skipped.')
+            return
+
+        self.nginx_test(require_site=phase not in (None, 'prepared'))
+        temporary = self.state_path.with_suffix('.tmp')
+        if temporary.exists():
+            trusted(temporary)
+            require(temporary.is_file() and not temporary.is_symlink(), 'Unexpected journal temporary path.')
+            temporary.unlink()
+        if self.journal is None:
+            self.check_other_sites(domain)
+            self.journal = {'domain': domain, 'available': str(self.available), 'enabled': str(self.enabled),
+                            'phase': 'prepared', 'http_sha256': hashlib.sha256(body).hexdigest()}
+            self.save(new=True)
+        if self.journal['phase'] == 'prepared':
+            self.ensure_http(body)
+        if self.journal['phase'] == 'complete_https':
+            self.verify_https(domain, addresses)
+            self.output('Already provisioned; existing configuration and certificate retained.')
+            return
+        if no_ssl:
+            self.save(phase='complete_http')
+            self.output('HTTP ready: http://'+domain+' (SSL intentionally skipped).')
+            return
+
+        if self.journal['phase'] == 'certbot_started':
+            try:
+                self.verify_https(domain, addresses)
+                self.save(phase='complete_https')
+                self.output('Previous SSL attempt is healthy; no new certificate request was necessary.')
+                return
+            except DeploymentError:
+                self.output('Resuming the previous SSL attempt; the existing managed site will be retained.')
+        self.save(phase='certbot_started')
+        try:
+            self.output('Requesting/installing SSL with the existing Certbot account (non-interactive).')
+            self.execute(certbot, 600)
+            self.nginx_test(require_site=True)
+            self.execute([self.c['systemctl'], 'reload', 'nginx'])
+            self.verify_https(domain, addresses)
+            self.save(phase='complete_https')
+        except DeploymentError as error:
+            # Certbot can issue a certificate before installation fails. Preserve
+            # its lineage and journal; never delete certificates or roll back
+            # global Certbot checkpoints belonging to another domain.
+            try:
+                self.nginx_test()
+            except DeploymentError as validation:
+                self.output('ATTENTION: final Nginx validation failed; no helper reload was performed: '+str(validation))
+            raise DeploymentError(str(error)+' SSL is incomplete. Managed site/certificate retained; '
+                                  'fix the error and retry the same name. Journal: '+str(self.state_path)) from error
+        self.output('Ready: https://'+domain)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Restricted PianoLIT server-only subdomain deployment.')
+    parser.add_argument('name')
+    parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--no-ssl', action='store_true')
+    args = parser.parse_args()
+    lock = None
+    try:
+        validate_name(args.name)
+        require(sys.platform == 'linux' and os.geteuid() == 0, 'Run only on Ubuntu through the authorized sudo rule.')
+        trusted(Path(__file__).absolute())
+        trusted(CONFIG)
+        c = json.loads(CONFIG.read_text())
+        authorize_caller(c)
+        deployment = Deployment(c)
+        deployment.validate_settings()
+        for key in ('template', 'state_dir', 'sites_available', 'sites_enabled', 'nginx', 'systemctl', 'dig', 'curl'):
+            trusted(safe_path(c[key]))
+        if not args.no_ssl:
+            trusted(safe_path(c['certbot']))
+            trusted(safe_path(c['certbot_accounts_dir']))
+            for key in ('certbot_renewal_dir', 'certbot_live_dir', 'certbot_archive_dir'):
+                trusted(safe_path(c[key]))
+        lock_path = trusted(Path(c['state_dir']) / 'provision.lock')
+        lock = deployment_lock(lock_path)
+        if not args.dry_run:
+            os.umask(0o022)
+            for event in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+                signal.signal(event, interrupted)
+        deployment.run(args.name, args.dry_run, args.no_ssl)
+        return 0
+    except (DeploymentError, OSError, ValueError, KeyError, TypeError) as error:
+        print('ERROR: '+str(error), file=sys.stderr)
+        return 1
+    finally:
+        if lock is not None:
+            lock.close()
+
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -45,7 +45,7 @@
     @stack('header')
 </head>
 
-<body>
+<body @isset($bodyClass) class="{{ $bodyClass }}" @endisset>
     @qrcode
 
     @include('layouts.html.google.manager-body')
@@ -56,7 +56,9 @@
 
     <div id="app">
 
-        @include('layouts.header')
+        @unless($projectHome ?? false)
+            @include('layouts.header')
+        @endunless
 
         <main>
 
@@ -64,7 +66,9 @@
 
         </main>
 
-        @include('layouts.footer')
+        @unless($projectHome ?? false)
+            @include('layouts.footer')
+        @endunless
 
         @include('auth.modal')
 

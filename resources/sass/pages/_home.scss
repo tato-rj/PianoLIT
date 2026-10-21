@@ -1,0 +1,170 @@
+.project-home {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+    letter-spacing: 0;
+
+    &__page {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        min-height: 100svh;
+        overflow: hidden;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        width: min(1280px, calc(100% - 80px));
+        margin: 0 auto;
+        padding-top: clamp(32px, 5vh, 60px);
+    }
+
+    &__hero {
+        padding: 30px 20px 0;
+        text-align: center;
+
+        h1 {
+            margin: 0 0 18px;
+            font-size: clamp(38px, 4.5vw, 66px);
+            font-weight: 600;
+            line-height: 1.13;
+            letter-spacing: -.055em;
+
+            span { color: var(--color-primary); }
+        }
+
+        > p {
+            color: var(--color-text-muted);
+            font-size: 17px;
+            margin: 0;
+        }
+
+        .project-home__invitation {
+            margin-top: 30px;
+            font-size: 13px;
+            color: var(--color-text);
+
+            span {
+                display: block;
+                margin-top: 8px;
+                font-size: 20px;
+            }
+        }
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        width: min(1280px, calc(100% - 80px));
+        padding: 24px 0 28px;
+        margin: auto auto 0;
+        color: var(--color-text-muted);
+        font-size: 12px;
+
+        p { margin: 0; }
+        nav { display: flex; gap: 24px; }
+        a {
+            color: inherit;
+
+            &:hover,
+            &:focus-visible { color: var(--color-primary); text-decoration: underline; }
+        }
+        small { font-size: inherit; }
+    }
+}
+
+.project-deck {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    width: min(1300px, calc(100% - 80px));
+    margin: 30px auto 32px;
+    isolation: isolate;
+
+    > [data-project='webapp'] { order: -2; }
+    > [data-project='ios'] { order: -1; }
+}
+
+// A stable bottom edge keeps the pointer over its link as the fan reshapes.
+// DOM order stays fixed; focus and hover receive the same treatment.
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+    .project-deck {
+        display: flex;
+        align-items: flex-end;
+        gap: 0;
+        min-height: 440px;
+        margin-top: 0;
+        margin-bottom: 46px;
+
+        > .project-card {
+            flex: 1 1 0;
+            order: 0;
+            margin: 0 -8px;
+            transition: flex-grow .48s cubic-bezier(.2, .75, .25, 1), height .48s cubic-bezier(.2, .75, .25, 1), box-shadow .3s, border-color .3s;
+
+            @for $i from 1 through 6 {
+                &:nth-child(#{$i}) {
+                    height: 390px - (abs(3.5 - $i) - .5) * 34px;
+                    z-index: 6 - round(abs(3.5 - $i));
+                }
+            }
+        }
+
+        @for $active from 1 through 6 {
+            &:has(> .project-card:nth-child(#{$active}):focus-visible),
+            &:not(:has(> .project-card:focus-visible)):has(> .project-card:nth-child(#{$active}):hover) {
+                @for $i from 1 through 6 {
+                    > .project-card:nth-child(#{$i}) {
+                        height: 430px - abs($active - $i) * 27px;
+                        z-index: 10 - abs($active - $i);
+
+                        @if $active == $i {
+                            flex-grow: 1.75;
+                            box-shadow: var(--shadow-dark);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .project-home__header { width: calc(100% - 32px); }
+    .project-home__hero { padding-top: 24px; }
+    .project-home__hero > p { font-size: 15px; }
+    .project-deck {
+        width: calc(100% - 32px);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .project-deck .project-card {
+        height: 310px;
+
+        &__heading { padding: 20px 16px 0; }
+        &__heading h2 { font-size: 21px; }
+        &__arrow { font-size: 20px; }
+        &__art { width: 240px; }
+        &__caption { padding: 0 16px 20px; }
+        &__caption p { font-size: 13px; }
+    }
+    .project-home__footer {
+        flex-direction: column;
+        gap: 16px;
+        width: calc(100% - 32px);
+        padding-top: 8px;
+    }
+}
+
+@media (max-width: 359px) {
+    .project-deck { grid-template-columns: minmax(0, 1fr); }
+    .project-deck .project-card { height: 340px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project-deck > .project-card { transition: none; }
+}

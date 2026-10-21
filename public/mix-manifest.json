@@ -13,8 +13,8 @@
     "/images/dart-left.svg?6538a8c547acee232dfedf4f5f7378a0": "/images/dart-left.svg?6538a8c547acee232dfedf4f5f7378a0",
     "/js/app.js": "/js/app.js?id=521451f9570578bcd07e27370246851c",
     "/js/admin.js": "/js/admin.js?id=18850dadc61fe8b390e9b13bbbdc80c1",
-    "/css/app.css": "/css/app.css?id=8792bf57c3d783837e564c94877b44ad",
-    "/css/admin.css": "/css/admin.css?id=52a48edfc88a6700be83a1f005c843c4",
+    "/css/app.css": "/css/app.css?id=d2e26ceb00e67f2b24a99389c772b818",
+    "/css/admin.css": "/css/admin.css?id=e4c6f0bd118f4e8e3a86fe3073b3c12c",
     "/js/views/admin-design-system.js": "/js/views/admin-design-system.js?id=68e9d3df1d2fd5df887fe8b1cb232aba",
     "/js/views/admin-access-limits.js": "/js/views/admin-access-limits.js?id=935d8744b7d17c0d8f005c94549c9844",
     "/js/views/membership-billing.js": "/js/views/membership-billing.js?id=51312ce7eede7ddb69b2221c44fb03ff",
@@ -1585,5 +1585,11 @@
     "/images/emails/welcome/resource-browser.jpg": "/images/emails/welcome/resource-browser.jpg?id=6bbe1c69758024e185c1849e53470ba6",
     "/images/emails/welcome/tablet-iphone.jpg": "/images/emails/welcome/tablet-iphone.jpg?id=513ed67ba496d917058f3931dbc6aa7d",
     "/images/emails/welcome/webapp-devices.jpg": "/images/emails/welcome/webapp-devices.jpg?id=40d147fbf4f561affb6ba333f7ec4d86",
-    "/images/emails/welcome/app-store.png": "/images/emails/welcome/app-store.png?id=f1cf355bb69fbf244e98b6b145887093"
+    "/images/emails/welcome/app-store.png": "/images/emails/welcome/app-store.png?id=f1cf355bb69fbf244e98b6b145887093",
+    "/images/home/projects/webapp.svg": "/images/home/projects/webapp.svg?id=581741cf473a065de0e3c99aeafaf2b1",
+    "/images/home/projects/ios.svg": "/images/home/projects/ios.svg?id=d1eb2e41bbaf2dede848cc6d1082554b",
+    "/images/home/projects/shop.svg": "/images/home/projects/shop.svg?id=6ceb397cd42dc6684c5306594a0e3037",
+    "/images/home/projects/play.svg": "/images/home/projects/play.svg?id=6487072132ad189fdd95a61822a2386b",
+    "/images/home/projects/learn.svg": "/images/home/projects/learn.svg?id=b6e854becf97d21119aed0408101b1dc",
+    "/images/home/projects/blog.svg": "/images/home/projects/blog.svg?id=ed5fb6e29fc6b5a2f86603846b2b29c4"
 }

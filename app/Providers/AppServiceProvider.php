@@ -19,6 +19,15 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->scoped(\App\Services\WebApp\AccessPolicy::class);
+        // Component folders are part of the deployed code. An older production
+        // config cache must not hide moved email views or their theme.
+        $this->callAfterResolving(\Illuminate\Mail\Markdown::class, function ($markdown) {
+            $markdown->loadComponentsFrom(array_values(array_unique(array_merge(
+                [resource_path('views/emails/components')],
+                (array) config('mail.markdown.paths', []),
+                [resource_path('views/vendor/mail')]
+            ))));
+        });
         \View::composer('*', function($view) {
             $view->with(['full' => ! request()->has('bodyonly')]);
         });

@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\{Tag, Piece};
-use App\Api\Api;
+use App\Piece;
 use Illuminate\Http\Request;
-use App\Jobs\UploadToCloud;
-use App\Rules\VideoLength;
 
 class HomeController extends Controller
 {
@@ -15,17 +12,23 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Api $api)
+    public function index()
     {
-        $latest = Piece::latest()->with(['composer', 'tags'])->take(8)->get();
-        $tags = Tag::byTypes($except = ['sublevel', 'ranking', 'level', 'length', 'period', 'genre'])->reverse();
-        $highlights = \App\Piece::freePicks()->free(false)->with(['tags', 'composer'])->take(16)->get();
-        $composers = \App\Composer::inRandomOrder()->has('pieces')->take(16)->get();
-        $suggestions = $api->querySuggestions()['queries'];
-        $testimonials = testimonials();
-        shuffle($testimonials);
+        $scheme = parse_url(config('app.url'), PHP_URL_SCHEME) ?: request()->getScheme();
+        $hub = fn ($name) => $scheme.'://'.$name.'.'.config('app.short_url');
 
-        return view('home.index', compact(['latest', 'tags', 'testimonials', 'composers', 'highlights', 'suggestions']));
+        $webapp = ['key' => 'webapp', 'title' => 'Web app', 'description' => 'Find your next favorite piece.', 'destination' => 'my.pianolit', 'url' => route('webapp.discover'), 'color' => 'sky'];
+        $ios = ['key' => 'ios', 'title' => 'iOS app', 'description' => 'A little inspiration. Everywhere.', 'destination' => 'App Store', 'url' => config('app.stores.ios'), 'color' => 'lavender'];
+        $shop = ['key' => 'shop', 'title' => 'Shop', 'description' => 'Good things for your piano.', 'destination' => 'shop.pianolit', 'url' => route('shop.home'), 'color' => 'peach'];
+        $play = ['key' => 'play', 'title' => 'Play', 'description' => 'Let your curiosity play.', 'destination' => 'play.pianolit', 'url' => $hub('play'), 'color' => 'butter'];
+        $learn = ['key' => 'learn', 'title' => 'Learn', 'description' => 'Make sense of the music.', 'destination' => 'learn.pianolit', 'url' => $hub('learn'), 'color' => 'mint'];
+        $blog = ['key' => 'blog', 'title' => 'Blog', 'description' => 'Stories beyond the notes.', 'destination' => 'blog.pianolit', 'url' => route('posts.index'), 'color' => 'rose'];
+
+        $projects = [
+            $shop, $play, $webapp, $ios, $learn, $blog
+        ];
+
+        return view('home.index', compact('projects'));
     }
 
     public function loadPieces(Request $request)

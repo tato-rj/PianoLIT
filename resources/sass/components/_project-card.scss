@@ -1,0 +1,76 @@
+// Project navigation shares the web app's pastel feature-card surfaces.
+.project-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 360px;
+    overflow: hidden;
+    border-radius: var(--radius);
+    color: var(--card-ink);
+    text-decoration: none;
+    box-shadow: var(--shadow);
+
+    &:hover,
+    &:focus-visible {
+        color: var(--card-ink);
+        text-decoration: none;
+        border-color: var(--card-action);
+    }
+
+    &__heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px;
+        padding: 24px 22px 0;
+        z-index: 1;
+
+        h2 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: -0.8px;
+            white-space: nowrap;
+        }
+    }
+
+    &__arrow {
+        font-size: 25px;
+        line-height: 1;
+        opacity: .65;
+    }
+
+    &__art {
+        position: absolute;
+        width: 290px;
+        max-width: none;
+        height: calc(100% - 154px);
+        left: 50%;
+        top: 62px;
+        transform: translateX(-50%);
+        pointer-events: none;
+        user-select: none;
+    }
+
+    &__caption {
+        margin-top: auto;
+        padding: 0 22px 24px;
+        position: relative;
+        z-index: 1;
+
+        p {
+            max-width: 180px;
+            min-height: 40px;
+            margin: 0 0 10px;
+            font-size: 14px;
+            line-height: 1.45;
+            letter-spacing: 0;
+        }
+
+        span {
+            font-size: 11px;
+            letter-spacing: .02em;
+            opacity: .75;
+        }
+    }
+}

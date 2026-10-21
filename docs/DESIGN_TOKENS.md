@@ -373,3 +373,14 @@ emitted by the shared stylesheet, and the component includes its versioned
 `js/components/date-picker.js` once. The Design System's calendar specimen uses
 this same component. Server-side validation remains authoritative when another
 administrator changes availability after a page was loaded.
+
+## Homepage project cards
+
+`components.project-card` renders the homepage's six destination links and its
+Design System specimen. It reuses `.pastel-card` and the existing radius, shadow,
+color and typography tokens; its shared styles live in
+`resources/sass/components/_project-card.scss`. The homepage fan/grid layout is
+separate in `pages/_home.scss`. Desktop hover and keyboard focus resize cards in
+place without changing link order. Touch layouts use a grid and reduced-motion
+preferences disable the transitions. Editable vector artwork lives under
+`resources/images/home/projects/` and is copied/versioned by Mix.
