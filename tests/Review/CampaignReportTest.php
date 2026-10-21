@@ -10,12 +10,13 @@ use Illuminate\Support\Str;
 
 class CampaignReportTest extends ReviewTestCase
 {
-    private function visit($source, array $extra = [], $user = null, $created = null)
+    private function visit($source, array $extra = [], $user = null, $created = null, $landing = '')
     {
         $parameters = CampaignParameters::fromQuery(['utm_source' => $source] + $extra);
         $id = (string) Str::uuid();
         DB::table('campaign_visits')->insert($parameters + [
             'id' => $id, 'campaign' => CampaignParameters::key($parameters), 'user_id' => optional($user)->id,
+            'landing_url' => $landing,
             'consented_at' => now(), 'created_at' => $created ?: now(), 'expires_at' => now()->addDays(30),
         ]);
         return $id;
@@ -215,5 +216,86 @@ class CampaignReportTest extends ReviewTestCase
         $this->assertDatabaseHas('campaign_visits', ['id' => $anonymous, 'consented_at' => null]);
         $this->assertSame([], DB::select('PRAGMA foreign_key_check'));
         $this->assertSame(1, (int) DB::select('PRAGMA foreign_keys')[0]->foreign_keys);
+    }
+
+    public function test_admin_splits_destinations_without_mixing_their_conversions_or_revenue()
+    {
+        $first = $this->visit('youtube.com', [], null, null, route('webapp.pieces.show', 174));
+        $this->visit('youtube.com', [], null, null, route('webapp.pieces.show', 174));
+        $second = $this->visit('youtube.com', [], null, null, route('webapp.pieces.show', 175));
+        $this->paid($first, 'landingone');
+        $this->paid($second, 'landingtwo', 'chf', 1299);
+        $this->admin();
+        $page = $this->get(route('admin.analytics.campaigns'))->assertOk()->assertSee('Landing page');
+        $rows = $page->viewData('campaigns');
+        $this->assertSame(2, $rows->total());
+        $this->assertSame(route('webapp.pieces.show', 174), $rows[0]->landing_url);
+        $this->assertSame(2, $rows[0]->arrivals);
+        $this->assertSame(1, $rows[0]->trials);
+        $this->assertSame(1, $rows[0]->first_paid_subscriptions);
+        $this->assertSame('USD 9.99', $rows[0]->first_payment_revenue);
+        $this->assertSame('CHF 12.99', $rows[1]->first_payment_revenue);
+        $filtered = $this->get(route('admin.analytics.campaigns', ['search' => '/pieces/175']))->assertOk()->viewData('campaigns');
+        $this->assertSame(1, $filtered->total());
+        $this->assertSame('CHF 12.99', $filtered[0]->first_payment_revenue);
+        // Keep the existing CLI's UTM-level totals and output fields intact.
+        $cli = (new CampaignAttributionReport)->rows(now()->subDay());
+        $this->assertCount(1, $cli);
+        $this->assertSame(3, $cli[0]['arrivals']);
+        $this->assertSame('CHF 12.99, USD 9.99', $cli[0]['first_payment_revenue']);
+        if ($directory = getenv('CAMPAIGN_REPORT_PREVIEW_DIR')) file_put_contents($directory.'/campaigns-landings.html', $page->getContent());
+    }
+
+    public function test_page_group_pagination_unknown_history_and_untrusted_destinations()
+    {
+        for ($index = 0; $index < 26; $index++) $this->visit('youtube.com', [], null, null, config('app.url').sprintf('/page/%02d', $index));
+        $this->visit('youtube.com');
+        $this->visit('youtube.com', [], null, null, 'https://untrusted.example/redirect');
+        $this->visit('youtube.com', [], null, null, config('app.url').'/password/reset/[redacted]');
+        $this->admin();
+        $page = $this->get(route('admin.analytics.campaigns', ['sort' => 'source_asc', 'period' => 'all']))->assertOk();
+        $this->assertSame(29, $page->viewData('campaigns')->total());
+        $this->assertCount(12, $page->viewData('campaigns'));
+        $this->assertStringContainsString('period=all', $page->viewData('campaigns')->nextPageUrl());
+        $all = $this->get(route('admin.analytics.campaigns', ['per_page' => 48]))->assertOk()->assertSee('Not recorded')->assertDontSee('untrusted.example');
+        foreach ($all->viewData('campaigns') as $row) {
+            if ($row->landing_url === '' || strpos($row->landing_url, 'untrusted.example') !== false || strpos($row->landing_url, '[redacted]') !== false) {
+                $this->assertNull($row->landing_page_url);
+            }
+        }
+    }
+
+    public function test_landing_migration_preserves_legacy_rows_and_subscription_children()
+    {
+        $visit = $this->visit('youtube.com');
+        $this->paid($visit, 'landingmigration');
+        $before = (array) DB::table('campaign_visits')->sole();
+        $subscription = (array) DB::table('campaign_subscriptions')->sole();
+        $migration = new \AddCampaignLandingUrl;
+        $migration->down();
+        $migration->up();
+        $this->assertSame($before, (array) DB::table('campaign_visits')->sole());
+        $this->assertSame($subscription, (array) DB::table('campaign_subscriptions')->sole());
+        $this->assertSame('', DB::table('campaign_visits')->sole()->landing_url);
+        $this->assertSame(1, (int) DB::select('PRAGMA foreign_keys')[0]->foreign_keys);
+        $this->assertSame([], DB::select('PRAGMA foreign_key_check'));
+    }
+
+    public function test_piece_landing_titles_use_one_bulk_query_for_the_whole_admin_page()
+    {
+        $pieces = Model::withoutEvents(function () { return create(\App\Piece::class, [], 12); });
+        foreach ($pieces as $piece) $this->visit('youtube.com', [], null, null, route('webapp.pieces.show', $piece->id));
+        $this->admin();
+        DB::enableQueryLog();
+        $page = $this->get(route('admin.analytics.campaigns'))->assertOk();
+        $queries = DB::getQueryLog();
+        DB::disableQueryLog();
+        $titles = array_filter($queries, function ($query) { return strpos($query['query'], 'from "pieces" as "p"') !== false; });
+        $this->assertCount(1, $titles);
+        $this->assertCount(12, $page->viewData('campaigns'));
+        foreach ($page->viewData('campaigns') as $row) {
+            $this->assertNotSame(parse_url($row->landing_url, PHP_URL_PATH), $row->landing_page_label);
+            $this->assertSame($row->landing_url, $row->landing_page_url);
+        }
     }
 }

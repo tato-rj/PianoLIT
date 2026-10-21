@@ -44,7 +44,7 @@ class CampaignAttributionTest extends ReviewTestCase
     {
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
-        return (new \DOMXPath($dom))->query('//*[@data-campaign-measurement]')->item(0)->getAttribute('data-token');
+        return optional((new \DOMXPath($dom))->query('//*[@data-campaign-measurement]')->item(0))->getAttribute('data-token') ?? '';
     }
 
     private function grant()
@@ -106,9 +106,11 @@ class CampaignAttributionTest extends ReviewTestCase
     public function test_report_counts_the_supplied_youtube_link_before_any_javascript_or_opt_in()
     {
         $page = $this->get(route('webapp.pieces.show', ['piece' => 174, 'utm_source' => 'youtube.com', 'utm_medium' => 'video']))->assertOk();
+        if ($directory = getenv('CAMPAIGN_REPORT_PREVIEW_DIR')) file_put_contents($directory.'/piece-without-campaign-panel.html', $page->getContent());
         $visit = DB::table('campaign_visits')->sole();
         $this->assertNull($visit->user_id);
         $this->assertNull($visit->consented_at);
+        $this->assertSame(route('webapp.pieces.show', 174), $visit->landing_url);
         $page->assertCookieMissing(CampaignAttribution::VISIT_COOKIE)->assertCookieMissing(CampaignAttribution::CONSENT_COOKIE);
         $this->assertSame(1, $this->report()['arrivals']);
         $this->assertSame(0, $this->report()['trials']);
@@ -121,6 +123,13 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->assertSame('video', $rows[0]->utm_medium);
         $this->assertSame('', $rows[0]->utm_campaign);
         $this->assertSame(1, $rows[0]->arrivals);
+        $this->assertSame(route('webapp.pieces.show', 174), $rows[0]->landing_page_url);
+        $this->assertStringContainsString('Notturno attribution fixture', $rows[0]->landing_page_label);
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($report->getContent());
+        $links = (new \DOMXPath($dom))->query('//a[@href="'.route('webapp.pieces.show', 174).'"]');
+        $this->assertSame('_blank', $links->item(0)->getAttribute('target'));
+        $this->assertSame('noopener noreferrer', $links->item(0)->getAttribute('rel'));
         if ($directory = getenv('CAMPAIGN_REPORT_PREVIEW_DIR')) file_put_contents($directory.'/campaigns-anonymous.html', $report->getContent());
     }
 
@@ -141,6 +150,7 @@ class CampaignAttributionTest extends ReviewTestCase
         $updated = DB::table('campaign_visits')->sole();
         $this->assertSame($visit->id, $updated->id);
         $this->assertSame($visit->created_at, $updated->created_at);
+        $this->assertSame($visit->landing_url, $updated->landing_url);
         $this->assertSame('youtube.com', $updated->utm_source);
         $this->assertSame($this->user->id, $updated->user_id);
         $this->assertNotNull($updated->consented_at);
@@ -160,6 +170,62 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->withCookies([CampaignAttribution::VISIT_COOKIE => $visit->id, CampaignAttribution::CONSENT_COOKIE => 'v1:granted']);
         $this->get(route('webapp.pieces.show', ['piece' => 174]))->assertOk();
         $this->assertDatabaseHas('campaign_visits', ['id' => $visit->id, 'user_id' => null, 'consented_at' => null]);
+    }
+
+    public function test_first_landing_page_is_retained_across_later_tagged_destinations_and_consent()
+    {
+        $this->withCredentials();
+        $this->landing();
+        $this->withCookie(config('session.cookie'), session()->getId());
+        $other = Model::withoutEvents(function () { return create(Piece::class, ['id' => 175]); });
+        $other->tags()->sync($this->piece->tags->modelKeys());
+        $later = $this->get(route('webapp.pieces.show', ['piece' => 175, 'utm_source' => 'reddit.com']))->assertOk();
+        $this->assertDatabaseCount('campaign_visits', 1);
+        $this->postJson(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $this->token($later)])->assertOk();
+        $this->assertDatabaseHas('campaign_visits', ['landing_url' => route('webapp.pieces.show', 174), 'utm_source' => 'youtube.com']);
+    }
+
+    public function test_landing_capture_omits_queries_and_redacts_non_public_route_parameters()
+    {
+        \Route::middleware('web')->get('/review/campaign-reset/{token}', function () { return response('<html>Reset page</html>'); });
+        $this->get(config('app.url').'/review/campaign-reset/private-reset-token?utm_source=youtube.com&email=private@example.test&secret=private-query')->assertOk();
+        $visit = DB::table('campaign_visits')->sole();
+        $this->assertSame(config('app.url').'/review/campaign-reset/[redacted]', $visit->landing_url);
+        $this->assertStringNotContainsString('private', $visit->landing_url);
+        $this->assertStringNotContainsString('?', $visit->landing_url);
+    }
+
+    public function test_landing_tokens_accept_bounded_long_urls_but_reject_foreign_destinations()
+    {
+        $this->withCredentials();
+        \Route::middleware('web')->get('/review/campaign-post/{post}', function () {
+            $service = new CampaignAttribution;
+            return response('<html><span data-campaign-measurement data-token="'.e($service->landingToken(request())).'"></span></html>');
+        });
+        $url = config('app.url').'/review/campaign-post/'.str_repeat('public-post-', 75);
+        $page = $this->get($url.'?'.http_build_query(['utm_source' => 'youtube.com', 'utm_campaign' => str_repeat('a', 100)]))->assertOk();
+        $token = $this->token($page);
+        $this->assertGreaterThan(2048, strlen($token));
+        $this->withCookie(config('session.cookie'), session()->getId());
+        $this->postJson(config('app.url').route('attribution.consent', [], false), ['choice' => 'granted', 'token' => $token])->assertOk();
+        $this->assertDatabaseHas('campaign_visits', ['landing_url' => $url]);
+        $data = json_decode(\Crypt::decryptString($token), true);
+        $data['landing_url'] = 'https://untrusted.example/pieces/174';
+        $invalid = \Crypt::encryptString(json_encode($data));
+        $this->withExceptionHandling()->postJson(config('app.url').route('attribution.consent', [], false), ['choice' => 'granted', 'token' => $invalid])->assertStatus(422);
+    }
+
+    public function test_older_tokens_without_a_url_preserve_the_recorded_first_destination()
+    {
+        $this->withCredentials();
+        $token = $this->token($this->landing());
+        $data = json_decode(\Crypt::decryptString($token), true);
+        unset($data['landing_url']);
+        $legacy = \Crypt::encryptString(json_encode($data));
+        $this->withCookie(config('session.cookie'), session()->getId());
+        $this->postJson(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $legacy])->assertOk();
+        $this->assertDatabaseCount('campaign_visits', 1);
+        $this->assertDatabaseHas('campaign_visits', ['landing_url' => route('webapp.pieces.show', 174)]);
     }
 
     public function test_declining_removes_anonymous_arrival_and_remains_respected_on_later_links()
@@ -256,12 +322,8 @@ class CampaignAttributionTest extends ReviewTestCase
 
     public function test_guest_arrival_is_automatic_but_linkage_requires_opt_in_and_valid_tokens()
     {
-        $page = $this->landing()->assertDontSee('GTM-KJW7XGP')->assertSee('Allow measurement');
+        $page = $this->landing()->assertDontSee('GTM-KJW7XGP')->assertDontSee('Allow measurement');
         $this->assertNotEmpty($this->token($page));
-        if ($path = getenv('CAMPAIGN_ATTRIBUTION_PREVIEW')) {
-            preg_match('/<aside class="container my-3"[\s\S]*?<\/aside>/', $page->getContent(), $match);
-            file_put_contents($path, '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"></head><body><main class="container py-4"><h2>Notturno</h2><p>Optional campaign measurement preview</p></main>'.($match[0] ?? '').'<script src="/js/views/campaign-attribution.js"></script></body></html>');
-        }
         $this->assertDatabaseCount('campaign_visits', 1);
         $this->assertDatabaseHas('campaign_visits', ['user_id' => null, 'consented_at' => null]);
         foreach (['utm_source' => 'someone@example.com', 'utm_campaign' => '<script>alert(1)</script>', 'utm_content' => ['description']] as $field => $value) {
@@ -289,18 +351,41 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->assertDatabaseCount('campaign_visits', 0);
     }
 
-    public function test_tagged_search_keeps_the_visible_opt_in_choice()
+    public function test_public_and_webapp_layouts_never_render_a_campaign_preference_panel()
+    {
+        $this->withoutMiddleware(\App\Http\Middleware\Logs\RecordWebLog::class);
+        $public = rtrim(config('app.url'), '/');
+        $this->get($public.'/login?utm_source=youtube.com')->assertOk()
+            ->assertDontSee('Campaign link measurement')->assertDontSee('campaign-measurement-choice')
+            ->assertDontSee('Allow measurement')->assertDontSee('data-campaign-choice');
+        foreach ([null, $this->user] as $user) {
+            if ($user) $this->actingAs($user, 'web');
+            foreach ([[], ['utm_source' => 'youtube.com', 'utm_medium' => 'video']] as $tags) {
+                $pages = [
+                    $this->get(route('webapp.pieces.show', ['piece' => 174] + $tags))->assertOk(),
+                    $this->get($public.route('terms', $tags, false))->assertOk(),
+                ];
+                foreach ($pages as $page) {
+                    $page->assertDontSee('Campaign link measurement')->assertDontSee('campaign-measurement-choice')
+                        ->assertDontSee('Allow measurement')->assertDontSee('data-campaign-choice')
+                        ->assertDontSee('js/views/campaign-attribution.js');
+                }
+            }
+        }
+    }
+
+    public function test_tagged_search_counts_anonymous_arrival_without_visible_campaign_controls()
     {
         $page = $this->get(route('webapp.search.results', [
             'search' => 'notturno', 'utm_source' => 'youtube.com',
-        ]))->assertOk()->assertSee('Allow measurement');
+        ]))->assertOk()->assertDontSee('Campaign link measurement')->assertDontSee('Allow measurement');
         $token = $this->token($page);
         $this->assertNotEmpty($token);
         $dom = new \DOMDocument;
         @$dom->loadHTML($page->getContent());
         $xpath = new \DOMXPath($dom);
-        $this->assertFalse($xpath->query('//*[@data-campaign-measurement]')->item(0)->hasAttribute('hidden'));
-        $this->assertFalse($xpath->query('//*[@id="campaign-measurement-choice"]')->item(0)->hasAttribute('hidden'));
+        $this->assertTrue($xpath->query('//*[@data-campaign-measurement]')->item(0)->hasAttribute('hidden'));
+        $this->assertSame(0, $xpath->query('//*[@id="campaign-measurement-choice"]')->length);
         $this->assertDatabaseCount('campaign_visits', 1);
         $this->assertDatabaseHas('campaign_visits', ['user_id' => null, 'consented_at' => null]);
         $this->withCookie(config('session.cookie'), session()->getId());
@@ -308,13 +393,15 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->assertDatabaseCount('campaign_visits', 1);
     }
 
-    public function test_tagged_search_with_a_saved_choice_keeps_controls_hidden()
+    public function test_tagged_search_only_acknowledges_a_previously_granted_choice()
     {
         foreach (['granted', 'denied'] as $choice) {
             $this->withCookie(CampaignAttribution::CONSENT_COOKIE, 'v1:'.$choice);
             $page = $this->get(route('webapp.search.results', [
                 'search' => 'notturno', 'utm_source' => 'youtube.com',
-            ]))->assertOk()->assertSee('js/views/campaign-attribution.js');
+            ]))->assertOk()->assertDontSee('Campaign link measurement');
+            if ($choice === 'granted') $page->assertSee('js/views/campaign-attribution.js');
+            else $page->assertDontSee('js/views/campaign-attribution.js');
             $this->assertNotEmpty($this->token($page));
             $dom = new \DOMDocument;
             @$dom->loadHTML($page->getContent());
@@ -411,7 +498,7 @@ class CampaignAttributionTest extends ReviewTestCase
     {
         $this->withCredentials();
         $this->withoutMiddleware(\App\Http\Middleware\Logs\RecordWebLog::class);
-        $page = $this->get(route('terms', ['utm_source' => 'reddit.com']))->assertOk()->assertSee('Campaign link measurement');
+        $page = $this->get(route('terms', ['utm_source' => 'reddit.com']))->assertOk()->assertDontSee('Campaign link measurement');
         $token = $this->token($page);
         $this->assertNotEmpty($token);
         $this->assertStringContainsString('data-url="/attribution/consent"', $page->getContent());

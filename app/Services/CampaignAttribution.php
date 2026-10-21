@@ -42,6 +42,7 @@ class CampaignAttribution
         $touch = [
             'parameters' => $visit ? array_intersect_key((array) $visit, array_flip(CampaignParameters::FIELDS)) : $parameters,
             'visit_id' => $visit ? $visit->id : (string) Str::uuid(), 'issued_at' => now()->timestamp,
+            'landing_url' => $visit ? $visit->landing_url : CampaignLandingPage::capture($request),
             'context' => $this->context($request),
         ];
         $request->attributes->set('campaign.touch', $touch);
@@ -65,6 +66,7 @@ class CampaignAttribution
         DB::table('campaign_visits')->insertOrIgnore($touch['parameters'] + [
             'id' => $touch['visit_id'], 'campaign' => CampaignParameters::key($touch['parameters']),
             'user_id' => null, 'consented_at' => null, 'created_at' => now(),
+            'landing_url' => $touch['landing_url'],
             'expires_at' => now()->addDays(config('attribution.touch_days')),
         ]);
         $request->session()->put($this->arrivalSessionKey($request), $touch['visit_id']);
@@ -93,6 +95,9 @@ class CampaignAttribution
         if (! is_array($data) || ! is_array($data['parameters'] ?? null) || ! is_int($data['issued_at'] ?? null) || ! is_string($data['visit_id'] ?? null) || ! Str::isUuid($data['visit_id'])) return null;
         $parameters = CampaignParameters::fromQuery($data['parameters']);
         if (! $parameters || $parameters !== $data['parameters'] || ($data['context'] ?? null) !== $this->context(request())) return null;
+        // Older open pages may still acknowledge a token without this field.
+        if (($data['landing_url'] ?? '') !== '' && (! CampaignLandingPage::valid($data['landing_url'])
+            || parse_url($data['landing_url'], PHP_URL_HOST) !== request()->getHost())) return null;
         $age = now()->timestamp - $data['issued_at'];
         return $age >= 0 && $age <= 600 ? $data : null;
     }
@@ -146,6 +151,7 @@ class CampaignAttribution
             $id = $touch['visit_id'];
             DB::table('campaign_visits')->insertOrIgnore(array_merge($touch['parameters'], [
                 'id' => $id, 'campaign' => CampaignParameters::key($touch['parameters']), 'user_id' => auth('web')->id(),
+                'landing_url' => $touch['landing_url'] ?? '',
                 'consented_at' => now(), 'created_at' => now(),
                 'expires_at' => now()->addDays(config('attribution.touch_days')),
             ]));

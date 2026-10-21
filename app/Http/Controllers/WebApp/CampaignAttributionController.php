@@ -11,7 +11,7 @@ class CampaignAttributionController extends Controller
     public function consent(Request $request, CampaignAttribution $attribution)
     {
         if (! $attribution->available($request)) return response()->json(['message' => 'Campaign measurement unavailable.'], 404);
-        $data = $request->validate(['choice' => 'required|in:granted,denied', 'token' => 'nullable|string|max:2048']);
+        $data = $request->validate(['choice' => 'required|in:granted,denied', 'token' => 'nullable|string|max:4096']);
         $campaign = null;
         if ($data['choice'] === 'granted' && ! empty($data['token'])) {
             $campaign = $attribution->campaignFromToken($data['token']);

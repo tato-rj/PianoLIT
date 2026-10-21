@@ -43,7 +43,7 @@ because its icon refresh is controlled by the device.
 ### Home-screen splash screens
 
 The public website/web app uses a white launch background; administration uses
-`#181e22`. Both center the approved icon at 120 CSS pixels. The blue icon has a
+`#181e22`. Both center the approved icon at 80 CSS pixels. The blue icon has a
 thin, light `#dee2e6` outline (one CSS pixel) so its white keys remain distinct
 from the launch background. These splash treatments leave the icon masters
 unchanged. `components.brand-splash` supplies

@@ -14,11 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 BRAND = ROOT / 'resources/images/brand'
 PUBLIC = ROOT / 'public/images/brand'
 PROFILES = json.loads((ROOT / 'resources/data/brand-splash-screens.json').read_text())
-ICON_CSS_SIZE = 120
+ICON_CSS_SIZE = 80
 
 
 def artwork(icon, color, width, height, scale=1):
-    # A constant 120 CSS-pixel mark stays centered and comfortably inside the
+    # A constant 80 CSS-pixel mark stays centered and comfortably inside the
     # safe area in either orientation, including smaller phones and tablets.
     size = ICON_CSS_SIZE * scale
     x = (width - size) / 2
