@@ -40,7 +40,7 @@ class ShopSubdomainTest extends ReviewTestCase
             }
         }
 
-        foreach (['/shop/validate-coupon' => 'shop.validate-coupon', '/ebooks' => 'ebooks.index', '/api/pieces/find' => 'api.pieces.find'] as $path => $name) {
+        foreach (['/shop/validate-coupon' => 'shop.validate-coupon', '/ebooks' => 'legacy.ebooks', '/escores' => 'legacy.escores', '/api/pieces/find' => 'api.pieces.find'] as $path => $name) {
             $matched = app('router')->getRoutes()->match(Request::create($baseUrl.$path));
             $this->assertSame($name, $matched->getName());
         }
@@ -51,7 +51,7 @@ class ShopSubdomainTest extends ReviewTestCase
     {
         $this->useDomain($baseUrl);
         $this->get(route('shop.home'))->assertOk()
-            ->assertViewIs('shop.coming-soon')
+            ->assertSee('class="shop-coming-soon"', false)
             ->assertSee('Coming up soon!')
             ->assertDontSee('<h1', false)
             ->assertSee('images/shop/coming-soon.webp', false)

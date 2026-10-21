@@ -3,7 +3,7 @@
 namespace Tests\Review;
 
 use App\{Admin, Composer, Performance, Piece, TutorialRequest, User};
-use App\Mail\{AccountWelcome, AutomaticEmailSettings, IosAccountWelcome, SharePieceEmail};
+use App\Mail\{AccountWelcome, AutomaticEmailSettings, IosAccountWelcome, SharePieceEmail, WebsiteAccountWelcome};
 use App\Mail\Admin\EmailPreview;
 use App\Mail\Memberships\MembershipConfirmed;
 use App\Mail\Performances\{PerformanceApprovedEmail, PerformanceSubmittedEmail};
@@ -49,6 +49,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $this->actingAs($admin, 'admin');
         $this->assertFalse($this->settings()->enabled('account-welcome'));
         $this->assertFalse($this->settings()->enabled('account-welcome-ios'));
+        $this->assertFalse($this->settings()->enabled('account-welcome-website'));
         $this->assertTrue($this->settings()->enabled('reset-password'));
         $this->assertDatabaseCount('automatic_email_settings', 0);
         $url = route('admin.emails.sending', 'reset-password');
@@ -63,7 +64,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $dom = new \DOMDocument; @$dom->loadHTML($page->getContent());
         $xpath = new \DOMXPath($dom);
         $this->assertCount(1, $xpath->query('//input[@role="switch" and @aria-label="Automatic sending: Reset password" and not(@checked)]'));
-        $this->assertCount(16, $xpath->query('//input[@role="switch"]/ancestor::form/input[@name="_token"]'));
+        $this->assertCount(17, $xpath->query('//input[@role="switch"]/ancestor::form/input[@name="_token"]'));
         Mail::assertNothingSent(); Mail::assertNothingQueued();
     }
 
@@ -89,7 +90,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         [$user, $piece, $request] = $this->fixtures();
         $purchase = new ConfirmPurchase((object) ['title' => 'Practice Companion']); $purchase->user = $user;
         $mails = [
-            'account-welcome' => new AccountWelcome('Jamie'), 'account-welcome-ios' => new IosAccountWelcome('Jamie'), 'purchase-confirmation' => $purchase,
+            'account-welcome-website' => new WebsiteAccountWelcome('Jamie'), 'account-welcome' => new AccountWelcome('Jamie'), 'account-welcome-ios' => new IosAccountWelcome('Jamie'), 'purchase-confirmation' => $purchase,
             'membership-confirmation' => new MembershipConfirmed('Jamie', 'monthly', true, null),
             'tutorial-request' => new NewRequestEmail($request), 'tutorial-published' => new RequestPublishedEmail($request),
             'performance-submitted' => new PerformanceSubmittedEmail($piece), 'performance-approved' => new PerformanceApprovedEmail($piece),
@@ -208,48 +209,147 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $this->assertContains(\App\Listeners\Users\SendAccountWelcome::class, \Illuminate\Support\Arr::flatten($this->app->getProvider(\App\Providers\EventServiceProvider::class)->listens()));
     }
 
-    public function test_welcome_variants_have_the_same_copy_and_only_the_web_email_has_a_button()
+    public function test_welcome_variants_share_the_minimal_layout_and_highlight_the_other_platforms()
     {
         $catalog = app(\App\Services\Admin\AutomaticEmails::class);
-        $web = $catalog->render('account-welcome');
-        $ios = $catalog->render('account-welcome-ios');
-        $this->assertSame($web['subject'], $ios['subject']);
-        $bodyText = [];
-        foreach (['web' => $web, 'ios' => $ios] as $origin => $sample) {
+        foreach (['account-welcome-website' => 3, 'account-welcome' => 2, 'account-welcome-ios' => 2] as $key => $buttonCount) {
+            $sample = $catalog->render($key);
+            $this->assertSame('Welcome to PianoLIT!', $sample['subject']);
             $dom = new \DOMDocument; @$dom->loadHTML($sample['html']);
             $xpath = new \DOMXPath($dom);
-            $buttons = $xpath->query('//button | //a[contains(concat(" ", normalize-space(@class), " "), " button ")]');
-            $this->assertCount($origin === 'web' ? 1 : 0, $buttons);
-            if ($origin === 'web') $this->assertSame(route('webapp.discover'), $buttons[0]->getAttribute('href'));
-            $bodyText[$origin] = trim(preg_replace('/\s+/u', ' ', str_replace('Explore PianoLIT', '', $xpath->query('//body')[0]->textContent)));
+            $this->assertCount(2, $xpath->query('//h2'));
+            $this->assertCount($key === 'account-welcome-ios' ? 3 : 4, $xpath->query('//img[@alt and @width]'));
+            $buttons = $xpath->query('//a[contains(concat(" ", normalize-space(@class), " "), " welcome-button ")]');
+            $this->assertCount($buttonCount, $buttons);
+            $this->assertSame('http://localhost', $buttons[$buttonCount - 1]->getAttribute('href'));
+            $appUrls = array_map(function ($button) { return $button->getAttribute('href'); }, iterator_to_array($buttons));
+            $this->assertSame($key !== 'account-welcome', in_array(route('webapp.discover'), $appUrls));
+            $this->assertSame($key !== 'account-welcome-ios', in_array(config('app.stores.ios'), $appUrls));
+            foreach (['Welcome, Jamie.', 'Your music. Your way.', 'same', 'account', 'theory tools', 'quiz', 'blog', 'contact@pianolit.com'] as $copy) {
+                $this->assertStringContainsString($copy, $sample['html']);
+                $this->assertStringContainsString($copy, $sample['text']);
+            }
+            $this->assertStringContainsString('background-color: #0055fe', $sample['html']);
+            $this->assertStringNotContainsString('<table', $sample['text']);
+            $this->assertStringNotContainsString('<br', $sample['text']);
         }
-        $this->assertSame($bodyText['web'], $bodyText['ios']);
-        $this->assertStringNotContainsString('Explore PianoLIT', $ios['text']);
-        $this->assertStringNotContainsString(route('webapp.discover'), $ios['text']);
-        $this->assertStringNotContainsString('my.localhost', $ios['html']);
+    }
+
+    public function test_welcome_assets_are_absolute_on_admin_and_normalize_a_schemeless_app_url()
+    {
+        [$mailer] = $this->mailer();
+        $this->app->instance('mailer', $mailer);
+        config(['app.url' => 'pianolit.example']);
+        $this->app['url']->setRequest(\Illuminate\Http\Request::create('https://admin.pianolit.example'));
+        $html = (new WebsiteAccountWelcome('<Jamie>'))->render();
+        $this->assertStringContainsString('Welcome, &lt;Jamie&gt;.', $html);
+        $this->assertStringContainsString('href="https://pianolit.example"', $html);
+        $this->assertStringContainsString('src="https://pianolit.example/images/emails/welcome/', $html);
+        $this->assertStringNotContainsString('admin.pianolit.example', $html);
+    }
+
+    public function test_edits_to_a_welcome_view_update_html_and_plain_text_without_changing_other_variants()
+    {
+        $directory = sys_get_temp_dir().'/pianolit-email-view-'.bin2hex(random_bytes(6));
+        mkdir($directory.'/emails/welcome', 0700, true);
+        $file = $directory.'/emails/welcome/webapp.blade.php';
+        $view = file_get_contents(resource_path('views/emails/welcome/webapp.blade.php'));
+        file_put_contents($file, str_replace(
+            ['A world of piano music, ready to explore.', 'Take PianoLIT with you.', 'Get the iOS app'],
+            ['Your edited welcome introduction.', 'Your edited app paragraph.', 'Your edited button'], $view
+        ));
+        $finder = app('view')->getFinder();
+        $paths = $finder->getPaths();
+        $finder->prependLocation($directory);
+        $finder->flush();
+        try {
+            $sample = app(\App\Services\Admin\AutomaticEmails::class)->render('account-welcome');
+            foreach (['html', 'text'] as $format) {
+                foreach (['Your edited welcome introduction.', 'Your edited app paragraph.', 'Your edited button'] as $copy) {
+                    $this->assertStringContainsString($copy, $sample[$format]);
+                }
+            }
+            foreach (['account-welcome-website', 'account-welcome-ios'] as $key) {
+                $other = app(\App\Services\Admin\AutomaticEmails::class)->render($key);
+                $this->assertStringNotContainsString('Your edited', $other['html']);
+                $this->assertStringNotContainsString('Your edited', $other['text']);
+            }
+        } finally {
+            $finder->setPaths($paths);
+            $finder->flush();
+            unlink($file); rmdir($directory.'/emails/welcome'); rmdir($directory.'/emails'); rmdir($directory);
+        }
+    }
+
+    public function test_local_welcome_previews_use_the_available_scheme_for_all_three_variants()
+    {
+        foreach (['http', 'https'] as $scheme) {
+            config(['app.url' => 'pianolit.test']);
+            $this->app->instance('request', \Illuminate\Http\Request::create($scheme.'://admin.pianolit.test'));
+            foreach (['account-welcome-website', 'account-welcome', 'account-welcome-ios'] as $key) {
+                $sample = app(\App\Services\Admin\AutomaticEmails::class)->render($key);
+                $dom = new \DOMDocument; @$dom->loadHTML($sample['html']);
+                $images = (new \DOMXPath($dom))->query('//img');
+                $this->assertCount($key === 'account-welcome-ios' ? 3 : 4, $images);
+                foreach ($images as $image) {
+                    $url = $image->getAttribute('src');
+                    $this->assertStringStartsWith($scheme.'://pianolit.test/images/emails/welcome/', $url);
+                    $this->assertNotEmpty(parse_url($url, PHP_URL_QUERY));
+                    $this->assertFileExists(public_path(parse_url($url, PHP_URL_PATH)));
+                }
+                $this->assertStringContainsString('href="'.$scheme.'://pianolit.test"', $sample['html']);
+                $this->assertStringContainsString($scheme.'://pianolit.test', $sample['text']);
+            }
+        }
+    }
+
+    public function test_welcome_preserves_explicit_schemes_and_production_https_fallback()
+    {
+        $this->app->instance('request', \Illuminate\Http\Request::create('http://admin.pianolit.test'));
+        foreach (['http://pianolit.test', 'https://pianolit.test', 'https://pianolit.com', 'pianolit.com'] as $configured) {
+            config(['app.url' => $configured]);
+            $expected = $configured === 'pianolit.com' ? 'https://pianolit.com' : $configured;
+            $html = app(\App\Services\Admin\AutomaticEmails::class)->render('account-welcome-website')['html'];
+            $this->assertStringContainsString('href="'.$expected.'"', $html);
+            $this->assertStringContainsString('src="'.$expected.'/images/emails/welcome/', $html);
+        }
+    }
+
+    public function test_a_welcome_does_not_change_the_next_email_theme_in_a_long_lived_worker()
+    {
+        [$mailer] = $this->mailer();
+        $this->app->instance('mailer', $mailer);
+        $ordinary = new MembershipConfirmed('Jamie', 'monthly', false, null);
+        $before = $ordinary->render();
+        (new WebsiteAccountWelcome('Jamie'))->render();
+        $this->assertSame($before, (new MembershipConfirmed('Jamie', 'monthly', false, null))->render());
     }
 
     public function test_welcome_routing_uses_signup_origin_and_each_sending_switch_independently()
     {
         [$user] = $this->fixtures();
         $listener = new \App\Listeners\Users\SendAccountWelcome;
-        foreach ([[false, false], [true, false], [false, true], [true, true]] as [$webEnabled, $iosEnabled]) {
+        foreach ([[false, false, false], [true, false, false], [false, true, false], [false, false, true], [true, true, false], [true, false, true], [false, true, true], [true, true, true]] as [$webEnabled, $iosEnabled, $websiteEnabled]) {
             $this->settings()->setEnabled('account-welcome', $webEnabled, null);
             $this->settings()->setEnabled('account-welcome-ios', $iosEnabled, null);
+            $this->settings()->setEnabled('account-welcome-website', $websiteEnabled, null);
             foreach (['web', 'webapp', 'ios', 'android', null] as $origin) {
                 Mail::fake();
                 $user->origin = $origin;
                 request()->merge(['origin' => $origin === 'ios' ? 'webapp' : 'ios']);
                 $listener->handle(new Registered($user));
                 $expectedClass = $origin === 'ios' && $iosEnabled ? IosAccountWelcome::class
-                    : (in_array($origin, ['web', 'webapp'], true) && $webEnabled ? AccountWelcome::class : null);
+                    : ($origin === 'web' && $websiteEnabled ? WebsiteAccountWelcome::class
+                    : ($origin === 'webapp' && $webEnabled ? AccountWelcome::class : null));
                 if ($expectedClass) {
                     Mail::assertQueued($expectedClass, function ($mail) use ($user, $expectedClass) {
                         return get_class($mail) === $expectedClass && $mail->hasTo($user->email);
                     });
                     Mail::assertQueued($expectedClass, 1);
-                    $otherClass = $expectedClass === AccountWelcome::class ? IosAccountWelcome::class : AccountWelcome::class;
-                    Mail::assertNotQueued($otherClass, function ($mail) use ($otherClass) { return get_class($mail) === $otherClass; });
+                    foreach ([AccountWelcome::class, IosAccountWelcome::class, WebsiteAccountWelcome::class] as $otherClass) {
+                        if ($otherClass === $expectedClass) continue;
+                        Mail::assertNotQueued($otherClass, function ($mail) use ($otherClass) { return get_class($mail) === $otherClass; });
+                    }
                 } else {
                     Mail::assertNothingQueued();
                 }

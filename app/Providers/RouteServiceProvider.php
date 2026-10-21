@@ -28,11 +28,12 @@ class RouteServiceProvider extends ServiceProvider
             // Public preview links must leave the admin host when paths overlap.
             if ($route && $route->getAction('public_site')) {
                 $host = request()->getHost();
-                // Blog navigation returns to the public site, while its AJAX
-                // and subscription forms retain their own session and CSRF token.
-                $blogLocal = in_array($route->getName(), ['subscriptions.modal', 'subscriptions.store', 'attribution.consent'], true);
+                // Subdomain navigation returns to the public site, while forms
+                // and AJAX retain their own session and CSRF token.
+                $local = in_array($route->getName(), ['subscriptions.modal', 'subscriptions.store', 'attribution.consent'], true)
+                    || (in_array($host, ['shop.'.config('app.short_url'), 'learn.'.config('app.short_url')], true) && $route->named('shop.*', 'reviews.*'));
                 if ($host === 'admin.'.config('app.short_url')
-                    || ($host === 'blog.'.config('app.short_url') && ! $blogLocal)) {
+                    || (in_array($host, ['blog.'.config('app.short_url'), 'shop.'.config('app.short_url'), 'learn.'.config('app.short_url')], true) && ! $local)) {
                     $website = rtrim(config('app.url'), '/');
 
                     return preg_match('#^https?://#i', $website) ? $website : request()->getScheme().'://'.ltrim($website, '/');
@@ -61,6 +62,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapShopRoutes();
 
+        $this->mapLearnRoutes();
+
         $this->mapApiRoutes();
 
         Route::middleware('web')->group(base_path('routes/google-auth.php'));
@@ -74,8 +77,6 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapBlogRoutes();
 
         $this->mapWebRoutes();
-
-        $this->mapMailRoutes();
 
         $this->mapWebhooksRoutes();
 
@@ -119,9 +120,16 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::domain('shop.'.config('app.short_url'))
              ->middleware(['web', 'log.web'])
-             ->name('shop.')
              ->namespace($this->namespace)
              ->group(base_path('routes/shop.php'));
+    }
+
+    protected function mapLearnRoutes()
+    {
+        Route::domain('learn.'.config('app.short_url'))
+             ->middleware(['web', 'log.web', 'location.update'])
+             ->namespace($this->namespace)
+             ->group(base_path('routes/learn.php'));
     }
 
     /**
@@ -178,22 +186,6 @@ class RouteServiceProvider extends ServiceProvider
              ->group(function() {
                 $this->getFolder('routes/admin');
              });
-    }
-
-    /**
-     * Define the "admin" routes for the application.
-     *
-     * These routes all receive session state, CSRF protection, etc.
-     *
-     * @return void
-     */
-    protected function mapMailRoutes()
-    {
-        Route::middleware(['web'])
-             ->prefix('email-preview')
-             ->name('email-preview.')
-             ->namespace($this->namespace)
-             ->group(base_path('routes/mail.php'));
     }
 
     /**

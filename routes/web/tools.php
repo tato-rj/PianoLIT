@@ -1,33 +1,11 @@
 <?php
 
-Route::prefix('tools')->name('tools.')->group(function() {
+// Already-open tool pages keep their original same-origin AJAX endpoints.
+Route::get('tools/chord-finder/analyse', 'ToolsController@analyseChord')->name('legacy.tools.chord-finder.analyse');
+Route::get('tools/scales/generate', 'ToolsController@generateScale')->name('legacy.tools.scales.generate');
+Route::get('tools/arpeggios/generate', 'ToolsController@generateArpeggio')->name('legacy.tools.arpeggios.generate');
 
-	Route::get('staff/{type?}', 'ToolsController@staff')->name('staff');
-
-	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {
-
-		Route::get('', 'ToolsController@chordFinder')->name('index');
-
-		Route::get('analyse', 'ToolsController@analyseChord')->name('analyse');
-
-	});
-
-	Route::get('circle-of-fifths', 'ToolsController@circleOfFifths')->name('circle-of-fifths');
-	
-	Route::prefix('scales')->name('scales.')->group(function() {
-
-		Route::get('', 'ToolsController@scales')->name('index');
-
-		Route::get('generate', 'ToolsController@generateScale')->name('generate');
-
-	});
-
-	Route::prefix('arpeggios')->name('arpeggios.')->group(function() {
-
-		Route::get('', 'ToolsController@arpeggios')->name('index');
-
-		Route::get('generate', 'ToolsController@generateArpeggio')->name('generate');
-
-	});
-
-});
+Route::get('tools/{tool}/{path?}', 'RedirectsController@learn')
+    ->where('tool', 'circle-of-fifths|chord-finder|scales|arpeggios')
+    ->where('path', '.*')
+    ->name('legacy.tools');

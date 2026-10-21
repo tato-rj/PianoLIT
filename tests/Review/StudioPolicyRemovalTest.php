@@ -33,8 +33,8 @@ class StudioPolicyRemovalTest extends ReviewTestCase
 
     public function test_other_tools_and_account_navigation_still_render_without_the_table()
     {
-        foreach (['tools.staff', 'tools.chord-finder.index', 'tools.circle-of-fifths', 'tools.scales.index', 'tools.arpeggios.index'] as $route) {
-            $this->get(route($route))->assertOk()->assertSee('Staff Generator')->assertDontSee('Studio Policy');
+        foreach (['tools.chord-finder.index', 'tools.circle-of-fifths', 'tools.scales.index', 'tools.arpeggios.index'] as $route) {
+            $this->get(route($route))->assertOk()->assertDontSee('Staff Generator')->assertDontSee('Studio Policy');
         }
 
         $user = Model::withoutEvents(function () { return create(User::class); });

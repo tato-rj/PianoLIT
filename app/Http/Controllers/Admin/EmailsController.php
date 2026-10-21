@@ -38,7 +38,7 @@ class EmailsController extends Controller
     {
         return response($emails->render($email)['html'])
             ->header('Cache-Control', 'no-store, private')
-            ->header('Content-Security-Policy', "sandbox; default-src 'none'; style-src 'unsafe-inline'; img-src https: http: data:; frame-ancestors 'self'");
+            ->header('Content-Security-Policy', "sandbox; default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src https: http: data:; frame-ancestors 'self'");
     }
 
     public function send(Request $request, AutomaticEmails $emails)

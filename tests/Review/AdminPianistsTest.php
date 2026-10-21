@@ -140,13 +140,65 @@ class AdminPianistsTest extends ReviewTestCase
         $this->post(route('admin.pianists.store'), [])->assertRedirect(route('admin.login.show'));
     }
 
+    public function test_editor_sections_share_one_form_and_validation_opens_the_relevant_tab()
+    {
+        $target = $this->pianists[0];
+        $response = $this->get(route('admin.pianists.edit', $target))->assertOk();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(3, $xpath->query('//form[@id="edit-form"]//*[@role="tab"]'));
+        $this->assertCount(3, $xpath->query('//form[@id="edit-form"]//*[@role="tabpanel"]'));
+        $this->assertCount(1, $xpath->query('//button[@form="edit-form" and @type="submit"]'));
+        $this->assertCount(1, $xpath->query('//form[@id="edit-form"]//button[@type="submit"]'));
+        foreach (['name', 'country_id', 'date_of_birth', 'date_of_death', 'biography', 'itunes_id', 'cover'] as $field) {
+            $this->assertCount(1, $xpath->query('//form[@id="edit-form"]//*[@name="'.$field.'"]'));
+        }
+        $this->withExceptionHandling();
+        $this->from(route('admin.pianists.edit', $target))->patch(route('admin.pianists.update', $target), array_merge($this->payload(), ['biography' => '', 'editor_section' => 'pianist-music']))
+            ->assertRedirect()->assertSessionHasErrors('biography');
+        $response = $this->get(route('admin.pianists.edit', $target))->assertOk()
+            ->assertSee('data-error-section="pianist-biography"', false)
+            ->assertSee('data-tab-default="pianist-biography"', false)
+            ->assertSee('value="A new pianist"', false)->assertSee('Unsaved changes');
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame('', $xpath->query('//textarea[@name="biography"]')[0]->textContent);
+        $this->assertSame($target->biography, $target->fresh()->biography);
+        $this->flushSession();
+        $target->updateQuietly(['date_of_death' => '2000-01-01']);
+        $this->from(route('admin.pianists.edit', $target))->patch(route('admin.pianists.update', $target), array_merge($this->payload(), ['name' => '', 'biography' => '', 'itunes_id' => '', 'date_of_death' => '']))->assertRedirect();
+        $response = $this->get(route('admin.pianists.edit', $target))->assertOk()->assertSee('data-error-section="pianist-profile"', false);
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        foreach (['name', 'itunes_id', 'date_of_death'] as $field) $this->assertSame('', $xpath->query('//input[@name="'.$field.'"]')[0]->getAttribute('value'));
+        $this->flushSession();
+        $this->from(route('admin.pianists.edit', $target))->patch(route('admin.pianists.update', $target), array_merge($this->payload(), ['name' => ['invalid'], 'biography' => ['invalid'], 'itunes_id' => ['invalid'], 'editor_section' => ['invalid']]))->assertRedirect();
+        $this->get(route('admin.pianists.edit', $target))->assertOk()->assertSee('data-error-section="pianist-profile"', false);
+    }
+
+    public function test_editor_save_returns_to_the_selected_section_and_rejects_invalid_section_values()
+    {
+        $target = $this->pianists[0];
+        $context = ['search' => 'Pianist', 'sort' => 'name_desc', 'page' => 2];
+        $this->patch(route('admin.pianists.update', ['pianist' => $target] + $context), $this->payload() + ['editor_section' => 'pianist-music'])
+            ->assertRedirect(route('admin.pianists.edit', ['pianist' => 'a-new-pianist'] + $context).'#pianist-music');
+        $target->refresh();
+        $original = $target->toArray();
+        $this->withExceptionHandling();
+        foreach (['external-tab', ['pianist-profile']] as $section) {
+            $this->patchJson(route('admin.pianists.update', $target), array_merge($this->payload(), ['name' => 'Must not save', 'editor_section' => $section]))->assertUnprocessable();
+            $this->assertSame($original, $target->fresh()->toArray());
+        }
+    }
+
     public function test_render_preview_when_requested()
     {
         if (!$directory = getenv('ADMIN_PIANISTS_PREVIEW_DIR')) { $this->assertTrue(true); return; }
         $names = ['Alexandre Moreau', 'Amelia Laurent', 'Benjamin Clarke', 'Clara Beaumont', 'Daniel Tremblay', 'Elise Bernard', 'Gabriel Martin', 'Isabelle Roy', 'Julien Dubois', 'Lucie Fontaine', 'Nathan Wilson', 'Olivia Mercier', 'Raphael Blanc', 'Sophie Girard', 'Theo Pelletier'];
         foreach ($this->pianists as $i => $pianist) $pianist->updateQuietly(['name' => $names[$i], 'biography' => 'A pianist and educator known for thoughtful interpretations and a wide-ranging repertoire.', 'cover_path' => 'fixture-portrait.jpg']);
         $this->pianists->last()->updateQuietly(['itunes_id' => null]);
-        foreach (['index' => route('admin.pianists.index'), 'empty' => route('admin.pianists.index', ['search' => 'absent']), 'edit' => route('admin.pianists.edit', $this->pianists->last())] as $name => $url) {
+        foreach (['index' => route('admin.pianists.index'), 'empty' => route('admin.pianists.index', ['search' => 'absent']), 'edit' => route('admin.pianists.edit', $this->pianists->last()), 'edit-linked' => route('admin.pianists.edit', $this->pianists->first())] as $name => $url) {
             $html = $this->get($url)->assertOk()->getContent();
             $html = preg_replace('~https?://(?:admin\.)?localhost(?=/(?:css|js|images|fonts|storage)/)~', '/assets', $html);
             file_put_contents($directory.'/'.$name.'.html', $html);
@@ -155,5 +207,11 @@ class AdminPianistsTest extends ReviewTestCase
         $html = $this->get(route('admin.pianists.index'))->assertOk()->getContent();
         $html = preg_replace('~https?://(?:admin\.)?localhost(?=/(?:css|js|images|fonts|storage)/)~', '/assets', $html);
         file_put_contents($directory.'/invalid.html', $html);
+        $this->flushSession();
+        $target = $this->pianists->last();
+        $this->from(route('admin.pianists.edit', $target))->patch(route('admin.pianists.update', $target), array_merge($this->payload(), ['biography' => '', 'editor_section' => 'pianist-music']))->assertRedirect();
+        $html = $this->get(route('admin.pianists.edit', $target))->assertOk()->getContent();
+        $html = preg_replace('~https?://(?:admin\.)?localhost(?=/(?:css|js|images|fonts|storage)/)~', '/assets', $html);
+        file_put_contents($directory.'/edit-invalid.html', $html);
     }
 }

@@ -17,7 +17,10 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        \Illuminate\Mail\Events\MessageSending::class => [\App\Listeners\Emails\CheckAutomaticMail::class],
+        \Illuminate\Mail\Events\MessageSending::class => [
+            \App\Listeners\Emails\CheckAutomaticMail::class,
+            \App\Listeners\Emails\EmbedLocalImages::class,
+        ],
         \Illuminate\Notifications\Events\NotificationSending::class => [\App\Listeners\Emails\CheckAutomaticNotification::class],
         Registered::class => [
             \App\Listeners\Users\RecordAuthentication::class,

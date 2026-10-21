@@ -1,0 +1,62 @@
+@use 'sass:math';
+@import '../shared/bootstrap-theme';
+@import '../shared/tokens';
+@import '../shared/button-foundations';
+
+$email-button-font-size: math.div($font-size-base, 1rem) * 16px * $button-font-scale;
+$email-button-height: $button-line-height + 2 * $button-padding-y + 2 * $button-border-width;
+
+// Dedicated welcome theme; foundations match the web app. Compiled to the
+// Laravel Markdown theme, which inlines these values for email clients.
+body, table, td, p, a { font-family: $font-family-sans-serif; }
+body { margin: 0; padding: 0; background: #fff; color: $text-color; -webkit-text-size-adjust: 100%; }
+table { border-collapse: collapse; }
+img { border: 0; outline: none; max-width: 100%; }
+a { color: $brand-primary; text-decoration: none; }
+p { margin: 0; font-size: 16px; line-height: 1.65; }
+h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; font-weight: 600; text-align: center; }
+.welcome-wrapper { width: 100%; background: #fff; }
+.welcome-container { width: 600px; max-width: 600px; }
+.welcome-padding { padding-left: 48px; padding-right: 48px; }
+.welcome-preheader { display: none !important; visibility: hidden; mso-hide: all; font-size: 1px; line-height: 1px; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; }
+.welcome-hero { padding-top: 28px; padding-bottom: 40px; text-align: center; }
+.welcome-logo { display: block; width: 130px; height: auto; margin: 0 auto 14px; }
+.welcome-hero h1 { margin: 0 0 18px; font-size: 36px; line-height: 1.25; letter-spacing: -1px; overflow-wrap: break-word; word-break: break-word; }
+.welcome-introduction p, .welcome-description p { text-align: center; color: #6c757d; }
+.welcome-section { padding-bottom: 40px; text-align: center; }
+.welcome-rule { height: 1px; background: #e9ecef; font-size: 1px; line-height: 1px; }
+.welcome-section h2 { font-size: 25px; line-height: 1.35; letter-spacing: -.5px; margin: 36px 0 14px; }
+.welcome-description { margin: 0 auto 24px; }
+.welcome-mockup { display: block; width: 504px; height: auto; margin: 0 auto 20px; }
+.welcome-actions { margin: 0 auto; }
+.welcome-actions td { padding: 0 5px; }
+.welcome-button {
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    @include default-button-size($email-button-font-size);
+    @include primary-button-surface($brand-primary);
+    border: $button-border-width solid $primary;
+    border-radius: $button-radius;
+    font-weight: 400;
+    letter-spacing: .4px;
+    text-align: center;
+    text-decoration: none;
+    mso-padding-alt: $button-padding-y $button-padding-x;
+}
+.welcome-button.welcome-app-store {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    font-size: 0;
+    line-height: 0;
+    height: $email-button-height;
+    mso-padding-alt: 0;
+}
+.welcome-app-store img { display: block; width: auto; height: $email-button-height; }
+.welcome-footer { padding-top: 8px; padding-bottom: 36px; text-align: center; }
+.welcome-footer p { margin-bottom: 20px; color: #6c757d; font-size: 13px; text-align: center; }
+.welcome-footer strong { color: $text-color; font-weight: 600; }
+.welcome-footer .welcome-copyright { margin: 28px 0 0; font-size: 11px; }

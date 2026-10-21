@@ -9,19 +9,21 @@ module.exports = function () {
             setAttribute(key, value) { this.attrs[key] = value; },
             addEventListener(key, value) { this.listeners[key] = value; }};
     }
-    function setup(artistId = '123', modal = false) {
+    function setup(artistId = '123', modal = false, albumTab = null) {
         const container = element('div'), status = element('p'), results = element('div'), retry = element('button');
         container.getAttribute = () => artistId;
         container.querySelector = selector => selector === '[data-albums-status]' ? status : results;
+        container.closest = () => albumTab;
         const calls = [];
         let opened = 0;
-        const document = {createElement: element, querySelector(selector) {
+        const listeners = {};
+        const document = {createElement: element, addEventListener(event, callback) { listeners[event] = callback; }, querySelector(selector) {
             return selector === '#add-modal.autoshow' ? (modal ? {} : null)
-                : selector === '[data-pianist-albums]' ? container : retry;
+                : selector === '[data-pianist-albums]' ? container : selector === '[data-pianist-albums-retry]' ? retry : null;
         }};
         const window = {bootstrap: {Modal: {getOrCreateInstance() { return {show() { opened++; }}; }}}};
         vm.runInNewContext(fs.readFileSync('resources/js/views/admin-pianists.js', 'utf8'), {document, window, URL, $: {ajax(options) { calls.push(options); }}});
-        return {container, status, results, retry, calls, opened};
+        return {container, status, results, retry, calls, opened, listeners};
     }
     const state = setup();
     assert.strictEqual(state.calls.length, 1);
@@ -48,5 +50,13 @@ module.exports = function () {
     assert.strictEqual(link.rel, 'noopener noreferrer');
     assert.strictEqual(setup('', true).opened, 1, 'Validation reopens the add dialog.');
     assert.strictEqual(setup('').calls.length, 0, 'An optional artist ID makes no request.');
-    console.log('Passed: pianist album retries, loading recovery, safe external content and add-dialog recovery.');
+    const lazy = setup('123', false, {id: 'pianist-music', classList: {contains() { return false; }}});
+    assert.strictEqual(lazy.calls.length, 0, 'Profile editing does not load external albums.');
+    const openAlbums = () => lazy.listeners['shown.bs.tab']({target: {getAttribute() { return '#pianist-music'; }}});
+    openAlbums();
+    assert.strictEqual(lazy.calls.length, 1);
+    lazy.calls[0].success({results: []}); lazy.calls[0].complete();
+    openAlbums();
+    assert.strictEqual(lazy.calls.length, 1, 'Returning to a loaded tab reuses its result.');
+    console.log('Passed: pianist album lazy loading/retries, loading recovery, safe external content and add-dialog recovery.');
 };

@@ -64,11 +64,6 @@ class EmailList extends PianoLit
         return $query->where('name', self::FREE_PICK)->first();
     }
 
-    public function scopeBirthdays($query)
-    {
-        return $query->where('name', 'Birthdays')->first();
-    }
-
     public function scopeTest($query)
     {
         return $query->where('name', 'Test')->first();

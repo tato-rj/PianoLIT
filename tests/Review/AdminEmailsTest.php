@@ -42,19 +42,19 @@ class AdminEmailsTest extends ReviewTestCase
         $admin = $this->admin();
         $response = $this->get(route('admin.emails.index'))->assertOk()->assertDontSee('Not currently sent')->assertSee('Membership confirmation')->assertSee('Sending');
         $xpath = $this->xpath($response);
-        $this->assertCount(16, $xpath->query('//table[@id="automatic-emails"]/tbody/tr'));
+        $this->assertCount(17, $xpath->query('//table[@id="automatic-emails"]/tbody/tr'));
         $this->assertCount(1, $xpath->query('//a[@href="'.route('admin.emails.index').'" and @aria-current="page"]'));
         $this->assertCount(1, $xpath->query('//ul[@id="settings" and contains(@class, "show")]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="email" and @value="'.$admin->email.'"]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@id="preview-recipient" and contains(@class,"form-control") and @type="email" and @required and @maxlength="254" and @autocomplete="email" and @aria-describedby="preview-send-help"]'));
         $this->assertCount(1, $xpath->query('//label[@for="preview-recipient"]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="_token"]'));
-        $this->assertCount(16, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
-        $this->assertCount(16, $xpath->query('//table[@id="automatic-emails"]//a[@target="_blank" and @rel="noopener noreferrer"]'));
+        $this->assertCount(17, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
+        $this->assertCount(17, $xpath->query('//table[@id="automatic-emails"]//a[@target="_blank" and @rel="noopener noreferrer"]'));
         $this->assertCount(14, $xpath->query('//input[@role="switch" and @checked and @value="1"]'));
-        $this->assertCount(16, $xpath->query('//label[contains(@class,"switch")]/input[@name="enabled" and not(contains(@class,"status-toggle"))]/following-sibling::span[contains(@class,"slider")]'));
-        $this->assertCount(16, $xpath->query('//input[@role="switch"]/ancestor::form/input[@type="hidden" and @name="enabled" and @value="0"]'));
-        foreach (['Web app welcome', 'iOS app welcome'] as $name) {
+        $this->assertCount(17, $xpath->query('//label[contains(@class,"switch")]/input[@name="enabled" and not(contains(@class,"status-toggle"))]/following-sibling::span[contains(@class,"slider")]'));
+        $this->assertCount(17, $xpath->query('//input[@role="switch"]/ancestor::form/input[@type="hidden" and @name="enabled" and @value="0"]'));
+        foreach (['Website welcome', 'Web app welcome', 'iOS app welcome'] as $name) {
             $this->assertCount(1, $xpath->query('//input[@role="switch" and not(@checked) and @value="1" and @aria-label="Automatic sending: '.$name.'"]'));
         }
         $response->assertDontSee('data-admin-datatable')->assertHeader('Cache-Control', 'no-store, private');
@@ -63,6 +63,7 @@ class AdminEmailsTest extends ReviewTestCase
 
     public function test_every_browser_preview_renders_real_templates_with_no_account_or_billing_side_effects()
     {
+        config(['app.name' => 'PianoLIT']);
         $this->admin();
         Notification::fake(); Queue::fake();
         DB::enableQueryLog(); DB::flushQueryLog();

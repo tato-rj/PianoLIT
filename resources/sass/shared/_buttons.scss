@@ -1,13 +1,13 @@
+@import 'button-foundations';
+
 // Match the score footer actions without changing compact controls or button groups.
 .btn.btn-primary,
 .btn.btn-secondary {
-    border-width: 1px;
-    --radius-button: 12px;
+    border-width: $button-border-width;
+    --radius-button: #{$button-radius};
 
     &:not(.btn-xs):not(.btn-sm):not(.btn-lg):not(.btn-xl) {
-        padding: 11px 21px;
-        font-size: calc(var(--font-size-base) * 0.9);
-        line-height: 22px;
+        @include default-button-size(calc(var(--font-size-base) * #{$button-font-scale}));
 
         .btn-group-sm > & {
             @include button-size(
@@ -34,9 +34,7 @@
 }
 
 .btn-primary {
-    color: white !important;
-    background-color: var(--color-primary);
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+    @include primary-button-surface(var(--color-primary));
 
     &:hover {
         color: white !important;

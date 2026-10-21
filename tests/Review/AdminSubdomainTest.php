@@ -111,8 +111,10 @@ class AdminSubdomainTest extends ReviewTestCase
         $blogOrigin = parse_url($baseUrl, PHP_URL_SCHEME).'://blog.'.parse_url($baseUrl, PHP_URL_HOST);
         $this->assertSame($blogOrigin.'/preview-post', route('posts.show', 'preview-post'));
         $this->assertSame('/preview-post', route('posts.show', 'preview-post', false));
+        $shopOrigin = parse_url($baseUrl, PHP_URL_SCHEME).'://shop.'.parse_url($baseUrl, PHP_URL_HOST);
+        $learnOrigin = parse_url($baseUrl, PHP_URL_SCHEME).'://learn.'.parse_url($baseUrl, PHP_URL_HOST);
         foreach (['ebooks.show' => '/ebooks/preview-post', 'escores.show' => '/escores/preview-post', 'crashcourses.show' => '/crashcourses/preview-post'] as $name => $path) {
-            $this->assertSame($baseUrl.$path, route($name, 'preview-post'));
+            $this->assertSame(($name === 'crashcourses.show' ? $learnOrigin : $shopOrigin).$path, route($name, 'preview-post'));
             $this->assertSame($path, route($name, 'preview-post', false));
         }
         $this->assertSame($baseUrl, route('home'));

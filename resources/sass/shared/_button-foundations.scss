@@ -1,0 +1,21 @@
+// Shared default button dimensions and primary finish. Browser styles pass
+// CSS tokens; emails pass resolved values so the same finish can be inlined.
+$button-border-width: 1px;
+$button-radius: 12px;
+$button-padding-y: 11px;
+$button-padding-x: 21px;
+$button-line-height: 22px;
+$button-font-scale: 0.9;
+$button-primary-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+
+@mixin default-button-size($font-size) {
+    padding: $button-padding-y $button-padding-x;
+    font-size: $font-size;
+    line-height: $button-line-height;
+}
+
+@mixin primary-button-surface($background) {
+    color: white !important;
+    background-color: $background;
+    box-shadow: $button-primary-shadow;
+}

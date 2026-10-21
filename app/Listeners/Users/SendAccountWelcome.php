@@ -2,7 +2,7 @@
 
 namespace App\Listeners\Users;
 
-use App\Mail\{AccountWelcome, AutomaticEmailSettings, IosAccountWelcome};
+use App\Mail\{AccountWelcome, AutomaticEmailSettings, IosAccountWelcome, WebsiteAccountWelcome};
 use App\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Mail;
@@ -17,7 +17,10 @@ class SendAccountWelcome
         if ($event->user->origin === 'ios') {
             $key = 'account-welcome-ios';
             $mailable = IosAccountWelcome::class;
-        } elseif (in_array($event->user->origin, ['web', 'webapp'], true)) {
+        } elseif ($event->user->origin === 'web') {
+            $key = 'account-welcome-website';
+            $mailable = WebsiteAccountWelcome::class;
+        } elseif ($event->user->origin === 'webapp') {
             $key = 'account-welcome';
             $mailable = AccountWelcome::class;
         } else {

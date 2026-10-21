@@ -177,6 +177,17 @@ an optional artist ID and portrait upload. Failed creation reopens its own dialo
 with the draft and field errors. Existing creator/manager permissions remain in
 force; legacy model serialization and public/mobile routes are unchanged.
 
+The pianist editor uses the shared segmented `components.tab-navigation` for
+Profile, Biography and Apple Music inside one form. The selected tab survives
+refresh and successful saves; `editor_section` is an optional, validated admin
+form value. Native and server validation open the first tab with a problem.
+Defaults apply only when a field is absent from flashed input, so explicitly
+cleared and malformed drafts render safely without restoring saved values.
+Header Save and the shared save footer submit all sections together; the footer
+reports saved/unsaved/saving state. Portrait selection previews locally, and
+saved-artist album results load only when Apple Music opens. No local tab,
+button, field or editor-card styles are needed.
+
 ## Table action buttons
 
 The Tags directory uses `TagsTable` for SQL name/type search, a fixed type filter,

@@ -6,16 +6,6 @@ class Timeline extends PianoLit
 {
 	protected $range = 30;
     protected $appends = ['century'];
-    protected $icons = [
-        'history' => ['icon' => 'globe-europe', 'color' => 'teal'],
-        'us-history' => ['icon' => 'flag-usa', 'color' => 'blue'],
-        'science' => ['icon' => 'flask', 'color' => 'red'],
-        'literature' => ['icon' => 'book', 'color' => 'pink'],
-        'music' => ['icon' => 'feather-alt', 'color' => 'indigo'],
-        'premiere' => ['icon' => 'theater-masks', 'color' => 'orange'],
-        'birthday' => ['icon' => 'birthday-cake', 'color' => 'yellow'],
-        'deathday' => ['icon' => 'skull-crossbones', 'color' => 'grey']
-    ];
 
     public function creator()
     {
@@ -25,86 +15,6 @@ class Timeline extends PianoLit
     public function getCenturyAttribute()
     {
         return substr($this->year, 0, 2) . '00';
-    }
-
-    public function century($year)
-    {
-        return intval(substr($year, 0, 2)) + 1 . 'th';
-    }
-
-    public function getIcon($type)
-    {
-        if (array_key_exists($type, $this->icons))
-            return $this->icons[$type];
-
-        return array_values($this->icons)[0];
-    }
-
-    public function decade($year)
-    {
-        return floor($year/10) * 10;        
-    }
-
-    public function scopeFromYear($query, $year)
-    {
-        return $query->where('year', $year);
-    }
-
-    public function scopeGenerate($query, $limit = null)
-    {
-        $events = $decades = $centuries = [];
-
-        foreach (Timeline::all() as $event) {
-            array_push($events, [
-                'century' => $this->century($event->year),
-                'decade' => $this->decade($event->year),
-                'year' => $event->year,
-                'event' => $event->event,
-                'icon' => $this->getIcon($event->type)['icon'],
-                'color' => $this->getIcon($event->type)['color'],
-                'url' => $event['url'],
-                ]);
-        }
-
-        foreach (Composer::famous()->get() as $composer) {
-            array_push($events, [
-                'century' => $this->century($composer->born_in),
-                'decade' => $this->decade($composer->born_in),
-                'year' => $composer->born_in, 
-                'event' => $composer->name . ' was born.',
-                'icon' => $this->getIcon('birthday')['icon'],
-                'color' => $this->getIcon('birthday')['color'],
-                'url' => wiki($composer->name),
-                ]);
-        }
-
-        foreach (Composer::famous()->get() as $composer) {
-            array_push($events, [
-                'century' => $this->century($composer->died_in),
-                'decade' => $this->decade($composer->died_in),
-                'year' => $composer->died_in, 
-                'event' => $composer->name . ' died.',
-                'icon' => $this->getIcon('deathday')['icon'],
-                'color' => $this->getIcon('deathday')['color'],
-                'url' => wiki($composer->name),
-                ]);
-        }
-
-        usort($events, function($a, $b) {
-            return $a["year"] - $b["year"];
-        });
-
-        foreach ($events as $index => $event) {
-            $centuries[$event['century']][] = $event;
-        }
-        
-        foreach ($centuries as $century => $events) {
-            foreach ($events as $event) {
-                $decades[$century][$event['decade']][] = $event;
-            }
-        }
-
-        return $decades;        
     }
 
     public function scopeFor($query, $pieceId, $limit = null)
@@ -155,11 +65,6 @@ class Timeline extends PianoLit
         }
 
     	return $events;
-    }
-
-    public function scopeAroundYear($query, $year, $range)
-    {
-        return Timeline::whereBetween('year', [$year - $range, $year + $range]);
     }
 
     public function findPieceKey($events)

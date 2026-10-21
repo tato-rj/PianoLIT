@@ -5,14 +5,18 @@ switches. These switches apply globally, independently of newsletter subscriptio
 Browser and test-send previews remain available when automatic sending is off.
 Stripe/Apple provider receipts and internal admin reports are outside this catalog.
 
-Existing email types default to on. **Web app welcome** and **iOS app welcome**
-have independent switches and default to off. The web welcome keeps the existing
+Existing email types default to on. **Website welcome**, **Web app welcome** and
+**iOS app welcome** have independent switches and default to off. The web app welcome keeps the existing
 `account-welcome` setting and `AccountWelcome` class, preserving its saved state.
-`account-welcome-ios` controls `IosAccountWelcome` separately. Both use the same
-content; only the web email has the Explore PianoLIT button.
+`account-welcome-ios` controls `IosAccountWelcome` separately. The new
+`account-welcome-website` setting controls `WebsiteAccountWelcome` and starts off.
+All three share the same minimal layout, floating brand icon and actual screenshot
+mockups. Website signup highlights both apps, web app signup highlights iOS, and
+iOS signup highlights the web app, always explaining that the same account works.
+See [WELCOME_EMAILS.md](WELCOME_EMAILS.md) for assets, editing and local previews.
 
-The welcome listener uses the new account's saved signup `origin`: `web`/`webapp`
-select the web email and `ios` selects the iOS email. Other/unknown origins do not
+The welcome listener uses the new account's saved signup `origin`: `web` selects
+the website email, `webapp` the web app email, and `ios` the iOS email. Other/unknown origins do not
 receive either welcome. Browser/device headers and the current request's fields
 do not override that choice. Welcomes follow future `Registered` events only;
 they do not send retrospectively, join a newsletter or replace verification.
@@ -57,6 +61,27 @@ When adding a transactional email, add its catalog definition/sample, fixed
 mailable or notification mapping, and dispatch check together. Do not classify
 messages by their subject, recipient or a submitted class/view name. The rendering
 callback adds only internal mail-view data, with no new model or mobile JSON fields.
+Keep its editable copy and buttons in a purpose-based Blade folder under
+`resources/views/emails/`, following `welcome/`, `memberships/`, `shop/` and
+`tutorials/`. See `resources/views/emails/README.md` for the editing convention.
+
+## Local Mailtrap images
+
+When the application environment is `local` and `APP_URL` uses a `.test` host,
+`EmbedLocalImages` runs after the automatic-sending check on `MessageSending`.
+It replaces local `<img src>` URLs with CID references and attaches the matching
+public bitmap files inline. This covers sent admin previews, normal mailables,
+notifications and queued delivery without making the developer's machine public.
+Repeated references to one file share one inline part. Plain text, navigation
+links and existing attachments are preserved. Browser previews retain image URLs.
+
+Only existing PNG/JPEG/GIF/WebP files whose resolved paths remain inside
+`public/images` qualify. Other hosts, missing files, non-image content, traversal
+and symlink escapes are left untouched; the listener makes no HTTP requests.
+Production and other environments/hosts retain their existing delivery behavior.
+New test emails include the images; existing messages in Mailtrap cannot change.
+Long-running local workers must load the updated listener through their normal
+restart process. There is no migration, credential/configuration change or build.
 
 ## Verification
 
@@ -67,3 +92,6 @@ variants, queued-copy suppression, preview bypass, dispatch suppression and the
 default-off welcome. `AdminEmailsTest` checks the catalog and previews, and
 `StripeMembershipBillingTest` covers disabled confirmation mail after checkout.
 SQLite checks do not establish MySQL behavior or actual inbox delivery.
+`LocalEmailImagesTest` verifies real array-transport MIME output for all welcome
+variants, serialized welcome delivery, shared catalog images, plaintext/attachment
+preservation, local-only guards, deduplication and filesystem boundaries.

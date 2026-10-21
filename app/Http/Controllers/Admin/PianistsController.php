@@ -108,7 +108,8 @@ class PianistsController extends Controller
             $pianist->update(['cover_path' => $request->file('cover')->store('app/pianists', 'public')]);
         }
 
-        return redirect()->route('admin.pianists.edit', ['pianist' => $pianist] + $returnFilters)->with('status', "$request->name has been updated");
+        $redirect = redirect()->route('admin.pianists.edit', ['pianist' => $pianist] + $returnFilters)->with('status', "$request->name has been updated");
+        return $request->filled('editor_section') ? $redirect->withFragment($request->editor_section) : $redirect;
     }
 
     /**

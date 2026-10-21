@@ -2,6 +2,7 @@ require('./timeline-events-admin');
 require('./admin-freepick-schedule')();
 require('./admin-playlists')();
 require('./admin-pianists')();
+require('./admin-pianist-editor')();
 require('./google-auth');
 require('./apple-auth');
 const assert = require('assert');

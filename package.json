@@ -13,9 +13,10 @@
         "icons": "node scripts/build-icons.js",
         "brand:icons": "python3 scripts/build-brand-icons.py",
         "brand:splashes": "python3 scripts/build-brand-splashes.py",
-        "preproduction": "npm run icons",
+        "preproduction": "npm run icons && npm run emails:styles",
+        "emails:styles": "node scripts/build-welcome-email-theme.js",
         "postproduction": "npm run test:css && npm run test:build",
-        "predevelopment": "npm run icons",
+        "predevelopment": "npm run icons && npm run emails:styles",
         "test:build": "node tests/build/regressions.js",
         "prewatch": "npm run icons",
         "prehot": "npm run icons"

@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\AppTest;
-use App\Mail\BirthdaysEmail;
 use App\Mail\Admin\AdminReport;
 use App\{Composer, EmailList, Subscription, EmailLog, User};
 use Illuminate\Auth\Notifications\VerifyEmail;

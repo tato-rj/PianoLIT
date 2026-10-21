@@ -1,15 +1,6 @@
 <?php
 
-Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
+Route::get('crashcourses/{path?}', 'RedirectsController@learn')->where('path', '.*')->name('legacy.crashcourses');
 
-	Route::get('', 'CrashCoursesController@index')->name('index');
-
-	Route::get('video', 'CrashCoursesController@video')->name('video');
-
-	Route::get('cancel', 'CrashCoursesController@cancel')->name('cancel');
-
-	Route::get('{crashcourse}', 'CrashCoursesController@show')->name('show');
-
-	Route::post('{crashcourse}/signup', 'CrashCoursesController@signup')->name('signup');
-	
-});
+// Already-open signup forms retain their original session and CSRF context.
+Route::post('crashcourses/{crashcourse}/signup', 'CrashCoursesController@signup')->name('legacy.crashcourses.signup');

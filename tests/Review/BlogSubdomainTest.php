@@ -96,7 +96,7 @@ class BlogSubdomainTest extends ReviewTestCase
         $this->get(route('posts.index'))->assertOk()->assertSee($post->title)->assertSee(route('posts.show', $post), false);
         $response = $this->get(route('posts.show', $post))->assertOk()->assertSee('Existing article content.');
         $response->assertSee('<link rel="canonical" href="'.$origin.'/'.$post->slug.'"', false)
-            ->assertSee('href="http://localhost/tools/circle-of-fifths"', false)
+            ->assertSee('href="http://learn.localhost/circle-of-fifths"', false)
             ->assertSee('href="http://localhost/contact-us"', false)
             ->assertSee('data-url="'.$origin.'/subscriptions/modal"', false)
             ->assertSee('data-url="'.$origin.'/'.$post->slug.'/gift"', false);
@@ -135,14 +135,14 @@ class BlogSubdomainTest extends ReviewTestCase
                 $this->fail('Website navigation must include a scheme: '.$href);
             }
         }
-        $response->assertSee('href="'.$baseUrl.'/tools/circle-of-fifths"', false)
+        $response->assertSee('href="'.parse_url($baseUrl, PHP_URL_SCHEME).'://learn.'.$host.'/circle-of-fifths"', false)
             ->assertSee('href="'.$baseUrl.'/contact-us"', false)
             ->assertSee('href="'.$blog.'"', false);
         $this->assertSame($baseUrl, $xpath->query('//a[contains(@class, "navbar-brand")]')->item(0)->getAttribute('href'));
         $this->assertSame(1, $xpath->query('//footer//a[@href="'.$baseUrl.'" and text()="Home"]')->length);
         $this->assertSame($baseUrl, route('home'));
-        $this->assertSame($baseUrl.'/tools/circle-of-fifths', route('tools.circle-of-fifths'));
-        $this->assertSame('/tools/circle-of-fifths', route('tools.circle-of-fifths', [], false));
+        $this->assertSame(parse_url($baseUrl, PHP_URL_SCHEME).'://learn.'.$host.'/circle-of-fifths', route('tools.circle-of-fifths'));
+        $this->assertSame('/circle-of-fifths', route('tools.circle-of-fifths', [], false));
         $this->assertSame($blog.'/subscriptions/modal', route('subscriptions.modal'));
         $this->assertSame($blog.'/subscriptions', route('subscriptions.store'));
     }

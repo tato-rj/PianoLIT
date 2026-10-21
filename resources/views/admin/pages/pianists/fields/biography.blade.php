@@ -1,0 +1,1 @@
+@textarea(['bag' => $bag, 'id' => $prefix.'-biography', 'name' => 'biography', 'label' => 'Biography', 'value' => array_key_exists('biography', session()->getOldInput()) ? null : optional($pianist)->biography, 'rows' => $rows ?? 5])

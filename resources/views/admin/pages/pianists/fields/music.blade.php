@@ -1,0 +1,2 @@
+@input(['bag' => $bag, 'id' => $prefix.'-itunes', 'name' => 'itunes_id', 'label' => 'Apple Music artist ID (optional)', 'placeholder' => 'e.g. 123456789', 'value' => array_key_exists('itunes_id', session()->getOldInput()) ? null : optional($pianist)->itunes_id, 'required' => false, 'limit' => 255, 'describedBy' => $prefix.'-itunes-note'])
+<p class="small text-muted mb-0" id="{{ $prefix }}-itunes-note">The number at the end of their Apple Music artist link. Leave blank to hide albums.</p>

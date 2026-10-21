@@ -10,7 +10,7 @@
           <h3>Welcome to PianoLIT</h3>
           <p class="text-muted mb-1" style="font-size: 110%">We're here to help you find new and exciting pieces to play.</p>
       </div>
-      @include('auth.webapp.mockup', ['slide' => 1, 'description' => 'PianoLIT Discover, piece details and Collections on desktop, tablet and phone'])
+      @include('auth.webapp.mockup', ['slide' => 1, 'description' => 'PianoLIT Discover, the free-pick Sonatina HWV 584 by Handel and Collections on desktop, tablet and phone'])
     </div>
     <div class="carousel-item">
       <div class="text-center px-2">
@@ -24,7 +24,7 @@
           <h3>Go beyond the notes</h3>
           <p class="text-muted mb-1" style="font-size: 110%">Discover the stories, details, and performances that bring each piece to life.</p>
       </div>
-      @include('auth.webapp.mockup', ['slide' => 3, 'description' => 'PianoLIT performance player and score viewer for A Sad Song by Yuri Levitin'])
+      @include('auth.webapp.mockup', ['slide' => 3, 'description' => 'PianoLIT performance player and score viewer for the free-pick Sonatina HWV 584 by Handel'])
     </div>
   </div>
 </div>

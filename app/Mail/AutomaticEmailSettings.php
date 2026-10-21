@@ -14,8 +14,9 @@ use Illuminate\Support\Facades\DB;
 class AutomaticEmailSettings
 {
     private const MAILABLES = [
-        // The iOS subtype has its own switch; match it before the shared base.
+        // Each signup subtype has its own switch; match them before the shared base.
         IosAccountWelcome::class => 'account-welcome-ios',
+        WebsiteAccountWelcome::class => 'account-welcome-website',
         AccountWelcome::class => 'account-welcome',
         ConfirmPurchase::class => 'purchase-confirmation',
         MembershipConfirmed::class => 'membership-confirmation',

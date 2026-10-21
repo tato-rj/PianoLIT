@@ -19,11 +19,7 @@
           [
             'title' => 'Technique',
             'links' => ['Scales' => route('tools.scales.index'), 'Arpeggios' => route('tools.arpeggios.index')]
-          ],
-          [
-            'title' => 'For teachers',
-            'links' => ['Staff Generator' => route('tools.staff')]
-          ],
+          ]
         ]])
 
       @include('layouts.menu.dropdown', [
@@ -34,16 +30,11 @@
             'links' => [
               'Crash Courses' => route('crashcourses.index'),
               'Infographics' => route('resources.infographs.index'),
-              'Music Timeline' => route('resources.timeline'),
-              'Famous birthdays' => route('composers.birthdays')]
+              'Quizzes' => route('quizzes.index')]
           ],
           [
             'title' => 'Listen',
             'links' => ['Great Pianists' => route('resources.pianists.index')]
-          ],
-          [
-            'title' => 'Games',
-            'links' => ['Quizzes' => route('quizzes.index'), 'True or False' => route('true-or-false.index'), 'Riddles' => route('riddles')]
           ],
         ]])
 
@@ -51,10 +42,9 @@
         'label' => 'Shop',
         'groups' => [
           [
-            'links' => ['eBooks' => route('ebooks.index')]
-          ],
-          [
-            'links' => ['eScores' => route('escores.index')]
+            'links' => [
+              'eBooks' => route('ebooks.index'),
+              'eScores' => route('escores.index')]
           ],
         ]])
 

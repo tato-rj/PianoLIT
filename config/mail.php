@@ -116,6 +116,7 @@ return [
         'theme' => 'default',
 
         'paths' => [
+            resource_path('views/emails/components'),
             resource_path('views/vendor/mail'),
         ],
     ],

@@ -62,6 +62,7 @@ class QuizAnalyticsRetirementTest extends ReviewTestCase
         $quiz = $this->quiz(['published_at' => null]);
         $this->withExceptionHandling()->get(route('quizzes.show', $quiz->slug))->assertNotFound();
         $this->actingAs(create(Admin::class), 'admin');
+        auth()->shouldUse('web');
         $this->get(route('quizzes.show', $quiz->slug))->assertOk()->assertSee('not published')->assertDontSee('987654321');
         $this->assertSame(987654321, (int) DB::table('quizzes')->where('id', $quiz->id)->value('views'));
     }

@@ -7,7 +7,7 @@ use App\Mail\Performances\{PerformanceApprovedEmail, PerformanceSubmittedEmail};
 use App\Mail\Shop\ConfirmPurchase;
 use App\Mail\Memberships\MembershipConfirmed;
 use App\Mail\SharePieceEmail;
-use App\Mail\{AccountWelcome, IosAccountWelcome};
+use App\Mail\{AccountWelcome, IosAccountWelcome, WebsiteAccountWelcome};
 use App\Mail\Tutorials\{NewRequestEmail, RequestPublishedEmail};
 use App\Notifications\User\ConfirmGoogleAccount;
 use Illuminate\Auth\Notifications\{ResetPassword, VerifyEmail};
@@ -22,7 +22,8 @@ class AutomaticEmails
     public function all()
     {
         return collect([
-            'account-welcome' => ['name' => 'Web app welcome', 'category' => 'Account', 'trigger' => 'After a new account is created on the website or web app.', 'default_enabled' => false],
+            'account-welcome-website' => ['name' => 'Website welcome', 'category' => 'Account', 'trigger' => 'After a new account is created on pianolit.com.', 'default_enabled' => false],
+            'account-welcome' => ['name' => 'Web app welcome', 'category' => 'Account', 'trigger' => 'After a new account is created on the web app.', 'default_enabled' => false],
             'account-welcome-ios' => ['name' => 'iOS app welcome', 'category' => 'Account', 'trigger' => 'After a new account is created from the iOS app.', 'default_enabled' => false],
             'verify-email' => ['name' => 'Signup · verify email', 'category' => 'Account', 'trigger' => 'After password signup, or when email verification is requested again.'],
             'reset-password' => ['name' => 'Reset password', 'category' => 'Account', 'trigger' => 'When someone requests a password reset.'],
@@ -56,15 +57,21 @@ class AutomaticEmails
         // Restore the original generator so subsequent admin navigation stays on admin.*.
         $originalUrls = app('url');
         $publicUrls = clone $originalUrls;
-        $publicUrls->setRequest(Request::create(config('app.url')));
-        $publicUrls->forceRootUrl(config('app.url'));
-        $publicUrls->forceScheme(parse_url(config('app.url'), PHP_URL_SCHEME));
+        $root = config('app.url');
+        if (!preg_match('#^https?://#i', $root)
+            && substr(strtolower((string) parse_url('//'.ltrim($root, '/'), PHP_URL_HOST)), -5) === '.test') {
+            $root = request()->getScheme().'://'.ltrim($root, '/');
+        }
+        $publicUrls->setRequest(Request::create($root));
+        $publicUrls->forceRootUrl($root);
+        $publicUrls->forceScheme(parse_url($root, PHP_URL_SCHEME));
         URL::swap($publicUrls);
 
         try {
             $mail = $this->sample($key);
             app()->call([$mail, 'build']);
-            $markdown = app(Markdown::class);
+            $markdown = clone app(Markdown::class);
+            $markdown->theme($mail->theme ?: config('mail.markdown.theme', 'default'));
             $data = $mail->buildViewData();
             $html = (string) $markdown->render($mail->markdown, $data);
             $text = (string) $markdown->renderText($mail->markdown, $data);
@@ -86,6 +93,7 @@ class AutomaticEmails
 
         switch ($key) {
             case 'account-welcome': return new AccountWelcome('Jamie');
+            case 'account-welcome-website': return new WebsiteAccountWelcome('Jamie');
             case 'account-welcome-ios': return new IosAccountWelcome('Jamie');
             case 'verify-email':
                 $notification = new class extends VerifyEmail {
