@@ -84,7 +84,7 @@ class AdminSubdomainTest extends ReviewTestCase
         $this->assertGreaterThan(100, $count);
         $this->assertSame($origin, route('admin.home'));
         $this->assertSame($origin.'/login', route('admin.login.show'));
-        foreach (['/' => 'home', '/login' => 'login', '/blog' => 'posts.index'] as $path => $name) {
+        foreach (['/' => 'home', '/login' => 'login', '/blog' => 'legacy.blog'] as $path => $name) {
             $matched = app('router')->getRoutes()->match(Request::create($baseUrl.$path));
             $this->assertSame($name, $matched->getName());
         }
@@ -108,7 +108,10 @@ class AdminSubdomainTest extends ReviewTestCase
         app('url')->setRequest($request);
         app('url')->forceRootUrl(null);
 
-        foreach (['posts.show' => '/blog/preview-post', 'ebooks.show' => '/ebooks/preview-post', 'escores.show' => '/escores/preview-post', 'crashcourses.show' => '/crashcourses/preview-post'] as $name => $path) {
+        $blogOrigin = parse_url($baseUrl, PHP_URL_SCHEME).'://blog.'.parse_url($baseUrl, PHP_URL_HOST);
+        $this->assertSame($blogOrigin.'/preview-post', route('posts.show', 'preview-post'));
+        $this->assertSame('/preview-post', route('posts.show', 'preview-post', false));
+        foreach (['ebooks.show' => '/ebooks/preview-post', 'escores.show' => '/escores/preview-post', 'crashcourses.show' => '/crashcourses/preview-post'] as $name => $path) {
             $this->assertSame($baseUrl.$path, route($name, 'preview-post'));
             $this->assertSame($path, route($name, 'preview-post', false));
         }
@@ -120,7 +123,7 @@ class AdminSubdomainTest extends ReviewTestCase
         $request = Request::create($baseUrl);
         $this->app->instance('request', $request);
         app('url')->setRequest($request);
-        $this->assertSame($baseUrl.'/blog/preview-post', route('posts.show', 'preview-post'));
+        $this->assertSame($blogOrigin.'/preview-post', route('posts.show', 'preview-post'));
     }
 
     public function test_authenticated_piece_creation_renders_the_new_ajax_urls()

@@ -1,0 +1,3 @@
+@include('admin.components.play', ['audio' => $piece->audio_path ? (string) storage($piece->audio_path) : null])
+@php($scoreUrl = $piece->is_public_domain ? ($piece->score_path ? (string) storage($piece->score_path) : null) : $piece->score_url)
+@include('admin.components.table-action', ['tableAction' => ['url' => $scoreUrl ?: null, 'label' => 'View score for '.$piece->short_name, 'icon' => $piece->is_public_domain ? 'file-text' : 'globe', 'iconOnly' => true, 'attributes' => ['target' => $scoreUrl ? '_blank' : null, 'rel' => $scoreUrl ? 'noopener noreferrer' : null, 'disabled' => !$scoreUrl]]])

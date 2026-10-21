@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Tag;
+use App\Services\Admin\TagsTable;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\{Rule, ValidationException};
 
 class TagsController extends Controller
 {
@@ -13,13 +16,13 @@ class TagsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, TagsTable $table)
     {
         $this->authorize('create', Tag::class);
 
-        $types = Tag::with(['pieces', 'creator'])->orderBy('ordering')->byTypes();
-
-        return view('admin.pages.tags.index', compact('types'));
+        $data = $table->get($request);
+        $data['editingTag'] = Tag::with('creator:id,name')->find($request->session()->get('editing_tag_id'));
+        return view('admin.pages.tags.index', $data);
     }
 
     /**
@@ -38,22 +41,20 @@ class TagsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, TagsTable $table)
     {
         $this->authorize('create', Tag::class);
 
-        $request->validate([
-            'name' => 'required|unique:tags|max:255',
-            'type' => 'required'
+        $filters = $table->filters(Request::create('/', 'GET', $request->query()));
+        $data = $request->validateWithBag('tagForm', [
+            'name' => 'required|string|unique:tags|max:255',
+            'type' => ['required', 'string', Rule::in(array_keys($table->types()))],
+            'ordering' => 'nullable|integer|min:1|max:65535',
         ]);
 
-        Tag::create([
-            'name' => $request->name,
-            'creator_id' => auth()->guard('admin')->user()->id,
-            'type' => $request->type
-        ]);
+        Tag::create($data + ['creator_id' => auth()->guard('admin')->id()]);
 
-        return redirect()->back()->with('status', "The tag has been successfully added!");
+        return $table->redirect($filters)->with('status', "The tag has been successfully added!");
     }
 
     /**
@@ -85,21 +86,25 @@ class TagsController extends Controller
      * @param  \App\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Tag $tag)
+    public function update(Request $request, Tag $tag, TagsTable $table)
     {
         $this->authorize('create', Tag::class);
 
-        $request->validate([
-            'name' => 'required|max:255',
-            'ordering' => 'nullable|integer|min:1|max:65535',
-        ]);
+        $filters = $table->filters(Request::create('/', 'GET', $request->query()));
+        try {
+            $data = $request->validateWithBag('tagForm', [
+                'name' => 'required|string|max:255',
+                'type' => ['sometimes', 'required', 'string', Rule::in(array_keys($table->types()))],
+                'ordering' => 'nullable|integer|min:1|max:65535',
+            ]);
+        } catch (ValidationException $exception) {
+            if (!$request->expectsJson()) $request->session()->flash('editing_tag_id', $tag->id);
+            throw $exception;
+        }
 
-        $tag->update([
-            'name' => $request->name,
-            'type' => $request->type,
-        ] + $request->only('ordering'));
+        $tag->update($data);
 
-        return redirect()->back()->with('status', "The tag has been successfully updated!");
+        return $table->redirect($filters)->with('status', "The tag has been successfully updated!");
     }
 
     /**
@@ -108,12 +113,13 @@ class TagsController extends Controller
      * @param  \App\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Tag $tag)
+    public function destroy(Request $request, Tag $tag, TagsTable $table)
     {
         $this->authorize('create', Tag::class);
 
-        $tag->delete();
+        $filters = $table->filters(Request::create('/', 'GET', $request->query()));
+        DB::transaction(function () use ($tag) { $tag->delete(); });
 
-        return redirect()->back()->with('status', "The tag has been successfully deleted!");
+        return $table->redirect($filters)->with('status', "The tag has been successfully deleted!");
     }
 }

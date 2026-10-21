@@ -1,76 +1,28 @@
 @extends('admin.layouts.app')
 
-@section('head')
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
-@endsection
-
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
+<div class="content-wrapper"><div class="container-fluid" data-playlist-editor-root>
     @include('admin.components.page.title', [
-      'theme' => 'edit',
-      'title' => $playlist->name, 
-      'subtitle' => 'Use this page to edit this playlist.', 
-      'breadcrumbs' => [['label' => 'Playlists', 'url' => route('admin.playlists.index')]]
+        'title' => 'Edit '.$playlist->name, 'subtitle' => 'Shape the collection, choose its pieces and arrange their order.',
+        'breadcrumbs' => [['label' => 'Playlists', 'url' => route('admin.playlists.index')]],
     ])
+    @if($errors->any())<div class="alert alert-red" role="alert">{{ $errors->first() }} Your other changes have been kept. Choose the cover file again if needed.</div>@endif
 
-	    <div class="row mb-4">
-	      <div class="col-12">
-			@include('admin.pages.playlists.edit.form')
-	      </div>
-	    </div>
-
-	    <div class="row mb-4">
-	    	<div class="col-12">
-	    		<div class="border-bottom mb-3">
-	    			<label><strong>Select pieces here</strong></label>
-	    		</div>
-
-   				@datatable(['table' => 'pieces', 'rows' => 'admin.pages.playlists.edit.row', 'columns' => ['Piece', 'Composer', 'Level', 'Ranking', '']])
-
-	    	</div>
-	    </div>
-	</div>
-</div>
-
+    <form id="playlist-edit-form" method="POST" action="{{ route('admin.playlists.update', $playlist) }}" enctype="multipart/form-data" data-playlist-editor data-restored="{{ $restored ? 'true' : 'false' }}">
+        @csrf
+        @method('PATCH')
+        <input type="hidden" name="_playlist_editor" value="{{ $playlist->id }}">
+        @include('admin.pages.playlists.edit.form')
+        @include('admin.pages.playlists.edit.selected')
+        @component('admin.components.table-save-actions', ['status' => $restored ? 'Unsaved changes' : 'All changes saved'])
+            <button type="submit" class="btn btn-primary" data-playlist-save>@icon('check')Save changes</button>
+        @endcomponent
+    </form>
+    <template data-playlist-empty>@include('admin.components.table-empty-row', ['columns' => range(1, 5), 'emptyTitle' => 'No pieces yet', 'emptyDescription' => 'Use Add pieces to start building this playlist.'])</template>
+    @include('admin.pages.playlists.edit.finder.modal')
+</div></div>
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
-<script type="text/javascript">
-$(document).on('click', '.selected-piece .remove', function(event) {
-	event.preventDefault();
-	$(this).parent('.edit-control').remove();
-});
-
-$(document).on('click', '.add-piece', function(event) {
-	event.preventDefault();
-	let $container = $('#playlist-pieces');
-	let $piece = $(this).find('.selected-piece').clone();
-	let id = $(this).attr('data-id');
-
-	if ($container.has('input[value="'+id+'"]').length) {
-		alert('This pieces is already in this playlist');
-	} else {
-		console.log($piece);
-		$piece.attr('name', 'pieces[]');
-		$container.append($piece);
-	}
-});
-
-</script>
-<script type="text/javascript">
-$('#playlist-pieces').sortable({handle: '.sort-handle'});
-</script>
-<script type="text/javascript">
-(new DataTable('#pieces-table')).columns([
-  {data: 'name', name: 'pieces.name', class: 'dataTables_main_column'},
-  {data: 'composer.short_name', name: 'composer.name', class: 'text-nowrap'},
-  {data: 'level', name: 'tags.name', orderable: false},
-  {data: 'ranking', name: 'tags.name', orderable: false},
-  {data: 'actions', orderable: false, searchable: false},
-]).dontSort().create();
-</script>
+<script src="{{ mix('js/views/admin-playlist-editor.js') }}"></script>
 @endsection

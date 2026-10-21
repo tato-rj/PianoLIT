@@ -176,6 +176,8 @@ class WebAppCollectionsTest extends ReviewTestCase
         $this->actingAs(create(Admin::class), 'admin');
         $this->get(route('admin.playlists.index'))->assertOk()->assertDontSee('Basic 1');
         $this->get(route('admin.playlists.order'))->assertOk()->assertDontSee('Basic 1');
+        $this->get(route('admin.playlists.edit', $playlist))->assertOk();
+        $this->getJson(route('admin.playlists.pieces', $playlist))->assertOk();
         Cache::forget('app.playlists.order');
         DB::enableQueryLog();
         DB::flushQueryLog();

@@ -33,7 +33,8 @@ class BlogAnalyticsRetirementTest extends ReviewTestCase
         });
         $this->assertTrue(traffic()->isRealVisitor());
         $this->assertGuest('web'); $this->assertGuest('admin');
-        foreach (['posts.show', 'posts.app', 'webapp.blog.show'] as $route) {
+        $this->get(route('webapp.blog.show', $post->slug))->assertStatus(301)->assertRedirect(route('posts.show', $post->slug));
+        foreach (['posts.show', 'posts.app'] as $route) {
             for ($visit = 0; $visit < 2; $visit++) {
                 $this->get(route($route, $post->slug))->assertOk()->assertSee('Published blog article')
                     ->assertSee('Article content remains available.')->assertDontSee('987654321');
@@ -49,6 +50,7 @@ class BlogAnalyticsRetirementTest extends ReviewTestCase
         $post = Model::withoutEvents(function () { return create(Post::class, ['title' => 'Draft article', 'views' => 27, 'published_at' => null, 'gift_path' => null]); });
         $this->withExceptionHandling()->get(route('posts.show', $post->slug))->assertNotFound();
         $this->actingAs(create(Admin::class), 'admin');
+        auth()->shouldUse('web'); // Public requests keep the web guard as their default.
         $this->get(route('posts.show', $post->slug))->assertOk()->assertSee('Draft article')->assertSee('not published');
         $this->assertSame(27, (int) DB::table('posts')->where('id', $post->id)->value('views'));
     }

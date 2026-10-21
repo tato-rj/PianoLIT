@@ -1,153 +1,55 @@
 @extends('admin.layouts.app')
 
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
+<div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', [
-      'theme' => 'edit',
-      'title' => $pianist->name,
-      'subtitle' => 'Use this page to edit this pianist.',
-      'breadcrumbs' => [['label' => 'Pianists', 'url' => route('admin.pianists.index')]]
+        'title' => 'Edit '.$pianist->name,
+        'breadcrumbLabel' => $pianist->name,
+        'subtitle' => 'Update this pianist’s profile and portrait.',
+        'breadcrumbs' => [['label' => 'Pianists', 'url' => route('admin.pianists.index', $returnFilters)]],
+        'action' => ['label' => 'View public profile', 'external_link' => route('resources.pianists.show', $pianist)],
     ])
-
-    <div class="row">
-      <form id="edit-form" method="POST" action="{{route('admin.pianists.update', $pianist)}}" enctype="multipart/form-data" class="col-lg-6 col-sm-10 col-12 mx-auto">
+    @cannot('update', $pianist)
+        <div class="alert alert-grey">You can view this profile. Only its creator or a manager can make changes.</div>
+    @endcannot
+    <form id="edit-form" method="POST" action="{{ route('admin.pianists.update', ['pianist' => $pianist] + $returnFilters) }}" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
-        {{-- Name --}}
-        <div class="form-group row">
-          <label class="col-sm-2 col-form-label text-brand">Name</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" name="name" placeholder="Full name" value="{{ $pianist->name }}" required>
-          </div>
-        </div>
-        {{-- Biography --}}
-        <div class="form-group row">
-          <label class="col-sm-2 col-form-label text-brand">Biography</label>
-          <div class="col-sm-10">
-            <textarea maxlength="275" class="form-control" rows="6" name="biography" placeholder="pianist's biography" required>{{ $pianist->biography }}</textarea>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="w-100 d-flex justify-content-between">
-            <label class="text-brand">iTunes ID</label>
-            <div>@include('admin.components.link', ['link' => 'https://linkmaker.itunes.apple.com/en-us'])</div>
-          </div>
-          <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ $pianist->itunes_id }}">
-        </div>
-        {{-- Nationality and period --}}
-        <div class="row g-2 form-group">
-          <div class="col">
-            <div class="form-group">
-              <label class="text-brand">Nationality</label>
-              <select class="form-control" name="country_id">
-                <option selected disabled>Nationality</option>
-                @foreach($countries as $country)
-                <option value="{{$country->id}}" {{(strtolower($pianist->country_id) == $country->id) ? 'selected' : ''}}>{{$country->nationality}}</option>
-                @endforeach
-              </select>
+        <div class="admin-editor-grid">
+            <div class="admin-editor-stack">
+                @component('admin.components.editor.section', ['id' => 'pianist-profile', 'title' => 'Profile details', 'description' => 'Biography, nationality and life dates shown on the public profile.'])
+                    <fieldset @cannot('update', $pianist) disabled @endcannot>
+                        @include('admin.pages.pianists.fields', ['bag' => 'default', 'prefix' => 'pianist-edit'])
+                    </fieldset>
+                @endcomponent
             </div>
-            <div class="form-group">
-              <label class="text-brand">Born in</label>
-              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ $pianist->date_of_birth->format('m/d/Y') }}" required>
+            <div class="admin-editor-stack">
+                @component('admin.components.editor.section', ['id' => 'pianist-portrait', 'title' => 'Portrait', 'description' => 'Choose an image for the pianist’s profile.'])
+                    <img src="{{ storage($pianist->cover_path) }}" alt="Portrait of {{ $pianist->name }}" width="120" height="120" class="rounded-circle object-fit-cover d-block mb-4">
+                    @include('components.form.upload.file', ['bag' => 'default', 'id' => 'pianist-edit-cover', 'name' => 'cover', 'label' => 'Replace portrait (optional)', 'accept' => 'image/jpeg,image/png,image/gif,image/webp', 'disabled' => !auth('admin')->user()->can('update', $pianist)])
+                    <p class="small text-muted mb-0">Created by {{ optional($pianist->creator)->name ?: 'an administrator' }}.</p>
+                @endcomponent
             </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label class="text-brand">Cover image</label>
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" name="cover" id="customFile">
-                <label class="custom-file-label truncate" for="customFile">Upload</label>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="text-brand">Died in</label>
-              <input type="text" class="form-control" id="died-in" name="date_of_death" placeholder="Died in" value="{{ $pianist->date_of_death ? $pianist->date_of_death->format('m/d/Y') : null}}">
-            </div>
-          </div>
         </div>
-
         @can('update', $pianist)
-        <div class="text-center mt-5">
-          <button type="submit" class="btn d-block w-100 btn-default">Save changes</button>
+        <div class="admin-editor-save mb-4">
+            <p class="small text-muted mb-0">Changes appear on the public profile when saved.</p>
+            <button type="submit" class="btn btn-primary">@icon('check')Save changes</button>
         </div>
         @endcan
-
-        <div class="mt-3">
-          <p class="text-muted text-end"><small><i>This pianist was created by <strong>{{$pianist->creator->name}}</strong></i></small></p>
+    </form>
+    @component('admin.components.editor.section', ['id' => 'pianist-albums', 'title' => 'Apple Music albums', 'description' => 'Albums from the saved artist ID. Save changes to preview a different artist.'])
+        @slot('actions')
+            @if($pianist->itunes_id)<button type="button" class="btn btn-dark btn-sm" data-pianist-albums-retry>Reload albums</button>@endif
+        @endslot
+        <div data-pianist-albums data-artist-id="{{ $pianist->itunes_id }}">
+            <p class="text-muted mb-0" role="status" aria-live="polite" data-albums-status>{{ $pianist->itunes_id ? 'Loading albums…' : 'Add an Apple Music artist ID and save the profile to see albums here.' }}</p>
+            <div class="row g-4 mt-0" data-albums-results></div>
         </div>
-      </form>
-
-      <div class="col-lg-6 col-sm-10 col-12 mx-auto">
-        <img src="{{storage($pianist->cover_path)}}" class="shadow rounded-circle d-block mx-auto mb-4" style="width: 120px">
-        <div>
-          <div id="api-results" style="max-height: 460px; overflow-y: scroll;">
-            <p class="text-muted text-center"><i>Loading iTunes albums...</i></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
+    @endcomponent
+</div></div>
 @endsection
 
 @section('scripts')
-<script type="text/javascript">
-$(document).ready(function() {
-  $('#api-results').html('');
-  $.ajax({
-      url: 'https://itunes.apple.com/lookup',
-      data: {id: '{{$pianist->itunes_id}}', entity: 'album'},
-      type: 'GET',
-      crossDomain: true,
-      dataType: 'jsonp',
-      success: function(response) {
-        let albums = response.results;
-        albums.shift();
-        let html = '<p class="text-muted">We found '+albums.length+' albums on iTunes</p>';
-        // albums = albums.slice(0,10);
-
-        for (album in albums) {
-          html += `
-            <div class="d-flex mb-2 pb-2 border-bottom">
-              <div class="me-3"><img src="`+albums[album].artworkUrl100+`"></div>
-              <div>
-                <a href="`+albums[album].collectionViewUrl+`" target="_blank"><p class="m-0">`+albums[album].collectionName+`</p></a>
-                <p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
-              </div>
-            </div>
-          `;
-        }
-
-        $('#api-results').html(html);
-      },
-      error: function(status) { alert('Couldn\'t get the albums from iTunes!'); }
-  });
-});
-</script>
-@cannot('update', $pianist)
-<script type="text/javascript">
-$('#edit-form input, #edit-form select, #edit-form textarea').attr('disabled', true);
-$('.add-new-field').remove();
-</script>
-@endcannot
-
-<script type="text/javascript">
-function select()
-{
-  $form = $('#select-form');
-  $slug = $('#select-form select option:selected').attr('data-slug');
-  window.location = $form.attr('action')+$slug;
-}
-
-var bornIn = document.getElementById("born-in");
-var diedIn = document.getElementById("died-in");
-
-$(document).ready(function(){
-  $(bornIn).inputmask("99/99/9999");
-  $(diedIn).inputmask("99/99/9999");
-});
-</script>
+<script src="{{ mix('js/views/admin-pianists.js') }}"></script>
 @endsection

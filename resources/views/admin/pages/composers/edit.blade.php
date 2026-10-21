@@ -1,181 +1,61 @@
 @extends('admin.layouts.app')
 
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
-    @include('admin.components.page.title', [
-      'theme' => 'edit',
-      'title' => $composer->name,
-      'subtitle' => 'Use this page to edit this composer.',
-      'breadcrumbs' => [['label' => 'Composers', 'url' => route('admin.composers.index')]]
+<div class="content-wrapper"><div class="container-fluid">
+    @component('admin.components.page.title', [
+        'theme' => 'edit', 'title' => $composer->name,
+        'subtitle' => 'Manage the profile, biography and repertoire.',
+        'breadcrumbs' => [['label' => 'Composers', 'url' => route('admin.composers.index', $returnFilters)]],
     ])
-
-    <div class="row">
-      <form id="edit-form" method="POST" action="{{route('admin.composers.update', $composer->id)}}" enctype="multipart/form-data" class="col-lg-6 col-sm-10 col-12 mx-auto">
+        <a href="#composer-profile" class="btn btn-sm btn-secondary">Profile</a>
+        <a href="#composer-biography" class="btn btn-sm btn-secondary">Biography</a>
+        <a href="#composer-repertoire" class="btn btn-sm btn-dark">@icon('music')Repertoire ({{ number_format($pieces->total()) }})</a>
+    @endcomponent
+    @cannot('update', $composer)<p class="alert alert-grey">You can view this profile. Changes can be saved by its creator or a manager.</p>@endcannot
+    <form id="edit-form" method="POST" action="{{ route('admin.composers.update', ['composer' => $composer] + $returnFilters) }}" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
-        {{-- Name --}}
-        <div class="form-group row">
-          <label class="col-sm-2 col-form-label text-brand">Name</label>
-          <div class="col-sm-10">
-            <div class="d-flex">
-              <input type="text" class="form-control me-2" name="name" placeholder="Full name" value="{{ $composer->name }}" required>
-              @include('admin.pages.composers.gender', ['gender' => $composer->gender])
+        <fieldset class="row g-4 mb-4" @cannot('update', $composer) disabled @endcannot>
+            <div class="col-xl-6">
+            @component('admin.components.editor.section', ['id' => 'composer-profile', 'sectionId' => 'composer-profile', 'title' => 'Profile', 'description' => 'The details that identify this composer.'])
+                <div class="mb-4">@include('components.composer-label')</div>
+                @include('admin.pages.composers.fields.profile', ['bag' => 'default', 'prefix' => 'composer-edit'])
+                @include('admin.pages.composers.fields.options')
+            @endcomponent
             </div>
-          </div>
-        </div>
-        {{-- Biography --}}
-        <div class="form-group row">
-          <label class="col-sm-2 col-form-label text-brand">Biography</label>
-          <div class="col-sm-10">
-            <textarea class="form-control" rows="6" name="biography" placeholder="Composer's biography" required>{{ $composer->biography }}</textarea>
-          </div>
-        </div>
-        {{-- Did you know? --}}
-        <div class="form-group row">
-          <label class="col-sm-2 col-form-label text-brand">Did you know?</label>
-          <div class="col-sm-10">
-            <textarea class="form-control" rows="3" name="curiosity" placeholder="Enter a curiosity here">{{ $composer->curiosity }}</textarea>
-          </div>
-        </div>
-
-        <div class="row g-2 form-group">
-          <div class="col">
-            <label class="text-brand">Cover image</label>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input" name="cover_image" id="customFile">
-              <label class="custom-file-label truncate" for="customFile">Upload</label>
+            <div class="col-xl-6">
+            @component('admin.components.editor.section', ['id' => 'composer-biography', 'sectionId' => 'composer-biography', 'title' => 'Biography', 'description' => 'Introduce the composer and share an interesting fact.'])
+                @include('admin.pages.composers.fields.biography', ['bag' => 'default', 'prefix' => 'composer-edit'])
+            @endcomponent
             </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label class="text-brand">Period</label>
-              <select class="form-control" name="period">
-                <option selected disabled>Period</option>
-                @foreach(\App\Tag::periods()->get() as $period)
-                <option value="{{$period->name}}" {{(strtolower($composer->period) == $period->name) ? 'selected' : ''}}>{{ucfirst($period->name)}}</option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-        </div>
-        {{-- Nationality and period --}}
-        <div class="row g-2">
-          <div class="col">
-            <div class="form-group">
-              <label class="text-brand">Nationality</label>
-              <select class="form-control" name="country_id">
-                <option selected disabled>Nationality</option>
-                @foreach($countries as $country)
-                <option value="{{$country->id}}" {{(strtolower($composer->country_id) == $country->id) ? 'selected' : ''}}>{{$country->nationality}}</option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label class="text-brand">Ethnicity</label>
-              <select class="form-control" name="ethnicity">
-                <option selected disabled>Ethnicity</option>
-                @foreach(ethnicities() as $ethnicity)
-                <option value="{{$ethnicity}}" {{(strtolower($composer->ethnicity) == $ethnicity) ? 'selected' : ''}}>{{ucfirst($ethnicity)}}</option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label class="text-brand">Mood</label>
-              <select class="form-control" name="mood">
-                <option selected disabled>Mood</option>
-                @foreach($moods as $mood)
-                <option value="{{$mood}}" {{$composer->mood == $mood ? 'selected' : ''}}>{{ucfirst($mood)}}</option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="row g-2">
-          <div class="col">
-            <div class="form-group">
-              <label class="text-brand">Born in</label>
-              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ is_object($composer->date_of_birth) ? $composer->date_of_birth->format('m/d/Y') : null }}">
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label class="text-brand">Died in</label>
-              <input type="text" class="form-control" id="died-in" name="date_of_death" placeholder="Died in" value="{{ is_object($composer->date_of_death) ? $composer->date_of_death->format('m/d/Y') : null}}">
-            </div>
-          </div>
-        </div>
-
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" name="is_famous" id="famous-check" {{$composer->is_famous ? 'checked' : null}}>
-          <label class="form-check-label" for="famous-check">Is this composer famous?</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" name="is_pedagogical" id="pedagogical-check" {{$composer->is_pedagogical ? 'checked' : null}}>
-          <label class="form-check-label" for="pedagogical-check">Is this mostly a pedagogical composer?</label>
-        </div>
-
+        </fieldset>
         @can('update', $composer)
-        <div class="text-center mt-5">
-          <button type="submit" class="btn d-block w-100 btn-default">Save changes</button>
-        </div>
+        @component('admin.components.table-save-actions', ['status' => 'Changes take effect when you save.'])
+            <button type="submit" class="btn btn-primary">@icon('check')Save changes</button>
+        @endcomponent
         @endcan
-
-        <div class="mt-3">
-          <p class="text-muted text-end"><small><i>This composer was created by <strong>{{$composer->creator->name}}</strong></i></small></p>
-        </div>
-      </form>
-
-      <div class="col-lg-6 col-sm-10 col-12 mx-auto">
-        <div>
-          <img src="{{storage($composer->cover_path)}}" class="rounded-circle shadow mb-4 mx-auto d-block" style="width: 160px">
-        </div>
-        <p class="text-muted"><strong>{{$composer->name}} has {{$composer->pieces_count}} {{str_plural('piece', $composer->pieces_count)}}</strong></p>
-        @if($composer->pieces_count > 0)
-        <ul class="list-style-none ps-2">
-          @foreach($composer->pieces as $piece)
-          <li class="mb-2">
-            <a href="{{route('webapp.pieces.show', $piece)}}" target="_blank" rel="noopener noreferrer">
-              @icon('chevron-right', ['mr' => 2]){{$piece->long_name}}
-            </a>
-          </li>
-          @endforeach
-        </ul>
-        @endif
-      </div>
+        <p class="small text-muted mb-4">Created by {{ optional($composer->creator)->name ?: 'Unknown creator' }}.</p>
+    </form>
+    <div id="composer-repertoire">
+        @component('admin.components.table', [
+            'id' => 'composer-pieces-table', 'title' => 'Repertoire', 'label' => 'Composer repertoire', 'items' => $pieces,
+            'description' => number_format($pieces->total()).' '.str_plural('piece', $pieces->total()).' by '.$composer->name.'. Open a title to view its piece page.',
+            'pageSizes' => [], 'columns' => ['Piece', ['label' => 'Actions', 'hidden' => true]],
+            'emptyTitle' => 'No pieces yet', 'emptyDescription' => 'Pieces assigned to this composer will appear here.',
+        ])
+            @foreach($pieces as $piece)
+            <tr>
+                <td><a href="{{ route('webapp.pieces.show', $piece) }}" class="admin-table__primary" target="_blank" rel="noopener noreferrer">{{ $piece->long_name }}</a></td>
+                <td>@include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.pieces.edit', $piece), 'attributes' => ['aria-label' => 'Edit '.$piece->long_name]]])</td>
+            </tr>
+            @endforeach
+        @endcomponent
     </div>
-  </div>
-</div>
-
+</div></div>
 @endsection
 
 @section('scripts')
-@cannot('update', $composer)
-<script type="text/javascript">
-$('#edit-form input, #edit-form select, #edit-form textarea').attr('disabled', true);
-$('.add-new-field').remove();
-</script>
-@endcannot
-
-<script type="text/javascript">
-function select()
-{
-  $form = $('#select-form');
-  $slug = $('#select-form select option:selected').attr('data-slug');
-  window.location = $form.attr('action')+$slug;
-}
-
-var bornIn = document.getElementById("born-in");
-var diedIn = document.getElementById("died-in");
-
-$(document).ready(function(){
-  $(bornIn).inputmask("99/99/9999");
-  $(diedIn).inputmask("99/99/9999");
-});
+<script>
+$('#born-in, #died-in').inputmask('99/99/9999');
 </script>
 @endsection

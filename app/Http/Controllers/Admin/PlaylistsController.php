@@ -85,7 +85,25 @@ class PlaylistsController extends Controller
         if (request()->ajax())
             return Piece::with(['tags', 'composer'])->orderBy('updated_at', 'desc')->datatable(view('admin.pages.playlists.edit.table.actions'));
 
-        return view('admin.pages.playlists.edit.index', ['playlist' => $playlist, 'playlistTags' => app(\App\Services\Admin\PlaylistTags::class)->all()]);
+        $finder = app(\App\Services\Admin\PlaylistPieceFinder::class);
+        $restored = (string) old('_playlist_editor') === (string) $playlist->id;
+        $selectedPieces = $playlist->pieces()->select('pieces.*')->get();
+        if ($restored) {
+            $ids = old('pieces', []);
+            $ids = is_array($ids) ? array_values(array_unique(array_filter($ids, function ($id) { return is_scalar($id) && ctype_digit((string) $id); }))) : [];
+            $records = Piece::select('pieces.*')->with('tags')->whereIn('id', array_slice($ids, 0, 5000))->get()->keyBy('id');
+            $selectedPieces = collect($ids)->map(function ($id) use ($records) { return $records->get($id); })->filter()->values();
+        }
+        return view('admin.pages.playlists.edit.index', [
+            'playlist' => $playlist, 'playlistTags' => app(\App\Services\Admin\PlaylistTags::class)->all(),
+            'selectedPieces' => $selectedPieces, 'restored' => $restored,
+        ] + $finder->get(Request::create(route('admin.playlists.pieces', $playlist))) + $finder->choices());
+    }
+
+    public function pieces(Request $request, Playlist $playlist, \App\Services\Admin\PlaylistPieceFinder $finder)
+    {
+        $data = ['playlist' => $playlist] + $finder->get($request) + $finder->choices();
+        return response()->json(['html' => view('admin.pages.playlists.edit.finder.table', $data)->render(), 'total' => $data['pieces']->total()]);
     }
 
     /**
@@ -100,7 +118,7 @@ class PlaylistsController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255', 'subtitle' => 'required|string|max:72', 'description' => 'required|string|max:255',
             'featured_tag_id' => 'nullable|integer|exists:playlist_tags,id',
-            'pieces' => 'sometimes|array', 'pieces.*' => 'required|integer|distinct|exists:pieces,id',
+            'pieces' => 'sometimes|array|max:5000', 'pieces.*' => 'required|integer|distinct|exists:pieces,id',
             'cover' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:8192',
         ]);
         $cover = $request->hasFile('cover') ? $request->file('cover')->store('app/playlists', 'public') : null;
@@ -115,7 +133,7 @@ class PlaylistsController extends Controller
                     'cover_path' => $cover ?? $oldCover,
                 ] + $tag);
                 $pieces = [];
-                foreach ($data['pieces'] ?? [] as $order => $id) $pieces[$id] = ['order' => $order];
+                foreach (array_values($data['pieces'] ?? []) as $order => $id) $pieces[$id] = ['order' => $order];
                 $record->pieces()->sync($pieces);
             }, 3);
         } catch (\Throwable $exception) {

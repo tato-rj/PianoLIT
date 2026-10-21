@@ -1,7 +1,3 @@
 <?php
 
-Route::namespace('WebApp')->prefix('blog')->name('blog.')->group(function() {
-
-	Route::get('{post}', 'BlogController@show')->name('show');
-
-});
+Route::get('blog/{post}', 'RedirectsController@blog')->name('blog.show');

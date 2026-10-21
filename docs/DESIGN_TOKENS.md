@@ -319,6 +319,10 @@ stylesheet precedence. Page templates request only their main bundle.
 ## Admin breadcrumbs
 
 Every admin page header renders `admin.components.breadcrumb` above its heading.
+The date, notification button and account menu share that upper row, aligned to
+the right; the title and subtitle use the full width below. Long breadcrumb
+trails wrap beside the controls, which stay at the top of the row. This layout
+comes from the shared page-title component and applies to the Design System too.
 The shared `admin.components.page.title` component adds the Overview link and the
 current page automatically. Supply `breadcrumbs` as an ordered array of parent
 `label` / `url` items, for example:

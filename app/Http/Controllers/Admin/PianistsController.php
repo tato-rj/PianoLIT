@@ -6,6 +6,8 @@ use App\{Pianist, Country};
 use App\Http\Requests\PianistForm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\Admin\PianistsTable;
+use App\Support\AdminTableFilters;
 
 class PianistsController extends Controller
 {
@@ -14,14 +16,10 @@ class PianistsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, PianistsTable $table)
     {
-        if (request()->ajax())
-            return Pianist::datatable();
-
         $countries = Country::orderBy('nationality')->get();
-        
-        return view('admin.pages.pianists.index', compact(['countries']));
+        return view('admin.pages.pianists.index', $table->get($request) + compact('countries'));
     }
 
     /**
@@ -40,7 +38,7 @@ class PianistsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, PianistForm $form)
+    public function store(PianistForm $form)
     {
         $pianist = Pianist::create([
             'slug' => str_slug($form->name),
@@ -49,12 +47,12 @@ class PianistsController extends Controller
             'cover_path' => $form->file('cover')->store('app/pianists', 'public'),
             'country_id' => $form->country_id,
             'itunes_id' => $form->itunes_id,
-            'date_of_birth' => $form->date_of_birth,
-            'date_of_death' => $form->date_of_death,
+            'date_of_birth' => carbon($form->date_of_birth)->format('Y-m-d'),
+            'date_of_death' => $form->date_of_death ? carbon($form->date_of_death)->format('Y-m-d') : null,
             'creator_id' => auth()->guard('admin')->user()->id
         ]);
 
-        return redirect()->back()->with('status', "$pianist->name has been successfully added!");
+        return redirect()->route('admin.pianists.edit', $pianist)->with('status', "$pianist->name has been successfully added!");
     }
 
     /**
@@ -74,11 +72,12 @@ class PianistsController extends Controller
      * @param  \App\Pianist  $pianist
      * @return \Illuminate\Http\Response
      */
-    public function edit(Pianist $pianist)
+    public function edit(Request $request, Pianist $pianist, PianistsTable $table)
     {
         $countries = Country::orderBy('nationality')->get();
-        
-        return view('admin.pages.pianists.edit', compact(['pianist', 'countries']));
+        $returnFilters = AdminTableFilters::query($table->filters($request), 'name_asc');
+        $pianist->load('creator');
+        return view('admin.pages.pianists.edit', compact('pianist', 'countries', 'returnFilters'));
     }
 
     /**
@@ -88,9 +87,10 @@ class PianistsController extends Controller
      * @param  \App\Pianist  $pianist
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Pianist $pianist)
+    public function update(PianistForm $request, Pianist $pianist, PianistsTable $table)
     {
         $this->authorize('update', $pianist);
+        $returnFilters = AdminTableFilters::query($table->filters(Request::create('/', 'GET', $request->query())), 'name_asc');
 
         $pianist->update([
             'slug' => str_slug($request->name),
@@ -108,7 +108,7 @@ class PianistsController extends Controller
             $pianist->update(['cover_path' => $request->file('cover')->store('app/pianists', 'public')]);
         }
 
-        return redirect()->back()->with('status', "$request->name has been updated");
+        return redirect()->route('admin.pianists.edit', ['pianist' => $pianist] + $returnFilters)->with('status', "$request->name has been updated");
     }
 
     /**
@@ -117,12 +117,13 @@ class PianistsController extends Controller
      * @param  \App\Pianist  $pianist
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Pianist $pianist)
+    public function destroy(Request $request, Pianist $pianist, PianistsTable $table)
     {
         $this->authorize('update', $pianist);
+        $filters = $table->filters(Request::create('/', 'GET', $request->query()));
     
         $pianist->delete();
 
-        return redirect()->back()->with('status', "The pianist has been successfully deleted!");
+        return $table->redirect($filters)->with('status', 'The pianist has been successfully deleted!');
     }
 }

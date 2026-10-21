@@ -56,7 +56,8 @@ class WebAppGuestAccessTest extends ReviewTestCase
             ->assertDontSee('id="synthesia-request-form"', false);
         $this->get(route('webapp.playlists.show', $this->playlist))->assertRedirect(route('webapp.playlists'))->assertSessionHas('collection_access_prompt', '#signup-collections-modal');
         $this->get(route('webapp.composers.show', $this->piece->composer))->assertOk();
-        $this->get(route('webapp.blog.show', $this->post))->assertOk();
+        $this->get(route('webapp.blog.show', $this->post))->assertStatus(301)->assertRedirect(route('posts.show', $this->post));
+        $this->get(route('posts.show', $this->post))->assertOk();
 
         foreach (['collection', 'timeline', 'similar', 'audio'] as $name) {
             $this->get(route('webapp.pieces.'.$name, $this->piece))->assertOk();

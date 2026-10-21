@@ -1,38 +1,16 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'New composer'])
+@component('components.modal', ['id' => 'add-modal', 'header' => 'Add new composer', 'options' => ['size' => 'lg'], 'show' => $errors->getBag('composerCreate')->any() ? true : null])
 @slot('body')
-<form method="POST" action="{{route('admin.composers.store')}}" enctype="multipart/form-data">
-  @csrf
-  {{-- Name --}}
-  <div class="d-flex">
-    <div class="flex-grow me-2">
-      @input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Full name', 'limit' => 120])
-    </div>
-    <div>
-      @include('admin.pages.composers.gender', ['gender' => old('gender')])
-    </div>
-  </div>
-  @textarea(['bag' => 'default', 'name' => 'biography', 'placeholder' => 'Life\'s summary', 'rows' => 6])
-  @textarea(['bag' => 'default', 'name' => 'curiosity', 'placeholder' => 'Did you know?', 'limit' => 125, 'rows' => 3, 'required' => false])
-
-  <div class="row g-2">
-    @file(['bag' => 'default', 'name' => 'cover_image', 'placeholder' => 'Cover image', 'grid' => 'col'])
-    @select(['bag' => 'default', 'name' => 'period', 'placeholder' => 'Period', 'options' => \App\Tag::periods()->get()->pluck('name'), 'grid' => 'col'])
-  </div>
-
-  <div class="row g-2">
-    @select(['bag' => 'default', 'name' => 'country_id', 'placeholder' => 'Nationality', 'options' => $countries->pluck('id', 'nationality'), 'grid' => 'col'])
-    @select(['bag' => 'default', 'name' => 'ethnicity', 'placeholder' => 'Ethnicity', 'options' => ethnicities(), 'grid' => 'col'])
-    @select(['bag' => 'default', 'name' => 'mood', 'placeholder' => 'Mood', 'options' => $moods, 'grid' => 'col'])
-  </div>
-
-  <div class="row g-2">
-    @input(['bag' => 'default', 'name' => 'date_of_birth', 'id' => 'born-in', 'placeholder' => 'Date born', 'grid' => 'col', 'required' => false])
-    @input(['bag' => 'default', 'name' => 'date_of_death', 'id' => 'died-in', 'placeholder' => 'Date died', 'grid' => 'col', 'required' => false])
-  </div>
-  @options(['bag' => 'default', 'required' => false, 'nogutters' => true, 'type' => 'checkbox', 'name' => 'is_famous', 'options' => ['Is this composer famous?' => true]])
-  @options(['bag' => 'default', 'required' => false, 'type' => 'checkbox', 'name' => 'is_pedagogical', 'options' => ['Is this mostly a pedagogical composer?' => true]])
-
-  @submit(['label' => 'Add composer', 'block' => true])
-</form>
+    <p class="text-muted mb-4">Add a profile and biography. You can manage the composer’s repertoire from the editor.</p>
+    <form method="POST" action="{{ route('admin.composers.store') }}" enctype="multipart/form-data">
+        @csrf
+        @if($errors->getBag('composerCreate')->any())<div class="alert alert-red" role="alert">Please check the highlighted fields and choose the portrait file again.</div>@endif
+        @include('admin.pages.composers.fields.profile', ['composer' => null, 'bag' => 'composerCreate', 'prefix' => 'composer-create'])
+        @include('admin.pages.composers.fields.biography', ['composer' => null, 'bag' => 'composerCreate', 'prefix' => 'composer-create'])
+        @include('admin.pages.composers.fields.options', ['composer' => null])
+        <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-dark">@icon('plus')Add composer</button>
+        </div>
+    </form>
 @endslot
 @endcomponent

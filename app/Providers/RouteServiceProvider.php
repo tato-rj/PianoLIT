@@ -26,8 +26,17 @@ class RouteServiceProvider extends ServiceProvider
     {
         URL::formatHostUsing(function ($root, $route) {
             // Public preview links must leave the admin host when paths overlap.
-            if ($route && $route->getAction('public_site') && request()->getHost() === 'admin.'.config('app.short_url')) {
-                return rtrim(config('app.url'), '/');
+            if ($route && $route->getAction('public_site')) {
+                $host = request()->getHost();
+                // Blog navigation returns to the public site, while its AJAX
+                // and subscription forms retain their own session and CSRF token.
+                $blogLocal = in_array($route->getName(), ['subscriptions.modal', 'subscriptions.store', 'attribution.consent'], true);
+                if ($host === 'admin.'.config('app.short_url')
+                    || ($host === 'blog.'.config('app.short_url') && ! $blogLocal)) {
+                    $website = rtrim(config('app.url'), '/');
+
+                    return preg_match('#^https?://#i', $website) ? $website : request()->getScheme().'://'.ltrim($website, '/');
+                }
             }
 
             return $root;
@@ -59,11 +68,14 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapAuthRoutes();
 
+        $this->mapUserRoutes();
+
+        // Shared account URLs must resolve before root-level blog slugs.
+        $this->mapBlogRoutes();
+
         $this->mapWebRoutes();
 
         $this->mapMailRoutes();
-
-        $this->mapUserRoutes();
 
         $this->mapWebhooksRoutes();
 
@@ -93,6 +105,14 @@ class RouteServiceProvider extends ServiceProvider
              ->group(function() {
                 $this->getFolder('routes/webapp');
              });
+    }
+
+    protected function mapBlogRoutes()
+    {
+        Route::domain('blog.'.config('app.short_url'))
+             ->middleware(['web', 'log.web', 'location.update'])
+             ->namespace($this->namespace)
+             ->group(base_path('routes/blog.php'));
     }
 
     protected function mapShopRoutes()

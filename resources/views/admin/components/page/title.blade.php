@@ -1,19 +1,19 @@
 <header class="admin-page-header" id="page-title">
-  @include('admin.components.breadcrumb', ['items' => array_merge(
-      request()->routeIs('admin.home') && $title === 'Overview' ? [] : [['label' => 'Overview', 'url' => route('admin.home')]],
-      $breadcrumbs ?? [],
-      [['label' => $breadcrumbLabel ?? $title]]
-  )])
   <div class="admin-page-header-row">
-    <div class="admin-page-heading">
-      <h1 class="admin-page-title">{{$title}}<span class="admin-heading-dot" aria-hidden="true">.</span></h1>
-      @if(!empty($subtitle))<p class="admin-page-subtitle">{{$subtitle}}</p>@endif
-    </div>
+    @include('admin.components.breadcrumb', ['items' => array_merge(
+        request()->routeIs('admin.home') && $title === 'Overview' ? [] : [['label' => 'Overview', 'url' => route('admin.home')]],
+        $breadcrumbs ?? [],
+        [['label' => $breadcrumbLabel ?? $title]]
+    )])
     <div class="admin-page-tools">
       <span class="admin-today">{{now()->format('l, M j')}}</span>
       @include('admin.layouts.header.notifications')
       @include('admin.layouts.header.account')
     </div>
+  </div>
+  <div class="admin-page-heading">
+    <h1 class="admin-page-title">{{$title}}<span class="admin-heading-dot" aria-hidden="true">.</span></h1>
+    @if(!empty($subtitle))<p class="admin-page-subtitle">{{$subtitle}}</p>@endif
   </div>
 
   @if((isset($slot) && trim((string) $slot) !== '') || isset($action['url']) || isset($action['external_link']) || isset($action['modal']))

@@ -1,25 +1,22 @@
-@component('components.modal', ['id' => 'tag-modal', 'header' => 'Edit tag'])
+@php($tagFormFailed = $errors->getBag('tagForm')->any())
+@component('components.modal', ['id' => 'tag-modal', 'header' => $editingTag ? 'Edit tag' : 'Create a tag', 'show' => $tagFormFailed ? true : null])
 @slot('body')
-  <form method="POST" id="edit-tag" class="row g-2">
-    @csrf
-    @method('PATCH')
-    @input(['bag' => 'default', 'label' => 'Name', 'name' => 'name', 'id' => 'name', 'grid' => 'col'])
-    @select(['bag' => 'default', 'label' => 'Type', 'name' => 'type', 'placeholder' => 'Type', 'optGroups' => \App\Tag::labels(), 'grid' => 'col'])
-    @input(['bag' => 'default', 'label' => 'Display order', 'name' => 'ordering', 'id' => 'ordering', 'type' => 'number', 'min' => 1, 'step' => 1, 'limit' => 65535, 'required' => '', 'placeholder' => 'Leave empty for no order', 'grid' => 'col-12'])
-    @submit(['label' => 'Save changes', 'block' => true])
-  </form>
-@endslot
-
-@slot('footer')
-<div class="d-flex d-apart w-100">
-  <div>
-    <form method="POST" id="delete-tag">
-      @csrf
-      @method('DELETE')
-      <button type="submit" class="btn btn-link btn-sm text-danger no-underline p-0">@icon('trash-2', ['mr' => 2])Delete tag</button>
+    <form method="POST" id="tag-form"
+        action="{{ $editingTag ? route('admin.tags.update', ['tag' => $editingTag->id] + $returnFilters) : route('admin.tags.store', $returnFilters) }}"
+        data-create-url="{{ route('admin.tags.store', $returnFilters) }}" data-default-type="{{ $filters['tag_type'] }}">
+        @csrf
+        <input type="hidden" name="_method" value="PATCH" data-tag-method @unless($editingTag) disabled @endunless>
+        <p class="text-muted">Use a clear name and choose the type that fits the piece.</p>
+        @if($tagFormFailed)<div class="alert alert-red" role="alert" data-tag-errors>Please check the highlighted fields.</div>@endif
+        @input(['bag' => 'tagForm', 'id' => 'tag-name', 'name' => 'name', 'label' => 'Tag name', 'value' => $tagFormFailed ? '' : optional($editingTag)->name, 'limit' => 255, 'placeholder' => 'e.g. lyrical'])
+        @select(['bag' => 'tagForm', 'id' => 'tag-type', 'name' => 'type', 'label' => 'Type', 'choices' => ['' => 'Choose a type'] + $tagTypes, 'value' => $tagFormFailed ? '' : (optional($editingTag)->type ?? $filters['tag_type'])])
+        @input(['bag' => 'tagForm', 'id' => 'tag-ordering', 'name' => 'ordering', 'label' => 'Display order (optional)', 'type' => 'number', 'min' => 1, 'step' => 1, 'limit' => 65535, 'required' => '', 'value' => $tagFormFailed ? '' : optional($editingTag)->ordering, 'placeholder' => 'Leave empty for no order', 'describedBy' => 'tag-ordering-help'])
+        <p class="small text-muted" id="tag-ordering-help">Controls the order of periods and genres on the website. Lower numbers appear first; leave empty to list after numbered tags.</p>
+        <p class="small text-muted" data-tag-creator @unless($editingTag) hidden @endunless>Created by <span>{{ optional(optional($editingTag)->creator)->name ?? 'Not recorded' }}</span></p>
+        <div class="d-flex justify-content-end flex-wrap gap-2 mt-4">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-dark" data-tag-save>{{ $editingTag ? 'Save changes' : 'Create tag' }}</button>
+        </div>
     </form>
-  </div>
-  <div class="text-muted mb-0"><i><small>Tag created by <strong><span id="creator"></span></strong></small></i></div>
-</div>
 @endslot
 @endcomponent

@@ -1,6 +1,6 @@
 @component('webapp.explore.rows.row', ['data' => $row])
 <div>
-<a href="{{route('webapp.blog.show', $row['collection'])}}" class="link-none">
+<a href="{{route('posts.show', $row['collection'])}}" class="link-none">
 	<div class="row">
 		<div class="col-lg-3 col-md-4 col-12 py-1">
 			<div class="bg-align-center position-relative h-100 rounded" style="background-image: url({{$row['collection']->cover_image()}}); min-height: 140px"></div>

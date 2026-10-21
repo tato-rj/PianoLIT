@@ -1,59 +1,41 @@
 @extends('admin.layouts.app')
 
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
+<div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'music',
-      'title' => 'Tags',
-      'subtitle' => 'Manage all the tags used by pieces.',
-      'action' => ['label' => 'Create a new tag', 'modal' => 'add-modal']
+        'title' => 'Tags',
+        'subtitle' => 'Organize piece tags by type and see where they are used.',
+        'action' => ['label' => 'Create a tag', 'modal' => 'tag-modal'],
     ])
-
-    <div class="row my-3">
-      <div class="col-12 text-center">
-        <p class="text-center"><small>Showing {{\App\Tag::count()}} tags</small></p>
-      </div>
-      <div class="col-12">
-        @foreach($types as $type => $tags)
-          <label class="p-2 border-bottom w-100"><strong>{{ucfirst($type)}}</strong></label>
-          <div class="d-flex flex-wrap mb-2">
-          @foreach($tags as $tag)
+    @component('admin.components.table', [
+        'id' => 'tags-table', 'label' => 'Tags', 'items' => $tags,
+        'description' => number_format($tags->total()).' matching '.str_plural('tag', $tags->total()).'.',
+        'action' => route('admin.tags.index'), 'state' => $filters,
+        'search' => ['label' => 'Find a tag', 'placeholder' => 'Tag name or type'],
+        'filters' => [['name' => 'tag_type', 'label' => 'Type', 'options' => ['' => 'All types'] + $tagTypes]],
+        'sorts' => \App\Services\Admin\TagsTable::SORTS,
+        'showReset' => $filters['search'] !== '' || $filters['tag_type'] !== '' || $filters['sort'] !== 'type_asc' || $filters['per_page'] !== \App\Support\AdminPagination::PER_PAGE,
+        'resetUrl' => route('admin.tags.index'),
+        'columns' => [
+            ['label' => 'Tag', 'sort' => ['asc' => 'name_asc', 'desc' => 'name_desc']],
+            ['label' => 'Type', 'sort' => ['asc' => 'type_asc', 'desc' => 'type_desc']],
+            ['label' => 'Pieces', 'sort' => ['asc' => 'pieces_asc', 'desc' => 'pieces_desc']],
+            ['label' => 'Display order', 'sort' => ['asc' => 'ordering_asc', 'desc' => 'ordering_desc']],
+            ['label' => 'Actions', 'hidden' => true],
+        ],
+        'emptyTitle' => $tags->total() ? 'No tags on this page' : 'No matching tags',
+        'emptyDescription' => 'Try another name or type, or create a tag to get started.',
+        'emptyAction' => ['label' => 'Show all tags', 'url' => route('admin.tags.index')],
+    ])
+        @foreach($tags as $tag)
             @include('admin.pages.tags.tag')
-          @endforeach
-          </div>
         @endforeach
-      </div>
-      <div class="col-12 mt-4 ms-2">
-        <p class="text-muted"><small>Ps: Tags with a @icon('star', ['mr' => 0, 'classes' => 'text-warning icon-size-xs', 'filled' => true]) are the ones showing in the tour screen on the app.</small></p>
-      </div>
-    </div>
-
-  </div>
-</div>
-
+    @endcomponent
+</div></div>
 @include('admin.components.modals.tag')
-@include('admin.pages.tags.create')
-
+@include('admin.pages.tags.delete')
 @endsection
 
 @section('scripts')
-<script type="text/javascript">
-$('.tag').on('click', function (e) {
-  $tag = $(this);
-  name = $tag.attr('data-name');
-  type = $tag.attr('data-type');
-  creator = $tag.attr('data-creator');
-  edit_url = $tag.attr('data-edit-url');
-  delete_url = $tag.attr('data-delete-url');
-
-  $('#tag-modal').find('form#delete-tag').attr('action', delete_url);
-  $('#tag-modal').find('form#edit-tag').attr('action', edit_url);
-  $('#tag-modal').find('input#name').val(name);
-  $('#tag-modal').find('input#ordering').val($tag.attr('data-ordering'));
-  $('#tag-modal').find('select[name="type"] option[value="'+type+'"]').prop('selected', true);
-  $('#tag-modal').find('#creator').text(creator);
-})
-</script>
+<script src="{{ mix('js/views/admin-tags.js') }}"></script>
 @endsection

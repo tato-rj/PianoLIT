@@ -71,7 +71,8 @@ class TagOrderingTest extends ReviewTestCase
             $this->assertStringContainsString($attribute, $input[0]);
         }
         $this->assertDoesNotMatchRegularExpression('/\srequired(?:\s|=|>)/', $input[0]);
-        $this->assertStringContainsString(".val(\$tag.attr('data-ordering'))", $html);
+        $this->assertStringContainsString('id="tag-ordering"', $input[0]);
+        $this->assertStringContainsString('js/views/admin-tags.js', $html);
     }
 
     public function test_ordering_migration_can_be_rolled_back_and_reapplied()

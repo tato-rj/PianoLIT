@@ -1,21 +1,14 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'New composer'])
+@component('components.modal', ['id' => 'add-modal', 'header' => 'Add a pianist', 'show' => $errors->getBag('pianistCreate')->any() ? true : null])
 @slot('body')
-<form method="POST" action="{{route('admin.pianists.store')}}" enctype="multipart/form-data">
-  @csrf
-  @input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Full name', 'limit' => 120])
-  @textarea(['bag' => 'default', 'name' => 'biography', 'placeholder' => 'Life\'s summary', 'limit' => 255, 'rows' => 6])
-  @include('admin.components.link', ['link' => 'https://linkmaker.itunes.apple.com/en-us'])
-  @input(['bag' => 'default', 'name' => 'iteuns_id', 'placeholder' => 'iTunes ID'])
-  <div class="row g-2">
-    @select(['bag' => 'default', 'name' => 'country_id', 'placeholder' => 'Nationality', 'options' => $countries->pluck('id', 'nationality'), 'grid' => 'col'])
-    @file(['bag' => 'default', 'name' => 'cover', 'placeholder' => 'Cover image', 'grid' => 'col'])
-  </div>
-  <div class="row g-2">
-    @input(['bag' => 'default', 'name' => 'date_of_birth', 'id' => 'born-in', 'placeholder' => 'Date born', 'grid' => 'col'])
-    @input(['bag' => 'default', 'name' => 'date_of_death', 'id' => 'died-in', 'placeholder' => 'Date died', 'grid' => 'col'])
-  </div>
-
-  @submit(['label' => 'Add pianist', 'block' => true])
-</form>
+    <form method="POST" action="{{ route('admin.pianists.store') }}" enctype="multipart/form-data">
+        @csrf
+        @if($errors->getBag('pianistCreate')->any())<div class="alert alert-red" role="alert">Please check the highlighted fields and choose the portrait again.</div>@endif
+        @include('admin.pages.pianists.fields', ['pianist' => null, 'bag' => 'pianistCreate', 'prefix' => 'pianist-create'])
+        @include('components.form.upload.file', ['bag' => 'pianistCreate', 'id' => 'pianist-create-cover', 'name' => 'cover', 'label' => 'Portrait', 'required' => true, 'accept' => 'image/jpeg,image/png,image/gif,image/webp'])
+        <div class="d-flex justify-content-end flex-wrap gap-2 mt-4">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-dark">@icon('plus')Add pianist</button>
+        </div>
+    </form>
 @endslot
 @endcomponent

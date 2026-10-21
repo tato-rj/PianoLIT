@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light py-5">
-  <a class="navbar-brand" href="{{config('app.url')}}">
+  <a class="navbar-brand" href="{{route('home')}}">
       @brandIcon
   </a>
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-items">

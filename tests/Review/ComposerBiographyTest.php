@@ -111,7 +111,7 @@ class ComposerBiographyTest extends ReviewTestCase
             ->assertDontSee('composer-biography-admin.js')->assertDontSee('fake-review-key');
         $this->actingAs(create(Admin::class, ['role' => 'editor']), 'admin');
         $this->get(route('admin.composers.edit', $this->composer))->assertOk()
-            ->assertDontSee('Regenerate bio')->assertSee("$('#edit-form input, #edit-form select, #edit-form textarea').attr('disabled', true);", false);
+            ->assertDontSee('Regenerate bio')->assertSee('You can view this profile')->assertDontSee('Save changes');
     }
 
     /** @dataProvider invalidSources */

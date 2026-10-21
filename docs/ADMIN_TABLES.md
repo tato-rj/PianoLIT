@@ -4,7 +4,7 @@ On 2026-10-15 the user chose the membership directory design and a reusable
 Laravel Blade component as the standard. Always reuse `admin.components.table`
 for admin tables, including small fixed lists such as Emails; do not create a
 page-specific table implementation. Users, Subscribers, Feedback, Emails, analytics People and the membership
-directory and Playlists use this component. Migrate existing legacy tables when their pages
+directory, Playlists and Pianists use this component. Migrate existing legacy tables when their pages
 are updated within the requested scope. Preserve each page’s columns, filters,
 route names, session permissions, row actions and bulk behavior.
 
@@ -151,7 +151,45 @@ explicitly. The server locks the group and rejects incomplete or stale lists.
 Ordering this collection must never alter Journey or a playlist's piece order.
 New playlists start as drafts and open their existing editor to add pieces.
 
+The playlist editor follows the Pieces editor's shared sections for metadata,
+artwork and publication status. Its selected-piece table is a complete curation
+list because one save submits the entire selection in order; do not paginate it.
+Drag handles and accessible up/down controls update the draft, while Remove
+only removes a piece from that draft. The Add pieces modal uses the same table,
+filters and native pagination with `PlaylistPieceFinder`: SQL name/composer/
+catalogue/tag/ID search, composer/level filters, validated sorts and 12 results
+by default. AJAX browsing preserves unsaved metadata, selection and order; added
+pieces remain visibly disabled across result changes. The shared empty-row
+partial and save footer cover empty playlists and explicit saving. Validation
+restores the submitted selection, including a cleared playlist. All changes
+apply together through the existing transactional update and featured-tag
+compatibility service. Legacy DataTables requests remain supported separately;
+the redesigned editor does not load or initialize DataTables.
+
+The Pianists directory uses `Services/Admin/PianistsTable` for SQL name/nationality
+search, nationality filtering, fixed sort keys and shared pagination. Portraits,
+life dates and Apple Music linkage make profiles recognizable; profile previews
+open on the public website. Edit links and the editor breadcrumb retain the
+directory's filters and page. Creation opens the saved profile's editor; deletion
+returns to the filtered directory and clamps an emptied last page. Shared editor
+sections and form fields serve the add/edit flow, including native date fields,
+an optional artist ID and portrait upload. Failed creation reopens its own dialog
+with the draft and field errors. Existing creator/manager permissions remain in
+force; legacy model serialization and public/mobile routes are unchanged.
+
 ## Table action buttons
+
+The Tags directory uses `TagsTable` for SQL name/type search, a fixed type filter,
+validated sorts, piece counts and shared 12-result pagination. `tag_type` is the
+directory query parameter; `type` remains the tag form field, so a changed tag
+cannot overwrite the active directory filter. Load creator names and count the
+piece relation without hydrating all linked pieces. Create and Edit share one
+modal with labeled shared fields and an optional display order. Validation
+reopens the failed draft using the route-bound tag ID flashed by the server,
+including when that tag is outside the current results. Delete has its own
+confirmation with the affected piece count; tag removal and pivot detachment
+are transactional. Writes preserve directory state and clamp its page. Legacy
+mobile tag serialization and the separate `order` field remain unchanged.
 
 Use `admin.components.table-action` for row actions and destructive confirmation
 buttons. The Users directory is the visual reference: `kind: edit` renders the
@@ -332,3 +370,24 @@ bypass and the existing skeleton/error/retry behavior consistent until each page
 is migrated. Do not globally remove the shared DataTables assets while these
 pages still depend on them. Do not migrate unrelated pages as part of a narrow
 request.
+
+
+## Composers directory and editor
+
+Composers uses `Services/Admin/ComposersTable` for SQL name/country/nationality
+search, period/famous/pedagogical filters, fixed sorts and 12-result pagination.
+Rows reuse `components.composer-label`, the shared switch, and Edit/Delete actions.
+Names open the profile; piece counts link directly to its Repertoire section.
+The editor breadcrumb retains directory filters and page, while repertoire has
+its own `pieces_page` paginator and fragment. Profile and Biography use the shared
+editor sections and form fields, also reused by the named-error creation modal.
+Read-only profiles disable a native fieldset; update/delete policy checks remain
+authoritative. New records open the editor after creation.
+
+The Famous switch submits an explicit desired state through the existing PATCH
+route with `return_to=directory`; filtered returns clamp to the last valid page.
+Legacy requests without that marker retain the existing JSON toggle response.
+Deletion uses the shared confirmation with its optional escaped `deleteDescription`
+to explain that the composer's assigned pieces are also removed. Piece-title
+links open `webapp.pieces.show` in a new tab with `noopener noreferrer`; explicit
+Edit links retain the admin editor. Public/mobile models and payloads are unchanged.

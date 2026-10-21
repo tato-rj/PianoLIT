@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ComposerForm extends FormRequest
 {
+    protected $errorBag = 'composerCreate';
+
     /**
      * Determine if the user is authorized to make this request.
      *

@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Files\Uploaders\ImageUpload;
 use App\Services\OpenAI\ComposerBiography;
 use App\Services\OpenAI\BiographyGenerationException;
+use App\Services\Admin\ComposersTable;
+use App\Support\AdminTableFilters;
 
 class ComposersController extends Controller
 {
@@ -17,16 +19,15 @@ class ComposersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, ComposersTable $table)
     {
         if (request()->ajax())
             return Composer::datatable();
 
-        $composers = Composer::famous()->get();
         $countries = Country::orderBy('nationality')->get();
         $moods = Tag::mood()->mostPopular()->pluck('name')->take(25)->sortBy('name');
 
-        return view('admin.pages.composers.index', compact(['composers', 'countries', 'moods']));
+        return view('admin.pages.composers.index', $table->get($request) + compact('countries', 'moods'));
     }
 
     /**
@@ -67,7 +68,7 @@ class ComposersController extends Controller
             'creator_id' => auth()->guard('admin')->user()->id
         ]);
 
-        return redirect()->back()->with('status', "$composer->name has been successfully added!");
+        return redirect()->route('admin.composers.edit', $composer)->with('status', "$composer->name has been successfully added!");
     }
 
     /**
@@ -87,12 +88,19 @@ class ComposersController extends Controller
      * @param  \App\Composer  $composer
      * @return \Illuminate\Http\Response
      */
-    public function edit(Composer $composer)
+    public function edit(Composer $composer, Request $request, ComposersTable $table)
     {
+        $request->validate(['pieces_page' => 'nullable|integer|min:1|max:1000000']);
         $countries = Country::orderBy('nationality')->get();
         $moods = Tag::mood()->mostPopular()->pluck('name')->take(25)->sortBy('name');
 
-        return view('admin.pages.composers.edit', compact(['composer', 'countries', 'moods']));
+        $returnFilters = AdminTableFilters::query($table->filters($request), 'name_asc');
+        $composer->load('creator');
+        $pieces = $composer->pieces()->setEagerLoads([])->select('pieces.*')->with('tags')
+            ->orderBy('name')->orderBy('id')->paginate(\App\Support\AdminPagination::PER_PAGE, ['*'], 'pieces_page')
+            ->appends($returnFilters)->fragment('composer-repertoire');
+
+        return view('admin.pages.composers.edit', compact('composer', 'countries', 'moods', 'returnFilters', 'pieces'));
     }
 
     /**
@@ -141,10 +149,15 @@ class ComposersController extends Controller
         }
     }
 
-    public function toggleFamous(Request $request, Composer $composer)
+    public function toggleFamous(Request $request, Composer $composer, ComposersTable $table)
     {
-        $composer->update(['is_famous' => ! $composer->is_famous]);
+        $filters = $table->filters($request);
+        $request->validate(['is_famous' => 'sometimes|boolean', 'return_to' => 'sometimes|in:directory']);
+        $composer->update(['is_famous' => $request->has('is_famous') ? $request->boolean('is_famous') : ! $composer->is_famous]);
 
+        if ($request->input('return_to') === 'directory' && !$request->expectsJson()) {
+            return $table->redirect($filters)->with('status', 'The composer has been updated.');
+        }
         return response()->json(['status' => 'The composer has been updated.']);
     }
 
@@ -154,15 +167,16 @@ class ComposersController extends Controller
      * @param  \App\Composer  $composer
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Composer $composer)
+    public function destroy(Composer $composer, Request $request, ComposersTable $table)
     {
         $this->authorize('update', $composer);
+        $filters = $table->filters($request);
 
         if ($composer->pieces()->exists())
             $composer->pieces->each->delete();
     
         $composer->delete();
 
-        return redirect()->back()->with('status', "$composer->name has been successfully deleted!");
+        return $table->redirect($filters)->with('status', "$composer->name has been successfully deleted!");
     }
 }

@@ -1,6 +1,7 @@
 require('./timeline-events-admin');
 require('./admin-freepick-schedule')();
 require('./admin-playlists')();
+require('./admin-pianists')();
 require('./google-auth');
 require('./apple-auth');
 const assert = require('assert');
@@ -29,6 +30,7 @@ function element(value = '') {
 
 async function main() {
     await require('./admin-playlist-tags')();
+    await require('./admin-playlist-editor')();
     require('./access-prompts')();
     await require('./explore')();
     await require('./explore-transitions')();

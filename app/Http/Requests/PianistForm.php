@@ -3,9 +3,15 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PianistForm extends FormRequest
 {
+    protected function prepareForValidation()
+    {
+        $this->errorBag = $this->route('pianist') ? 'default' : 'pianistCreate';
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,10 +19,8 @@ class PianistForm extends FormRequest
      */
     public function authorize()
     {
-        $this->date_of_birth = carbon($this->date_of_birth)->format('Y-m-d');
-        $this->date_of_death = $this->date_of_death ? carbon($this->date_of_death)->format('Y-m-d') : null;
-
-        return true;
+        $pianist = $this->route('pianist');
+        return $this->user('admin') && (!$pianist || $this->user('admin')->can('update', $pianist));
     }
 
     /**
@@ -27,11 +31,18 @@ class PianistForm extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:pianists|max:140',
-            'biography' => 'required',
-            'cover' => 'required',
-            'country_id' => 'required',
-            'date_of_birth' => 'required'
+            'name' => ['required', 'string', 'max:140', Rule::unique('pianists')->ignore(optional($this->route('pianist'))->id)],
+            'biography' => 'required|string',
+            'cover' => [$this->route('pianist') ? 'nullable' : 'required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
+            'country_id' => 'required|integer|exists:countries,id',
+            'itunes_id' => 'nullable|string|max:255',
+            'date_of_birth' => 'required|date',
+            'date_of_death' => 'nullable|date|after_or_equal:date_of_birth',
         ];
+    }
+
+    public function attributes()
+    {
+        return ['country_id' => 'nationality', 'itunes_id' => 'Apple Music artist ID', 'cover' => 'portrait'];
     }
 }

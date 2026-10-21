@@ -6,6 +6,7 @@ Route::prefix('playlists')->name('playlists.')->group(function() {
     Route::delete('tags/{playlistTag}', 'Admin\PlaylistTagsController@destroy')->name('tags.destroy');
 
     Route::get('order', 'Admin\PlaylistsController@order')->name('order');
+    Route::get('{playlist}/pieces', 'Admin\PlaylistsController@pieces')->name('pieces');
 
 	Route::patch('reorder', 'Admin\PlaylistsController@reorder')->name('reorder');
 	Route::patch('{playlist}/publication', 'Admin\PlaylistsController@togglePublication')->name('publication');
