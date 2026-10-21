@@ -28,6 +28,7 @@ function element(value = '') {
 }
 
 async function main() {
+    await require('./admin-playlist-tags')();
     require('./access-prompts')();
     await require('./explore')();
     await require('./explore-transitions')();

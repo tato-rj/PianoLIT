@@ -1,6 +1,10 @@
 <?php
 
 Route::prefix('playlists')->name('playlists.')->group(function() {
+    Route::post('tags', 'Admin\PlaylistTagsController@store')->name('tags.store');
+    Route::patch('tags/{playlistTag}', 'Admin\PlaylistTagsController@update')->name('tags.update');
+    Route::delete('tags/{playlistTag}', 'Admin\PlaylistTagsController@destroy')->name('tags.destroy');
+
     Route::get('order', 'Admin\PlaylistsController@order')->name('order');
 
 	Route::patch('reorder', 'Admin\PlaylistsController@reorder')->name('reorder');

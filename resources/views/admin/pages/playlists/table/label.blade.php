@@ -12,6 +12,6 @@
             @if(($link ?? true) && $playlist->is_featured)<span class="admin-table__badge admin-table__badge--blue">Featured</span>@endif
         </div>
         <small class="clamp-2">{{ $playlist->subtitle }}</small>
-        @if($playlist->featured)<small>{{ $playlist->featured }}</small>@endif
+        <small data-playlist-featured-tag="{{ $playlist->featured_tag_id }}" @if(!$playlist->featured) hidden @endif>{{ $playlist->featured }}</small>
     </div>
 </div>

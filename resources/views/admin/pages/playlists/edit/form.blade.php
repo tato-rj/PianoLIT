@@ -16,7 +16,7 @@
 					<div class="flex-grow">
 						<input type="text" name="name" placeholder="Name" class="form-control mb-2" value="{{$playlist->name}}" required>
 						<input type="text" name="subtitle" maxlength="72" placeholder="Subtitle" class="form-control mb-2" value="{{$playlist->subtitle}}" required>
-						<input type="text" name="featured" maxlength="16" placeholder="Featured tag (optional)" class="form-control mb-2" value="{{$playlist->featured}}">
+						@select(['bag' => 'default', 'id' => 'playlist-edit-featured', 'name' => 'featured_tag_id', 'label' => 'Featured tag (optional)', 'choices' => ['' => 'No tag'] + $playlistTags->pluck('name', 'id')->all(), 'value' => $playlist->featured_tag_id, 'required' => false])
 					</div>
 				</div>
 				<div class="custom-file mb-2">

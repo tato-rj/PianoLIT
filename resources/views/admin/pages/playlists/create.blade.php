@@ -7,7 +7,7 @@
         @input(['bag' => 'playlistCreate', 'id' => 'playlist-create-name', 'name' => 'name', 'label' => 'Playlist name', 'limit' => 255])
         @input(['bag' => 'playlistCreate', 'id' => 'playlist-create-subtitle', 'name' => 'subtitle', 'label' => 'Subtitle', 'limit' => 72])
         @textarea(['bag' => 'playlistCreate', 'id' => 'playlist-create-description', 'name' => 'description', 'label' => 'Description', 'rows' => 3, 'limit' => 255])
-        @input(['bag' => 'playlistCreate', 'id' => 'playlist-create-featured', 'name' => 'featured', 'label' => 'Featured tag (optional)', 'limit' => 16, 'required' => false])
+        @select(['bag' => 'playlistCreate', 'id' => 'playlist-create-featured', 'name' => 'featured_tag_id', 'label' => 'Featured tag (optional)', 'classes' => 'js-playlist-tag-select', 'choices' => ['' => 'No tag'] + $playlistTags->pluck('name', 'id')->all(), 'required' => false])
         @include('components.form.upload.file', ['bag' => 'playlistCreate', 'id' => 'playlist-create-cover', 'name' => 'cover', 'label' => 'Cover image (optional)', 'accept' => 'image/jpeg,image/png,image/gif,image/webp'])
         <p class="small text-muted">New playlists are saved as drafts.</p>
         <div class="d-flex justify-content-end flex-wrap gap-2 mt-4">

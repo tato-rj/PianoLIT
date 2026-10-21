@@ -11,7 +11,7 @@ class Playlist extends PianoLit
     protected $appends = ['cover_image', 'is_featured'];
     protected $withCount = ['pieces'];
     protected $dates = ['published_at'];
-    protected $hidden = ['published_at'];
+    protected $hidden = ['published_at', 'featured_tag_id', 'featuredTag'];
 
     public static function boot()
     {
@@ -31,6 +31,11 @@ class Playlist extends PianoLit
     public function creator()
     {
         return $this->belongsTo(Admin::class);
+    }
+
+    public function featuredTag()
+    {
+        return $this->belongsTo(PlaylistTag::class, 'featured_tag_id');
     }
 
     public function scopeComplete($query)

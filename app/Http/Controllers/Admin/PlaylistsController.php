@@ -17,7 +17,7 @@ class PlaylistsController extends Controller
     {
         $table = app(\App\Services\Admin\PlaylistsTable::class);
         if (request()->has('group')) return redirect()->route('admin.playlists.index', \App\Support\AdminTableFilters::query($table->filters(request()), 'order_asc'));
-        return view('admin.pages.playlists.index', $table->get(request()));
+        return view('admin.pages.playlists.index', $table->get(request()) + ['playlistTags' => app(\App\Services\Admin\PlaylistTags::class)->all()]);
     }
 
     public function order(Request $request)
@@ -37,7 +37,7 @@ class PlaylistsController extends Controller
     {
         $data = $request->validateWithBag('playlistCreate', [
             'name' => 'required|string|max:255', 'subtitle' => 'required|string|max:72',
-            'description' => 'required|string|max:255', 'featured' => 'nullable|string|max:16',
+            'description' => 'required|string|max:255', 'featured_tag_id' => 'nullable|integer|exists:playlist_tags,id',
             'group' => 'nullable|string|in:general,journey',
             'cover' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:8192',
         ]);
@@ -45,17 +45,19 @@ class PlaylistsController extends Controller
         $cover = $request->hasFile('cover') ? $request->file('cover')->store('app/playlists', 'public') : null;
         try {
             $playlist = \DB::transaction(function () use ($data, $cover) {
+                $tag = app(\App\Services\Admin\PlaylistTags::class)->assignment($data['featured_tag_id'] ?? null);
                 $group = $data['group'] === 'journey' ? 'journey' : null;
                 $orders = \DB::table('playlists')->where('group', $group)->lockForUpdate()->pluck('order');
                 return Playlist::create([
                     'creator_id' => auth('admin')->id(), 'name' => $data['name'], 'subtitle' => $data['subtitle'],
-                    'description' => $data['description'], 'featured' => $data['featured'] ?? null,
+                    'description' => $data['description'],
                     'cover_path' => $cover, 'group' => $group, 'published_at' => null,
                     'order' => $orders->isEmpty() ? 0 : $orders->max() + 1,
-                ]);
+                ] + $tag);
             }, 3);
         } catch (\Throwable $exception) {
             if ($cover) \Storage::disk('public')->delete($cover);
+            if ($exception instanceof \Illuminate\Validation\ValidationException) $exception->errorBag('playlistCreate');
             throw $exception;
         }
         return redirect()->route('admin.playlists.edit', $playlist)->with('status', 'The playlist has been created as a draft.');
@@ -83,7 +85,7 @@ class PlaylistsController extends Controller
         if (request()->ajax())
             return Piece::with(['tags', 'composer'])->orderBy('updated_at', 'desc')->datatable(view('admin.pages.playlists.edit.table.actions'));
 
-        return view('admin.pages.playlists.edit.index', compact(['playlist']));
+        return view('admin.pages.playlists.edit.index', ['playlist' => $playlist, 'playlistTags' => app(\App\Services\Admin\PlaylistTags::class)->all()]);
     }
 
     /**
@@ -95,26 +97,32 @@ class PlaylistsController extends Controller
      */
     public function update(Request $request, Playlist $playlist)
     {
-        $playlist->update([
-            'name' => $request->name,
-            'subtitle' => $request->subtitle,
-            'description' => $request->description,
-            'featured' => $request->featured ?? null
+        $data = $request->validate([
+            'name' => 'required|string|max:255', 'subtitle' => 'required|string|max:72', 'description' => 'required|string|max:255',
+            'featured_tag_id' => 'nullable|integer|exists:playlist_tags,id',
+            'pieces' => 'sometimes|array', 'pieces.*' => 'required|integer|distinct|exists:pieces,id',
+            'cover' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:8192',
         ]);
-
-        $playlist->pieces()->detach();
-
-        if ($request->has('pieces')) {
-            foreach ($request->pieces as $order => $piece) {
-                $playlist->pieces()->attach($piece, ['order' => $order]);
-            }
+        $cover = $request->hasFile('cover') ? $request->file('cover')->store('app/playlists', 'public') : null;
+        $oldCover = null;
+        try {
+            \DB::transaction(function () use ($data, $cover, $playlist, &$oldCover) {
+                $tag = app(\App\Services\Admin\PlaylistTags::class)->assignment($data['featured_tag_id'] ?? null);
+                $record = Playlist::whereKey($playlist->id)->lockForUpdate()->firstOrFail();
+                $oldCover = $record->cover_path;
+                $record->update([
+                    'name' => $data['name'], 'subtitle' => $data['subtitle'], 'description' => $data['description'],
+                    'cover_path' => $cover ?? $oldCover,
+                ] + $tag);
+                $pieces = [];
+                foreach ($data['pieces'] ?? [] as $order => $id) $pieces[$id] = ['order' => $order];
+                $record->pieces()->sync($pieces);
+            }, 3);
+        } catch (\Throwable $exception) {
+            if ($cover) \Storage::disk('public')->delete($cover);
+            throw $exception;
         }
-
-        if ($request->hasFile('cover')) {
-            \Storage::disk('public')->delete($playlist->cover_path);
-            
-            $playlist->update(['cover_path' => $request->file('cover')->store('app/playlists', 'public')]);
-        }
+        if ($cover && $oldCover && $cover !== $oldCover) \Storage::disk('public')->delete($oldCover);
 
         return redirect()->back()->with('status', 'The playlist has been successfully updated');
     }

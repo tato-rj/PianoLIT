@@ -2,10 +2,12 @@
 
 @section('content')
 <div class="content-wrapper"><div class="container-fluid">
-    @include('admin.components.page.title', [
+    @component('admin.components.page.title', [
         'title' => 'Playlists', 'subtitle' => 'Curate collections, manage publication and arrange their display order.',
-        'action' => ['label' => 'Create a new playlist', 'modal' => 'add-modal'],
     ])
+        <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#add-modal">@icon('plus')Create a new playlist</button>
+        <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#playlist-tags-modal">@icon('tag')Manage tags</button>
+    @endcomponent
     @component('admin.components.table', [
         'id' => 'playlists-table', 'label' => 'Playlists', 'items' => $playlists,
         'description' => number_format($playlists->total()).' matching playlists.',
@@ -40,8 +42,10 @@
 </div></div>
 @include('admin.components.modals.delete')
 @include('admin.pages.playlists.create')
+@include('admin.pages.playlists.tags.modal')
 @endsection
 
 @section('scripts')
 <script src="{{ mix('js/views/admin-playlists.js') }}"></script>
+<script src="{{ mix('js/views/admin-playlist-tags.js') }}"></script>
 @endsection
