@@ -67,15 +67,19 @@ class ExcludedAccounts
             // anonymous context. Never infer ownership from submitted IDs/IPs.
             $cleanupFailed = false;
             $visitor = $request->hasSession() ? $request->session()->get('activity.visitor') : null;
-            if ($visitor || $request->cookie('pianolit_campaign_visit')) {
-                try { (new ExcludedHistory)->anonymous($visitor, $request->cookie('pianolit_campaign_visit')); }
+            $arrivals = $request->hasSession() ? (array) $request->session()->get(\App\Services\CampaignAttribution::ARRIVAL_SESSION, []) : [];
+            if ($visitor || $request->cookie('pianolit_campaign_visit') || $arrivals) {
+                try {
+                    (new ExcludedHistory)->anonymous($visitor, $request->cookie('pianolit_campaign_visit'));
+                    foreach ($arrivals as $arrival) (new ExcludedHistory)->anonymous(null, $arrival);
+                }
                 // Keep the anonymous context for a later retry without sending
                 // its identity/payload to an external error tracker.
                 catch (\Throwable $exception) { $cleanupFailed = true; }
             }
             if ($request->hasSession()) {
                 $request->session()->forget(['activity.visit', PendingVisits::KEY, 'webapp.location_attempt']);
-                if (!$cleanupFailed) $request->session()->forget('activity.visitor');
+                if (!$cleanupFailed) $request->session()->forget(['activity.visitor', \App\Services\CampaignAttribution::ARRIVAL_SESSION]);
                 $request->session()->put(self::SESSION, true);
             }
             foreach (['activity.page', 'activity.visitor', 'webapp.location'] as $name) $request->attributes->remove($name);
@@ -83,7 +87,7 @@ class ExcludedAccounts
                 Cookie::queue(new BrowserCookie(self::COOKIE, '1', now()->addYear(), '/', self::domain($request), $request->isSecure(), true, false, 'lax'));
                 $request->cookies->set(self::COOKIE, '1');
             }
-            if (!$cleanupFailed && ($request->cookie('pianolit_campaign_visit') || $request->cookie('pianolit_campaign_consent'))) (new \App\Services\CampaignAttribution)->clearCookies($request);
+            if (!$cleanupFailed && ($arrivals || $request->cookie('pianolit_campaign_visit') || $request->cookie('pianolit_campaign_consent'))) (new \App\Services\CampaignAttribution)->clearCookies($request);
         } elseif ($user instanceof User) {
             // A different signed-in account on a shared browser resumes normal
             // measurement. This privacy flag never grants account/media access.

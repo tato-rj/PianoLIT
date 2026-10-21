@@ -12,6 +12,7 @@ class CampaignAttribution
 {
     const VISIT_COOKIE = 'pianolit_campaign_visit';
     const CONSENT_COOKIE = 'pianolit_campaign_consent';
+    const ARRIVAL_SESSION = 'campaign.arrivals';
 
     public function available(Request $request)
     {
@@ -36,10 +37,53 @@ class CampaignAttribution
         if (! $this->available($request) || ! $request->isMethod('GET')) return null;
         $parameters = CampaignParameters::fromQuery($request->query());
         if (! $parameters) return null;
-        return Crypt::encryptString(json_encode([
-            'parameters' => $parameters, 'visit_id' => (string) Str::uuid(), 'issued_at' => now()->timestamp,
+        if ($request->attributes->has('campaign.touch')) return Crypt::encryptString(json_encode($request->attributes->get('campaign.touch')));
+        $visit = $this->arrival($request);
+        $touch = [
+            'parameters' => $visit ? array_intersect_key((array) $visit, array_flip(CampaignParameters::FIELDS)) : $parameters,
+            'visit_id' => $visit ? $visit->id : (string) Str::uuid(), 'issued_at' => now()->timestamp,
             'context' => $this->context($request),
-        ]));
+        ];
+        $request->attributes->set('campaign.touch', $touch);
+        return Crypt::encryptString(json_encode($touch));
+    }
+
+    public function recordArrival(Request $request, $response)
+    {
+        // Ordinary navigation must not add account-exclusion/database lookups.
+        if (! $request->isMethod('GET') || ! CampaignParameters::fromQuery($request->query())) return;
+        if (! $this->available($request) || $this->consent($request) === 'denied'
+            || $request->ajax() || $request->expectsJson()
+            || ($request->hasHeader('Accept') && strpos($request->header('Accept'), 'text/html') === false)
+            || \App\Activity\TrafficFilter::ignores($request)
+            || stripos($request->header('Sec-Purpose', $request->header('Purpose', '')), 'prefetch') !== false
+            || ! $response->isSuccessful() || stripos($response->headers->get('Content-Type', ''), 'text/html') === false) return;
+        if (! $this->landingToken($request) || $this->arrival($request)) return;
+        $touch = $request->attributes->get('campaign.touch');
+        // An arrival is anonymous until the existing consent endpoint explicitly
+        // upgrades it. No account link or long-lived campaign cookie is created.
+        DB::table('campaign_visits')->insertOrIgnore($touch['parameters'] + [
+            'id' => $touch['visit_id'], 'campaign' => CampaignParameters::key($touch['parameters']),
+            'user_id' => null, 'consented_at' => null, 'created_at' => now(),
+            'expires_at' => now()->addDays(config('attribution.touch_days')),
+        ]);
+        $request->session()->put($this->arrivalSessionKey($request), $touch['visit_id']);
+    }
+
+    private function arrivalSessionKey(Request $request)
+    {
+        // Session domains can be shared; attribution must still stay host-local.
+        return self::ARRIVAL_SESSION.'.'.hash('sha256', $request->getHost());
+    }
+
+    private function arrival(Request $request, $requireFresh = true)
+    {
+        if ($visit = $this->visit($request, $requireFresh)) return $visit;
+        $id = $request->session()->get($this->arrivalSessionKey($request));
+        if (! is_string($id) || ! Str::isUuid($id)) return null;
+        $query = DB::table('campaign_visits')->where('id', $id)->whereNull('user_id')->whereNull('consented_at');
+        if ($requireFresh) $query->where('expires_at', '>', now());
+        return $query->first();
     }
 
     public function campaignFromToken($token)
@@ -64,7 +108,7 @@ class CampaignAttribution
         $id = $request->cookie(self::VISIT_COOKIE);
         if (! is_string($id) || ! Str::isUuid($id)) return null;
         $visit = DB::table('campaign_visits')->where('id', $id)->first();
-        if (! $visit) return null;
+        if (! $visit || ! $visit->consented_at) return null;
         $userId = auth('web')->id();
         if ($visit->user_id !== null && (int) $visit->user_id !== (int) $userId) return null;
         if ($requireFresh && \Carbon\Carbon::parse($visit->expires_at)->lte(now())) return null;
@@ -87,7 +131,7 @@ class CampaignAttribution
     public function choose(Request $request, $choice, $touch = null)
     {
         if ($choice === 'denied') {
-            if ($visit = $this->visit($request, false)) DB::table('campaign_visits')->where('id', $visit->id)->delete();
+            if ($arrival = $this->arrival($request, false)) DB::table('campaign_visits')->where('id', $arrival->id)->delete();
             if (auth('web')->check()) DB::table('campaign_visits')->where('user_id', auth('web')->id())->delete();
             $this->clearCookies($request);
         }
@@ -105,6 +149,10 @@ class CampaignAttribution
                 'consented_at' => now(), 'created_at' => now(),
                 'expires_at' => now()->addDays(config('attribution.touch_days')),
             ]));
+            // The GET may already have counted this exact anonymous arrival.
+            // Opt-in adds permission/account linkage without a second arrival.
+            DB::table('campaign_visits')->where('id', $id)->whereNull('user_id')->whereNull('consented_at')
+                ->update(['consented_at' => now(), 'user_id' => auth('web')->id()]);
             $this->queueCookie($request, self::VISIT_COOKIE, $id);
             $request->cookies->set(self::VISIT_COOKIE, $id);
         }
@@ -113,6 +161,7 @@ class CampaignAttribution
 
     public function clearCookies(Request $request)
     {
+        if ($request->hasSession()) $request->session()->forget($this->arrivalSessionKey($request));
         foreach ([self::VISIT_COOKIE, self::CONSENT_COOKIE] as $name) {
             Cookie::queue(new BrowserCookie($name, '', now()->subDay(), '/', null, $request->isSecure(), true, false, 'lax'));
             $request->cookies->remove($name);

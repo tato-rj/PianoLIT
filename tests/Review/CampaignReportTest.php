@@ -193,4 +193,27 @@ class CampaignReportTest extends ReviewTestCase
         config(['attribution.enabled' => false]);
         $this->get(route('admin.analytics.campaigns'))->assertOk()->assertSee('Campaign tracking is disabled')->assertSee('future-source.example');
     }
+
+    public function test_anonymous_arrival_migration_preserves_existing_visits_and_subscription_links()
+    {
+        $visit = $this->visit('youtube.com');
+        $this->paid($visit, 'beforemigration');
+        $before = (array) DB::table('campaign_visits')->sole();
+        $subscription = (array) DB::table('campaign_subscriptions')->sole();
+        $migration = new \AllowAnonymousCampaignArrivals;
+        $migration->down();
+        $migration->up();
+        $this->assertSame($before, (array) DB::table('campaign_visits')->sole());
+        $this->assertSame($subscription, (array) DB::table('campaign_subscriptions')->sole());
+        $this->assertSame(1, (new CampaignAttributionReport)->rows(now()->subDay())[0]['first_paid_subscriptions']);
+        $anonymous = $this->visit('reddit.com');
+        DB::table('campaign_visits')->where('id', $anonymous)->update(['consented_at' => null]);
+        $migration->down(); // A code rollback must neither discard nor invent consent.
+        $this->assertDatabaseHas('campaign_visits', ['id' => $anonymous, 'consented_at' => null]);
+        $this->assertDatabaseHas('campaign_subscriptions', $subscription);
+        $migration->up();
+        $this->assertDatabaseHas('campaign_visits', ['id' => $anonymous, 'consented_at' => null]);
+        $this->assertSame([], DB::select('PRAGMA foreign_key_check'));
+        $this->assertSame(1, (int) DB::select('PRAGMA foreign_keys')[0]->foreign_keys);
+    }
 }

@@ -6,7 +6,7 @@
 
     <section class="ua-card" aria-label="Campaign tracking">
         <h2>{{ $enabled ? 'Campaign tracking is enabled' : 'Campaign tracking is disabled' }}</h2>
-        <p>{{ $enabled ? 'New sources, mediums and campaigns appear automatically after a visitor allows measurement.' : 'Saved results are shown below. Enable CAMPAIGN_ATTRIBUTION_ENABLED in the server configuration to record new arrivals.' }}</p>
+        <p>{{ $enabled ? 'Tagged visits appear automatically. Linking a visit to an account, trial or payment requires the visitor to allow measurement.' : 'Saved results are shown below. Enable CAMPAIGN_ATTRIBUTION_ENABLED in the server configuration to record new arrivals.' }}</p>
         <details><summary>How to tag a link</summary>
             <p class="mt-3">Add any of <code>utm_source</code>, <code>utm_medium</code> or <code>utm_campaign</code> to a public website or web app link. Each works on its own, or you can combine them. For example, <code>?utm_campaign=autumn_repertoire</code> tracks that campaign without a source or medium.</p>
             <p>To record all three, use <code>?utm_source=youtube.com&amp;utm_medium=video&amp;utm_campaign=autumn_repertoire</code>. Start with <code>&amp;</code> when the link already has a query string.</p>
@@ -28,7 +28,7 @@
             'Trials', 'First paid subscriptions', 'First payment revenue', 'Latest arrival',
         ],
         'emptyTitle' => 'No measured campaign arrivals',
-        'emptyDescription' => 'Results appear after visitors open tagged links and allow measurement. Try another search or arrival period.',
+        'emptyDescription' => 'Results appear when visitors open valid tagged links. Try another search or arrival period.',
     ])
         @foreach($campaigns as $campaign)
         <tr>
@@ -42,6 +42,6 @@
         </tr>
         @endforeach
     @endcomponent
-    <p class="ua-note">Arrivals count consented first touches within a 30-day window, rather than every click or unique people. Trials and payments belong to the selected arrival period, even when they happen later. Revenue includes the first positive subscription payment, before fees and refunds; renewals are excluded and currencies stay separate. Declined measurement, blocked scripts, cross-device visits and excluded accounts are outside these results. Campaign cookies stay on the arrival host; moving between the website and web app does not carry attribution.</p>
+    <p class="ua-note">Arrivals count the first tagged visit per browser session, or per 30-day campaign cookie after opt-in; they are not every click or unique people. Anonymous visits need no button click or JavaScript. Account, trial and payment attribution requires opt-in. Trials and payments belong to the selected arrival period, even when they happen later. Revenue includes the first positive subscription payment, before fees and refunds; renewals are excluded and currencies stay separate. Declined measurement, known bots and excluded accounts stay out. Attribution stays on the arrival host and does not follow visitors across devices.</p>
 </div></div>
 @endsection
