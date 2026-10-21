@@ -14,7 +14,7 @@
   @manager
   <div class="admin-dashboard-filters">
     <nav class="admin-segmented" aria-label="Activity platform">
-      @foreach(['all' => 'All platforms', 'web' => 'Website', 'webapp' => 'Web app', 'app' => 'iOS'] as $key => $label)
+      @foreach(['all' => 'All', 'web' => 'Website', 'webapp' => 'Web app', 'app' => 'iOS'] as $key => $label)
       <a href="{{route('admin.home', ['days' => $dashboard['days'], 'platform' => $key])}}" class="{{$dashboard['platform'] === $key ? 'is-active' : ''}}" @if($dashboard['platform'] === $key) aria-current="true" @endif>{{$label}}</a>
       @endforeach
     </nav>
@@ -79,7 +79,7 @@
           @endforeach
         </ol>
         @else
-        <div class="admin-engaged-empty">@icon('users', ['mr' => 0])<strong>{{$dashboard['platform'] === 'app' ? 'User rankings unavailable' : 'No active web accounts'}}</strong><p>{{$dashboard['platform'] === 'app' ? 'Choose All platforms, Website or Web app to see engaged accounts.' : 'No signed-in web activity was recorded in this period.'}}</p></div>
+        <div class="admin-engaged-empty">@icon('users', ['mr' => 0])<strong>{{$dashboard['platform'] === 'app' ? 'User rankings unavailable' : 'No active web accounts'}}</strong><p>{{$dashboard['platform'] === 'app' ? 'Choose All, Website or Web app to see engaged accounts.' : 'No signed-in web activity was recorded in this period.'}}</p></div>
         @endif
         <a class="admin-card-footer-link" href="{{route('admin.users.index')}}">View all users @icon('arrow-right', ['mr' => 0])</a>
       </article>
