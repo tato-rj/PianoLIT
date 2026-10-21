@@ -3040,13 +3040,7 @@ var DataTableRaw = /*#__PURE__*/function () {
         columnDefs: [{
           'orderable': false,
           'targets': [obj.dontSortFirst, obj.sortLast]
-        }],
-        language: {
-          paginate: {
-            next: '&#8594;',
-            previous: '&#8592;'
-          }
-        }
+        }]
       };
       this.$table.DataTable(_objectSpread(_objectSpread({}, defaultOptions), obj.options));
     }
@@ -116418,6 +116412,41 @@ $.ajaxSetup({
     $.extend($.fn.dataTable.ext.classes, {
         sFilterInput: 'form-control pianolit-input',
         sLengthSelect: 'form-control'
+    });
+
+    $(document).on('preInit.dt.pianolitPagination', function (event, settings) {
+        var language = settings.oInit.language || settings.oInit.oLanguage || {};
+        if (language.url || language.sUrl) return;
+        if (language.info === undefined && language.sInfo === undefined) settings.oLanguage.sInfo = 'Showing _START_–_END_ of _TOTAL_ results';
+        if (language.infoEmpty === undefined && language.sInfoEmpty === undefined) settings.oLanguage.sInfoEmpty = 'Showing 0–0 of 0 results';
+        var paginate = language.paginate || language.oPaginate || {};
+        function arrow(icon, label) {
+            return '<i class="app-icon icon-' + icon + '" aria-hidden="true"></i><span class="visually-hidden">' + label + '</span>';
+        }
+        if (paginate.previous === undefined && paginate.sPrevious === undefined) settings.oLanguage.oPaginate.sPrevious = arrow('chevron-left', 'Previous page');
+        if (paginate.next === undefined && paginate.sNext === undefined) settings.oLanguage.oPaginate.sNext = arrow('chevron-right', 'Next page');
+    });
+
+    // Keep DataTables' original info/pager nodes and their handlers. Bootstrap
+    // renderers already share a footer row; older renderers need one wrapper.
+    $(document).on('init.dt.pianolitPagination', function (event, settings) {
+        var wrapper = settings.nTableWrapper;
+        if (!wrapper) return;
+        var info = wrapper.querySelector('.dataTables_info');
+        var pager = wrapper.querySelector('.dataTables_paginate');
+        if (!info && !pager) return;
+        var row = (info || pager).closest('.row');
+        if (row && row.parentElement === wrapper && (!pager || row.contains(pager))) {
+            row.classList.add('admin-pagination');
+            return;
+        }
+        if ((!info || info.parentElement === wrapper) && (!pager || pager.parentElement === wrapper)) {
+            var footer = document.createElement('div');
+            footer.className = 'admin-pagination';
+            if (info) footer.appendChild(info);
+            if (pager) footer.appendChild(pager);
+            wrapper.appendChild(footer);
+        }
     });
 
     $(document).on('preInit.dt.pianolitFields', function (event, settings) {

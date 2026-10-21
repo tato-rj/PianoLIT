@@ -43,7 +43,7 @@
             </small>
         </div>
         @empty<p>No dated {{ $iosOnly ? 'iOS requests' : 'ungrouped records' }} in this period.</p>@endforelse
-        {{ $history->links() }}
+        @include('admin.components.pagination', ['paginator' => $history, 'label' => 'Activity'])
     </section>
     @endif
 </div></div>

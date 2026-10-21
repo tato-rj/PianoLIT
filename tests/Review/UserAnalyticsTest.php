@@ -224,6 +224,23 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('A request could not be completed (HTTP 500)');
     }
 
+    public function test_failed_request_details_identify_the_endpoint_without_exposing_private_query_values()
+    {
+        $visit = $this->visit();
+        $failure = $this->event($visit, null, 'request');
+        DB::table('activity_events')->where('id', $failure)->update([
+            'source' => 'server', 'status' => 429, 'method' => 'POST',
+            'route_name' => 'webapp.membership.prepare.card',
+            'url' => 'https://my.pianolit.test/membership/card/prepare?token=private-token&email=private@example.test',
+        ]);
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->get(route('admin.analytics.users.journey', $visit))->assertOk()
+            ->assertSee('A request could not be completed (HTTP 429)')
+            ->assertSee('HTTP method')->assertSee('POST')->assertSee('webapp.membership.prepare.card')
+            ->assertSee('https://my.pianolit.test/membership/card/prepare')
+            ->assertDontSee('private-token')->assertDontSee('private@example.test');
+    }
+
     public function test_preview_play_clicks_fold_only_into_subsequent_playback_for_the_same_page_and_preview()
     {
         $visit = $this->visit(); $page = $this->page($visit, 'webapp.find-your-match');

@@ -49,7 +49,3 @@ div.dataTables_paginate li.previous a:before,
 div.dataTables_paginate li.next a:after {
     content: none !important;
 }
-div.dataTables_paginate li.previous > a,
-div.dataTables_paginate li.next > a {
-    padding: 0.5rem 0.75rem !important;
-}

@@ -11,9 +11,6 @@
     ])
 
     <div class="row my-3">
-      <div class="col-12 text-center">
-        <p class="text-center"><small>Showing {{$editors->count()}} of {{$editors->total()}}</small></p>
-      </div>
       @foreach($editors as $editor)
       <div class="col-12 mb-2">
         <div class="d-flex justify-content-between px-3 py-2 bg-light text-muted rounded">
@@ -30,11 +27,7 @@
     </div>
 
     {{-- PAGINATION --}}
-    <div class="row mb-3">
-          <div class="d-flex align-items-center w-100 justify-content-center my-4">
-        {{ $editors->links() }}
-        </div>
-    </div>
+    @include('admin.components.pagination', ['paginator' => $editors, 'label' => 'Editors'])
 
   </div>
 </div>

@@ -491,23 +491,6 @@
         margin: 10px 0 20px;
         color: #626d65;
     }
-    .fa-pagination {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-        margin-top: 22px;
-    }
-    .fa-pagination p {
-        font-size: var(--font-size-sm);
-        color: #626d65;
-    }
-    .fa-pagination .pagination {
-        margin-bottom: 0;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
     .fa-detail {
         border-color: #91b39d;
         margin-bottom: 22px;

@@ -35,7 +35,6 @@
         line-height: 1.3;
     }
     .admin-table__heading p,
-    .admin-table__footer p,
     .admin-table__scroll-hint {
         color: #687169;
         font-size: var(--font-size-sm);
@@ -141,19 +140,6 @@
     .admin-table__empty p {
         margin: 0;
         color: #626b64;
-    }
-    .admin-table__footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 16px;
-        margin-top: 20px;
-    }
-    .pagination {
-        margin: 0;
-        gap: 5px;
-        flex-wrap: wrap;
     }
     .admin-users-table {
         min-width: 800px;
@@ -304,7 +290,7 @@
             opacity: 1;
         }
         .dataTables_info::before {
-            top: calc(50% + 0.425em);
+            top: 50%;
             width: 220px;
             max-width: 85%;
         }

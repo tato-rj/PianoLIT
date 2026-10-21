@@ -13,6 +13,22 @@ the page heading already identifies it. Pass `label` for its accessible name.
 Use a visible table title only to distinguish a section on a multi-section page,
 such as Membership directory inside Membership analytics.
 
+All admin pagination uses `admin.components.pagination`: Showing 1–12 of N
+results stays on the left and the rounded page controls stay on the right. The
+active page is dark with white text; inactive controls have a soft white surface.
+The footer wraps at narrow widths, retaining those alignments. Pass `paginator`
+and an accessible `label`; optional `unit` and `note` preserve list-specific copy.
+Preserve the paginator's query parameters, page name and fragment. The table
+component includes this footer automatically; standalone admin lists use it too.
+The Design System renders this same footer with inert preview buttons.
+
+`resources/sass/admin/_pagination.scss` owns the shared finish, scoped to admin.
+Retained DataTables use it through the `admin-table-fields.js` adapter: keep their
+original info/pager nodes and handlers, reuse an existing Bootstrap footer row or
+wrap the plain renderer's nodes. Default summary copy and chevrons match native
+tables; explicitly configured translations/labels remain supported. Keep loading
+placeholders and redraw behavior intact. Do not restore local pagination styles.
+
 ## Component usage
 
 The component owns the rounded card, heading, shared filter form, table headers,

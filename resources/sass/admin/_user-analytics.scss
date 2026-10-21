@@ -826,22 +826,6 @@
         gap: 4px;
         overflow-wrap: anywhere;
     }
-    .pagination {
-        margin-top: 20px;
-        font-size: var(--font-size-base);
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-    .page-link {
-        border-radius: 12px;
-        border: 1px solid #fff;
-        color: #42573e;
-        background: rgba(255, 255, 255, 0.65);
-    }
-    .page-item.active .page-link {
-        background: #181e22;
-        border-color: #181e22;
-    }
 }
 @media (max-width: 1199px) {
     .ua .ua-metrics {

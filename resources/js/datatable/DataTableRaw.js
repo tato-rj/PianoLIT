@@ -12,12 +12,6 @@ class DataTableRaw
 		let defaultOptions = {
 		  aaSorting: [],
 		  columnDefs: [ { 'orderable': false, 'targets': [obj.dontSortFirst, obj.sortLast] } ],
-		  language: {
-		    paginate: {
-		      next: '&#8594;',
-		      previous: '&#8592;'
-		    }
-		  }
 		};
 
 		this.$table.DataTable({...defaultOptions, ...obj.options});

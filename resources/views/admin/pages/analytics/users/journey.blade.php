@@ -53,8 +53,8 @@
         </li>
         @empty<li class="ua-empty"><h2>Limited activity details were recorded for this visit.</h2><p>No page boundaries are available. Any independently recorded actions appear below.</p></li>@endforelse
     </ol>
-    {{ $pages->links() }}
-    @if($unplaced->total()){{ $unplaced->links() }}@endif
+    @include('admin.components.pagination', ['paginator' => $pages, 'label' => 'Visit pages'])
+    @if($unplaced->total())@include('admin.components.pagination', ['paginator' => $unplaced, 'label' => 'Additional activity'])@endif
 </div></div>
 @component('components.modal', ['id' => 'delete-visit-modal', 'header' => 'Delete this visit?', 'centered' => true, 'descriptionId' => 'delete-visit-description', 'options' => ['body' => ['padding' => 3]]])
     @slot('body')

@@ -58,7 +58,7 @@
             </article>
             @empty<div class="fa-directory-empty"><span class="fa-folder-icon">@icon('folder-search', ['mr' => 0])</span><h3>{{ $folders->total() ? 'No folders on this page' : ($summary['total'] ? 'No folders match these filters' : 'No custom folders yet') }}</h3><p>{{ $folders->total() ? 'Return to the first page of these results.' : ($summary['total'] ? 'Try a different search or folder size.' : 'Folders will appear here when users create their own collections.') }}</p>@if($folders->total())<a class="fa-button" href="{{ route('admin.analytics.favorites', array_diff_key($filters, array_flip(['page', 'folder', 'pieces_page']))) }}#folder-directory">First page</a>@elseif($summary['total'])<a class="fa-button" href="{{ route('admin.analytics.favorites') }}#folder-directory">Show all folders</a>@endif</div>@endforelse
         </div>
-        @if($folders->total())<div class="fa-pagination"><p>Showing {{ $folders->firstItem() ?? 0 }}–{{ $folders->lastItem() ?? 0 }} of {{ number_format($folders->total()) }} folders</p>{{ $folders->fragment('folder-directory')->links() }}</div>@endif
+        @include('admin.components.pagination', ['paginator' => $folders->fragment('folder-directory'), 'label' => 'Folders', 'unit' => 'folders'])
     </section>
 </div></div>
 @endsection

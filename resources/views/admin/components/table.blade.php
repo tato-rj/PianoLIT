@@ -56,12 +56,5 @@
             </tbody>
         </table>
     </div>
-    @if($paginated && $items->count())
-    <div class="admin-table__footer">
-        <p>Showing {{ number_format($items->firstItem()) }}–{{ number_format($items->lastItem()) }} of {{ number_format($items->total()) }} results</p>
-        {{ $items->onEachSide(1)->links('admin.components.table-pagination', ['label' => $label ?? $title ?? 'Results']) }}
-    </div>
-    @elseif($paginated && $items->hasPages())
-    <div class="admin-table__footer">{{ $items->onEachSide(1)->links('admin.components.table-pagination', ['label' => $label ?? $title ?? 'Results']) }}</div>
-    @endif
+    @if($paginated)@include('admin.components.pagination', ['paginator' => $items, 'label' => $label ?? $title ?? 'Results'])@endif
 </section>

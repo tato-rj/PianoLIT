@@ -124,8 +124,8 @@
         'buttons' => [['label' => 'Apply filters'], ['label' => 'Reverse order', 'secondary' => true, 'icon' => 'arrow-down']],
       ])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Pagination', 'usage' => '.pagination + .page-link', 'properties' => 'font-size,padding,border,border-radius,background-color'])
-      <div class="admin-table p-0 border-0"><nav aria-label="Sample pagination"><ul class="pagination"><li class="page-item disabled"><span class="page-link" aria-label="Previous page">@icon('chevron-left', ['mr' => 0])</span></li><li class="page-item active" aria-current="page"><span class="page-link" data-ds-preview>1</span></li><li class="page-item"><button class="page-link" type="button">2</button></li><li class="page-item"><button class="page-link" type="button" aria-label="Next page">@icon('chevron-right', ['mr' => 0])</button></li></ul></nav></div>
+    @component('admin.pages.settings.sample', ['label' => 'Pagination', 'usage' => 'admin.components.pagination · table-pagination', 'properties' => 'font-size,padding,border,border-radius,background-color'])
+      @include('admin.components.pagination', ['paginator' => new \Illuminate\Pagination\LengthAwarePaginator(range(1, 12), 72, 12), 'label' => 'Sample', 'preview' => true])
     @endcomponent
   </div>
 </section>

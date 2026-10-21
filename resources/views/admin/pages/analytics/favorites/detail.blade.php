@@ -4,6 +4,6 @@
     @if(!$pieces->total())<p class="fa-empty">This folder has no saved pieces.</p>@else
         @if($pieces->isEmpty())<p class="fa-empty">No pieces on this page. <a href="{{ route('admin.analytics.favorites', array_diff_key($filters, ['pieces_page' => true])) }}#folder-detail">Return to the first page.</a></p>@endif
         <ol class="fa-piece-list" start="{{ $pieces->firstItem() }}">@foreach($pieces as $piece)<li><span>{{ $pieces->firstItem() + $loop->index }}</span><div><a href="{{ route('webapp.pieces.show', $piece->id) }}" target="_blank" rel="noopener noreferrer">{{ $piece->name }}</a><small>{{ $piece->composer ?: 'Composer unavailable' }}</small></div><time>{{ $piece->saved_at ? carbon($piece->saved_at)->format('M j, Y') : 'Date unknown' }}<small>Saved</small></time></li>@endforeach</ol>
-        <div class="fa-pagination"><p>Showing {{ $pieces->firstItem() ?? 0 }}–{{ $pieces->lastItem() ?? 0 }} of {{ number_format($pieces->total()) }} pieces · folder order</p>{{ $pieces->links() }}</div>
+        @include('admin.components.pagination', ['paginator' => $pieces, 'label' => 'Folder pieces', 'unit' => 'pieces', 'note' => 'folder order'])
     @endif
 </article>

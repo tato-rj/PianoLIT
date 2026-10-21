@@ -1,0 +1,133 @@
+// One pagination finish for native admin lists and retained DataTables.
+// Keep scoped to administration so public and mobile-facing views are unchanged.
+@mixin admin-pagination-button($margin: 0) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    min-height: 44px;
+    padding: 8px 12px;
+    margin: $margin;
+    border: 1px solid var(--color-white);
+    border-radius: var(--radius-button);
+    color: #42573e;
+    background: rgba(255, 255, 255, 0.65);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+        color: #253e30;
+        background: #eef1ec;
+        border-color: var(--color-white);
+        text-decoration: none;
+    }
+}
+
+@mixin admin-pagination-active {
+    color: var(--color-white);
+    background: #181e22;
+    border-color: #181e22;
+}
+
+.admin-shell {
+    .admin-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        width: 100%;
+        margin-top: 20px;
+    }
+    .admin-pagination__summary {
+        margin: 0;
+        color: #687169;
+        font-size: var(--font-size-sm);
+    }
+    .admin-pagination > nav {
+        margin-left: auto;
+        max-width: 100%;
+    }
+    .pagination {
+        margin: 0;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        font-size: var(--font-size-base);
+    }
+    .pagination .page-item .page-link {
+        @include admin-pagination-button;
+    }
+    .pagination .page-item.active .page-link {
+        @include admin-pagination-active;
+    }
+    .pagination .page-item.disabled .page-link {
+        color: #8c968e;
+        background: rgba(255, 255, 255, 0.65);
+        cursor: default;
+    }
+    .admin-datatable__placeholder .pagination .page-item .page-link {
+        background: #f1f3f5;
+        border-color: var(--color-white);
+    }
+
+    // Bootstrap DataTables keep their request/draw lifecycle and native controls.
+    div.dataTables_wrapper > .row:last-child {
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 20px;
+    }
+    div.dataTables_wrapper > .row:last-child > div {
+        flex: 0 1 auto;
+        width: auto;
+        max-width: 100%;
+        padding: 0;
+    }
+    div.dataTables_wrapper > .row:last-child > div:first-child {
+        margin-right: auto;
+    }
+    div.dataTables_wrapper > .row:last-child > div:last-child:not(:first-child) {
+        margin-left: auto;
+    }
+    div.dataTables_wrapper div.dataTables_info {
+        padding: 0;
+        color: #687169;
+        font-size: var(--font-size-sm);
+        text-align: left;
+        white-space: normal;
+    }
+    div.dataTables_wrapper div.dataTables_paginate {
+        margin: 0;
+        text-align: right;
+        white-space: normal;
+    }
+    div.dataTables_wrapper .admin-pagination > div.dataTables_paginate {
+        margin-left: auto;
+    }
+    div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+        margin: 0;
+        justify-content: flex-end;
+        white-space: normal;
+    }
+
+    // Older non-Bootstrap renderers emit anchors instead of .page-item lists.
+    .dataTables_paginate > .paginate_button,
+    .dataTables_paginate > span > .paginate_button {
+        @include admin-pagination-button(0 0 0 5px);
+
+        &.current { @include admin-pagination-active; }
+        &.disabled { color: #8c968e; cursor: default; }
+    }
+
+    @media (max-width: 575px) {
+        .pagination .page-item .page-link,
+        .dataTables_paginate > .paginate_button,
+        .dataTables_paginate > span > .paginate_button {
+            min-width: 32px;
+            padding: 8px;
+        }
+    }
+}

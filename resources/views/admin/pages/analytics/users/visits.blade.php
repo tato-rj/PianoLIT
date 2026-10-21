@@ -29,4 +29,4 @@
     </div>
 @endforelse
 </div>
-{{ $visits->links() }}
+@include('admin.components.pagination', ['paginator' => $visits, 'label' => 'Visits'])
