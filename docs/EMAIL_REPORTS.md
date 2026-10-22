@@ -200,3 +200,58 @@ delivery URLs remain unchanged.
 - [Event identity and timestamps](https://documentation.mailgun.com/docs/mailgun/user-manual/events/event-structure)
 - [Mailgun tracking and aggregate statistics](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/tracking-messages)
 - [MIME sending options and tracking tags](https://documentation.mailgun.com/docs/mailgun/user-manual/sending-messages/pass-sending-options)
+
+## PianoLIT newsletter
+
+Deploy `2026_10_21_230000_create_newsletter_digests_tables.php` before enabling
+matching scheduler/queue code, then restart Redis workers. For a rolling
+release, deploy the `Subscription::joinAll` newsletter exclusion on every web
+server and worker before exposing signup or creating the PianoLIT News list;
+older code otherwise enrolls new accounts in every existing list. This adds
+`newsletter_digests` and `newsletter_deliveries`, without changing shared/mobile
+content models, JSON, existing lists or media delivery.
+
+The newsletter is PianoLIT-wide, independent of Free Pick and other lists. The
+shared modal uses `@input` and the primary button. `newsletter.subscribe` and
+subscription AJAX stay on the request host for CSRF/session compatibility. The
+legacy blog `posts.subscribe` and already-open blog `/subscriptions` forms also
+join this newsletter. Other existing Free Pick/gift flows retain their behavior.
+Signing up sends no immediate email and preserves all other list preferences.
+
+`newsletter:send-monthly --execute` runs on the first at 08:00 America/New_York.
+It automatically selects the previous calendar month's published blog posts,
+crash courses, quizzes, infographics, eBooks and eScores using `published_at`.
+Pianist profiles are public immediately and use `created_at`. The interval is
+inclusive at its start and exclusive at the next month. Drafts, future releases,
+older items, and coming-soon hub roots are not announced automatically.
+
+Code-based feature, game and tool launches have no publication table. Add a
+stable, dated entry to `config/newsletter.php` alongside each launch, with its
+public route, title, description, hub and type. The monthly collector picks it
+up automatically in the matching month; there is no manual monthly campaign
+assembly. Preserve the key after publication. Remove an entry to withdraw it;
+removing its route also excludes it from delivery. Rebuild cached configuration
+when deploying changes. Do not backdate existing tools or infer release dates
+from route discovery, modified timestamps or deployments. The config includes a
+commented example and starts empty, so existing tools are not presented as new.
+
+No news means no campaign or emails. A monthly record freezes content keys and
+the opted-in audience, deduplicated by normalized email. Each recipient job
+rechecks membership and the selected content's current public availability;
+withdrawn items are omitted, and an empty selection skips delivery. New items
+or subscribers added after scheduling are not inserted into that campaign.
+
+The command without `--execute` prints a read-only selection preview. Re-running
+with `--execute` does not duplicate an already queued month. If Redis fails while
+scheduling, restore it and rerun during the same month. Failed jobs retain normal
+retry behavior; recipient locks and sent markers guard against ordinary duplicates.
+As with Free Pick, a provider accepting a message immediately before a process
+or database failure can leave an ambiguous delivery.
+
+Mail uses the existing tracking/report system and ExcludedAccounts guards.
+Recipient delivery records follow the three-calendar-month retention policy,
+pruned in batches of 500; non-recipient monthly markers remain to prevent
+historical resends. Existing report/receipt pruning remains intact. Email copy
+is editable in `resources/views/emails/newsletter/`; see the email README. The
+PianoLIT News list's manual Send action uses the same monthly/empty guards.
+Browser and test-email previews remain available through Email Lists.

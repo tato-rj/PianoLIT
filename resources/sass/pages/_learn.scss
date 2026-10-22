@@ -1,0 +1,15 @@
+.learn-home {
+    background: var(--color-surface-subtle);
+    letter-spacing: 0;
+
+    &__intro {
+        h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            letter-spacing: -.045em;
+            line-height: 1.15;
+        }
+        p { font-size: var(--font-size-base); line-height: 1.75; }
+    }
+    &__art { display: block; max-width: 100%; height: 150px; }
+    &__section { scroll-margin-top: 24px; }
+}

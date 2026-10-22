@@ -1,0 +1,32 @@
+// Quiet home link for standalone, full-screen public projects.
+.project-watermark {
+    position: fixed;
+    top: max(16px, env(safe-area-inset-top));
+    left: max(16px, env(safe-area-inset-left));
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    padding: 4px;
+    opacity: .3;
+    transition: opacity .18s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+
+    img {
+        display: block;
+        width: 44px;
+        height: 44px;
+        pointer-events: none;
+    }
+
+    &:hover,
+    &:focus-visible {
+        opacity: .65;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}

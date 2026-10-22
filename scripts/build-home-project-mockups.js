@@ -1,0 +1,177 @@
+// Build illustrated Discover screens inside the homepage's existing device frames.
+// Run with Node 24; Mix copies and versions the resulting self-contained SVGs.
+const fs = require('fs');
+const path = require('path');
+const root = path.resolve(__dirname, '..');
+
+const webapp = `<svg x="48" y="73" width="224" height="126" viewBox="0 0 448 252" font-family="Arial, sans-serif">
+  <rect width="448" height="252" fill="#FAFCFF"/>
+  <use href="#app-mark" x="20" y="12" width="21" height="21"/>
+  <text x="48" y="26" fill="#344866" font-size="11" font-weight="700">PianoLIT</text>
+  <path d="M350 23H369M382 23H401" stroke="#CCD9EF" stroke-width="5" stroke-linecap="round"/>
+  <path d="M20 42H428" stroke="#E7EDF7"/>
+  <text x="224" y="68" text-anchor="middle" fill="#344866" font-size="23" font-weight="700">Discover</text>
+  <rect x="177" y="78" width="94" height="18" rx="9" fill="#E5EDFF"/>
+  <text x="224" y="90" text-anchor="middle" fill="#5E7CB7" font-size="8" font-weight="700">Find your match</text>
+  <text x="28" y="117" fill="#526784" font-size="11" font-weight="700">Free weekly pick</text>
+  <rect x="26" y="126" width="396" height="57" rx="10" fill="url(#screen-blue)"/>
+  <circle cx="328" cy="153" r="38" fill="#CAD8FF" opacity=".25"/>
+  <text x="41" y="150" fill="white" font-size="15" font-weight="700">Sonatina</text>
+  <path d="M42 163H108" stroke="#D1DFFF" stroke-width="4" stroke-linecap="round"/>
+  <use href="#grand-piano" x="262" y="130" width="103" height="51"/>
+  <circle cx="399" cy="155" r="11" fill="#F5F8FF"/>
+  <path d="M396 150L404 155L396 160Z" fill="#647DC4"/>
+  <text x="28" y="204" fill="#526784" font-size="11" font-weight="700">Composers</text>
+  <use href="#composer-wig" x="29" y="212" width="31" height="31"/>
+  <path d="M70 225H111M70 234H97" stroke="#D3DDED" stroke-width="4" stroke-linecap="round"/>
+  <use href="#composer-wild" x="157" y="212" width="31" height="31"/>
+  <path d="M198 225H239M198 234H225" stroke="#D3DDED" stroke-width="4" stroke-linecap="round"/>
+  <use href="#composer-swept" x="285" y="212" width="31" height="31"/>
+  <path d="M326 225H367M326 234H353" stroke="#D3DDED" stroke-width="4" stroke-linecap="round"/>
+  <path d="M405 225L411 229L405 233" stroke="#9AAFD0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+const ios = `<svg x="106" y="26" width="108" height="235.38" viewBox="0 0 216 470.76" font-family="Arial, sans-serif">
+  <rect width="216" height="471" fill="#FCFCFF"/>
+  <rect width="216" height="188" fill="url(#screen-blue)"/>
+  <circle cx="188" cy="125" r="82" fill="#C7C9F5" opacity=".3"/>
+  <circle cx="10" cy="14" r="65" fill="#C7DCFF" opacity=".18"/>
+  <text x="17" y="17" fill="#F5F8FF" font-size="8" font-weight="700">9:41</text>
+  <path d="M174 13V16M179 11V16M184 9V16" stroke="#F5F8FF" stroke-width="2" stroke-linecap="round"/>
+  <rect x="191" y="9" width="13" height="7" rx="2" stroke="#F5F8FF" stroke-width="1.5"/>
+  <rect x="193" y="11" width="8" height="3" rx="1" fill="#F5F8FF"/>
+  <rect x="72" y="0" width="72" height="15" rx="8" fill="#273447"/>
+  <text x="108" y="58" text-anchor="middle" fill="white" font-size="29" font-weight="700">Discover</text>
+  <path d="M78 73H138" stroke="#CEDCFF" stroke-width="4" stroke-linecap="round"/>
+  <use href="#grand-piano" x="43" y="88" width="140" height="70"/>
+  <rect x="62" y="163" width="92" height="16" rx="8" fill="#D8E3FF" fill-opacity=".2" stroke="#DAE4FF"/>
+  <text x="108" y="174" text-anchor="middle" fill="white" font-size="7" font-weight="700">Find your match</text>
+  <text x="16" y="213" fill="#526784" font-size="12" font-weight="700">Free weekly pick</text>
+  <rect x="14" y="225" width="188" height="66" rx="10" fill="#E9ECFC"/>
+  <g transform="rotate(-7 47 258)">
+    <rect x="29" y="236" width="34" height="45" rx="4" fill="#CDD5F3"/>
+    <rect x="26" y="232" width="34" height="45" rx="4" fill="white"/>
+    <path d="M32 244H54M32 249H54M32 254H54M32 259H54" stroke="#CCD7EB" stroke-width="1.5"/>
+    <path d="M45 261V242L52 240V248" stroke="#7186C6" stroke-width="2.5" stroke-linejoin="round"/>
+    <ellipse cx="42" cy="262" rx="4" ry="3" fill="#7186C6"/>
+  </g>
+  <text x="77" y="249" fill="#526784" font-size="13" font-weight="700">Sonatina</text>
+  <path d="M79 261H129M79 270H112" stroke="#B7C5E2" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="181" cy="258" r="11" fill="#7188CE"/>
+  <path d="M178 253L186 258L178 263Z" fill="white"/>
+  <text x="16" y="317" fill="#526784" font-size="12" font-weight="700">Composers</text>
+  <use href="#composer-wig" x="16" y="332" width="47" height="47"/>
+  <use href="#composer-wild" x="85" y="332" width="47" height="47"/>
+  <use href="#composer-swept" x="154" y="332" width="47" height="47"/>
+  <path d="M26 389H52M95 389H121M164 389H190" stroke="#CAD4E6" stroke-width="4" stroke-linecap="round"/>
+  <path d="M0 406H216" stroke="#E6EAF4" stroke-width="1.5"/>
+  <g stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26 431V419L37 416V428M26 422L37 419" stroke="#6385DC"/>
+    <ellipse cx="23" cy="432" rx="4" ry="2.7" fill="#6385DC"/>
+    <ellipse cx="34" cy="429" rx="4" ry="2.7" fill="#6385DC"/>
+    <circle cx="68" cy="423" r="5" stroke="#A7B5CD"/>
+    <path d="M72 427L77 432M102 420L108 417L114 420L108 423L102 420ZM102 425L108 428L114 425M102 430L108 433L114 430" stroke="#A7B5CD"/>
+    <path d="M148 432L141 425C136 419 144 415 148 420C152 415 160 419 155 425L148 432Z" fill="#A7B5CD"/>
+    <circle cx="188" cy="425" r="7" stroke="#A7B5CD"/>
+    <circle cx="188" cy="425" r="2" fill="#A7B5CD"/>
+  </g>
+  <text x="29" y="444" text-anchor="middle" fill="#6385DC" font-size="6" font-weight="700">Discover</text>
+  <path d="M62 442H76M101 442H115M141 442H155M181 442H195" stroke="#D5DDEB" stroke-width="2" stroke-linecap="round"/>
+  <path d="M87 461H129" stroke="#495872" stroke-width="3" stroke-linecap="round"/>
+</svg>`;
+
+const defs = `<defs>
+  <filter id="shadow" x="-40%" y="-30%" width="180%" height="180%"><feDropShadow dx="0" dy="12" stdDeviation="8" flood-color="#28385C" flood-opacity=".2"/></filter>
+  <linearGradient id="frame" x1="65" y1="50" x2="250" y2="240" gradientUnits="userSpaceOnUse"><stop stop-color="#52617A"/><stop offset="1" stop-color="#182231"/></linearGradient>
+  <linearGradient id="silver" x1="160" y1="216" x2="160" y2="246" gradientUnits="userSpaceOnUse"><stop stop-color="#F9FBFF"/><stop offset=".6" stop-color="#DCE4F1"/><stop offset="1" stop-color="#AAB9D0"/></linearGradient>
+  <linearGradient id="phone-edge" x1="100" y1="20" x2="225" y2="260" gradientUnits="userSpaceOnUse"><stop stop-color="#E2DEF6"/><stop offset=".4" stop-color="#8C88AB"/><stop offset="1" stop-color="#BDB5E1"/></linearGradient>
+  <clipPath id="laptop-screen"><rect x="48" y="73" width="224" height="126" rx="3"/></clipPath>
+  <clipPath id="phone-screen"><rect x="106" y="26" width="108" height="235.38" rx="20"/></clipPath>
+  <linearGradient id="screen-blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6D96DC"/><stop offset="1" stop-color="#878BCB"/></linearGradient>
+  <symbol id="app-mark" viewBox="0 0 40 40">
+    <rect width="40" height="40" rx="9" fill="#6385DC"/>
+    <path d="M9 10Q15 7 20 11Q25 7 31 10V24Q25 21 20 24Q15 21 9 24Z" fill="white"/>
+    <path d="M20 11V24M12 14H17M23 14H28M12 18H17M23 18H28" stroke="#A9BCDF" stroke-width="1.5"/>
+    <path d="M0 29H40V32H0Z" fill="#344866"/>
+    <path d="M5 32V39M11 32V40M17 32V40M23 32V40M29 32V40M35 32V39" stroke="white" stroke-width="3"/>
+  </symbol>
+  <symbol id="grand-piano" viewBox="0 0 180 90">
+    <ellipse cx="94" cy="81" rx="67" ry="6" fill="#344C83" opacity=".18"/>
+    <path d="M37 53L33 80M134 53L139 79M91 51L93 73" stroke="#35486B" stroke-width="5" stroke-linecap="round"/>
+    <path d="M29 43C29 20 54 8 76 14C91 18 91 31 108 31C133 31 151 40 151 53L139 64H29Z" fill="#33486B"/>
+    <path d="M27 41C27 18 52 6 74 12C89 16 89 29 106 29C131 29 149 38 149 51H27Z" fill="#526A91"/>
+    <path d="M34 37C39 20 55 15 70 18" stroke="#8199BC" stroke-width="3" stroke-linecap="round"/>
+    <path d="M29 51H139V63H29Z" fill="#F4F6FF"/>
+    <path d="M42 52V62M55 52V62M68 52V62M81 52V62M94 52V62M107 52V62M120 52V62M133 52V62" stroke="#CAD4E8" stroke-width="1.3"/>
+    <path d="M41 51V57M54 51V57M80 51V57M93 51V57M106 51V57M132 51V57" stroke="#344866" stroke-width="4"/>
+    <path d="M29 65H138" stroke="#94AACD" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="composer-wig" viewBox="0 0 40 40">
+    <circle cx="20" cy="20" r="20" fill="#EBDDCB"/>
+    <path d="M6 35Q8 26 20 26Q32 26 34 35Q20 44 6 35Z" fill="#B98A7E"/>
+    <path d="M11 24Q4 14 12 9Q20 2 28 9Q36 14 29 25Z" fill="#FBF4E7"/>
+    <path d="M16 27L20 34L24 27" fill="#FFF8EE"/>
+    <ellipse cx="20" cy="19" rx="8" ry="10" fill="#DBB296"/>
+    <path d="M10 15Q11 5 20 7Q29 5 30 15L23 12L20 9L17 12Z" fill="#FBF4E7"/>
+    <path d="M18 23Q20 24 22 23" stroke="#B98A7E" stroke-width="1.2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="composer-wild" viewBox="0 0 40 40">
+    <circle cx="20" cy="20" r="20" fill="#D9E3F5"/>
+    <path d="M5 35Q9 25 20 26Q31 25 35 35Q20 45 5 35Z" fill="#536783"/>
+    <path d="M11 25L6 20L9 15L6 11L13 9L14 5L21 7L27 5L29 10L35 12L31 17L33 23L27 27Z" fill="#A4A9B8"/>
+    <path d="M14 28L20 35L26 28L23 26H17Z" fill="#C78D88"/>
+    <ellipse cx="20" cy="20" rx="8" ry="10" fill="#DFC0A6"/>
+    <path d="M11 18L13 10L21 9L29 12L27 18L23 14L19 15L16 13Z" fill="#A4A9B8"/>
+    <path d="M17 24H22" stroke="#BC9785" stroke-width="1.2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="composer-swept" viewBox="0 0 40 40">
+    <circle cx="20" cy="20" r="20" fill="#E4DFF4"/>
+    <path d="M6 35Q9 25 20 26Q31 25 34 35Q20 44 6 35Z" fill="#667393"/>
+    <path d="M16 27L20 34L24 27" fill="#F8F5FC"/>
+    <ellipse cx="20" cy="19" rx="8" ry="10" fill="#E2BEA8"/>
+    <path d="M11 22Q7 13 12 8Q20 2 29 9L31 17L27 22L26 13Q19 17 13 13Z" fill="#747182"/>
+    <path d="M18 24Q20 25 22 24" stroke="#C29788" stroke-width="1.2" stroke-linecap="round"/>
+  </symbol>
+</defs>`;
+
+function write(name, body) {
+    fs.writeFileSync(path.join(root, 'resources/images/home/projects', name + '.svg'),
+        `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="280" viewBox="0 0 320 280" fill="none">\n${defs}\n${body}\n</svg>\n`);
+}
+
+write('webapp', `<circle cx="160" cy="138" r="103" fill="#6CB5F2" opacity=".2"/>
+<g transform="rotate(-7 160 148)" filter="url(#shadow)">
+  <rect x="40" y="64" width="240" height="154" rx="11" fill="url(#frame)" stroke="#8190A8" stroke-width="1.5"/>
+  <circle cx="160" cy="68.5" r="1.4" fill="#8798B6"/>
+  <rect x="48" y="73" width="224" height="126" rx="3" fill="white"/>
+  <g clip-path="url(#laptop-screen)">${webapp}</g>
+  <path d="M146 209H174" stroke="#9CA9BD" stroke-width="2" stroke-linecap="round"/>
+  <path d="M40 218H280L304 236V238C304 242 298 245 291 245H29C22 245 16 242 16 238V236L40 218Z" fill="url(#silver)" stroke="#ADBBD0" stroke-width=".8"/>
+  <path d="M40 218H280L304 236H16L40 218Z" fill="#E8EEF8"/>
+  <path d="M62 221H258L270 229H50L62 221Z" fill="#B6C3D6"/>
+  <path d="M61 224H259M57 227H263M79 222L74 228M99 222L96 228M119 222L117 228M139 222L138 228M159 222V228M179 222L180 228M199 222L201 228M219 222L222 228M239 222L244 228" stroke="#EAF0F9" stroke-width="1"/>
+  <path d="M142 231H178L181 234H139L142 231Z" fill="#CDD8E8"/>
+  <path d="M16 236H304" stroke="#F8FAFF" stroke-width="1.3"/>
+  <path d="M140 237H180" stroke="#9CAEC8" stroke-width="2" stroke-linecap="round"/>
+</g>
+<path d="M62 52V38M55 45H69" stroke="#78A6EE" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="270" cy="57" r="5" fill="#8DB6F6"/>`);
+
+write('ios', `<circle cx="160" cy="140" r="101" fill="#AA8BE8" opacity=".2"/>
+<g transform="rotate(8 160 143)" filter="url(#shadow)">
+  <rect x="99" y="19" width="124" height="250" rx="27" fill="url(#phone-edge)"/>
+  <rect x="97" y="65" width="2" height="16" rx="1" fill="#8E8BA7"/>
+  <rect x="97" y="88" width="2" height="25" rx="1" fill="#8E8BA7"/>
+  <rect x="223" y="84" width="2" height="34" rx="1" fill="#8E8BA7"/>
+  <rect x="100" y="20" width="120" height="247" rx="26" fill="url(#frame)" stroke="#7D839B" stroke-width=".7"/>
+  <rect x="106" y="26" width="108" height="235.38" rx="20" fill="white"/>
+  <g clip-path="url(#phone-screen)">${ios}</g>
+  <path d="M150 30H166" stroke="#596477" stroke-width="2" stroke-linecap="round"/>
+</g>
+<path d="M65 98V84M58 91H72" stroke="#A99DE9" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="252" cy="224" r="5" fill="#BCB0ED"/>`);
+
+for (const name of ['webapp', 'ios']) {
+    const file = path.join(root, 'resources/images/home/projects', name + '.svg');
+    console.log(`${name}: ${fs.statSync(file).size.toLocaleString()} bytes`);
+}

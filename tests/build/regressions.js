@@ -7,7 +7,7 @@ const vm = require('vm');
 const root = path.resolve(__dirname, '../..');
 const publicRoot = path.join(root, 'public');
 const manifest = JSON.parse(fs.readFileSync(path.join(publicRoot, 'mix-manifest.json'), 'utf8'));
-const entryPoints = ['css/app.css', 'css/admin.css', 'css/shared.css', 'js/app.js', 'js/admin.js', 'js/tone.js'];
+const entryPoints = ['css/app.css', 'css/admin.css', 'css/shared.css', 'css/metronome.css', 'js/app.js', 'js/admin.js', 'js/tone.js', 'js/metronome.js'];
 
 function filesIn(directory) {
     return fs.readdirSync(directory, {withFileTypes: true}).flatMap(entry => {

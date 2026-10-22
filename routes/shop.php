@@ -1,6 +1,6 @@
 <?php
 
-Route::view('/', 'shop.coming-soon')->name('shop.home');
+Route::view('/', 'projects.coming-soon', ['project' => 'shop', 'projectTitle' => 'Shop'])->name('shop.home');
 
 Route::middleware('location.update')->namespace('Shop')->group(function () {
     Route::prefix('ebooks')->name('ebooks.')->group(function () {

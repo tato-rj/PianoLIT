@@ -6,9 +6,9 @@
 		$tenth = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 10);
 		$twelveth = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 12);
 
-		if ($tenth) {
+		if ($tenth['name']) {
 			$type = 'has a <strong>' . str_replace('10', '3', $tenth['name']) . '</strong> (we see it an octave above as a 10th, but this will still count as a 3rd)';
-		} elseif ($third) {
+		} elseif ($third['name']) {
 			$type = 'has a <strong>' . $third['name'] . '</strong>';
 		} elseif ($fifth['type'] == 'diminished') {
 			$type = '<strong>is missing the 3rd</strong>, but it has a <strong>diminished 5th</strong>, so we treat it as having a minor 3rd';
@@ -18,9 +18,9 @@
 			$type = '<strong>is missing the 3rd</strong>, so we treat it as having a major 3rd';
 		}
 
-		if (!$fifth && !$twelveth) {
+		if (!$fifth['name'] && !$twelveth['name']) {
 			$type .= ' but it <strong>is missing the 5th</strong> (in such cases we assume it is a perfect 5th)';
-		} elseif ($twelveth && !$fifth) {
+		} elseif ($twelveth['name'] && !$fifth['name']) {
 			$type .= ' and a <strong>' . str_replace('12', '5', $twelveth['name']) . '</strong> (we see it an octave above as a 12th, but this will still count as a 5th)';
 		} else {
 			$type .= ' and a <strong>' . $fifth['name'] . '</strong>';

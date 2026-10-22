@@ -266,6 +266,7 @@
             const active = !this.root.classList.contains('is-fullscreen');
             this.root.classList.toggle('is-fullscreen', active);
             this.find('.score-toolbar').classList.toggle('shadow', active);
+            this.find('.score-toolbar').classList.toggle('rounded-top', !active);
             document.body.classList.toggle('score-editor-fullscreen-open', active);
             const button = this.find('[data-fullscreen]');
             button.setAttribute('aria-label', active ? 'Exit full screen' : 'Full screen');

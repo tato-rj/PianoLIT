@@ -52,6 +52,7 @@ class LearnSubdomainTest extends ReviewTestCase
         $host = parse_url($baseUrl, PHP_URL_HOST);
         $scheme = parse_url($baseUrl, PHP_URL_SCHEME);
         $destinations = [
+            'learn.home' => ['', []],
             'tools.circle-of-fifths' => ['/circle-of-fifths', []],
             'tools.chord-finder.index' => ['/chord-finder', []],
             'tools.chord-finder.analyse' => ['/chord-finder/analyse', []],
@@ -81,7 +82,7 @@ class LearnSubdomainTest extends ReviewTestCase
             foreach ($destinations as $name => [$path, $parameters]) {
                 $url = route($name, $parameters);
                 $this->assertSame($scheme.'://learn.'.$host.$path, $url);
-                $this->assertSame($path, route($name, $parameters, false));
+                $this->assertSame($path ?: '/', route($name, $parameters, false));
                 $route = app('router')->getRoutes()->getByName($name);
                 foreach ($route->methods() as $method) {
                     $matched = app('router')->getRoutes()->match(Request::create($url, $method));
@@ -115,6 +116,32 @@ class LearnSubdomainTest extends ReviewTestCase
             ['/great-pianists/example', '/great-pianists/example'],
             ['/quizzes', '/quizzes'], ['/quizzes/example?level=beginner', '/quizzes/example?level=beginner'],
         ];
+    }
+
+    public function test_learn_home_is_an_organized_directory_with_public_destinations_and_a_local_newsletter()
+    {
+        $response = $this->get('http://learn.localhost/')->assertOk()
+            ->assertSee('PianoLIT Learn')->assertDontSee('Coming up soon!');
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertSame(6, $xpath->query('//a[contains(@class, "resource-card") and @aria-labelledby and @aria-describedby]')->length);
+        foreach (['tools.circle-of-fifths', 'tools.chord-finder.index', 'crashcourses.index', 'resources.infographs.index', 'quizzes.index', 'resources.pianists.index'] as $route) {
+            $this->assertSame(1, $xpath->query('//a[contains(@class, "resource-card") and @href="'.route($route).'"]')->length);
+        }
+        foreach ($xpath->query('//nav[@aria-label="Explore Learn"]/a') as $link) {
+            $target = substr($link->getAttribute('href'), 1);
+            $this->assertSame(1, $xpath->query('//section[@id="'.$target.'" and @aria-labelledby]')->length);
+        }
+        $this->assertSame(3, $xpath->query('//nav[@aria-label="Explore Learn"]/a')->length);
+        foreach (['tools.scales.index', 'tools.arpeggios.index'] as $route) {
+            $this->assertSame(1, $xpath->query('//main//a[@href="'.route($route).'"]')->length);
+        }
+        $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//a[@href="http://localhost"]')->length);
+        $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//*[@aria-current="page" and contains(., "Learn")]')->length);
+        $this->assertSame(2, $xpath->query('//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
+        $this->assertSame(1, $xpath->query('//header[contains(@class, "learn-home__intro")]//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
+        foreach (['/timeline', '/birthdays', '/true-or-false', '/riddles', '/tools/staff'] as $retired) {
+            $this->assertSame(0, $xpath->query('//main//a[contains(@href, "'.$retired.'")]')->length);
+        }
     }
 
     /** @dataProvider legacyUrls */
@@ -169,10 +196,11 @@ class LearnSubdomainTest extends ReviewTestCase
         $learn = parse_url($baseUrl, PHP_URL_SCHEME).'://learn.'.parse_url($baseUrl, PHP_URL_HOST);
         $this->get(route('resources.pianists.index'))->assertOk()
             ->assertSee('href="'.$baseUrl.'"', false)
-            ->assertSee('href="'.$learn.'/circle-of-fifths"', false)
-            ->assertSee('href="'.$learn.'/infographics"', false)
-            ->assertSee('href="'.$learn.'/great-pianists"', false)
+            ->assertSee('href="'.$learn.'/login"', false)
             ->assertSee('data-url="'.$learn.'/subscriptions/modal"', false);
+        $this->assertSame($learn.'/circle-of-fifths', route('tools.circle-of-fifths'));
+        $this->assertSame($learn.'/infographics', route('resources.infographs.index'));
+        $this->assertSame($learn.'/great-pianists', route('resources.pianists.index'));
         $this->assertSame($baseUrl, route('home'));
         $this->assertSame($learn.'/shop/1/thank-you', route('shop.success', 1));
     }
@@ -256,9 +284,7 @@ class LearnSubdomainTest extends ReviewTestCase
                 ->assertSee('href="http://localhost/contact-us"', false)
                 ->assertSee('data-url="http://learn.localhost/subscriptions/modal"', false)
                 ->assertDontSee('http://learn.localhost/tools/', false);
-            foreach (array_keys($tools) as $link) {
-                $response->assertSee('href="http://learn.localhost/'.$link.'"', false);
-            }
+            $response->assertSee('href="http://learn.localhost/login"', false);
             foreach (['localhost', 'blog.localhost', 'shop.localhost'] as $host) {
                 $this->get('http://'.$host.'/tools/'.$path.'?utm_source=menu')->assertStatus(301)
                     ->assertRedirect('http://learn.localhost/'.$path.'?utm_source=menu');

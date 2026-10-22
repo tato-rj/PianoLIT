@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="280" viewBox="0 0 320 280" fill="none">
+  <defs>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="220%">
+      <feDropShadow dx="0" dy="13" stdDeviation="10" flood-color="#28385C" flood-opacity=".16"/>
+    </filter>
+    <linearGradient id="shell" x1="90" y1="79" x2="224" y2="220" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#E8EDF7"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="83" y1="88" x2="223" y2="222" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#719EFF"/><stop offset="1" stop-color="#0055FE"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="84" y1="110" x2="206" y2="184" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#43536F"/><stop offset="1" stop-color="#182231"/>
+    </linearGradient>
+  </defs>
+  <circle cx="161" cy="137" r="101" fill="#F0C34D" opacity=".2"/>
+  <g transform="rotate(-12 160 155)" filter="url(#shadow)">
+    <!-- Raised shoulder buttons and the blue lower shell give the controller depth. -->
+    <rect x="79" y="79" width="43" height="25" rx="11" fill="#344661"/>
+    <rect x="198" y="79" width="43" height="25" rx="11" fill="#344661"/>
+    <path d="M98 94H222C243 94 256 108 262 130L280 198C284 216 277 230 263 232C250 234 242 227 232 215L207 187H113L88 215C78 227 70 234 57 232C43 230 36 216 40 198L58 130C64 108 77 94 98 94Z" fill="#2456B9"/>
+    <path d="M98 84H222C243 84 256 98 262 120L280 188C284 206 277 220 263 222C250 224 242 217 232 205L207 177H113L88 205C78 217 70 224 57 222C43 220 36 206 40 188L58 120C64 98 77 84 98 84Z" fill="url(#shell)"/>
+    <path d="M112 85H208L194 120H126L112 85Z" fill="url(#blue)"/>
+    <path d="M144 101H176" stroke="#D4E1FF" stroke-width="4" stroke-linecap="round"/>
+    <!-- Direction pad. -->
+    <circle cx="93" cy="132" r="26" fill="#DCE3EF"/>
+    <path d="M87 113H99V126H112V138H99V151H87V138H74V126H87V113Z" fill="url(#ink)" stroke="#25334A" stroke-width="2" stroke-linejoin="round"/>
+    <!-- Four tactile game buttons. -->
+    <circle cx="227" cy="132" r="28" fill="#E6EAF2"/>
+    <circle cx="227" cy="115" r="8" fill="#AF9FE7"/>
+    <circle cx="244" cy="132" r="8" fill="#D8B955"/>
+    <circle cx="227" cy="149" r="8" fill="#70AE9F"/>
+    <circle cx="210" cy="132" r="8" fill="#0055FE"/>
+    <path d="M224 113L227 109L230 113H224Z" stroke="white" stroke-width="1.4" stroke-linejoin="round"/>
+    <circle cx="244" cy="132" r="3" stroke="white" stroke-width="1.4"/>
+    <path d="M224 146L230 152M230 146L224 152" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+    <rect x="207" y="129" width="6" height="6" rx=".5" stroke="white" stroke-width="1.4"/>
+    <!-- Analog sticks, set into blue wells. -->
+    <circle cx="128" cy="169" r="23" fill="url(#blue)"/>
+    <circle cx="192" cy="169" r="23" fill="url(#blue)"/>
+    <circle cx="128" cy="167" r="16" fill="url(#ink)"/>
+    <circle cx="192" cy="167" r="16" fill="url(#ink)"/>
+    <circle cx="128" cy="166" r="11" stroke="#687B97" stroke-width="1.5"/>
+    <circle cx="192" cy="166" r="11" stroke="#687B97" stroke-width="1.5"/>
+    <circle cx="160" cy="139" r="5" fill="#AFC6F4"/>
+  </g>
+  <path d="M74 62V46M66 54H82" stroke="#C7B974" stroke-width="3" stroke-linecap="round"/>
+  <g filter="url(#shadow)">
+    <path d="M247 44L253 57L268 59L257 69L260 84L247 77L234 84L237 69L226 59L241 57L247 44Z" fill="#AF9FE7"/>
+  </g>
+  <circle cx="267" cy="233" r="5" fill="#D5BC68"/>
+</svg>

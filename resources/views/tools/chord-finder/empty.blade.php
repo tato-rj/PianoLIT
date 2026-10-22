@@ -1,41 +1,51 @@
-<div class="container" id="notes-container" data-url="{{route('tools.chord-finder.analyse')}}">
-	<p class="text-center text-grey">Tap/click on a note to select it</p>
-	<div class="row position-relative g-0 justify-content-center mb-4">
-		<div class="input-overlay"></div>
-		@include('tools.chord-finder.inputs.note', ['note' => 'A', 'octave' => 3])
-		@include('tools.chord-finder.inputs.note', ['note' => 'B', 'octave' => 3])
-		@include('tools.chord-finder.inputs.note', ['note' => 'C', 'octave' => 4])
-		@include('tools.chord-finder.inputs.note', ['note' => 'D', 'octave' => 4])
-		@include('tools.chord-finder.inputs.note', ['note' => 'E', 'octave' => 4])
-		@include('tools.chord-finder.inputs.note', ['note' => 'F', 'octave' => 4])
-		@include('tools.chord-finder.inputs.note', ['note' => 'G', 'octave' => 4])
-	</div>
-	<p class="text-center text-grey">Or use the keyboard to select the notes</p>
-	<div class="row position-relative mb-4">
-		<div class="input-overlay"></div>
-		<div class="col-12 keyboard-input">
-			@include('components.piano.keyboard', [
-				'centered' => true,
-				'octaves' => [
-					3 => [],
-					4 => []
-				]
-			])
-		</div>
-	</div>
-
-	@include('tools.chord-finder.options.enharmonics')
-
-	@include('tools.chord-finder.options.root')
-
-	<div class="row">
-		<div class="col-12 text-center mb-4">
-			<p class="text-center text-grey">All set?</p>
-			<button class="btn btn-primary btn-wide" id="submit-notes" data-text="Look up the chords!">Look up the chords!</button>
-		</div>
-		<div class="col-12 mb-6">
-			<p>This tool will not only show you the name of the possible chords based on the notes you put in, but also help you understand how we do this! If you are a beginner this process may seem a bit overwhelming at first but don't worry, it will soon be quite simple.</p>
-			<p>Just put the notes you have in the inputs above and we'll show you all the chords we can make with those notes. On the next screen, as you select each chord you will see detailed description about how we figured out its name.</p>
-		</div>
-	</div>
-</div>
+<section id="chord-editor" aria-labelledby="chord-editor-title">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div><h2 id="chord-editor-title" class="h5 mb-2">Choose your notes</h2><p class="small text-muted mb-0">Tap the piano keys or build your chord by note name.</p></div>
+        <button type="button" class="btn btn-secondary btn-sm" id="chord-clear">@icon('rotate-ccw')Clear notes</button>
+    </div>
+    @component('components.tab-navigation', [
+        'id' => 'chord-input-tabs', 'label' => 'Choose how to enter notes', 'variant' => 'segmented', 'class' => 'mb-4',
+        'items' => [['target' => 'chord-keyboard', 'label' => 'Piano keyboard'], ['target' => 'chord-note-names', 'label' => 'Note names']],
+    ])
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="chord-keyboard" role="tabpanel" aria-labelledby="chord-input-tabs-chord-keyboard">
+                <div class="keyboard-input" id="chord-input-piano">
+                    @include('components.piano.keyboard', ['centered' => true, 'responsive' => true, 'octaves' => [3 => [], 4 => []]])
+                </div>
+            </div>
+            <div class="tab-pane fade" id="chord-note-names" role="tabpanel" aria-labelledby="chord-input-tabs-chord-note-names">
+                <div class="chord-finder__notes">
+                    @foreach(['C' => 4, 'D' => 4, 'E' => 4, 'F' => 4, 'G' => 4, 'A' => 3, 'B' => 3] as $note => $octave)
+                        @include('tools.chord-finder.inputs.chord-note', ['note' => $note, 'octave' => $octave])
+                    @endforeach
+                </div>
+                <p class="small text-muted mt-3 mb-0">Select a letter, then use ♭ and ♯ to lower or raise it. Double flats and sharps are supported.</p>
+            </div>
+        </div>
+    @endcomponent
+    <div class="d-flex flex-wrap align-items-center gap-2 mt-4" aria-live="polite">
+        <span class="small text-muted" id="chord-selection-count">No notes selected</span><div class="d-flex flex-wrap gap-2" id="chord-selected-notes"></div>
+    </div>
+    <div id="chord-error" class="alert alert-danger mt-4 mb-0" role="alert" hidden></div>
+    <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+        <button type="button" class="btn btn-primary" id="submit-notes">Find chords @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>
+        <button type="button" class="btn btn-secondary" id="chord-example">Try C major</button>
+    </div>
+    <div id="chord-options" class="mt-4" hidden>
+        @component('components.accordion', ['id' => 'chord-options-accordion'])
+            @component('components.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling & root (optional)'])
+                <div id="options-container" hidden>
+                    <h3 class="h6 mb-2">Note names</h3>
+                    <p class="small text-muted mb-3">Change a spelling if you need an enharmonic equivalent.</p>
+                    <div id="options-buttons" class="row g-3"></div>
+                </div>
+                <div id="root-container" class="row mt-4" hidden>
+                    <div class="col-sm-6">@select(['bag' => 'default', 'id' => 'chord-root', 'name' => 'root', 'label' => 'Root note (optional)', 'choices' => ['' => 'Auto detect'], 'required' => false])</div>
+                    <p class="small text-muted mb-0 mt-2">Have a root in mind? Choose it here, or let us compare all possibilities.</p>
+                </div>
+            @endcomponent
+        @endcomponent
+    </div>
+    <p id="chord-audio-status" class="small text-muted mt-3 mb-0" role="status" hidden></p>
+    <noscript><p class="mt-3">Please enable JavaScript to select notes and find chords.</p></noscript>
+</section>

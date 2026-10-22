@@ -40,7 +40,8 @@ class Subscription extends PianoLit
 
     public function joinAll()
     {
-        foreach (EmailList::all() as $list) {
+        // PianoLIT news requires its own explicit signup, including for app accounts.
+        foreach (EmailList::where('name', '<>', EmailList::NEWSLETTER)->get() as $list) {
             if (! $list->has($this->email))
                 $this->lists()->attach($list);
         }

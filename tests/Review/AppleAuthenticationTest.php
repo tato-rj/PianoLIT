@@ -541,9 +541,8 @@ class AppleAuthenticationTest extends ReviewTestCase
                 $response = $this->get('http://'.$host.'/'.$page)->assertOk()->assertSee('name="email"', false)->assertSee('name="password"', false);
                 if ($enabled[0]) $response->assertSee('Continue with Google'); else $response->assertDontSee('Continue with Google');
                 if ($enabled[1]) $response->assertSee('Continue with Apple'); else $response->assertDontSee('Continue with Apple');
-                // Public pages also contain the two hidden authentication-modal
-                // panes; each displayed or hidden provider group has one notice.
-                $groups = $site === 'web' ? 3 : 1;
+                // Every host uses the same standalone page with one provider group.
+                $groups = 1;
                 $this->assertSame($enabled[0] || $enabled[1] ? $groups : 0, substr_count($response->getContent(), 'By continuing, you agree'));
                 $save($page.'-'.$site.'-'.$state, $response);
             }

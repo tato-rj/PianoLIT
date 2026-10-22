@@ -33,6 +33,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('activity:prune-noise --execute')->hourly()->withoutOverlapping();
         $schedule->command('email-reports:prune --execute')->monthlyOn(1, '03:00')
             ->withoutOverlapping()->runInBackground();
+        $schedule->command('newsletter:send-monthly --execute')->monthlyOn(1, '08:00')
+            ->timezone('America/New_York')->withoutOverlapping()->runInBackground();
 
         $schedule->command('subscriptions:remove-spam')->weeklyOn(7, '10:30');
 

@@ -1,5 +1,7 @@
 <?php
 
+Route::post('newsletter/subscribe', 'NewsletterSubscriptionsController@store')->middleware('throttle:2,1')->name('newsletter.subscribe');
+
 Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::get('modal', 'SubscriptionsController@modal')->name('modal');

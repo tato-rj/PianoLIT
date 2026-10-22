@@ -1,59 +1,37 @@
-<div class="container mb-4" id="notes-container">
-	<div class="row">
-		<div class="col-12 mb-4">
-			@include('tools.chord-finder.results.chords')
-		</div>
-		<div class="col-12 mb-4">
-			<p class="text-grey">@icon('volume-2', ['mr' => 2])Click the chords to hear them on the keyboard</p>
-			@include('components.piano.keyboard', [
-				'centered' => false,
-				'octaves' => [
-					3 => [],
-					4 => []
-				]
-			])
-			<div id="chord-label" class="d-flex justify-content-center"></div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-12">
-			<div id="info-alert" class="rounded text-grey bg-light px-5 py-4 d-flex flex-center mb-4">
-				<h4 class="my-4 text-center">Select a chord above to learn more about it!</h4>
-			</div>
-			<div id="info-container">
-				@foreach($request['chords'] as $chord)
-					@foreach($chord['inversions'] as $inversion)
-					  <div class="chord-info" style="display: none;" id="{{$inversion['id']}}">
-					  	<div class="row">
-							<div class="col-lg-4 col-12 mb-4">
-								<label class="alert-grey rounded-top py-2 px-4 text-center w-100 m-0 text-nowrap"><small><strong>THIS CHORD HAS</strong></small></label>
-								<ul class="list-flat">
-									@foreach($inversion['intervals'] as $interval)
-									<li class="py-2 px-4 text-nowrap {{$loop->odd ? 'alert-orange' : 'alert-yellow'}} {{$loop->last ? 'rounded-bottom' : null}}">
-										{{chordToHumans($inversion['chord'][0])}} to {{chordToHumans($inversion['chord'][$loop->iteration])}}: <strong>{{$interval['name']}}</strong>
-									</li>
-									@endforeach
-								</ul>
-							</div>
-
-							@include('tools.chord-finder.results.labels.accordion', ['index' => $loop->iteration, 'chordlabel' => $inversion['label']])
-					  	</div>
-					  </div>
-					@endforeach
-				@endforeach
-			</div>
-		</div>
-	</div>
-	<div class="row my-6">
-		<div class="col-12 text-center">
-			<div id="reload" class="d-inline-block cursor-pointer lead">
-				<strong>@icon('rotate-cw', ['mr' => 2])Start again</strong>
-			</div>
-		</div>
-		@if(app()->isLocal() || request()->has('dev'))
-		<div class="col-12 text-center mt-2">
-			<a href="{{$json}}" target="_blank" class="btn btn-link btn-xs">[See JSON response]</a>
-		</div>
-		@endif
-	</div>
-</div>
+<section aria-labelledby="chord-results-title" data-chord-results>
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div><h2 id="chord-results-title" class="h5 mb-2" tabindex="-1">Your chord possibilities</h2><p class="small text-muted mb-0">Select a chord to hear it and explore how it gets its name.</p></div>
+        <a href="{{ route('tools.chord-finder.index') }}" class="btn btn-secondary btn-sm" data-chord-edit>@icon('arrow-up')Edit notes</a>
+    </div>
+    @include('tools.chord-finder.results.chords')
+    <div class="border-top pt-4 mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div><h3 class="h6 mb-2" id="chord-playing-title">Hear this chord</h3><div id="chord-label" class="d-flex flex-wrap gap-2"></div></div>
+            <button type="button" class="btn btn-secondary btn-sm" data-chord-stop disabled>@icon('square')Stop playback</button>
+        </div>
+        <div id="chord-output-piano">@include('components.piano.keyboard', ['centered' => true, 'responsive' => true, 'octaves' => [3 => [], 4 => []]])</div>
+        <p id="chord-result-audio-status" class="small text-muted mt-3 mb-0" role="status" hidden></p>
+    </div>
+    <div id="info-container">
+        @foreach($request['chords'] as $chord)
+            @foreach($chord['inversions'] as $inversion)
+                <section class="chord-info" style="display: none;" id="{{ $inversion['id'] }}" aria-label="Chord explanation: {{ strip_tags($inversion['label']['full_shorthand']) }}">
+                    <div class="row gy-4">
+                        <div class="col-md-4 text-start">
+                            <h3 class="h6 mb-3">Intervals from the root</h3>
+                            <ul class="list-unstyled small mb-0">
+                                @foreach($inversion['intervals'] as $interval)
+                                    <li class="border-bottom py-3">
+                                        <span class="text-muted">{{ chordToHumans($inversion['chord'][0]) }} → {{ chordToHumans($inversion['chord'][$loop->iteration]) }}</span>
+                                        <strong class="d-block mt-1">{{ $interval['name'] }}</strong>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @include('tools.chord-finder.results.labels.accordion', ['index' => $inversion['id'], 'chordlabel' => $inversion['label']])
+                    </div>
+                </section>
+            @endforeach
+        @endforeach
+    </div>
+</section>

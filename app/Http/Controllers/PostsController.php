@@ -16,8 +16,8 @@ class PostsController extends Controller
      */
     public function index(BlogFilters $filters)
     {
-        $posts = Post::published()->latest()->filter($filters)->paginate(12);
-        $topics = Topic::all();
+        $posts = Post::published()->latest()->orderByDesc('id')->filter($filters)->paginate(12)->withQueryString();
+        $topics = Topic::orderBy('name')->get();
 
         return view('blog.index', compact(['posts', 'topics']));
     }

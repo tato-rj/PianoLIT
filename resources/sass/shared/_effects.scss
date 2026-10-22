@@ -30,6 +30,11 @@ a.link-teal:hover {
     .opacity-#{$step} {
         opacity: math.div($step, 10);
     }
+    .opacity-hover-#{$step}:hover,
+    .hover-group:hover .opacity-hover-#{$step},
+    .hover-group:focus-visible .opacity-hover-#{$step} {
+        opacity: math.div($step, 10);
+    }
 }
 
 .show-on-hover {

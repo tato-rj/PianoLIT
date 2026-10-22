@@ -1,33 +1,42 @@
-.roman-numeral {
-    font-family: 'Roboto Slab', serif;
-}
+.circle-tool {
+    .roman-numeral { font-family: 'Roboto Slab', serif; }
+    svg#circle { transition: transform .5s; }
+    &__tonic {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        pointer-events: none;
+        color: var(--color-text-dark);
 
-svg#circle {
-    transition-duration: 0.5s;
-    z-index: 1;
-}
-div#highlight {
-    left: 50%;
-    top: -12px;
-    transform: translateX(-50%);
-    z-index: -1;
-    width: 112%;
-    opacity: 0.2;
-}
-g#letters > g {
-    opacity: 0.5;
-    transition: 0.2s;
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
-}
-
-g.key {
-    opacity: 1 !important;
-}
-
-.key-neighbors span:not(:last-of-type)::after,
-.key-enharmonic-neighbors span:not(:last-of-type)::after {
-    content: '|';
-    margin-left: 0.4rem;
-    margin-right: 0.4rem;
+        span { display: block; font-family: var(--font-family-heading); font-size: 1.75rem; font-weight: 600; line-height: 1.2; }
+        small { display: block; margin-top: .25rem; }
+    }
+    #wheel-container {
+        max-width: 340px;
+        margin-inline: auto;
+        isolation: isolate;
+    }
+    #letters > g {
+        cursor: pointer;
+        filter: none;
+        opacity: 1;
+        .circle-hit-area { fill: transparent; transition: fill .2s, fill-opacity .2s; }
+        &.key .circle-hit-area { fill: var(--color-primary); fill-opacity: .12; }
+        &:hover .circle-hit-area, &:focus-visible .circle-hit-area { fill: var(--color-primary); fill-opacity: .2; }
+        &.key text { fill: var(--color-primary); }
+    }
+    .circle-rings__surface { fill: var(--color-white); stroke: var(--color-border); }
+    .circle-rings__divider { fill: none; stroke: var(--color-border); stroke-width: 1.5; }
+    .circle-rings__center { fill: var(--color-surface-subtle); stroke: var(--color-border); stroke-width: 1.5; }
+    .circle-key-label { transition: transform .5s; pointer-events: none; }
+    .circle-major-label { fill: var(--color-text-dark); font: 600 34px var(--font-family-heading); }
+    .circle-minor-label { fill: var(--color-text-muted); font: 500 24px var(--font-family-body); }
+    .key-signature { display: block; max-width: 100%; height: auto; }
+    .key-name, .key-relative { overflow-wrap: anywhere; }
+    .key-tonic, .key-dominant, .key-subdominant { overflow-wrap: anywhere; line-height: 1.8; }
+    @media (prefers-reduced-motion: reduce) {
+        svg#circle, #letters > g, .circle-key-label, .circle-hit-area { transition: none; }
+    }
 }

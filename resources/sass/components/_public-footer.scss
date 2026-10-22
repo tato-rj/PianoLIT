@@ -1,0 +1,14 @@
+.site-footer {
+    color: var(--color-text-muted);
+    font-size: 12px;
+    letter-spacing: 0;
+
+    a {
+        color: inherit;
+
+        &:hover,
+        &:focus-visible { color: var(--color-primary); text-decoration: underline; }
+    }
+    small { font-size: inherit; }
+}
+

@@ -1,0 +1,11 @@
+// Opt-in fluid geometry; existing keyboard instances retain their fixed sizes.
+.keyboard-responsive {
+    --piano-white-key-width: calc(100% / var(--piano-key-count));
+    --piano-black-key-width: 85%;
+    --piano-black-key-offset: -42.5%;
+    --piano-dot-size: clamp(9px, 2.4vw, 20px);
+    --piano-height: clamp(112px, 24vw, 160px);
+
+    .keyboard-white-key { flex-shrink: 0; }
+    .keyboard-key { touch-action: manipulation; }
+}

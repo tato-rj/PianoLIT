@@ -9,8 +9,10 @@
 
         <div class="form-group text-center">
             @include('auth.fields.register-button')
-            <p class="text-muted mb-0">Already have an account? <a class="fw-semibold text-decoration-underline text-nowrap" href="{{ route('login') }}">Log in</a></p>
         </div>
     </form>
     @include('auth.google.button')
+    <p class="auth-secondary text-muted text-center mt-4 mb-0">
+        Already have an account? <a class="auth-secondary-link text-nowrap" href="{{ route('login') }}">Log in</a>
+    </p>
 @endcomponent

@@ -1,76 +1,156 @@
-// Project navigation shares the web app's pastel feature-card surfaces.
-.project-card {
+// Gallery component shared by the homepage and Design System.
+.project-deck {
+    --project-width: 244px;
+    --project-gutter: clamp(24px, 5vw, 80px);
+    --project-gap: clamp(20px, 2.2vw, 32px);
     position: relative;
-    display: flex;
-    flex-direction: column;
+    width: 100%;
     min-width: 0;
-    height: 360px;
-    overflow: hidden;
-    border-radius: var(--radius);
-    color: var(--card-ink);
-    text-decoration: none;
-    box-shadow: var(--shadow);
+    isolation: isolate;
 
-    &:hover,
-    &:focus-visible {
-        color: var(--card-ink);
-        text-decoration: none;
-        border-color: var(--card-action);
-    }
-
-    &__heading {
+    &__viewport {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 4px;
-        padding: 24px 22px 0;
-        z-index: 1;
+        gap: var(--project-gap);
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 20px var(--project-gutter) 36px;
+        scrollbar-width: none;
+        scroll-padding-inline: var(--project-gutter);
+        overscroll-behavior-x: contain;
+        overflow-anchor: none;
+        -webkit-overflow-scrolling: touch;
+        &::-webkit-scrollbar { display: none; }
+    }
+    &.is-enhanced &__viewport { cursor: grab; }
+    &.is-dragging &__viewport, &.is-dragging .project-card { cursor: grabbing; user-select: none; }
+}
 
+.project-card {
+    --project-card-radius: 7px;
+    --project-card-shadow: 10px 22px 28px -8px rgba(32, 34, 33, .28), 1px 2px 4px rgba(32, 34, 33, .05);
+    position: relative;
+    flex: 0 0 var(--project-width, 244px);
+    width: var(--project-width, 244px);
+    aspect-ratio: 35 / 48;
+    overflow: hidden;
+    isolation: isolate;
+    border: 0;
+    border-radius: var(--project-card-radius);
+    background: #faf9f6;
+    color: var(--color-text);
+    text-align: center;
+    text-decoration: none;
+    box-shadow: var(--project-card-shadow);
+    transition-property: transform, box-shadow;
+    user-select: none;
+    -webkit-user-drag: none;
+
+    &:hover, &:focus-visible {
+        color: var(--color-text);
+        text-decoration: none;
+        box-shadow: 12px 30px 36px -10px rgba(32, 34, 33, .32), 1px 2px 4px rgba(32, 34, 33, .05);
+    }
+    &__heading {
+        position: relative;
+        padding: 20px 18px 0;
+        z-index: 1;
         h2 {
             margin: 0;
-            font-size: 24px;
-            letter-spacing: -0.8px;
-            white-space: nowrap;
+            font-size: var(--font-size-h4);
+            font-weight: var(--font-weight-heading);
+            line-height: var(--line-height-heading);
         }
     }
-
-    &__arrow {
-        font-size: 25px;
-        line-height: 1;
-        opacity: .65;
-    }
-
     &__art {
         position: absolute;
-        width: 290px;
-        max-width: none;
-        height: calc(100% - 154px);
-        left: 50%;
-        top: 62px;
-        transform: translateX(-50%);
+        inset: 40px 0 0;
+        width: 100%;
+        height: calc(100% - 40px);
+        object-fit: cover;
+        object-position: center top;
+        z-index: -1;
         pointer-events: none;
-        user-select: none;
+    }
+    &__caption {
+        position: relative;
+        margin: 6px auto 0;
+        padding: 0 18px;
+        color: var(--color-text-muted);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-body);
+        letter-spacing: var(--letter-spacing-body);
+    }
+}
+
+@media (max-width: 767px) {
+    .project-deck {
+        --project-width: 264px;
+        --project-gutter: 20px;
+        --project-gap: 20px;
+    }
+}
+
+// Desktop gallery emphasis. Transforms leave the link order and scroll geometry
+// intact; the two sides tuck toward the active card without moving it sideways.
+@mixin project-card-spotlight($active) {
+    &:has(> .project-card#{$active}) {
+        > .project-card {
+            transform: scale(.95);
+            filter: brightness(.90);
+        }
+
+        > .project-card:has(~ .project-card#{$active}) {
+            transform: translateX(32px) scale(.95);
+        }
+
+        > .project-card#{$active} ~ .project-card {
+            transform: translateX(-32px) scale(.95);
+        }
+
+        > .project-card#{$active} {
+            z-index: 3;
+            transform: translateY(-3px) scale(1.12);
+            filter: brightness(1);
+            box-shadow: 12px 30px 38px -10px rgba(32, 34, 33, .34), 1px 2px 5px rgba(32, 34, 33, .08);
+            transition-timing-function: cubic-bezier(.34, 1.56, .64, 1), ease, ease;
+        }
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .project-deck {
+        display: flow-root;
+
+        &__viewport {
+            // Extra paint room for the enlarged card and shadow, without
+            // changing the row's resting position or the scene below it.
+            padding-block: 40px 76px;
+            margin-block: -20px -40px;
+        }
     }
 
-    &__caption {
-        margin-top: auto;
-        padding: 0 22px 24px;
-        position: relative;
-        z-index: 1;
+    .project-deck .project-card {
+        // Keep the spring's upward movement restrained near the heading.
+        transform-origin: 50% 30%;
+        transition: transform 480ms cubic-bezier(.22, 1, .36, 1), filter 220ms ease, box-shadow 240ms ease;
+    }
 
-        p {
-            max-width: 180px;
-            min-height: 40px;
-            margin: 0 0 10px;
-            font-size: 14px;
-            line-height: 1.45;
-            letter-spacing: 0;
-        }
+    .project-deck:not(.is-dragging) .project-deck__viewport {
+        @include project-card-spotlight(':hover');
 
-        span {
-            font-size: 11px;
-            letter-spacing: .02em;
-            opacity: .75;
+        // Pointer hover wins when keyboard focus is left on another card.
+        &:not(:has(> .project-card:hover)) {
+            @include project-card-spotlight(':focus-visible');
         }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project-card { transition: none; }
+
+    .project-deck .project-deck__viewport > .project-card {
+        transition: none !important;
+        transform: none !important;
     }
 }

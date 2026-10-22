@@ -1,397 +1,301 @@
-$(document).ready(function() {
-
-$(document).on('click', '.chords-results button', function() {
-    if (notPlaying) {
-        hideDots();
-        resetLabel();
-        $('.chords-results button').removeClass('btn-chord-selected');
-        $(this).addClass('btn-chord-selected');
-        let notes = JSON.parse($(this).attr('data-notes'));
-        let info = $(this).attr('href');
-        let noteIndex = firstIndex = 0;
-        let chord = [];
-
-        $('.chord-info').hide();
-        $('#info-alert').remove();
-        $(info).fadeIn('fast');
-
-        notes.forEach(function(element, index) {
-            let note = element;
-
-            note = noteToHumans(note).toLowerCase();
-
-            let $key = findKey(note, noteIndex);
-
-            if ($key == null)
-                $key = findKey(note, firstIndex);
-
-            chord.push(note + $key.attr('data-octave'));
-            noteIndex = $key.hasClass('keyboard-black-key') ? $key.parent().next().index() : $key.index();
-            
-            if (firstIndex == 0)
-                firstIndex = noteIndex;
-
-            console.log('Playing ' + note + ' at index ' + noteIndex);
-            
-            setTimeout(function() {
-                press($key, 150, false);
-                highlight($key);
-                updateLabel(note);
-            }, 200 * index);
+(function (root, factory) {
+    const api = factory();
+    if (typeof module === 'object' && module.exports) module.exports = api;
+    else api.initialize(root.jQuery, root);
+})(typeof window !== 'undefined' ? window : this, function () {
+    const naturals = {c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11};
+    const tones = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    function human(note) { return note.replace(/2/g, '').replace(/\+/g, '#').replace(/-/g, 'b'); }
+    function machine(note) { return note[0].toUpperCase() + note.slice(1).replace(/#/g, '+').replace(/b/g, '-'); }
+    function pitch(note) {
+        const match = /^([a-g])([#b]*)$/i.exec(human(note));
+        if (!match) return null;
+        return (naturals[match[1].toLowerCase()] + Array.from(match[2]).reduce(function (sum, accidental) { return sum + (accidental === '#' ? 1 : -1); }, 0) + 12) % 12;
+    }
+    function voice(notes, bass) {
+        const bassIndex = bass ? notes.findIndex(function (note) { return pitch(note) === pitch(bass); }) : -1;
+        if (bassIndex > 0) notes = notes.slice(bassIndex).concat(notes.slice(0, bassIndex));
+        let previous = -1;
+        return notes.map(function (note) {
+            const value = pitch(note);
+            if (value === null) return null;
+            let midi = 48 + value; // Begin in octave 3 and ascend through the supplied inversion.
+            while (midi <= previous) midi += 12;
+            previous = midi;
+            return {name: human(note), pitch: value, octave: Math.floor(midi / 12) - 1, tone: tones[value] + (Math.floor(midi / 12) - 1)};
         });
-
-        setTimeout(function() {
-            piano.triggerAttackRelease(chord, "1n");
-        }, (notes.length + 1) * 200);
     }
-});
-
-function updateLabel(note) {
-    $label = $('#chord-label');
-    $label.append('<div>'+note+'</div>');
-}
-
-function resetLabel() {
-    $('#chord-label').empty();
-}
-
-var input = exclude = include = [];
-var root = tool = null;
-
-////////////////////////
-// ENHARMONIC OPTIONS //
-////////////////////////
-$(document).on('click', '#options-container button', function() {
-    let $button = $(this);
-    resetOptions($button);
-    $button.removeClass('btn-outline-secondary').addClass('btn-teal');
-
-    let $selected = $('#options-container button[data-source="'+$button.attr('data-source')+'"].btn-teal');
-    let target, source;
-    
-    target = $selected.attr('data-name');
-    source = $selected.attr('data-source');
-
-    notes = [];
-
-    $('#options-container button.btn-teal').each(function() {
-        notes.push($(this).attr('data-name'));
-    });
-    
-    console.log('You just selected the ' + target);
-
-    console.log('Set of notes: ' + notes);
-    
-    input = notes;
-        
-    if (missingEnharmonics() == 0)
-        showRootOptions(input);
-});
-
-//////////////////
-// ROOT OPTIONS //
-//////////////////
-$(document).on('click', '#root-container button', function() {
-    let $button = $(this);
-
-    $('#root-container button').not(this).removeClass('btn-teal').addClass('btn-outline-secondary');
-    
-    if ($button.hasClass('btn-outline-secondary')) {
-        root = $button.attr('data-name');
-        console.log('You just selected ' + root + ' as the root');
-    } else {
-        root = null;
-        console.log('The root has been erased');
-    }
-
-    $button.toggleClass('btn-outline-secondary btn-teal');
-});
-
-function noteToHumans(note) {
-    return ucfirst(note.replace('+', '#').replace('+', '#').replace('-', 'b').replace('-', 'b').replace('2', ''));
-}
-
-function noteToMachine(note) {
-    let letter = ucfirst(note[0]);
-
-    return letter + note.substring(1).replace('#', '+').replace('#', '+').replace('b', '-').replace('b', '-');    
-}
-
-function unique(value, index, self) { 
-    return self.indexOf(value) === index;
-}
-
-function showRootOptions(notes) {
-    let array = notes.filter(unique);
-    $('#root-buttons').html('');
-    root = null;
-
-    if (array.length > 2) {
-        for (var i=0; i<array.length; i++) {
-            let html = `<div class="m-2 d-inline-block">
-                            <button class="btn btn-outline-secondary fw-bold" data-name="`+array[i]+`" type="button">`+noteToHumans(array[i])+`</button>
-                        </div>`;
-
-            $('#root-buttons').append(html);
-        }
-    }
-    
-    if ($('#root-buttons > div').length > 0) {
-        $('#root-container').show();
-    } else {
-        $('#root-container').hide();
-    }
-}
-
-function showEnharmonicOptions(notes) {
-    $('#options-buttons').html('');
-
-    for (var i=0; i<notes.length; i++) {
-        let enharmonics = JSON.parse($('.keyboard-key[data-name="'+noteToHumans(notes[i]).toLowerCase()+'"]').attr('data-names'));
-
-            let html = '<div class="btn-group m-2">';
-
-            enharmonics.forEach(function(enharmonic) {
-                html += '<button class="btn btn-outline-secondary fw-bold" data-source="'+notes[i]+'" data-name="'+noteToMachine(enharmonic)+'" type="button">'+noteToHumans(enharmonic)+'</button>';
+    function spellings(notes) {
+        // Suggest conventional names for common pitch shapes, using only the
+        // keyboard's existing aliases. Explicit user spellings bypass this.
+        const shapes = [
+            [[0, 4, 7], [0, 2, 4]], [[0, 3, 7], [0, 2, 4]],
+            [[0, 3, 6], [0, 2, 4]], [[0, 4, 8], [0, 2, 4]],
+            [[0, 2, 7], [0, 1, 4]], [[0, 5, 7], [0, 3, 4]],
+            [[0, 4, 7, 10], [0, 2, 4, 6]], [[0, 4, 7, 11], [0, 2, 4, 6]],
+            [[0, 3, 7, 10], [0, 2, 4, 6]], [[0, 3, 7, 11], [0, 2, 4, 6]],
+            [[0, 3, 6, 10], [0, 2, 4, 6]], [[0, 3, 6, 9], [0, 2, 4, 6]],
+            [[0, 4, 8, 10], [0, 2, 4, 6]], [[0, 4, 8, 11], [0, 2, 4, 6]],
+            [[0, 4, 7, 9], [0, 2, 4, 5]], [[0, 3, 7, 9], [0, 2, 4, 5]],
+            [[0, 5, 7, 10], [0, 3, 4, 6]],
+            [[0, 4, 7, 10, 2], [0, 2, 4, 6, 1]],
+            [[0, 4, 7, 11, 2], [0, 2, 4, 6, 1]],
+            [[0, 3, 7, 10, 2], [0, 2, 4, 6, 1]]
+        ];
+        const letters = 'cdefgab';
+        let best = notes.map(function (note) { return note.name; }), score = Infinity;
+        notes.forEach(function (rootNote, rootIndex) {
+            rootNote.aliases.forEach(function (rootName) {
+                shapes.filter(function (shape) { return shape[0].length === notes.length; }).forEach(function (shape) {
+                    const names = notes.map(function (note) {
+                        const interval = (pitch(note.name) - pitch(rootName) + 12) % 12;
+                        const degree = shape[0].indexOf(interval);
+                        if (degree === -1) return null;
+                        const letter = letters[(letters.indexOf(rootName[0]) + shape[1][degree]) % 7];
+                        return note.aliases.find(function (alias) { return alias[0] === letter; }) || null;
+                    });
+                    if (names.some(function (name) { return !name; })) return;
+                    const cost = names.reduce(function (sum, name) { return sum + name.length - 1; }, 0) * 10 + rootIndex / notes.length + (rootName === rootNote.name ? 0 : 0.01);
+                    if (cost < score) { score = cost; best = names; }
+                });
             });
-            
-            html += '</div>';
-
-            $('#options-buttons').append(html);
-        
+        });
+        return best;
     }
+    function initialize($, win) {
+        $(function () {
+            const $container = $('#notes-container');
+            if (!$container.length) return;
+            const $inputPiano = $('#chord-input-piano');
+            const $inputKeys = $inputPiano.find('.keyboard-key');
+            const $submit = $('#submit-notes');
+            const submitHtml = $submit.html();
+            const $results = $('#chord-results');
+            const selectedKeys = new Map();
+            let requestVersion = 0, pending = null, timers = [], playing = false;
 
-    if ($('#options-buttons > div').length > 0) {
-        $('#options-container').show();
-    } else {
-        $('#options-container').hide();
+            function mode() { return $('#chord-input-tabs .active').attr('href') === '#chord-note-names' ? 'button' : 'keyboard'; }
+            function keyboardNotes() { return Array.from(selectedKeys.values()).sort(function (a, b) { return a.index - b.index; }); }
+            function notes() {
+                if (mode() === 'keyboard') return keyboardNotes().map(function (item) { return machine(item.spelling); });
+                return $('.chord-note').toArray().filter(function (el) { return $(el).find('.chord-note-toggle').attr('aria-pressed') === 'true'; })
+                    .map(function (el) { const steps = Number(el.dataset.steps); return el.dataset.letter + (steps > 0 ? '+'.repeat(steps) : '-'.repeat(-steps)); });
+            }
+            function error(message) { $('#chord-error').text(message || '').prop('hidden', !message); }
+            function audioStatus(message) {
+                $('#chord-audio-status, #chord-result-audio-status').empty().prop('hidden', true);
+                const $status = $results.find('#chord-result-audio-status');
+                ($status.length ? $status : $('#chord-audio-status')).text(message || '').prop('hidden', !message);
+            }
+            function stopPlayback() {
+                timers.forEach(clearTimeout); timers = [];
+                if (playing && win.piano && typeof win.piano.releaseAll === 'function') win.piano.releaseAll();
+                playing = false;
+                $('[data-chord-stop]').prop('disabled', true);
+            }
+            function invalidate() {
+                requestVersion++;
+                if (pending) { pending.cancel(); pending = null; }
+                stopPlayback();
+                $results.empty().attr('aria-busy', 'false');
+                $submit.prop('disabled', false).html(submitHtml);
+                error('');
+            }
+            function pill(target, note) {
+                const el = document.getElementById('chord-note-pill').content.firstElementChild.cloneNode(true);
+                el.querySelector('[data-note-label]').textContent = note;
+                $(target).append(el);
+            }
+            function renderSpellings() {
+                const $options = $('#options-buttons').empty();
+                keyboardNotes().forEach(function (item) {
+                    const field = document.getElementById('chord-spelling-template').content.firstElementChild.cloneNode(true);
+                    const select = field.querySelector('select');
+                    const id = 'chord-spelling-' + pitch(item.spelling);
+                    select.id = id; select.name = id; select.dataset.pitch = String(pitch(item.spelling));
+                    const label = field.querySelector('label');
+                    label.htmlFor = id;
+                    // Preserve the note letter's case while keeping a flat accidental lowercase.
+                    label.querySelector('small').textContent = item.key.dataset.name[0].toUpperCase() + item.key.dataset.name.slice(1);
+                    JSON.parse(item.key.dataset.names).forEach(function (name) {
+                        const option = document.createElement('option');
+                        option.value = name; option.textContent = name[0].toUpperCase() + name.slice(1);
+                        option.selected = name === item.spelling;
+                        select.append(option);
+                    });
+                    $options.append(field);
+                });
+                $('#options-container').prop('hidden', !selectedKeys.size || mode() !== 'keyboard');
+            }
+            function renderSelection(rebuildSpellings) {
+                const keys = keyboardNotes();
+                if (mode() === 'keyboard' && !keys.some(function (item) { return item.explicit; })) {
+                    const names = spellings(keys.map(function (item) { return {name: item.key.dataset.name, aliases: JSON.parse(item.key.dataset.names)}; }));
+                    keys.forEach(function (item, index) { item.spelling = names[index]; });
+                }
+                const current = notes(), root = $('#chord-root').val();
+                $('#chord-selected-notes').empty();
+                current.forEach(function (note) { pill('#chord-selected-notes', human(note)); });
+                $('#chord-selection-count').text(current.length ? current.length + (current.length === 1 ? ' note selected' : ' notes selected') : 'No notes selected');
+                const $root = $('#chord-root').empty().append($('<option>').val('').text('Auto detect'));
+                current.forEach(function (note) { $root.append($('<option>').val(note).text(human(note))); });
+                $root.val(current.includes(root) ? root : '');
+                $('#root-container').prop('hidden', current.length < 3);
+                $('#chord-options').prop('hidden', mode() === 'keyboard' ? !current.length : current.length < 3);
+                $('#chord-options-panel-heading .accordion-button').text(mode() === 'keyboard' ? 'Note spelling & root (optional)' : 'Root note (optional)');
+                $inputKeys.each(function () {
+                    const selected = selectedKeys.get(pitch(this.dataset.name));
+                    const active = !!selected && selected.key === this;
+                    $(this).attr('aria-pressed', String(active)).children('.dot').toggle(active);
+                });
+                if (rebuildSpellings !== false) renderSpellings();
+            }
+            function readyAudio() {
+                if (!win.piano || !win.piano.loaded) { audioStatus('The piano is still loading. Please try playback again in a moment.'); return false; }
+                audioStatus('');
+                return true;
+            }
+            function resumeAudio() {
+                if (win.Tone && win.Tone.context && typeof win.Tone.context.resume === 'function') {
+                    win.Tone.context.resume().catch(function () { stopPlayback(); audioStatus('The piano could not start. Please try playback again.'); });
+                }
+            }
+            function toggleKey(key) {
+                const value = pitch(key.dataset.name);
+                const selected = selectedKeys.get(value);
+                if (selected && selected.key === key) selectedKeys.delete(value);
+                else selectedKeys.set(value, {key: key, index: $inputKeys.index(key), spelling: selected ? selected.spelling : key.dataset.name, explicit: selected ? selected.explicit : false});
+                invalidate(); renderSelection();
+            }
+            $inputKeys.each(function () {
+                $(this).attr({role: 'button', tabindex: '0', 'aria-label': 'Select ' + human(this.dataset.name).toUpperCase() + this.dataset.octave, 'aria-pressed': 'false'});
+            });
+            $inputPiano.on('click', function (event) {
+                const key = $(event.target).closest('.keyboard-key')[0];
+                if (key) toggleKey(key);
+            }).on('keydown', function (event) {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                const key = $(event.target).closest('.keyboard-key')[0];
+                if (!key) return;
+                event.preventDefault(); event.stopPropagation();
+                toggleKey(key); resumeAudio();
+                if (readyAudio()) win.piano.triggerAttackRelease(key.dataset.name.toUpperCase() + key.dataset.octave, '8n');
+            });
+            $('#chord-editor').on('pointerdown', '.keyboard-key', function () { stopPlayback(); resumeAudio(); });
+            $container.on('mousedown touchstart', function (event) {
+                if (!$(event.target).closest('.keyboard-key').length) return;
+                if (!readyAudio()) event.stopPropagation();
+                resumeAudio();
+            });
+            $('#options-buttons').on('change', 'select', function () {
+                const item = selectedKeys.get(Number(this.dataset.pitch));
+                if (!item) return;
+                item.spelling = this.value;
+                item.explicit = true;
+                invalidate(); renderSelection(false);
+            });
+            $('.chord-note-toggle').on('click', function () {
+                const active = this.getAttribute('aria-pressed') !== 'true';
+                $(this).attr('aria-pressed', String(active)).toggleClass('btn-primary', active).toggleClass('btn-secondary', !active);
+                updateNote($(this).closest('.chord-note'));
+            });
+            $('.chord-note [data-step]').on('click', function () {
+                const $note = $(this).closest('.chord-note');
+                $note.attr('data-steps', Number($note.attr('data-steps')) + Number(this.dataset.step));
+                updateNote($note);
+            });
+            function updateNote($note) {
+                const steps = Number($note.attr('data-steps')), active = $note.find('.chord-note-toggle').attr('aria-pressed') === 'true';
+                $note.find('[data-accidental-label]').text(steps > 0 ? '♯'.repeat(steps) : '♭'.repeat(-steps));
+                $note.find('[data-step="-1"]').prop('disabled', !active || steps <= -2);
+                $note.find('[data-step="1"]').prop('disabled', !active || steps >= 2);
+                invalidate(); renderSelection(); resumeAudio();
+                if (active && readyAudio()) {
+                    const value = pitch($note.attr('data-letter') + (steps > 0 ? '+'.repeat(steps) : '-'.repeat(-steps)));
+                    win.piano.triggerAttackRelease(tones[value] + $note.attr('data-octave'), '8n');
+                }
+            }
+            $('#chord-root').on('change', invalidate);
+            $('#chord-input-tabs [data-bs-toggle="tab"]').on('shown.bs.tab', function () { invalidate(); renderSelection(); });
+            $('#chord-clear').on('click', function () {
+                selectedKeys.clear();
+                $('.chord-note').attr('data-steps', '0').find('[data-accidental-label]').empty();
+                $('.chord-note-toggle').attr('aria-pressed', 'false').removeClass('btn-primary').addClass('btn-secondary');
+                $('.chord-note [data-step]').prop('disabled', true);
+                invalidate(); renderSelection(); audioStatus('');
+            });
+            $('#chord-example').on('click', function () {
+                const example = function () {
+                    selectedKeys.clear();
+                    ['c', 'e', 'g'].forEach(function (name) {
+                        const key = $inputKeys.filter('[data-name="' + name + '"]').first()[0];
+                        selectedKeys.set(pitch(name), {key: key, index: $inputKeys.index(key), spelling: name});
+                    });
+                    invalidate(); renderSelection(); submit();
+                };
+                if (mode() === 'keyboard') example();
+                else $('#chord-input-tabs-chord-keyboard').one('shown.bs.tab', example).tab('show');
+            });
+            $submit.on('click', submit);
+            function submit() {
+                const selected = notes();
+                if (new Set(selected.map(pitch)).size < 3) { error('Choose at least three different notes to find a chord.'); return; }
+                invalidate();
+                const version = requestVersion;
+                pending = win.axios.CancelToken.source();
+                $submit.prop('disabled', true).text('Finding chords…');
+                $results.attr('aria-busy', 'true');
+                win.axios.get($container.attr('data-url'), {params: {notes: selected, root: $('#chord-root').val() || null, tool: mode()}, cancelToken: pending.token, timeout: 20000})
+                    .then(function (response) {
+                        if (version !== requestVersion) return;
+                        $results.html(response.data);
+                        chooseChord($results.find('.chords-results button').first(), false);
+                        const heading = document.getElementById('chord-results-title');
+                        if (heading) { heading.focus({preventScroll: true}); heading.scrollIntoView({behavior: 'auto', block: 'start'}); }
+                    }).catch(function (failure) {
+                        if (version !== requestVersion || win.axios.isCancel(failure)) return;
+                        const data = failure.response && failure.response.data;
+                        error(failure.response && failure.response.status === 422 && data && typeof data.message === 'string' ? data.message : 'We couldn’t check those notes. Please try again.');
+                    }).finally(function () {
+                        if (version !== requestVersion) return;
+                        pending = null; $submit.prop('disabled', false).html(submitHtml); $results.attr('aria-busy', 'false');
+                    });
+            }
+            function chooseChord($button, play) {
+                if (!$button.length) return;
+                stopPlayback();
+                $results.find('.chords-results button').removeClass('btn-primary').addClass('btn-secondary').attr('aria-pressed', 'false');
+                $button.removeClass('btn-secondary').addClass('btn-primary').attr('aria-pressed', 'true');
+                $results.find('.chord-info').hide();
+                $(document.getElementById($button.attr('aria-controls'))).show();
+                $('#chord-playing-title').text($button.text().trim());
+                const voiced = voice(JSON.parse($button.attr('data-notes')), $button.attr('data-bass')).filter(Boolean);
+                const $keys = $('#chord-output-piano .keyboard-key');
+                $keys.children('.dot').hide(); $('#chord-label').empty();
+                voiced.forEach(function (note) {
+                    pill('#chord-label', note.name[0].toUpperCase() + note.name.slice(1));
+                    let $key = $keys.filter(function () { return pitch(this.dataset.name) === note.pitch && Number(this.dataset.octave) === note.octave; }).first();
+                    if (!$key.length) $key = $keys.filter(function () { return pitch(this.dataset.name) === note.pitch; }).first();
+                    $key.children('.dot').show();
+                });
+                if (!play || !readyAudio()) return;
+                resumeAudio(); playing = true; $('[data-chord-stop]').prop('disabled', false);
+                voiced.forEach(function (note, index) { timers.push(setTimeout(function () { win.piano.triggerAttackRelease(note.tone, '8n'); }, index * 220)); });
+                timers.push(setTimeout(function () { win.piano.triggerAttackRelease(voiced.map(function (note) { return note.tone; }), '1n'); }, voiced.length * 220 + 100));
+                timers.push(setTimeout(stopPlayback, voiced.length * 220 + 2100));
+            }
+            $results.on('click', '.chords-results button', function () { chooseChord($(this), true); });
+            $results.on('click', '[data-chord-stop]', stopPlayback);
+            $results.on('click', '[data-chord-edit]', function (event) {
+                event.preventDefault();
+                stopPlayback(); document.getElementById('chord-editor-title').scrollIntoView({block: 'start'}); $('#chord-clear').trigger('focus');
+            });
+            $results.on('pointerdown', '.keyboard-key', function () { stopPlayback(); resumeAudio(); });
+            $(win).on('pagehide', stopPlayback);
+            $(document).on('visibilitychange', function () { if (document.hidden) stopPlayback(); });
+            $(document).on('show.bs.modal show.bs.offcanvas', stopPlayback);
+            renderSelection();
+        });
     }
-}
-
-function resetOptions(element = null) {
-    include = [];
-    exclude = [];
-
-    if (element) {
-        element.siblings('button').removeClass('btn-teal').addClass('btn-outline-secondary');
-    } else {
-        $('#options-container button').removeClass('btn-teal').addClass('btn-outline-secondary');
-    }
-}
-
-function removeOptions() {
-    resetOptions();
-    showEnharmonicOptions([]);
-    showRootOptions([]);
-}
-
-////////////////////
-// KEYBOARD CLICK //
-////////////////////
-$('.keyboard-input .keyboard-white-key, .keyboard-input .keyboard-white-key').on('click', function(e) {
-    let $key = $(e.target);
- 
-    tool = 'keyboard';
- 
-    reset('.note');
- 
-    $key.find(' > .dot').toggle();
-
-    notes = getNotes();
-
-    showEnharmonicOptions(notes);
-
-    showRootOptions([]);
-});
-
-$('.dot').on('click', function() {
-    $(this).hide();
-    getNotes();
-});
-
-//////////////////////
-// NOTE INPUT CLICK //
-//////////////////////
-$('.note h1').on('click', function() {
-    let $note = $(this).parent();
-    $note.toggleClass('note-inactive note-active');
-    $note.find('button').toggleAttr('disabled');
-
-    tool = 'button';
-
-    reset('.dot');
-    removeOptions();
-    playNote($note);
-    notes = getNotes();
-    showRootOptions(notes);
-});
-
-///////////////////////////////////
-// NOTE PLUS/MINUS BUTTONS CLICK //
-///////////////////////////////////
-$('.note button').on('click', function() {
-    let symbol = $(this).attr('data-symbol');
-    let accidental = '';
-    let accidentals = [];
-    let $note = $(this).parent().parent();
-    let $label = $(this).parent().siblings('h1').find('span');
-    let steps = parseInt($label.attr('data-steps'));
-    
-    if (symbol == '#' && steps < 2) {
-        steps += 1;
-    } else if (symbol == 'b' && steps > -2) {
-        steps -= 1;
-    }
-
-    $label.attr('data-steps', steps);
-
-    if (steps == 0)
-        $label.text('');
-
-    accidental = steps > 0 ? '#' : 'b';
-
-    for (i=0; i<Math.abs(steps); i++) {
-        accidentals.push(accidental);
-    }
-
-    $label.text(accidentals.join(''));
-    
-    let ext = accidentals.join('') == '##' ? 'x' : accidentals.join('');
-
-    $note.attr('data-name', $note.attr('data-name')[0] + ext);
-    playNote($note);
-    notes = getNotes();
-    showRootOptions(notes);
-});
-
-function reset(elem) {
-    let $notes = $(elem);
-    
-    if (elem == '.dot') {
-        $notes.hide();
-    } else {
-        $notes.removeClass('note-active').addClass('note-inactive');
-        $notes.find('button').prop('disabled', true);
-    }
-}
-
-function playNote($note) {
-    if ($note.hasClass('note-active'))
-        play($note.attr('data-name'), $note.attr('data-octave'), 500);
-}
-
-function getNotes() {
-    let notes = [];
-
-    $('.note-active').each(function() {
-        let note = $(this).find('h1').text();
-        note = note.replace(/#|_/g, '+');
-        note = note.replace(/b|_/g, '-');
-        notes.push(note);
-    });
-
-    $('.keyboard-key').each(function() {
-        $key = $(this);
-
-        if ($key.find('>.dot:visible').length > 0) {
-            let note = $key.attr('data-name').toUpperCase();
-            
-            notes.push(note.replace(/#|_/g, '+'));
-        }
-    });
-
-    input = notes;
-
-    $('#reset-options').attr('data-original', JSON.stringify(notes));
-
-    return notes;
-}
-
-////////////////////////
-// SUBMIT NOTES CLICK //
-////////////////////////
-$('button#submit-notes').on('click', function() {
-    if (missingEnharmonics() > 0) {
-            alert('Please select each enharmonic note, you\'re missing ' + missingEnharmonics());
-            $('#options-container').removeClass('bounce').addClass('bounce');
-    } else if (input.length < 3) {
-        alert('Please select at least 3 notes');
-    } else {
-        $(this).prop('disabled', true);
-        $(this).text('Hang on a sec...');
-
-        animate();
-        setTimeout(function() {
-            submit();
-        }, 1500);
-    }
-});
-
-function missingEnharmonics() {
-    return $('#options-buttons .btn-group').length - $('#options-buttons .btn-teal').length;
-}
-
-function nextLetter(letter) {
-    let next = letter.substring(0, letter.length - 1) + String.fromCharCode(letter.charCodeAt(letter.length - 1) + 1);
-
-    if (next == 'H')
-        return 'A';
-
-    return next;
-}
-
-function animate() {
-    $('.input-overlay').show();
-}
-
-function submit() {
-    let $container = $('#notes-container');
-    console.log('Sending: ' + input);
-    console.log('Tool used: ' + tool);
-    console.log(root ? 'The selected root is ' + root : 'No root was selected');
-
-    axios.get($container.attr('data-url'), {params: {notes: input, root: root, tool: tool}})
-        .then(function(response) {
-        $container.html(response.data);
-        $('html,body').scrollTop(0);
-    }).catch(function(error) {
-        showError(error.response.data.message);
-    });
-}
-
-function showError(response) {
-    $('#modal-error .modal-body div#error-report').text(response);
-    $('#modal-error').modal('show');
-}
-
-$('#modal-error').on('hide.bs.modal', function() {
-    reload();
-});
-
-function reload(full = false) {
-    $('button#submit-notes').text($('button#submit-notes').attr('data-text')).prop('disabled', false);
-    $('.input-overlay').hide();
-    
-    if (full) {
-        input = [];
-        reset('.dot');
-        reset('.note');
-        $('#options-buttons').html('').parent().removeClass('border');
-        $('#options-container').hide();
-        $('#root-buttons').html('');
-        $('#root-container').hide();
-    }
-}
-
-function updateUrl(notes) {
-    let query = '?';
-    notes.forEach(function(note) {
-        query += 'notes[]=' + note.replace('+', 's') + '&';
-    });
-    if (history.pushState) {
-        let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + query;
-        window.history.pushState({path:newurl},'',newurl);
-    }
-}
-
+    return {human: human, machine: machine, pitch: pitch, voice: voice, spellings: spellings, initialize: initialize};
 });

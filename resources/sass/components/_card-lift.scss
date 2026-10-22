@@ -1,0 +1,24 @@
+// Shared hover movement for public/web-app cards and Design System specimens.
+.piece-card,
+.search-card,
+.composer-tile,
+.discover-piece-link,
+.card-lift {
+    transition: transform 0.18s ease;
+    &:hover {
+        transform: translateY(-3px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .piece-card,
+    .search-card,
+    .composer-tile,
+    .discover-piece-link,
+    .card-lift {
+        transition: none;
+        &:hover {
+            transform: none;
+        }
+    }
+}

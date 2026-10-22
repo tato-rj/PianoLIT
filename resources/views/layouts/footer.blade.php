@@ -1,4 +1,5 @@
 @empty($raw)
+@if(request()->getHost() === 'my.'.config('app.short_url'))
 <footer class="bg-light py-6">
 	<div class="container">
 		<div class="col-lg-8 col-md-10 col-12 mx-auto text-center">
@@ -16,4 +17,7 @@
 		</div>
 	</div>
 </footer>
+@else
+    @include('components.public-footer')
+@endif
 @endempty

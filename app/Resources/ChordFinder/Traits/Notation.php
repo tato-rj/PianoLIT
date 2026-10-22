@@ -67,7 +67,7 @@ trait Notation
 
 		if (is_null($fifth['name']) || $fifth['type'] == 'perfect') {
 			if ($seventh['type'] == 'major') {
-				$label['seventh'] = $third == 'major' ? 'dominant 7' : 'minor 7';
+				$label['seventh'] = 'major 7';
 				$label['seventh_shorthand'] = ' maj7';
 			} else if ($seventh['type'] == 'minor') {
 				$label['seventh'] = 'minor 7';

@@ -1,6 +1,7 @@
 @php ($keyObj = $keys->find($key))
 
 id="key-{{str_replace('#', 's', $key)}}" 
+role="button" tabindex="{{ $key === 'c' ? '0' : '-1' }}" aria-label="{{ $keyObj->getMajorKey() }}, {{ $keyObj->getMinorKey() }}" aria-pressed="{{ $key === 'c' ? 'true' : 'false' }}"
 enharmonic-id="key-{{$keyObj->setEnharmonic()->isValid() ? str_replace('#', 's', $keyObj->getKey()) : 'loading'}}" 
 
 control-left="#key-{{$keyObj->setMajor()->next()}}"

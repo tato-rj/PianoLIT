@@ -16,6 +16,18 @@ class ToolsController extends Controller
 
     public function analyseChord()
     {
+		$notation = '/^[A-Ga-g](?:\+{1,2}|-{1,2}|s{1,2})?$/';
+		$data = request()->validate([
+			'notes' => ['required', 'array', 'min:3', 'max:12'],
+			'notes.*' => ['bail', 'required', 'string', 'regex:'.$notation],
+			'root' => ['nullable', 'string', 'regex:'.$notation],
+			'tool' => ['bail', 'nullable', 'string', 'in:button,keyboard'],
+		]);
+		abort_if(array_keys($data['notes']) !== range(0, count($data['notes']) - 1), 422, 'Please provide a list of notes.');
+		$normalize = function ($note) { return str_replace('s', '+', strtolower($note)); };
+		$notes = array_map($normalize, $data['notes']);
+		abort_if(count(array_unique($notes)) < 3, 422, 'Please select at least 3 different notes.');
+		abort_if(!empty($data['root']) && !in_array($normalize($data['root']), $notes, true), 422, 'The root must be one of your selected notes.');
 		$finder = new ChordFinder;
 		$request = $finder->take(request())->validate()->analyse()->ranked()->get();
 

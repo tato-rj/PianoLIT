@@ -1,0 +1,1 @@
+PianoLIT news for {{ $monthLabel }}

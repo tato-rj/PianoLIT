@@ -3,7 +3,7 @@
 	@php
 	$seventh = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 7);
 	@endphp
-	@if (! $seventh)
+	@if (! $seventh['name'])
 		<p class="m-0">This chord <strong>has no 7th</strong>.</p>
 	@else
 		<p class="{{$inversion['label']['type'] == 'major' && $seventh['type'] == 'minor' ? null : 'm-0'}}">In this case, we have a {!! '<strong>' . $seventh['name'] . '</strong>' !!}. 

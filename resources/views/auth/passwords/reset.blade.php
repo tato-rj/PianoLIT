@@ -1,31 +1,22 @@
-@extends('layouts.app')
+@component('auth.webapp.layout', [
+    'showCarousel' => false,
+    'title' => 'Reset your password below',
+    'subtitle' => 'Enter your email address and choose a new password.'])
 
-@section('content')
-<div class="container mb-4">
-    <div class="row">
-        <div class="col-lg-4 col-md-6 col-sm-8 col-12 mx-auto">
-            <h4 class="mb-4">Reset your password below</h4>
-            <form method="POST" action="{{ route('password.update') }}" disable-on-submit>
-                @csrf
+    <form method="POST" action="{{ route('password.update') }}" disable-on-submit>
+        @csrf
 
-                <input type="hidden" name="token" value="{{ $token }}">
+        <input type="hidden" name="token" value="{{ $token }}">
 
-                <div class="form-group">
-                    <input required type="email" name="email" placeholder="Email" class="form-control w-100 input-light" value="{{ old('email') }}">
-                </div>
-                <div class="form-group">
-                    <input required type="password" name="password" placeholder="New password" class="form-control w-100 input-light" value="{{ old('password') }}">
-                </div>
-                <div class="form-group">
-                    <input required type="password" name="password_confirmation" placeholder="Confirm your new password" class="form-control w-100 input-light" value="{{ old('password') }}">
-                </div>
+        @input(['type' => 'email', 'name' => 'email', 'placeholder' => 'Email', 'autocomplete' => 'email'])
+        @input(['type' => 'password', 'name' => 'password', 'placeholder' => 'New password', 'autocomplete' => 'new-password'])
+        @input(['type' => 'password', 'name' => 'password_confirmation', 'placeholder' => 'Confirm your new password', 'autocomplete' => 'new-password'])
 
-                <div class="form-group text-center">
-                    <button type="submit" class="btn btn-primary shadow d-block w-100 mb-4">Reset my password</button>
-                </div>
-            </form>
+        <div class="form-group mb-0">
+            <button type="submit" class="btn btn-primary d-block w-100">Reset my password</button>
         </div>
-    </div>
-</div>
-
-@endsection
+    </form>
+    <p class="auth-secondary text-muted text-center mt-4 mb-0">
+        <a class="auth-secondary-link" href="{{ route('login') }}">Back to log in</a>
+    </p>
+@endcomponent

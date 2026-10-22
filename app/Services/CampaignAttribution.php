@@ -18,7 +18,7 @@ class CampaignAttribution
     {
         return config('attribution.enabled')
             && $request->hasSession()
-            && in_array($request->getHost(), [config('app.short_url'), 'www.'.config('app.short_url'), 'my.'.config('app.short_url'), 'blog.'.config('app.short_url'), 'shop.'.config('app.short_url'), 'learn.'.config('app.short_url')], true)
+            && in_array($request->getHost(), [config('app.short_url'), 'www.'.config('app.short_url'), 'my.'.config('app.short_url'), 'blog.'.config('app.short_url'), 'shop.'.config('app.short_url'), 'learn.'.config('app.short_url'), 'games.'.config('app.short_url'), 'metronome.'.config('app.short_url')], true)
             && ! auth('admin')->check() && ! $request->session()->get('impersonator')
             && ! \App\Activity\ExcludedAccounts::request($request);
     }

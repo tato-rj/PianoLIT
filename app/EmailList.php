@@ -8,6 +8,7 @@ use App\Jobs\SendMassEmails;
 class EmailList extends PianoLit
 {
     const FREE_PICK = 'Free Pick';
+    const NEWSLETTER = 'PianoLIT News';
 
 	protected $dates = ['last_sent_at'];
     protected $casts = ['previewable' => 'boolean'];
@@ -29,6 +30,9 @@ class EmailList extends PianoLit
 
 	public function send($subject = null)
 	{
+        if ($this->name === self::NEWSLETTER) {
+            return app(\App\Services\Newsletter\MonthlyDigest::class)->queuePreviousMonth();
+        }
         $list_id = $this->listId();
         $this->update(['last_sent_at' => now()]);
 
@@ -40,6 +44,9 @@ class EmailList extends PianoLit
 
 	public function mailable($list_id, $subscription = null)
 	{
+        if ($this->name === self::NEWSLETTER) {
+            return app(\App\Services\Newsletter\MonthlyDigest::class)->preview($this, $subscription);
+        }
         if ($this->name === self::FREE_PICK) {
             return new \App\Mail\FreePickEmail($list_id, $subscription);
         }

@@ -1,45 +1,17 @@
-@php($count = 0)
-<div class="mb-4">
-	<label class="">
-		@if($request['strict'])
-		<strong>THE CHORD IS...</strong>
-		@else
-		<strong>MOST LIKELY {{ str_plural('CHORD', $request['chords_count']) }}...</strong>
-		@endif
-	</label>
-	<div class="chords-results d-flex flex-wrap">
-	@foreach($request['chords'] as $index => $chord)
-		@foreach($chord['inversions'] as $key => $inversion)
-			@if($inversion['ranking'] == $request['most_relevant'])
-				@php($count++)
-				<button class="m-1 btn btn-chord-main" 
-					href="#{{$inversion['id']}}" 
-					data-notes="{{json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
-					@icon('circle-play', ['mr' => 2, 'classes' => 'opacity-4'])
-					<strong>{!! $inversion['label']['full_shorthand'] !!}</strong>
-				</button>
-			@endif
-		@endforeach
-	@endforeach
-	</div>
-</div>
-
-@if($request['chords_count'] > $count)
-<div class="mb-4">
-<label>Other chords we can make with these notes...</label>
-	<div class="chords-results d-flex flex-wrap">
-	@foreach($request['chords'] as $chord)
-		@foreach($chord['inversions'] as $inversion)
-			@if($inversion['ranking'] < $request['most_relevant'])
-				<button class="btn btn-chord-additional m-1" 
-					href="#{{$inversion['id']}}" 
-					data-notes="{{json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
-					@icon('circle-play', ['mr' => 2, 'classes' => 'opacity-4'])
-					<strong>{!! $inversion['label']['full_shorthand'] !!}</strong>
-				</button>
-			@endif
-		@endforeach
-	@endforeach
-	</div>
-</div>
-@endif
+@foreach(['best' => 'Best matches', 'other' => 'Other possibilities'] as $group => $heading)
+    @php
+        $matches = collect($request['chords'])->flatMap(function ($chord) { return $chord['inversions']; })->filter(function ($inversion) use ($request, $group) {
+            return $group === 'best' ? $inversion['ranking'] === $request['most_relevant'] : $inversion['ranking'] < $request['most_relevant'];
+        })->sortByDesc('ranking');
+    @endphp
+    @if($matches->isNotEmpty())
+        <div class="mb-4">
+            <h3 class="h6 mb-3">{{ $heading }}</h3>
+            <div class="chords-results d-flex flex-wrap gap-2">
+                @foreach($matches as $inversion)
+                    <button type="button" class="btn btn-secondary" href="#{{ $inversion['id'] }}" aria-pressed="false" aria-controls="{{ $inversion['id'] }}" data-notes="{{ json_encode($inversion['chord']) }}" data-bass="{{ $request['strict'] && $request['tool'] !== 'button' ? $inversion['label']['bass'] : '' }}">@icon('play'){!! $inversion['label']['full_shorthand'] !!}</button>
+                @endforeach
+            </div>
+        </div>
+    @endif
+@endforeach

@@ -1,13 +1,13 @@
-<section class="container">
-	<nav aria-label="breadcrumb">
-	  <ol class="breadcrumb py-0">
-	  	@foreach($pages as $page => $route)
-	  	@if($loop->last)
-	    <li class="breadcrumb-item active" aria-current="page">{{ucfirst($page)}}</li>
-	  	@else
-	    <li class="breadcrumb-item"><a class="link-blue" href="{{$route}}">{{ucfirst($page)}}</a></li>
-	  	@endif
-	  	@endforeach
-	  </ol>
-	</nav>
-</section>
+<nav class="mb-4" aria-label="Breadcrumb" @if($preview ?? false) data-ds-preview @endif>
+    <ol class="breadcrumb bg-transparent p-0 mb-0 small">
+        @foreach($items as $item)
+            <li class="breadcrumb-item text-break{{ $loop->last ? ' active' : '' }}" @if($loop->last) aria-current="page" @endif>
+                @if(! $loop->last && ! empty($item['url']))
+                    <a class="link-blue" href="{{ $item['url'] }}">{{ $item['label'] }}</a>
+                @else
+                    {{ $item['label'] }}
+                @endif
+            </li>
+        @endforeach
+    </ol>
+</nav>

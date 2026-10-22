@@ -1,0 +1,13 @@
+// Common controls retain their shared finishes; only the live prompt and level
+// visualization have component-specific geometry.
+.voice-recorder__number {
+    font-size: clamp(5rem, 20vw, 8rem);
+    font-weight: 300;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+
+.voice-recorder [data-voice-level] {
+    width: 0;
+    transition: none;
+}

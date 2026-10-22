@@ -26,6 +26,7 @@ class EmailListTemplates
 
     public function path(EmailList $list)
     {
+        if ($list->name === EmailList::NEWSLETTER) return $this->viewsPath.'/emails/newsletter/monthly-digest.blade.php';
         return $this->viewsPath.'/emails/lists/'.self::slug($list->name).'.blade.php';
     }
 
@@ -51,7 +52,7 @@ class EmailListTemplates
         $created = false;
         try {
             // The existing Freepick template must survive deletion/recreation of its list.
-            if ($list->name !== EmailList::FREE_PICK || ! $this->exists($list)) {
+            if (!in_array($list->name, [EmailList::FREE_PICK, EmailList::NEWSLETTER], true) || ! $this->exists($list)) {
                 $contents = $this->files->get(resource_path('stubs/email-list.blade.stub'));
                 $this->files->ensureDirectoryExists(dirname($path));
                 $stream = @fopen($path, 'x');

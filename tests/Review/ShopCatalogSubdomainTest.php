@@ -123,7 +123,7 @@ class ShopCatalogSubdomainTest extends ReviewTestCase
         $response = $this->get($product->showRoute())->assertOk()->assertSee($product->title)
             ->assertSee('href="http://shop.localhost/'.$catalog.'/'.$product->slug.'/checkout"', false)
             ->assertSee('<link rel="canonical" href="'.$product->showRoute().'"', false)
-            ->assertSee('href="http://learn.localhost/circle-of-fifths"', false)
+            ->assertSee('href="http://shop.localhost/login"', false)
             ->assertSee('href="http://localhost/contact-us"', false)
             ->assertSee('action="'.$product->reviewRoute().'"', false);
         $this->assertStringStartsWith('http://shop.localhost/reviews/', $product->reviewRoute());
@@ -180,9 +180,9 @@ class ShopCatalogSubdomainTest extends ReviewTestCase
         $shop = parse_url($baseUrl, PHP_URL_SCHEME).'://shop.'.$host;
         $this->get(route('ebooks.index'))->assertOk()
             ->assertSee('href="'.$baseUrl.'"', false)
-            ->assertSee('href="'.parse_url($baseUrl, PHP_URL_SCHEME).'://learn.'.$host.'/circle-of-fifths"', false)
-            ->assertSee('href="'.$shop.'/ebooks"', false)
-            ->assertSee('href="'.$shop.'/escores"', false);
+            ->assertSee('href="'.$shop.'/login"', false);
+        $this->assertSame($shop.'/ebooks', route('ebooks.index'));
+        $this->assertSame($shop.'/escores', route('escores.index'));
         $this->assertSame($baseUrl.'/privacy-policy', route('privacy'));
         $this->assertSame($shop.'/subscriptions/modal', route('subscriptions.modal'));
         $this->assertSame($shop.'/shop/validate-coupon', route('shop.validate-coupon'));

@@ -5,7 +5,7 @@
 
 	foreach ([6,9,11,13] as $dissonance) {
 		$result = (new \App\Resources\ChordFinder\Label([]))->find($inversion, $dissonance);
-		if ($result)
+		if ($result['name'])
 			array_push($dissonances, $result);
 	}
 	@endphp

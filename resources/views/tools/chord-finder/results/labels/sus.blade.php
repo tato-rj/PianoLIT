@@ -4,13 +4,13 @@
 	$second = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 2);
 	$fourth = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 4);
 	@endphp
-	@if (! $second && ! $fourth)
+	@if (! $second['name'] && ! $fourth['name'])
 	<p class="m-0">This chord <strong>has no 2nd or 4th</strong>, so it is neither add nor sus.</p>
 	@else
 	<p class="m-0">In this chord we find a  
-		{!! $second ? ' <strong>' . $second['name'] . '</strong>' : null !!} 
-		{{ $fourth && $second ? ' and a' : null}}
-		{!! $fourth ? ' <strong>' . $fourth['name'] . '</strong>' : null !!}. 
+		{!! $second['name'] ? ' <strong>' . $second['name'] . '</strong>' : null !!}
+		{{ $fourth && $second['name'] ? ' and a' : null}}
+		{!! $fourth['name'] ? ' <strong>' . $fourth['name'] . '</strong>' : null !!}.
 		That is why we call it <strong>{{strip_tags($inversion['label']['sus_shorthand'])}}</strong>.
 	</p>
 	@endif

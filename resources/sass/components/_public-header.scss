@@ -1,0 +1,11 @@
+.site-header {
+    letter-spacing: 0;
+
+    + main { padding-top: 30px; }
+}
+
+.hub-menu.offcanvas-end {
+    --bs-offcanvas-width: 360px;
+    max-width: none;
+}
+

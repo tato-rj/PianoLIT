@@ -4,7 +4,7 @@
 		<div class="free-pick-card__content position-relative d-flex flex-column justify-content-between h-100">
 			<div>
 				<h4 class="free-pick-card__title text-white mb-1">{{ $piece->collection_name === 'Sonata' ? $piece->getRawOriginal('name') : ($piece->nickname ?: $piece->getRawOriginal('name')) }}</h4>
-				<p class="free-pick-card__metadata mb-3">@if(trim($piece->catalogue)){{ $piece->catalogue }} · @endif{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
+				<p class="free-pick-card__metadata mb-2">@if(trim($piece->catalogue)){{ $piece->catalogue }} · @endif{{ $piece->attribution }} by {{ $piece->composer->short_name }}</p>
 			</div>
 
 			{{-- <a class="btn btn-secondary d-inline-flex align-items-center gap-3" href="{{ route('webapp.pieces.show', $piece) }}">Explore piece @icon('arrow-right', ['mr' => 0])</a> --}}

@@ -1,0 +1,1 @@
+<button type="button" class="btn btn-primary" @unless($preview ?? false) show="subscription-modal" data-view="newsletter-subscription" data-url="{{ route('subscriptions.modal') }}" @endunless>@icon('mail'){{ $label ?? 'Subscribe' }}</button>

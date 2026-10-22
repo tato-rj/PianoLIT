@@ -9,7 +9,7 @@ module.exports = [
     ].map(file => 'public/' + prefix + file)),
     'public/site.webmanifest', 'public/admin.site.webmanifest',
     'public/browserconfig.xml', 'public/admin.browserconfig.xml',
-    ...['app-icon.svg', 'admin-icon.svg', 'app-icon.png', 'admin-icon.png',
+    ...['app-icon.svg', 'admin-icon.svg', 'icon-white.svg', 'app-icon.png', 'admin-icon.png',
         'app-icon-ios-1024.png', 'icon-rounded.png', 'icon-rounded-margin.png'
     ].map(file => 'public/images/brand/' + file),
     ...['app', 'admin'].flatMap(variant => [

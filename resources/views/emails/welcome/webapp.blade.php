@@ -1,7 +1,7 @@
 @component('mail::welcome.message')
 @component('mail::welcome.hero', ['firstName' => $firstName, 'image' => $websiteUrl.mix('images/emails/welcome/floating-logo.png')])
-A world of piano music, ready to explore.<br>
-Find pieces you love. Listen, learn, and make them your own.
+PianoLIT is where pianists discover new pieces and find inspiration<br>
+to play only what they love.
 @endcomponent
 
 @component('mail::welcome.section', ['title' => 'Try our iOS app.', 'image' => $websiteUrl.mix('images/emails/welcome/tablet-iphone.jpg'), 'alt' => 'PianoLIT on a tablet and in the iPhone app', 'links' => [['url' => $iosUrl, 'label' => 'Get the iOS app', 'kind' => 'app-store', 'image' => $websiteUrl.mix('images/emails/welcome/app-store.png')]]])

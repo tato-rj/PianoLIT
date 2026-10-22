@@ -29,7 +29,12 @@ class SubscriptionsController extends Controller
         if ($product && auth()->user() && auth()->user()->purchasesOf($product)->exists())
             return null;
 
-        return view('components.popups.popup', ['view' => $request->view, 'product' => $product])->render();
+        $view = $request->view;
+        if ($view === 'blog-subscription' || ($view === 'subscription' && $request->getHost() === 'blog.'.config('app.short_url'))) {
+            $view = 'newsletter-subscription';
+        }
+
+        return view('components.popups.popup', compact('view', 'product'))->render();
     }
 
     /**
@@ -40,6 +45,12 @@ class SubscriptionsController extends Controller
      */
     public function store(Request $request, SubscriptionForm $form)
     {
+        // Already-open blog forms retain their host/CSRF endpoint and join PianoLIT news.
+        if ($request->getHost() === 'blog.'.config('app.short_url') && !$request->gift_url) {
+            $request->validate(['email' => 'required|string|email|max:254']);
+            app(\App\Services\Newsletter\Subscribers::class)->subscribe($form->email);
+            return back()->with('status', 'You’re on the list! Look out for monthly PianoLIT news, whenever there’s something new to share.');
+        }
         $list = EmailList::where('name', EmailList::FREE_PICK)->first();
         if ($list && $list->has($form->email) && ! $request->gift_url)
             return redirect()->back()->with('error', 'We already have this email in our subscription list.');

@@ -1,6 +1,15 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Voice recorder', 'usage' => 'components.voice-recorder', 'properties' => 'font-size,color,padding'])
+      @include('components.voice-recorder', ['preview' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Full-screen project watermark', 'usage' => 'components.project-watermark', 'properties' => 'width,height,padding,opacity'])
+      <div class="position-relative bg-primary rounded p-5">
+        @include('components.project-watermark', ['preview' => true])
+        <p class="text-white pt-4 mb-0">A quiet home link for full-screen projects. Hover or focus to brighten.</p>
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Accordion', 'usage' => 'components.accordion · components.accordion-item', 'properties' => 'padding,border,border-radius,background-color'])
       @component('components.accordion', ['id' => 'ds-accordion', 'preview' => true])
         @component('components.accordion-item', ['id' => 'ds-accordion-first', 'parentId' => 'ds-accordion', 'title' => 'Level 1'])
@@ -57,8 +66,24 @@
     @component('admin.pages.settings.sample', ['label' => 'Pastel feature card · website / web app', 'usage' => '.pastel-card [data-pastel-color=mint]', 'properties' => 'color,background-color,border,border-radius'])
       <div class="pastel-card rounded p-4" data-pastel-color="mint" data-ds-preview><span class="pastel-card__tag">YOUR COLLECTION</span><h3 class="h5 mt-3">A little music, every day.</h3><p>A softer surface for folders and featured content.</p><button type="button" class="btn pastel-card__action">Open collection @icon('arrow-right', ['mr' => 0])</button></div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Project link card', 'usage' => 'components.project-card · pastel-card', 'properties' => 'color,background-color,border,border-radius,box-shadow'])
-      @include('components.project-card', ['preview' => true, 'project' => ['key' => 'webapp', 'title' => 'Web app', 'description' => 'Find your next favorite piece.', 'destination' => 'my.pianolit', 'url' => route('webapp.discover'), 'color' => 'sky']])
+    @component('admin.pages.settings.sample', ['label' => 'Scrolling project gallery', 'usage' => 'components.project-deck / project-card', 'properties' => 'color,background-color,border,border-radius,box-shadow'])
+      <div data-ds-preview>
+        @include('components.project-deck', ['deckId' => 'ds-project', 'projects' => [['key' => 'webapp', 'title' => 'Web app', 'description' => 'Find your next favorite piece.', 'url' => route('webapp.discover')]]])
+      </div>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Public promotion card', 'usage' => 'components.promo-card · components.editorial-layout sidebar', 'properties' => 'color,background-color,border,border-radius'])
+      @include('components.promo-card', ['preview' => true, 'category' => 'Crash courses', 'color' => 'mint', 'title' => 'Discover a new side of music', 'description' => 'Daily lessons delivered to your inbox.', 'action' => 'Start learning', 'url' => route('crashcourses.index')])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Newsletter invitation', 'usage' => 'components.newsletter.invitation · pastel-card', 'properties' => 'padding,color,background-color,border,border-radius'])
+      @include('components.newsletter.invitation', ['preview' => true, 'headingId' => 'ds-newsletter-invitation-title'])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Public resource card', 'usage' => 'components.resource-card · card-lift', 'properties' => 'padding,color,background-color,border,border-radius,box-shadow'])
+      @component('components.resource-card', ['preview' => true, 'id' => 'ds-resource-card', 'title' => 'Circle of fifths', 'format' => 'Explore harmony', 'description' => 'See how keys connect and find your way around harmony.', 'action' => 'Explore the circle', 'color' => 'mint', 'url' => route('tools.circle-of-fifths')])
+        @slot('artwork')@include('learn.components.artwork', ['kind' => 'circle'])@endslot
+      @endcomponent
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Responsive piano keyboard', 'usage' => 'components.piano.keyboard · responsive: true', 'properties' => 'width,height,border,border-radius'])
+      @include('components.piano.keyboard', ['designSystemPreview' => true, 'responsive' => true, 'centered' => true, 'octaves' => [3 => [[true, false], [true, false], [true, false], [true, false], [true, false], [true, false], [true, false]], 4 => []]])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Status badges', 'usage' => '.badge .rounded-pill .alert-{color}', 'properties' => 'font-size,padding,color,background-color,border-radius'])
       <div class="design-system__row"><span class="badge rounded-pill alert-green" data-ds-preview>Active</span><span class="badge rounded-pill alert-blue">Trial</span><span class="badge rounded-pill alert-orange">Pending</span><span class="badge rounded-pill alert-red">Ended</span></div>
@@ -79,7 +104,10 @@
     @component('admin.pages.settings.sample', ['label' => 'Dialog', 'usage' => '.modal + .modal-content', 'properties' => 'padding,border,border-radius,box-shadow'])
       <div class="modal design-system__modal-preview"><div class="modal-dialog m-0"><div class="modal-content" data-ds-preview><div class="modal-body"><h3 class="h5">A moment of focus</h3><p>Dialogs keep a single task in view.</p><button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#ds-example-modal">Open sample dialog</button></div></div></div></div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Breadcrumbs', 'usage' => 'admin.components.breadcrumb · page.title breadcrumbs', 'properties' => 'font-size,color,line-height'])
+    @component('admin.pages.settings.sample', ['label' => 'Public hub breadcrumbs', 'usage' => 'components.breadcrumb · items: label / url', 'properties' => 'font-size,color,line-height'])
+      @include('components.breadcrumb', ['preview' => true, 'items' => [['label' => 'Home', 'url' => route('home')], ['label' => 'Blog', 'url' => route('posts.index')], ['label' => 'A little piano inspiration']]])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Admin breadcrumbs', 'usage' => 'admin.components.breadcrumb · page.title breadcrumbs', 'properties' => 'font-size,color,line-height'])
       @include('admin.components.breadcrumb', ['designSystemPreview' => true, 'items' => [['label' => 'Overview', 'url' => '#ds-components'], ['label' => 'Email lists', 'url' => '#ds-components'], ['label' => 'Free Pick']]])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Links', 'usage' => 'a + .text-muted', 'properties' => 'font-size,color,text-decoration'])

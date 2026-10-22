@@ -26,6 +26,23 @@ editors. UI previews use the shared `@brandIcon` component and the actual export
 The two SVG masters live in `resources/images/brand/`; keep their six evenly
 spaced black keys, as explicitly requested by Arthur.
 
+Full-screen public projects use `components.project-watermark`: a white,
+transparent SVG with a white rounded-square border, derived from the approved
+monochrome silhouette, fixed at the top left with safe-area spacing. It links to
+the absolute `home` route, uses 30%
+opacity at rest and 65% on hover/keyboard focus, and disables its transition for
+reduced motion. The metronome uses this component without adding public
+navigation. The Components section previews the same link against blue; the
+Website & web app download modal includes `icon-white.svg`. Regenerating brand
+icons also regenerates this derivative, without changing the two icon masters.
+
+`components.voice-recorder` supplies the standalone metronome's guided four-count
+recorder and the Components specimen. Buttons, selects and the live level meter
+reuse shared Bootstrap controls; only the large number has dedicated display
+geometry. Keep the concise recording prompts, per-number replay/redo and explicit
+Use my voice action on this component. The specimen makes no microphone or account
+requests. See `METRONOME.md` for capture, private storage and deployment details.
+
 Run `npm run brand:icons` with ImageMagick 7 installed after changing either
 master, then run `npm run production`. The generator retains the legacy email
 and QR image dimensions. `app-icon-ios-1024.png` is a 1024 × 1024 RGB PNG with
@@ -83,6 +100,8 @@ Platform references: [Apple startup-image and standalone configuration](https://
 This updates `.rounded`, directional `.rounded-top/bottom/left/right`, the media
 player, the shared modal, pricing badges, admin overview corners, buttons, and unstyled form fields.
 Images and divs opt into these rules through their existing rounded classes.
+The score toolbar uses `.rounded-top` in regular mode; its fullscreen toggle
+removes the class while fullscreen is open and restores it on exit.
 `--radius-button` and `--radius-input` have independent .75rem defaults;
 `--radius-modal` inherits `--radius-sm`.
 
@@ -235,6 +254,15 @@ rendered `#3490dc`; PianoLIT's brand blue is `#0055fe`.
 Use `--color-text`, `--color-text-muted`, `--color-surface`,
 `--color-surface-subtle` and `--color-border` for new shared styles.
 
+The default body background across the public website, every hub and `my.*` is
+`--color-surface-subtle` (#f8f9fa), matching the homepage. Keep white cards and
+controls on `--color-surface`; page-specific backgrounds remain explicit
+exceptions. The mobile article embed retains its white body through `bg-white`.
+
+Discover's horizontal piece links reuse `.discover-compact-card` for their white
+`--color-surface`, shared padding and rounded corners, including Recently viewed
+and recommendation rails. Compact piece cards also stay white in Past highlights.
+
 The ordered `$pastel-palette` provides 12 soft tones: sky, cream, mint, lavender,
 peach, rose, aqua, butter, sage, lilac, periwinkle and terracotta. Each exposes
 `--pastel-{name}-surface` for light panels, `-accent` for tabs or soft actions,
@@ -307,7 +335,7 @@ stylesheet precedence. Page templates request only their main bundle.
 
 `components.membership-plan-card` is the single plan card used by Pricing and Change plan. Pass a plan, a unique `headingId`, an optional `monthlyPlan` for yearly savings, and an `action` slot containing a shared button or button link. Optional `trial`, `accessNote`, `context` and `selected` values adapt its content and selection state. Pass `current: true` for the existing membership plan to apply the shared `shadow-none border border-light` utilities. Its gradient panel, shadow and layout live in `components/_membership-plan-card.scss`, imported by both app and admin so the Design System specimen uses the same component and styles. These catalog cards belong to plan selection; the current membership overview uses ordinary `.card.rounded.shadow-light` content cards and saved billing dates, without guessing an existing subscriber’s charge from a catalog price.
 
-`components.tab-navigation` is a Blade `@component` with its `.tab-content` and panes in the default slot. It provides accessible Bootstrap tab triggers for an `items` array of `target`/`label` pairs, with a unique `id` and accessible `label`. The `segmented` variant is the shared compact account navigation in `components/_tabs.scss`; it uses a compact row on phones and two columns below 360px. Panels use the target as their ID and `aria-labelledby="{id}-{target}"`. Summary shortcuts activate the matching real tab trigger so keyboard focus and lazy loading remain consistent. It encloses the menu and panes in one frame and embeds its small shared controller once, selecting the URL fragment synchronously before revealing that frame. This avoids a flash of the default tab or a Bootstrap fade while the main bundle loads. With JavaScript disabled, the server default remains visible; an interrupted response reveals that default at DOM ready. Keep the panels inside the component slot, rather than after an `@include`. The navigation automatically marks each instance with `data-tab-navigation`. The shared `components/tab-navigation.js` controller, loaded in both app and admin bundles, saves the selected panel as a URL fragment and restores it on refresh or fragment navigation. It uses `history.replaceState` to preserve query strings and existing Back-button state without adding history entries; ordinary page anchors and unrelated tab implementations keep their own behavior. Both components are demonstrated under Settings → Design System → Components.
+`components.tab-navigation` is a Blade `@component` with its `.tab-content` and panes in the default slot. It provides accessible Bootstrap tab triggers for an `items` array of `target`/`label` pairs, with a unique `id` and accessible `label`. The `segmented` variant is the shared compact account navigation in `components/_tabs.scss`; it uses a compact row on phones and two columns below 360px. Panels use the target as their ID and `aria-labelledby="{id}-{target}"`. Items may supply an explicit `id` and a `data` map when an existing tool needs stable trigger IDs or data attributes; the matching panel must reference that explicit ID. Summary shortcuts activate the matching real tab trigger so keyboard focus and lazy loading remain consistent. It encloses the menu and panes in one frame and embeds its small shared controller once, selecting the URL fragment synchronously before revealing that frame. This avoids a flash of the default tab or a Bootstrap fade while the main bundle loads. With JavaScript disabled, the server default remains visible; an interrupted response reveals that default at DOM ready. Keep the panels inside the component slot, rather than after an `@include`. The navigation automatically marks each instance with `data-tab-navigation`. The shared `components/tab-navigation.js` controller, loaded in both app and admin bundles, saves the selected panel as a URL fragment and restores it on refresh or fragment navigation. It uses `history.replaceState` to preserve query strings and existing Back-button state without adding history entries; ordinary page anchors and unrelated tab implementations keep their own behavior. Both components are demonstrated under Settings → Design System → Components.
 
 ## Saved payment cards and secure fields
 
@@ -315,6 +343,23 @@ stylesheet precedence. Page templates request only their main bundle.
 
 `components.payment-card-fields` supplies the three Stripe-hosted mounts and native cardholder/postal fields. Pass a unique `prefix` and the initial `cardholder` value. Native fields use `@input` and shared labels; field layout lives in `components/_payment-card-fields.scss`. Checkout and Billing use this same component. Billing's editor uses `components.modal` at body level; its `data-deferred-card` form mounts after the modal is shown, focuses the card number once ready without overriding another user-selected field, and clears its draft after any dismissal while reusing the hosted fields on reopen. The dialog blocks dismissal during verification and temporarily releases its focus trap for Stripe's bank challenge, restoring it on failure. The existing verified SetupIntent flow remains responsible for saving the card.
 
+
+## Public hub breadcrumbs
+
+Use `components.breadcrumb` above the content of every redesigned public hub
+page. Blog now uses Home → Blog on its directory and Home → Blog → Article title
+on articles. Apply the same component automatically when Shop, Games and Learn
+and their nested pages are redesigned; their temporary and legacy pages can wait
+for that work. The main homepage, `my.*`, standalone account screens and mobile
+embeds do not receive public breadcrumbs.
+
+Pass an ordered `items` array of `label` / `url` pairs inside the page's Bootstrap
+container. Start with `['label' => 'Home', 'url' => route('home')]`, add the hub and
+any actual parents using named routes, then the current page's label. The last
+item is unlinked with `aria-current="page"`; labels are escaped and long titles
+wrap. Topic filters and pagination keep the directory trail. The component reuses
+Bootstrap breadcrumb, spacing, small-text and wrapping utilities and the shared
+link finish. Its specimen is under Settings → Design System → Components.
 
 ## Admin breadcrumbs
 
@@ -376,11 +421,299 @@ administrator changes availability after a page was loaded.
 
 ## Homepage project cards
 
-`components.project-card` renders the homepage's six destination links and its
-Design System specimen. It reuses `.pastel-card` and the existing radius, shadow,
-color and typography tokens; its shared styles live in
-`resources/sass/components/_project-card.scss`. The homepage fan/grid layout is
-separate in `pages/_home.scss`. Desktop hover and keyboard focus resize cards in
-place without changing link order. Touch layouts use a grid and reduced-motion
-preferences disable the transitions. Editable vector artwork lives under
-`resources/images/home/projects/` and is copied/versioned by Mix.
+The standard public header is `components.public-header`, with shared layout in
+`resources/sass/components/_public-header.scss`. Reuse it for public pages:
+brand icon left and the circular account control right. The YouTube button is
+shown only on the main homepage (`home` route).
+Other public pages add `components.public-hub-menu-button` after the account
+control. Its Bootstrap offcanvas, `components.public-hub-menu`, links to the
+main website, Web app, iOS app, Shop, Games, Learn, Blog and Metronome using named routes
+or the configured App Store URL. Its `.hub-menu.offcanvas-end` sets a 360px
+width and `max-width: none` to clear Bootstrap's inherited 100% cap, as requested
+by Arthur. The hamburger/panel is absent on `home`
+and `my.*`; standalone account pages keep their existing layout. The button
+uses the shared raw-button and Bootstrap spacing/alignment classes, with its
+specimen in the Design System. The hamburger icon is exactly `1.5rem`.
+Panel destinations are a plain text-link list without icons or button cards.
+The panel is pushed to the body-level script
+stack so it does not affect header layout or inherit a page stacking context.
+`layouts.header` supplies it to the public layout; the homepage and public
+account-security screens use the same component. Web app, admin and mobile
+embedded layouts retain their existing navigation.
+
+The public account control is `components.account-circle` with `.btn-raw` and
+shared styles in `components/_account-circle.scss`. Its actual button surface
+provides a consistent white-bordered light-grey circle using `--color-border`,
+with `--color-text-dark` for the icon/initial and `--color-text` on interaction.
+Its shape follows the admin avatar; the public control uses neutral site colors.
+Guests see a smaller `user-round` icon centered inside; signed-in users see
+their first initial, opening the retained account dropdown. Both states use the
+shared field-height token for size and are shown in the Design System. Bootstrap
+flex alignment on header list items centers YouTube beside the circle without
+inline baseline spacing.
+
+All public and web-app login/register URLs share `auth.webapp.login`,
+`auth.webapp.register` and their layout; there are no separate website versions.
+Forms and account links stay on the current host, with `web` / `webapp` signup
+origin and existing provider availability. Login and registration are
+standalone on every host, without the public header or footer.
+Login, registration and password recovery/reset fields use the shared `@input`
+component and field tokens. Their submit buttons use `.btn.btn-primary` and its
+standard shadow, without `input-light` or an extra `shadow` utility overriding
+the shared controls. The retained account modal uses the same fields/buttons.
+The reciprocal login/register prompts share `.auth-secondary` muted, centered
+text and `.auth-secondary-link` primary semibold links, with an underline only
+on hover/focus. Place both prompts after the provider options.
+Registration's entire terms notice uses that same muted, centered 14px paragraph
+style; its Terms of Service and Privacy Policy links inherit the same size and
+shared link styles, including their hover/focus behavior. Avoid nesting `small`
+text that makes the notice inconsistent with the account prompt.
+Forgot-password and reset-password views (`auth.passwords.email` and
+`auth.passwords.reset`) use this same standalone layout and return-link styling,
+with `showCarousel => false`: a shadowed panel centered horizontally and vertically
+using the Bootstrap grid, without the onboarding carousel. Login/register retain it.
+Their forms retain the existing same-host endpoints, CSRF fields and reset token.
+
+The homepage footer is also shared across all full public pages, including the
+temporary project pages and public account-security screens. Standalone login
+and registration are excluded. Use
+`components.public-footer` through `layouts.footer`; its `.site-footer` styles
+live in `components/_public-footer.scss`. Keep the existing message,
+Contact/Privacy/Terms links and copyright. The `.public-site` shell uses Bootstrap
+flex/height utilities to keep the footer at the bottom of short pages. Both
+shared templates use Bootstrap `container`, `row`, `col-*` and spacing/alignment
+classes for layout, so width and responsive behavior can be adjusted directly
+in Blade. The footer's three `col-12 col-md-4` groups stack on mobile. Sass
+retains typography, colors and link states. Web app, admin and embedded mobile
+layouts retain their own footers.
+
+The Shop and Games root placeholders use
+`projects.coming-soon`, their matching versioned card SVGs and the shared header.
+Their layout lives in `pages/_project-coming-soon.scss`; content URLs below those
+roots remain available. Return links use the named main-site route, including
+from Games and when `APP_URL` has no scheme.
+
+`components.project-card` renders the homepage's seven destination links and its
+Design System specimen. Its gallery finish lives in
+`resources/sass/components/_project-card.scss`; the wall, room and responsive
+arrangement live in `pages/_home.scss`. Following Arthur's October 22 reference,
+cards have a 35:48 aspect ratio, 7px corners, a warm-white surface, dark type and
+directional soft shadows. Realistic close-up product mockups fill the card width,
+with PianoLIT branding, dark hardware/printing and saturated book covers. The laptop
+and iPhone screens use the live web-app capture and Arthur's actual iOS screenshot,
+respectively, rather than invented interfaces. Neutral upper space keeps the HTML copy readable; relevant tabletop,
+score and piano details give the lower scene depth. Omit abstract shapes, folded
+paper and unrelated props. Artwork starts 40px below the top and uses `object-fit:
+cover` with top-center alignment; natural side/bottom crops are intentional. General
+pastel cards elsewhere retain their existing finish.
+Project titles explicitly use Bootstrap's `text-body` utility so they keep the
+regular text color regardless of inherited link states; descriptions also keep
+their regular color on hover. Each card has a muted top-right `arrow-up-right`
+from the shared icon renderer, positioned with Bootstrap utilities 16px inward
+from the top and right edges to indicate its destination link. The gallery has
+no previous/next arrow controls.
+Within the gallery, fine-pointer hover highlights the active card with a 1.12
+scale, 3px lift and soft 480ms spring. Other cards dim to 90% brightness and scale
+to .95; the cards on each side move 32px inward behind the active card. The active
+card stays in its original horizontal position and paints above its neighbors.
+Keyboard focus gets the same emphasis when no card is hovered. Dragging disables
+the emphasis, and reduced motion disables transforms/transitions while retaining
+the brightness contrast. Compensated scrollport padding leaves room for the larger
+card/shadow without changing the resting layout or piano position. These rules
+live in `_project-card.scss`; Blog and web-app piece cards keep the shared 3px /
+180ms `.card-lift` behavior in `components/_card-lift.scss`.
+
+The gallery uses `components.project-deck` and its standalone, versioned
+`js/components/project-deck.js`. Cards are 244px wide on desktop and 264px on
+phones, retaining the 35:48 ratio, responsive 20–32px gaps (20px on phones) and Web app / iOS / Shop /
+Learn / Games / Metronome / Blog order. Titles use `--font-size-h4` (24px); descriptions use
+`--font-size-base` (16px) and shared line-height/weight tokens. The hero also uses
+standard heading/body sizes. Every card is a direct destination link; Arthur
+withdrew the inline expansion request, so there are no open panels or extra
+navigation steps.
+
+Native horizontal touch/trackpad scrolling is supplemented by mouse dragging
+and Arrow/Home/End keyboard navigation; there are no previous/next buttons.
+The finite row gently auto-scrolls forward at 22px/second, then stops at the
+last card. Each project appears once; there are no clones, looping or reversal.
+Both first and last cards are real boundaries. Arrow keys stay within those
+seven links, Home selects Web app, and End selects the last rendered project.
+Hover, pointer/touch holds and keyboard focus pause it immediately.
+Manual scrolling and native swipe inertia postpone its
+return until 2.4 seconds after interaction ends. It also stops while offscreen,
+in a hidden tab or when reduced motion is enabled. A drag suppresses only its
+release click; ordinary, modified and Enter clicks retain native link behavior.
+Vertical mouse-wheel scrolling browses the row and releases to the page
+at either boundary. Without JavaScript, the original seven links and native
+horizontal scrolling still work as a finite row.
+The Design System includes this same gallery component.
+
+The main background keeps `--color-surface-subtle` (#f8f9fa) as its base, with
+homepage-only translucent daylight layers: a soft upper-left glow, gently darker
+right side and broad diagonal light bands feathered toward the left of the room.
+These static gradients live in `pages/_home.scss`; the light overlay is behind
+content and never intercepts input. The translucent floor shading lets the same
+light continue below the wall. The scene includes an upright
+piano and bench at their natural aspect ratio. The image uses `height: auto`,
+with a 620px desktop maximum. The piano retains a normal black satin finish with
+simplified surfaces, restrained texture, subtle brass trim and a softer shadow; its
+top stays bare, with no plant. Cards remain in front of the decorative scene.
+`--room-offset: 60px` in `pages/_home.scss` lowers the piano, floor and following
+content together. Desktop spacing is `calc(-132px + var(--room-offset))`.
+Below 768px, the responsive baseline remains
+`calc(-60px - 12vw + var(--room-offset))`, with the piano at 94% of viewport width.
+Adjust the shared offset to move the scene without separating it from its floor.
+Keep the piano physically grounded: `__instrument::before` supplies tight contact
+shadows under both wheels and the bench feet, plus broader soft floor shadows.
+Their percentage coordinates follow the transparent image and scale with it
+(wheels at 88.8% height, front bench feet at 94.6%). The piano's right/down drop
+shadow follows the left-side daylight. Simplifying the piano must not remove
+these contact/cast shadows or make it appear to float above the room.
+The decorative room has `pointer-events: none` so it does not intercept links
+or scrolling underneath. It is never compressed to fit the viewport.
+Its lower portion and the shared footer
+continue down the page. The floor meets the rear cabinet at 82% of the image
+height, excluding the room's bottom padding; the 7px skirting sits above that line.
+This keeps the piano's front feet and bench on the floor at every screen size.
+Header and footer continue to use their shared Bootstrap
+components, with the icon alone at left and YouTube/account controls at right.
+
+Versioned artwork lives under `resources/images/home/editorial/`. Card WebPs are
+720 × 960; the piano is a transparent 1402 × 1122 WebP. See
+`docs/HOMEPAGE_ARTWORK.md` for source references and the exact built-in imagegen
+prompts. The older SVGs under `resources/images/home/projects/` and
+`scripts/build-home-project-mockups.js` remain for existing hub illustrations;
+the homepage no longer consumes them.
+
+### Decorative homepage piano
+
+Arthur removed the homepage score and playing feature on October 22. The scene
+is now only the original piano image, with an empty score rack and no interactive
+controls. The homepage no longer queries the Free Pick or loads score PDFs,
+audio sources, player scripts or player styles. The dedicated `home-piano.js`,
+score partial and SCSS have been removed. Free Pick functionality and media
+access in the web app and mobile clients are unchanged. Cards render above the
+whole decorative piano/plant scene, which has `pointer-events: none`.
+
+## Public editorial pages and promotions
+
+The restored Blog directory uses the shared public header/footer, topic buttons
+and a server-paginated, uniform story-card grid: three columns on wide screens,
+two on tablets and one on phones, without a featured story.
+`blog.components.story-card` keeps titles visible and limits descriptions in CSS,
+without Masonry or JavaScript clamping. Cards show every story topic with the shared
+`@pill` component above the date, with no repeated author icon/byline. Titles keep
+their normal color on hover; `.card-lift` shares the piece cards' 3px upward hover
+movement and reduced-motion behavior. The existing 12-story page size, published
+content filter and topic queries are retained; pagination preserves the query.
+
+`components.editorial-layout` provides the Bootstrap content/sidebar columns,
+stacking the sidebar after the content below the desktop breakpoint. Reuse it
+as other public directories and editorial pages are redesigned.
+Hub detail content sits directly on the page surface and uses the available
+content column, without an enclosing white card, shadow or extra inset padding.
+Keep cards for individual stories/resources, promotions and purposeful controls.
+`components.display.ads` accepts `variant: cards` to render the existing latest
+published crash course, eBook and eScore through `components.promo-card`, in the
+requested order. Legacy banners on other pages retain their existing layout.
+The shared promotion card uses `.pastel-card`, its existing soft action button,
+color/radius/type tokens and the original course/shop destinations and media.
+Its specimen lives in Settings → Design System → Components. Shared layout/card
+styles live in `components/_editorial-layout.scss`; blog-specific typography and
+story grid styles remain in `pages/_blog.scss`.
+
+Public article pages use the same subtle surface, fluid headline, shared
+`components.editorial-layout` and pastel promotion cards as the directory. The
+article has no outer card or inset padding; topic links render shared `@pill`
+badges above its heading. The date and reading
+time remain visible, with a simple text byline. `.blog-article #blog-content`
+fills the content column with the shared blog font token, paragraph and
+heading rhythm, and responsive YouTube/Vimeo framing. These rules are scoped to
+the public article; mobile embeds retain their existing typography and media.
+Stored article HTML, cover credits and references are preserved.
+
+`components.newsletter.subscribe-button` supplies the shared primary mail-icon
+opener used in the Blog and Learn introductions and newsletter invitations.
+Its modal URL stays on the request host; `label` changes the caption and
+`preview: true` makes a Design System sample inert.
+
+`components.newsletter.invitation` provides the reusable pastel newsletter panel
+with the standard primary button and existing same-host subscription modal.
+Pass a unique `headingId`; `preview: true` renders an inert Design System sample.
+The article explicitly passes `preview: false` so editorial previews also retain
+the subscription action. Related stories reuse `blog.components.story-card` in
+the directory's responsive grid, without Masonry or JavaScript clamping.
+
+
+## Learn hub landing page
+
+`learn.home` renders `learn.index`, replacing its placeholder with a directory
+of six projects grouped by purpose: Interactive tools (Circle of fifths and
+Chord finder), Courses & guides (Crash courses and Infographics), and Quizzes &
+pianists. Anchor links at the top jump to each group without hiding content or
+requiring JavaScript. Each project has a clear description, format label and
+action. Scales and arpeggios stay in a smaller More practice tools row.
+
+Reuse `components.resource-card` for project/resource navigation cards. It uses
+`.card.rounded.shadow-light`, `.card-lift`, a pastel artwork panel and the shared
+color/type/radius tokens; the whole card is one named link and titles keep their
+normal color on hover. Pass a unique `id`, `title`, `description`, `format`,
+`action`, `url`, `color`, and an `artwork` slot. `preview: true` marks the Design
+System sample, which renders this same component and circle artwork. The common
+styles in `components/_resource-card.scss` are imported by app and admin.
+
+`learn/components/artwork.blade.php` supplies small decorative, editable SVG
+previews of each project. These use the card's palette and the existing PianoLIT
+illustration style. They contain no screenshots, invented content totals or
+external image requests. Learn retains the familiar public header/footer,
+breadcrumb, `components.editorial-layout` and pastel course/shop promotions.
+The introduction uses Blog's Subscribe action in place of its decorative image,
+with the same Bootstrap alignment and mobile stacking. Both that action and its
+newsletter invitation subscribe to PianoLIT-wide news on the Learn host.
+The Circle of Fifths and Chord Finder also use this shell; other deep resource and tool layouts
+remain for later work. Keep their routes, calculations, signup/download/quiz
+requests and mobile contracts intact.
+
+The Circle of Fifths workspace places its SVG wheel directly on the page, without
+a pastel wrapper or inset padding. White sectors contrast with the page surface;
+the center matches that surface. It pairs with the shared segmented tabs,
+key/relative-key panels, `@pill` chord labels and theory help dialogs. The
+wheel has broad tap sectors, upright major/minor labels, a selected-key sector,
+roving keyboard focus, arrow navigation and Reset to C. Respect reduced motion.
+Its key, scale, chord and signature data still comes from `CircleOfFifths`.
+The separate Hear the scale section offers cancellable playback through the existing
+piano sampler. Changing key/mode, playing a note, opening a dialog or leaving the
+page stops the sequence. Theoretical spellings missing from the keyboard aliases
+are matched locally by pitch; shared note data and media URLs remain unchanged.
+
+`components.piano.keyboard` supports an opt-in `responsive: true` layout with
+proportional key widths, responsive height/dots and solid white keys, including
+after a played note is released. Put the tool keyboard directly on the page,
+without a padded, rounded pastel wrapper. Existing callers retain their fixed key
+sizes and finish. App/admin import `components/_piano.scss`; the Design System's
+responsive keyboard specimen renders this same component without loading audio.
+The circle's standalone script uses `mix()` and an explicit versioned asset entry.
+
+The Chord Finder keeps its editor and results on this same open page surface.
+Use the shared segmented tabs for piano-keyboard versus note-name entry, standard
+buttons for note/accidental selection, shared `@pill` labels, and `@select` fields
+inside the optional spelling/root accordion. The piano uses the shared responsive
+keyboard. Selecting the same pitch in another octave moves that selection rather
+than adding a duplicate. For common chord shapes the keyboard suggests conventional
+enharmonic spellings (for example C–E♭–G), preferring fewer accidentals. It uses
+only existing keyboard aliases and leaves manual spelling choices intact. These
+suggestions do not change the server’s ranking rules. The editor remains available after analysis, with Clear
+notes, an example, inline errors and an Edit notes link from the results.
+
+Results reuse the shared accordion components for interval explanations; each
+inversion/step must have a unique target. Result buttons retain their `data-notes`
+and legacy `href` attributes alongside accessible state/controls. Displaying a
+result does not start audio: selecting a chord plays its ascending notes and
+then the full chord through the existing sampler. Slash-chord bass notes affect
+the voicing. Cancel playback on a new choice, editing, navigation/dialog opening,
+manual piano input or leaving the page. Protect against stale analysis responses
+when notes change. The standalone Chord Finder script also uses versioned `mix()`.
+
+### Standalone metronome settings
+
+`metronome.index` retains Arthur’s original full-screen canvas and animated native dialog sheet. Only this page loads `css/metronome.css` and `js/metronome.js`. The canvas defaults to `--color-primary`, with the matching `#0055fe` reset value in the local preference module. Its tempo numeral retains the original thin system face; the settings inherit PianoLIT body/heading typography and standard sizes from `app.css`. Reuse `components.segmented-control`, `@select`, `@toggle`, `.btn-close`, `.btn.btn-secondary` and `.btn.btn-primary`, including their existing shadows. `components.form.color` supplies the native `.form-control.form-control-color` control, also shown in Settings → Design System. Local settings CSS owns only the sheet geometry, scrolling and animation.

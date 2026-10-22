@@ -15,7 +15,7 @@
     @auth('web') data-metronome-preferences-url="{{ route('webapp.metronome.preferences.update') }}" @endauth
     data-score-version="{{ hash('sha256', $piece->score_path) }}"
     data-annotations-url="{{ $hasAnnotationAccess ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
-    <div class="score-toolbar" role="toolbar" aria-label="Score annotation tools">
+    <div class="score-toolbar rounded-top" role="toolbar" aria-label="Score annotation tools">
         <div class="score-tools" role="group" aria-label="Drawing tools">
             <button type="button" data-tool="pen" data-edit-control class="score-icon-button" aria-label="Pen" title="Pen" aria-pressed="false" {!! $scoreAnnotationAttributes !!}>@icon('pencil', ['mr' => 0])</button>
             <button type="button" data-tool="text" data-edit-control class="score-icon-button" aria-label="Text" title="Text" aria-pressed="false" {!! $scoreAnnotationAttributes !!}>@icon('text-cursor', ['mr' => 0])</button>

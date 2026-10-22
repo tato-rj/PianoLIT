@@ -35,7 +35,7 @@ class CampaignLandingPage
         if (! is_string($url) || strlen($url) > 1024 || preg_match('/[\\\\\x00-\x20\x7f]/', $url)) return false;
         $parts = parse_url($url);
         return $parts && in_array($parts['scheme'] ?? '', ['http', 'https'], true)
-            && in_array($parts['host'] ?? '', [config('app.short_url'), 'www.'.config('app.short_url'), 'my.'.config('app.short_url'), 'blog.'.config('app.short_url'), 'shop.'.config('app.short_url'), 'learn.'.config('app.short_url')], true)
+            && in_array($parts['host'] ?? '', [config('app.short_url'), 'www.'.config('app.short_url'), 'my.'.config('app.short_url'), 'blog.'.config('app.short_url'), 'shop.'.config('app.short_url'), 'learn.'.config('app.short_url'), 'games.'.config('app.short_url'), 'metronome.'.config('app.short_url')], true)
             && ! isset($parts['user']) && ! isset($parts['pass'])
             && ! isset($parts['query']) && ! isset($parts['fragment'])
             && strpos($parts['path'] ?? '', '/') === 0;

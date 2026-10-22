@@ -88,3 +88,29 @@ these current component paths at runtime so older cached mail paths cannot hide
 them. Clearing configuration with `php artisan config:clear` from the server's
 Laravel root repairs the stale-cache case immediately; use the usual deployment
 process to rebuild caches and reload long-running workers.
+
+## Monthly PianoLIT newsletter
+
+Edit `newsletter/monthly-digest.blade.php` for the body, content labels, button
+labels and newsletter unsubscribe copy. Edit `newsletter/monthly-subject.blade.php`
+for the subject. HTML and plain text share this body. Titles and descriptions
+come from each hub's content editor, or `config/newsletter.php` for code-based
+feature, game and tool releases. Links use the appropriate public hub hosts.
+
+The PianoLIT News list contains explicit newsletter opt-ins, independently of
+Free Pick and other lists. General account signup does not join it. The first
+of each month at 08:00 America/New_York, the scheduler collects the previous
+calendar month's new public content. Months without news send nothing; a
+recipient is skipped if all selected content has been withdrawn before delivery.
+
+Preview through PianoLIT News → Browser preview in Email Lists, or inspect the
+next selection without writing or sending:
+
+```sh
+php artisan newsletter:send-monthly
+```
+
+`--execute` queues a real newsletter. Monthly and recipient guards prevent
+ordinary retries from sending duplicates; opt-outs are rechecked immediately
+before delivery. See `docs/EMAIL_REPORTS.md` for sources, launch entries,
+deployment and retention.

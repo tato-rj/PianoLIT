@@ -51,10 +51,10 @@ class ShopSubdomainTest extends ReviewTestCase
     {
         $this->useDomain($baseUrl);
         $this->get(route('shop.home'))->assertOk()
-            ->assertSee('class="shop-coming-soon"', false)
+            ->assertSee('class="project-coming-soon"', false)
             ->assertSee('Coming up soon!')
-            ->assertDontSee('<h1', false)
-            ->assertSee('images/shop/coming-soon.webp', false)
+            ->assertSee('<h1>Coming up soon!</h1>', false)
+            ->assertSee('images/home/projects/shop.svg', false)
             ->assertSee('href="'.$baseUrl.'"', false)
             ->assertSee('images/brand/app-icon.svg', false)
             ->assertSee('css/app.css', false)

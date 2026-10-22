@@ -1,0 +1,40 @@
+.project-coming-soon {
+    background: var(--color-surface-subtle);
+    color: var(--color-text);
+    letter-spacing: 0;
+
+    #app {
+        > main {
+            flex: 1;
+            display: grid;
+            place-items: center;
+            padding: 32px 20px 64px;
+        }
+    }
+
+    &__content {
+        width: min(100%, 440px);
+        text-align: center;
+
+        h1 {
+            margin: 20px 0 16px;
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-heading);
+            line-height: var(--line-height-body);
+        }
+    }
+
+    &__art {
+        display: block;
+        width: min(100%, 360px);
+        height: auto;
+        margin: 0 auto;
+    }
+}
+
+@media (max-height: 700px) {
+    .project-coming-soon {
+        #app > main { padding: 24px 20px 40px; }
+        &__art { width: min(100%, 260px); }
+    }
+}

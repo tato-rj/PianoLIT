@@ -5,7 +5,7 @@
 <linearGradient id="blue" x1="80" y1="50" x2="230" y2="230" gradientUnits="userSpaceOnUse"><stop stop-color="#719EFF"/><stop offset="1" stop-color="#0055FE"/></linearGradient>
 <linearGradient id="ink" x1="80" y1="80" x2="220" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="#43536F"/><stop offset="1" stop-color="#182231"/></linearGradient>
 </defs>
-<circle cx="158" cy="137" r="101" fill="#F2D5E1" opacity=".6"/>
+<circle cx="158" cy="137" r="101" fill="#EF8FB5" opacity=".2"/>
 <g transform="rotate(13 178 144)" filter="url(#shadow)"><rect x="109" y="58" width="135" height="178" rx="10" fill="#C99EB2"/><rect x="107" y="52" width="135" height="178" rx="10" fill="#F6E9EF"/><path d="M126 80H221M126 91H201M126 108H221M126 119H221M126 130H221" stroke="#D7B7C7" stroke-width="4" stroke-linecap="round"/></g>
 <g transform="rotate(-9 136 135)" filter="url(#shadow)"><rect x="65" y="40" width="145" height="187" rx="10" fill="#CFBECA"/><rect x="62" y="34" width="145" height="187" rx="10" fill="url(#white)"/>
 <path d="M80 57H145" stroke="#27344C" stroke-width="7" stroke-linecap="round"/><path d="M80 72H185" stroke="#B6BDCC" stroke-width="3" stroke-linecap="round"/>

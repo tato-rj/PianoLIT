@@ -1,5 +1,7 @@
 <?php
 
+Route::view('/', 'learn.index')->name('learn.home');
+
 Route::name('tools.')->group(function () {
     Route::get('circle-of-fifths', 'ToolsController@circleOfFifths')->name('circle-of-fifths');
 

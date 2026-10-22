@@ -1,170 +1,157 @@
 .project-home {
-    background: var(--color-surface-subtle);
+    --home-wall: var(--color-surface-subtle);
+    background: var(--home-wall);
     color: var(--color-text);
     letter-spacing: 0;
 
     &__page {
+        position: relative;
+        isolation: isolate;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
         min-height: 100svh;
         overflow: hidden;
-    }
+        // Keep the shared wall color beneath soft daylight from the left.
+        background-color: var(--home-wall);
+        background-image:
+            radial-gradient(ellipse at 4% 8%, rgba(255, 255, 255, .75), transparent 64%),
+            linear-gradient(105deg, rgba(49, 57, 69, .065), rgba(49, 57, 69, .075) 56%, rgba(49, 57, 69, .14));
 
-    &__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        width: min(1280px, calc(100% - 80px));
-        margin: 0 auto;
-        padding-top: clamp(32px, 5vh, 60px);
+        &::before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            inset: 0;
+            pointer-events: none;
+            // Broad, feathered window-light bands; no hard stripes on the wall.
+            background: linear-gradient(44deg,
+                transparent 15%,
+                rgba(255, 255, 255, .72) 18%,
+                rgba(255, 255, 255, .88) 21%,
+                transparent 26%,
+                transparent 30%,
+                rgba(255, 255, 255, .70) 34%,
+                rgba(255, 255, 255, .85) 37%,
+                transparent 42%);
+            mask-image: radial-gradient(ellipse at 0% 70%, #000 20%, transparent 70%);
+        }
     }
 
     &__hero {
-        padding: 30px 20px 0;
+        padding: 8px 24px 0;
         text-align: center;
 
         h1 {
-            margin: 0 0 18px;
-            font-size: clamp(38px, 4.5vw, 66px);
-            font-weight: 600;
-            line-height: 1.13;
-            letter-spacing: -.055em;
+            margin: 0 0 8px;
+            font-size: var(--font-size-h1);
+            font-weight: var(--font-weight-heading);
+            line-height: var(--line-height-heading);
+            letter-spacing: normal;
 
             span { color: var(--color-primary); }
         }
 
         > p {
+            max-width: 760px;
+            margin: 0 auto;
             color: var(--color-text-muted);
-            font-size: 17px;
-            margin: 0;
-        }
-
-        .project-home__invitation {
-            margin-top: 30px;
-            font-size: 13px;
-            color: var(--color-text);
-
-            span {
-                display: block;
-                margin-top: 8px;
-                font-size: 20px;
-            }
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-body);
         }
     }
 
-    &__footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-        width: min(1280px, calc(100% - 80px));
-        padding: 24px 0 28px;
-        margin: auto auto 0;
-        color: var(--color-text-muted);
-        font-size: 12px;
+    &__room {
+        --room-offset: 60px;
+        --room-floor-space: 48px;
+        position: relative;
+        z-index: 1;
+        pointer-events: none;
+        width: 100%;
+        margin: var(--room-offset) auto 0;
+        padding-bottom: var(--room-floor-space);
 
-        p { margin: 0; }
-        nav { display: flex; gap: 24px; }
-        a {
-            color: inherit;
-
-            &:hover,
-            &:focus-visible { color: var(--color-primary); text-decoration: underline; }
+        // The piano's rear cabinet meets the floor at 82% of the image height.
+        // Exclude room padding and put the skirting above that contact line,
+        // leaving the front feet and bench fully in front of the wall.
+        &::before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            inset: calc((100% - var(--room-floor-space)) * .82 - 7px) 0 0;
+            border-top: 7px solid rgba(255, 255, 255, .35);
+            // A translucent floor keeps the room's daylight continuous below it.
+            background: linear-gradient(rgba(105, 113, 124, .14), rgba(105, 113, 124, 0) 72%);
+            box-shadow: 0 -2px 3px rgba(67, 66, 59, .04);
         }
-        small { font-size: inherit; }
+    }
+
+    &__instrument {
+        position: relative;
+        isolation: isolate;
+        width: min(620px, 52vw);
+        margin: 0 auto;
+
+        &::before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            inset: 0;
+            pointer-events: none;
+            // Contact points follow the transparent artwork's proportions.
+            // Tight shadows anchor the wheels/bench feet; wider shadows soften
+            // toward the right, away from the room's window light.
+            background:
+                radial-gradient(ellipse 3.2% 1.4% at 7.8% 88.8%, rgba(24, 28, 33, .52), rgba(24, 28, 33, .22) 38%, transparent 100%),
+                radial-gradient(ellipse 3.2% 1.4% at 92.4% 88.8%, rgba(24, 28, 33, .52), rgba(24, 28, 33, .22) 38%, transparent 100%),
+                radial-gradient(ellipse 3% 1.2% at 28.8% 94.6%, rgba(24, 28, 33, .48), rgba(24, 28, 33, .18) 40%, transparent 100%),
+                radial-gradient(ellipse 3% 1.2% at 70.6% 94.6%, rgba(24, 28, 33, .48), rgba(24, 28, 33, .18) 40%, transparent 100%),
+                radial-gradient(ellipse 3% 1.1% at 31% 87.6%, rgba(24, 28, 33, .30), transparent 100%),
+                radial-gradient(ellipse 3% 1.1% at 68.4% 87.6%, rgba(24, 28, 33, .30), transparent 100%),
+                radial-gradient(ellipse 26% 4.5% at 56% 93%, rgba(24, 28, 33, .18), transparent 100%),
+                radial-gradient(ellipse 47% 5.5% at 55% 86%, rgba(24, 28, 33, .24), transparent 100%);
+        }
+    }
+
+    &__piano {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        filter: drop-shadow(12px 10px 16px rgba(24, 28, 33, .16));
+        pointer-events: none;
+        user-select: none;
     }
 }
 
-.project-deck {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    width: min(1300px, calc(100% - 80px));
-    margin: 30px auto 32px;
-    isolation: isolate;
+.project-home .project-deck { margin-top: 8px; z-index: 2; }
 
-    > [data-project='webapp'] { order: -2; }
-    > [data-project='ios'] { order: -1; }
+@media (min-width: 768px) {
+    // Lower the decorative piano and its floor together, keeping cards in front.
+    .project-home__room { margin-top: calc(-132px + var(--room-offset)); }
 }
 
-// A stable bottom edge keeps the pointer over its link as the fan reshapes.
-// DOM order stays fixed; focus and hover receive the same treatment.
-@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
-    .project-deck {
-        display: flex;
-        align-items: flex-end;
-        gap: 0;
-        min-height: 440px;
-        margin-top: 0;
-        margin-bottom: 46px;
+@media (min-width: 1800px) {
+    .project-home__hero { padding-top: 48px; }
+    .project-home .project-deck { margin-top: 40px; }
+    .project-home__room { margin-top: calc(-132px + var(--room-offset)); }
+}
 
-        > .project-card {
-            flex: 1 1 0;
-            order: 0;
-            margin: 0 -8px;
-            transition: flex-grow .48s cubic-bezier(.2, .75, .25, 1), height .48s cubic-bezier(.2, .75, .25, 1), box-shadow .3s, border-color .3s;
-
-            @for $i from 1 through 6 {
-                &:nth-child(#{$i}) {
-                    height: 390px - (abs(3.5 - $i) - .5) * 34px;
-                    z-index: 6 - round(abs(3.5 - $i));
-                }
-            }
-        }
-
-        @for $active from 1 through 6 {
-            &:has(> .project-card:nth-child(#{$active}):focus-visible),
-            &:not(:has(> .project-card:focus-visible)):has(> .project-card:nth-child(#{$active}):hover) {
-                @for $i from 1 through 6 {
-                    > .project-card:nth-child(#{$i}) {
-                        height: 430px - abs($active - $i) * 27px;
-                        z-index: 10 - abs($active - $i);
-
-                        @if $active == $i {
-                            flex-grow: 1.75;
-                            box-shadow: var(--shadow-dark);
-                        }
-                    }
-                }
-            }
-        }
-    }
+@media (min-width: 768px) and (max-width: 1199px) {
+    .project-home__instrument { width: min(640px, 78vw); }
 }
 
 @media (max-width: 767px) {
-    .project-home__header { width: calc(100% - 32px); }
-    .project-home__hero { padding-top: 24px; }
-    .project-home__hero > p { font-size: 15px; }
-    .project-deck {
-        width: calc(100% - 32px);
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
+    .project-home__hero {
+        padding: 36px 24px 0;
+        h1 { font-size: var(--font-size-h2); }
+        > p { max-width: 360px; }
     }
-    .project-deck .project-card {
-        height: 310px;
-
-        &__heading { padding: 20px 16px 0; }
-        &__heading h2 { font-size: 21px; }
-        &__arrow { font-size: 20px; }
-        &__art { width: 240px; }
-        &__caption { padding: 0 16px 20px; }
-        &__caption p { font-size: 13px; }
+    .project-home .project-deck { margin-top: 16px; }
+    .project-home__room {
+        --room-floor-space: 32px;
+        // Retain the responsive overlap baseline, with the same scene offset.
+        margin-top: calc(-60px - 12vw + var(--room-offset));
     }
-    .project-home__footer {
-        flex-direction: column;
-        gap: 16px;
-        width: calc(100% - 32px);
-        padding-top: 8px;
-    }
-}
-
-@media (max-width: 359px) {
-    .project-deck { grid-template-columns: minmax(0, 1fr); }
-    .project-deck .project-card { height: 340px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .project-deck > .project-card { transition: none; }
+    .project-home__instrument { width: 94%; }
 }

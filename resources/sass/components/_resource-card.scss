@@ -1,0 +1,30 @@
+.resource-card {
+    color: var(--color-text);
+    text-decoration: none;
+    overflow: hidden;
+
+    &:hover, &:focus-visible {
+        color: var(--color-text);
+        text-decoration: none;
+    }
+    &__art {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 160px;
+        flex-shrink: 0;
+        color: var(--card-action);
+
+        svg { display: block; width: 100%; height: 100%; max-width: 280px; }
+    }
+    &__body {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        align-items: flex-start;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+    &__description { font-size: var(--font-size-sm); line-height: 1.7; }
+    &__action { color: var(--color-primary); }
+}

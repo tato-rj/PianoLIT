@@ -10,6 +10,7 @@
       [$variantPath.'.png', 'Raster icon', 'PNG', $admin ? '512 × 512 px' : '1238 × 1200 px', 'RGB · no transparency · square corners'],
     ];
     if (!$admin) {
+      $artwork[] = ['images/brand/icon-white.svg', 'White watermark icon', 'SVG', '512 × 512 viewBox', 'White monochrome artwork · transparent background'];
       $artwork[] = ['images/brand/app-icon-ios-1024.png', 'iOS app icon', 'PNG', '1024 × 1024 px', 'RGB · no transparency · square corners'];
       $artwork[] = ['images/brand/icon-rounded.png', 'Rounded artwork', 'PNG', '1200 × 1200 px', 'Rounded corners · transparent background'];
       $artwork[] = ['images/brand/icon-rounded-margin.png', 'QR artwork', 'PNG', '1200 × 1200 px', 'White inset · rounded corners · transparent background'];

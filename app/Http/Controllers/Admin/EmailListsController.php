@@ -41,6 +41,12 @@ class EmailListsController extends Controller
     public function send(Request $request, EmailList $list)
     {
         $this->assertTemplate($list);
+        if ($list->name === EmailList::NEWSLETTER) {
+            $campaign = $list->send();
+            return back()->with('status', $campaign
+                ? 'The monthly PianoLIT newsletter has been queued.'
+                : 'No newsletter queued: no new content, no subscribers, or this month was already queued.');
+        }
         if ($list->name === EmailList::FREE_PICK && ! Piece::free()->exists())
             return back()->with('error', 'Choose a current free pick before sending this list.');
 

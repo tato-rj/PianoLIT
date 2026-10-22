@@ -26,6 +26,15 @@
     @component('admin.pages.settings.sample', ['label' => 'With icon', 'usage' => '.btn .btn-secondary + Lucide icon'])
       <button type="button" class="btn btn-secondary" data-ds-preview>@icon('plus')Add piece</button>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Guest account', 'usage' => 'components.account-circle · .btn-raw + user-round', 'properties' => 'width,height,font-size,color,background-color,border'])
+      @include('components.account-circle', ['account' => null, 'designSystemPreview' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Public hub menu', 'usage' => 'components.public-hub-menu-button · Bootstrap offcanvas', 'properties' => 'padding,color'])
+      @include('components.public-hub-menu-button', ['designSystemPreview' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Signed-in account', 'usage' => 'components.account-circle · first initial', 'properties' => 'width,height,font-size,color,background-color,border'])
+      @include('components.account-circle', ['account' => (object) ['first_name' => 'Arthur'], 'menuId' => 'ds-account-circle', 'designSystemPreview' => true])
+    @endcomponent
   </div>
 </section>
 
@@ -89,6 +98,10 @@
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Range', 'usage' => '.form-range', 'properties' => 'width,height'])
       <label for="ds-range">Volume</label><input id="ds-range" type="range" class="form-range" min="0" max="100" value="60" data-ds-preview>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Color', 'usage' => 'components.form.color · .form-control-color'])
+      <label for="ds-color">Background color</label>
+      @include('components.form.color', ['id' => 'ds-color', 'name' => 'ds_color', 'value' => '#0055fe', 'designSystemPreview' => true])
     @endcomponent
   </div>
 </section>

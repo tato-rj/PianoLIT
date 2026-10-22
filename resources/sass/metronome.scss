@@ -1,0 +1,325 @@
+// Standalone metronome canvas, copied from Arthur’s original.
+// Settings controls use app.css and shared PianoLIT components.
+:root {
+    --metronome-color: var(--color-primary);
+    --metronome-ink: #fff;
+    color-scheme: light;
+    background: var(--metronome-color);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+@media (display-mode: standalone) {
+    html,
+    body {
+        // Keep the page canvas tall enough for the extended pulse as well.
+        min-height: 100vh;
+        min-height: 100lvh;
+    }
+}
+
+.metronome {
+    position: fixed;
+    isolation: isolate;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    margin: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    border: 0;
+    border-radius: 0;
+    appearance: none;
+    background: var(--metronome-color);
+    color: var(--metronome-ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: normal;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus {
+        outline: none;
+    }
+
+    &:focus-visible {
+        outline: 3px solid currentColor;
+        outline-offset: -12px;
+    }
+
+    &.is-dragging {
+        cursor: ns-resize;
+    }
+}
+
+.metronome__pulse {
+    position: absolute;
+    inset: 0;
+    // Home Screen Safari can make 100dvh shorter than the physical screen.
+    // Let the pulse cover the large viewport too, including the bottom strip,
+    // while the controls keep using the visible viewport and safe-area padding.
+    min-height: 100vh;
+    min-height: 100lvh;
+    z-index: -1;
+    background: var(--metronome-pulse);
+    opacity: 0;
+    pointer-events: none;
+    will-change: opacity;
+}
+
+.metronome__tempo {
+    display: block;
+    font-size: min(27vw, 43vh, 280px);
+    font-size: min(27vw, 43dvh, 280px);
+    font-weight: 200;
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    opacity: 0.88;
+    pointer-events: none;
+}
+
+.metronome__edge {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    width: clamp(64px, 16vw, 112px);
+    height: 100%;
+    height: 100dvh;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    appearance: none;
+    background: transparent;
+    color: var(--metronome-ink);
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+
+    &--left {
+        left: 0;
+        width: max(clamp(64px, 16vw, 112px), calc(env(safe-area-inset-left) + 48px));
+    }
+
+    &--right {
+        right: 0;
+        width: max(clamp(64px, 16vw, 112px), calc(env(safe-area-inset-right) + 48px));
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: -8px;
+    }
+}
+
+.metronome__message {
+    position: fixed;
+    right: 24px;
+    bottom: max(24px, env(safe-area-inset-bottom));
+    left: 24px;
+    margin: 0;
+    color: var(--metronome-ink);
+    font-size: 14px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.metronome__settings-button {
+    position: fixed;
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    padding: 12px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--metronome-ink);
+    cursor: pointer;
+    opacity: 0.8;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+
+    svg {
+        width: 26px;
+        height: 26px;
+        pointer-events: none;
+    }
+
+    &:hover,
+    &:focus-visible {
+        opacity: 1;
+    }
+
+    &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+}
+
+.metronome__conductor {
+    position: relative;
+    display: none;
+    width: min(88vw, 48vh, 460px);
+    width: min(88vw, 48dvh, 460px);
+    aspect-ratio: 2 / 3;
+    overflow: visible;
+    pointer-events: none;
+
+    > svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+    }
+}
+
+.metronome[data-mode="conductor"] {
+    .metronome__tempo {
+        position: absolute;
+        bottom: max(36px, calc(env(safe-area-inset-bottom) + 24px));
+        left: 50%;
+        translate: -50% 0;
+        font-size: clamp(40px, 9vw, 76px);
+    }
+
+    .metronome__conductor {
+        display: block;
+        margin-bottom: 40px;
+    }
+}
+
+.conductor-path {
+    stroke: currentColor;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.1;
+}
+
+.metronome[data-show-path="false"] .conductor-path {
+    visibility: hidden;
+}
+
+.conductor-ball {
+    position: absolute;
+    top: 0;
+    left: 0;
+    // 44 viewBox units; transform percentages in ConductorView use this size.
+    width: 11%;
+    aspect-ratio: 1;
+    will-change: transform;
+}
+
+.conductor-dot,
+.conductor-halo {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.conductor-dot { inset: calc(100% * 13 / 44); }
+.conductor-halo { opacity: 0.13; }
+
+.conductor-hand {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 175%;
+    height: auto;
+    overflow: visible;
+    // Place the reference SVG's baton tip, rather than its center, on the beat.
+    transform: translate(calc(-100% * 46 / 978), calc(-100% * 54 / 946));
+}
+
+.metronome[data-conductor-marker="hand"] {
+    .conductor-hand { display: block; }
+
+    .conductor-dot,
+    .conductor-halo { display: none; }
+}
+
+// Keep the original full-width animated settings sheet. Its contents inherit
+// the site’s typography, form controls, button shadows and focus styles.
+.metronome-settings {
+    position: fixed;
+    inset: 10vh 0 -16px;
+    inset: 10dvh 0 -16px;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: none;
+    margin: 0;
+    padding: max(28px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) calc(max(28px, env(safe-area-inset-bottom)) + 16px) max(24px, env(safe-area-inset-left));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 0;
+    border-radius: 24px 24px 0 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-dark);
+    will-change: transform;
+
+    &::backdrop {
+        background: rgba(0, 0, 0, .14);
+        animation: settings-backdrop-in 180ms ease-out both;
+    }
+
+    &[data-phase="closing"]::backdrop {
+        animation: settings-backdrop-out 280ms ease-in both;
+    }
+}
+
+.metronome-settings__content {
+    width: min(100%, 480px);
+    margin: 0 auto;
+}
+
+.metronome-settings[data-recording] [data-settings-field] {
+    display: none !important;
+}
+
+@keyframes settings-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes settings-backdrop-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .metronome-settings::backdrop,
+    .metronome-settings[data-phase="closing"]::backdrop { animation: none; }
+}
+

@@ -8,7 +8,7 @@
         @include('auth.fields.login', ['passwordRecovery' => true])
 
         <div class="form-group mb-0">
-            <button type="submit" class="btn btn-primary shadow d-block w-100">Login</button>
+            <button type="submit" class="btn btn-primary d-block w-100">Login</button>
         </div>
     </form>
     @include('auth.google.button')

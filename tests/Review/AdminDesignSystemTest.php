@@ -25,7 +25,7 @@ class AdminDesignSystemTest extends ReviewTestCase
         $this->assertSame(0, $xpath->query('//*[@id="ds-brand"]//*[@data-ds-sample or @data-ds-specs]')->length);
         $this->assertSame(0, $xpath->query('//*[@id="ds-brand"]//article//a[@download]')->length);
         $this->assertSame(2, $xpath->query('//*[@id="ds-brand"]//article//button[@type="button" and @data-bs-toggle="modal"]')->length);
-        foreach (['user' => 16, 'admin' => 13] as $variant => $downloadCount) {
+        foreach (['user' => 17, 'admin' => 13] as $variant => $downloadCount) {
             $id = 'ds-brand-'.$variant.'-downloads';
             $this->assertSame(1, $xpath->query('//*[@id="'.$id.'" and @aria-labelledby="'.$id.'-title" and @aria-describedby="'.$id.'-description"]')->length);
             $this->assertSame($downloadCount, $xpath->query('//*[@id="'.$id.'"]//a[@download]')->length);
@@ -33,7 +33,7 @@ class AdminDesignSystemTest extends ReviewTestCase
         }
         $this->assertStringContainsString('1238 × 1200 px', $response->getContent());
         $this->assertStringContainsString('1024 × 1024 px', $response->getContent());
-        foreach (['app-icon.svg', 'admin-icon.svg', 'app-icon-ios-1024.png', 'icon-rounded.png', 'icon-rounded-margin.png'] as $file) {
+        foreach (['app-icon.svg', 'admin-icon.svg', 'icon-white.svg', 'app-icon-ios-1024.png', 'icon-rounded.png', 'icon-rounded-margin.png'] as $file) {
             $this->assertSame(1, $xpath->query('//*[@id="ds-brand"]//a[@download and @href="'.asset(mix('images/brand/'.$file)).'"]')->length);
         }
         foreach (['', 'admin-'] as $prefix) {
@@ -58,7 +58,7 @@ class AdminDesignSystemTest extends ReviewTestCase
             $this->assertSame(1, $xpath->query('//*[@id="'.substr($link->getAttribute('href'), 1).'"]')->length);
         }
         foreach ($xpath->query('//*[@data-ds-sample]') as $sample) {
-            $this->assertSame(1, $xpath->query('.//*[@data-ds-preview]', $sample)->length);
+            $this->assertSame(1, $xpath->query('.//*[@data-ds-preview]', $sample)->length, trim($sample->textContent));
             $this->assertSame(1, $xpath->query('.//*[@data-ds-specs]', $sample)->length);
         }
         $this->assertSame(1, $xpath->query('//*[@id="ds-example-modal" and @aria-labelledby="ds-example-modal-title"]')->length);

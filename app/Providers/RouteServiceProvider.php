@@ -30,10 +30,10 @@ class RouteServiceProvider extends ServiceProvider
                 $host = request()->getHost();
                 // Subdomain navigation returns to the public site, while forms
                 // and AJAX retain their own session and CSRF token.
-                $local = in_array($route->getName(), ['subscriptions.modal', 'subscriptions.store', 'attribution.consent'], true)
+                $local = in_array($route->getName(), ['subscriptions.modal', 'subscriptions.store', 'newsletter.subscribe', 'attribution.consent'], true)
                     || (in_array($host, ['shop.'.config('app.short_url'), 'learn.'.config('app.short_url')], true) && $route->named('shop.*', 'reviews.*'));
                 if ($host === 'admin.'.config('app.short_url')
-                    || (in_array($host, ['blog.'.config('app.short_url'), 'shop.'.config('app.short_url'), 'learn.'.config('app.short_url')], true) && ! $local)) {
+                    || (in_array($host, ['blog.'.config('app.short_url'), 'shop.'.config('app.short_url'), 'learn.'.config('app.short_url'), 'games.'.config('app.short_url'), 'metronome.'.config('app.short_url')], true) && ! $local)) {
                     $website = rtrim(config('app.url'), '/');
 
                     return preg_match('#^https?://#i', $website) ? $website : request()->getScheme().'://'.ltrim($website, '/');
@@ -63,6 +63,10 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapShopRoutes();
 
         $this->mapLearnRoutes();
+
+        $this->mapGamesRoutes();
+
+        $this->mapMetronomeRoutes();
 
         $this->mapApiRoutes();
 
@@ -130,6 +134,22 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware(['web', 'log.web', 'location.update'])
              ->namespace($this->namespace)
              ->group(base_path('routes/learn.php'));
+    }
+
+    protected function mapGamesRoutes()
+    {
+        Route::domain('games.'.config('app.short_url'))
+             ->middleware(['web', 'log.web'])
+             ->namespace($this->namespace)
+             ->group(base_path('routes/games.php'));
+    }
+
+    protected function mapMetronomeRoutes()
+    {
+        Route::domain('metronome.'.config('app.short_url'))
+             ->middleware(['web', 'log.web'])
+             ->namespace($this->namespace)
+             ->group(base_path('routes/metronome.php'));
     }
 
     /**

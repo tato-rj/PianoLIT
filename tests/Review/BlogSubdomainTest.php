@@ -3,7 +3,7 @@
 namespace Tests\Review;
 
 use App\{Admin, User};
-use App\Blog\Post;
+use App\Blog\{Post, Topic};
 use App\Providers\RouteServiceProvider;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -93,10 +93,10 @@ class BlogSubdomainTest extends ReviewTestCase
     {
         $post = $this->article();
         $origin = 'http://blog.localhost';
-        $this->get(route('posts.index'))->assertOk()->assertSee($post->title)->assertSee(route('posts.show', $post), false);
+        $this->get(route('posts.index'))->assertOk()->assertSee('PianoLIT Blog')->assertSee($post->title)->assertDontSee('Coming up soon!')->assertDontSee('Latest story');
         $response = $this->get(route('posts.show', $post))->assertOk()->assertSee('Existing article content.');
         $response->assertSee('<link rel="canonical" href="'.$origin.'/'.$post->slug.'"', false)
-            ->assertSee('href="http://learn.localhost/circle-of-fifths"', false)
+            ->assertSee('href="http://blog.localhost/login"', false)
             ->assertSee('href="http://localhost/contact-us"', false)
             ->assertSee('data-url="'.$origin.'/subscriptions/modal"', false)
             ->assertSee('data-url="'.$origin.'/'.$post->slug.'/gift"', false);
@@ -104,7 +104,7 @@ class BlogSubdomainTest extends ReviewTestCase
         $this->assertSame('http://localhost/gift', route('gift'));
         $this->assertSame($origin.'/subscriptions', route('subscriptions.store'));
         $this->get($origin.'/subscriptions/modal?view=subscription')->assertOk()
-            ->assertSee('action="'.$origin.'/subscriptions"', false);
+            ->assertSee('action="'.$origin.'/newsletter/subscribe"', false);
         $this->get(route('posts.gift', $post))->assertOk()->assertSee('blog-gift-modal')->assertSee($post->gift_path, false);
         $this->get(route('posts.app', $post))->assertOk()->assertSee('Existing article content.')->assertDontSee('navbar-brand');
         $json = $post->fresh()->toArray();
@@ -125,7 +125,7 @@ class BlogSubdomainTest extends ReviewTestCase
         config(['app.url' => $host]);
         app('url')->forceRootUrl(null);
 
-        $response = $this->get(route('posts.index'))->assertOk();
+        $response = $this->get(route('posts.show', $this->article()))->assertOk();
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
@@ -135,16 +135,67 @@ class BlogSubdomainTest extends ReviewTestCase
                 $this->fail('Website navigation must include a scheme: '.$href);
             }
         }
-        $response->assertSee('href="'.parse_url($baseUrl, PHP_URL_SCHEME).'://learn.'.$host.'/circle-of-fifths"', false)
-            ->assertSee('href="'.$baseUrl.'/contact-us"', false)
-            ->assertSee('href="'.$blog.'"', false);
-        $this->assertSame($baseUrl, $xpath->query('//a[contains(@class, "navbar-brand")]')->item(0)->getAttribute('href'));
-        $this->assertSame(1, $xpath->query('//footer//a[@href="'.$baseUrl.'" and text()="Home"]')->length);
+        $response->assertSee('href="'.$blog.'/login"', false)
+            ->assertSee('href="'.$baseUrl.'/contact-us"', false);
+        $this->assertSame($baseUrl, $xpath->query('//header//a[@aria-label="PianoLIT home"]')->item(0)->getAttribute('href'));
+        $this->assertSame(1, $xpath->query('//footer//a[@href="'.$baseUrl.'/contact-us" and text()="Contact"]')->length);
         $this->assertSame($baseUrl, route('home'));
         $this->assertSame(parse_url($baseUrl, PHP_URL_SCHEME).'://learn.'.$host.'/circle-of-fifths', route('tools.circle-of-fifths'));
         $this->assertSame('/circle-of-fifths', route('tools.circle-of-fifths', [], false));
         $this->assertSame($blog.'/subscriptions/modal', route('subscriptions.modal'));
         $this->assertSame($blog.'/subscriptions', route('subscriptions.store'));
+    }
+
+    public function test_directory_filters_and_pagination_keep_every_published_story_once()
+    {
+        $topic = Model::withoutEvents(function () { return create(Topic::class, ['name' => 'Technique', 'slug' => 'technique']); });
+        $posts = [];
+        for ($i = 0; $i < 13; $i++) {
+            $post = $this->article(['title' => 'Technique story '.$i, 'created_at' => now()->subMinutes($i)]);
+            $post->topics()->attach($topic);
+            $posts[] = $post;
+        }
+        $this->article(['title' => 'Different topic']);
+        $draft = $this->article(['title' => 'Unpublished technique', 'published_at' => null]);
+        $draft->topics()->attach($topic);
+
+        $response = $this->get(route('posts.index', ['topics' => 'technique']))->assertOk()
+            ->assertSee('Showing 1–12 of 13 stories')->assertDontSee('Different topic')->assertDontSee($draft->title)
+            ->assertSee('topics=technique&amp;page=2', false);
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertSame(12, $xpath->query('//article[contains(@class, "blog-story")]')->length);
+        $this->assertSame(1, $xpath->query('//nav[@aria-label="Article topics"]//a[@aria-current="page" and text()="Technique"]')->length);
+        foreach (array_slice($posts, 0, 12) as $post) {
+            $this->assertSame(1, $xpath->query('//article[contains(@class, "blog-story")]//a[@href="'.route('posts.show', $post).'"]')->length);
+        }
+
+        $this->get(route('posts.index', ['topics' => 'technique', 'page' => 2]))->assertOk()
+            ->assertSee($posts[12]->title)->assertSee('Showing 13–13 of 13 stories')->assertDontSee('Latest story')
+            ->assertDontSee($posts[0]->title);
+        $this->get(route('posts.index', ['topics' => 'no-such-topic']))->assertOk()->assertSee('No stories here just yet.');
+        $this->get(route('posts.index', ['topics' => 'technique', 'page' => 99]))->assertOk()->assertSee('You’ve reached the end of these stories.');
+    }
+
+    public function test_directory_promotions_link_to_published_courses_and_shop_products()
+    {
+        $items = Model::withoutEvents(function () {
+            return [
+                create(\App\CrashCourse\CrashCourse::class, ['title' => 'Featured course', 'published_at' => now()]),
+                create(\App\Shop\eBook::class, ['title' => 'Featured book', 'published_at' => now()]),
+                create(\App\Shop\eScore::class, ['title' => 'Featured score', 'published_at' => now()]),
+            ];
+        });
+        Model::withoutEvents(function () { create(\App\Shop\eBook::class, ['title' => 'Unpublished book', 'published_at' => null]); });
+        $response = $this->get(route('posts.index'))->assertOk()->assertSee('Explore PianoLIT')->assertDontSee('Unpublished book')
+            ->assertSee('data-url="http://blog.localhost/subscriptions/modal"', false)
+            ->assertSee('href="http://localhost/contact-us"', false)->assertDontSee('Coming up soon!');
+        foreach ($items as $item) {
+            $response->assertSee($item->title)->assertSee('href="'.$item->showRoute().'"', false);
+        }
+        $this->assertSame(3, substr_count($response->getContent(), 'class="promo-card pastel-card'));
+        $this->assertStringStartsWith('http://learn.localhost/crashcourses/', $items[0]->showRoute());
+        $this->assertStringStartsWith('http://shop.localhost/ebooks/', $items[1]->showRoute());
+        $this->assertStringStartsWith('http://shop.localhost/escores/', $items[2]->showRoute());
     }
 
     public function test_drafts_still_require_admin_preview_on_the_new_host()

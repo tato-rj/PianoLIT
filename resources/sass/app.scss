@@ -20,6 +20,7 @@
 @import 'components/animations';
 @import 'components/toggle';
 @import 'components/music';
+@import 'components/piano';
 @import 'components/input-decorations';
 @import 'components/search';
 @import 'components/filter-columns';
@@ -53,6 +54,7 @@
 @import 'pages/crashcourse';
 @import 'pages/products';
 @import 'pages/circle-of-fifths';
+@import 'pages/chord-finder';
 
 // Brand overrides; shared token adapters are appended by Mix afterwards.
 @import 'shared/buttons';
@@ -83,4 +85,10 @@
 
 @import 'components/payment-checkout';
 @import 'components/project-card';
+@import 'components/editorial-layout';
+@import 'components/resource-card';
+@import 'components/public-header';
+@import 'components/public-footer';
 @import 'pages/home';
+@import 'pages/project-coming-soon';
+@import 'pages/learn';

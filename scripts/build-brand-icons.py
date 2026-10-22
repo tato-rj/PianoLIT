@@ -40,7 +40,7 @@ def rounded(svg):
     return svg[:start] + '<defs><clipPath id="tile"><rect width="512" height="512" rx="102.4"/></clipPath></defs><g clip-path="url(#tile)">' + svg[start:].replace('</svg>', '</g></svg>')
 
 
-def pinned(svg):
+def pinned(svg, color='#000', title='PianoLIT pinned tab'):
     master = ET.fromstring(svg)
     groups = master.findall('s:g', NS)
     paths = master.findall('s:path', NS)
@@ -50,7 +50,12 @@ def pinned(svg):
     pages = paths[3].attrib['d'] + ' ' + paths[4].attrib['d']
     marks = ''.join(ET.tostring(node, encoding='unicode') for node in groups[1])
     keys = ''.join(ET.tostring(node, encoding='unicode') for node in groups[-1])
-    return '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>PianoLIT pinned tab</title><g fill="#000"><path fill-rule="evenodd" d="' + body + ' ' + pages + '"/>' + marks + keys + '</g></svg>\n'
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>' + title + '</title><g fill="' + color + '"><path fill-rule="evenodd" d="' + body + ' ' + pages + '"/>' + marks + keys + '</g></svg>\n'
+
+
+def white_watermark(svg):
+    border = '<rect x="8" y="8" width="496" height="496" rx="96" fill="none" stroke="#fff" stroke-width="16"/>'
+    return pinned(svg, '#fff', 'PianoLIT white icon').replace('</svg>', border + '</svg>')
 
 
 if not shutil.which('magick'):
@@ -64,6 +69,11 @@ with tempfile.TemporaryDirectory(prefix='pianolit-brand-') as directory:
     ]:
         source = BRAND / f'{variant}-icon.svg'
         svg = source.read_text()
+        if variant == 'app':
+            # Reuse the approved monochrome silhouette with a transparent canvas.
+            watermark = white_watermark(svg)
+            (BRAND / 'icon-white.svg').write_text(watermark)
+            (PUBLIC / 'images/brand/icon-white.svg').write_text(watermark)
         square = work / f'{variant}-square.png'
         tile = work / f'{variant}-rounded.svg'
         tile.write_text(rounded(svg))

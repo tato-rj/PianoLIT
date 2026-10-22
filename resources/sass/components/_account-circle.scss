@@ -1,0 +1,26 @@
+.account-circle.btn-raw {
+    width: var(--field-min-height);
+    height: var(--field-min-height);
+    padding: 0;
+    border: 3px solid var(--color-surface);
+    background: var(--color-border);
+    color: var(--color-text-dark);
+    font-size: 17px;
+    line-height: 1;
+
+    &:hover,
+    &:focus-visible,
+    &[aria-expanded='true'] {
+        color: var(--color-text);
+    }
+
+    .app-icon {
+        width: 21px;
+        height: 21px;
+    }
+
+    .account-circle__initial {
+        font-weight: 400;
+        line-height: 1;
+    }
+}

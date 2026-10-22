@@ -1,6 +1,6 @@
 @component('mail::welcome.message')
 @component('mail::welcome.hero', ['firstName' => $firstName, 'image' => $websiteUrl.mix('images/emails/welcome/floating-logo.png')])
-Here is where pianists discover new pieces and find inspiration<br>
+PianoLIT is where pianists discover new pieces and find inspiration<br>
 to play only what they love.
 @endcomponent
 

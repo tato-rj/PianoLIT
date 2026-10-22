@@ -54,13 +54,13 @@
     @include('auth.alerts.unconfirmed')
     @endconfirmed --}}
 
-    <div id="app">
+    <div id="app" @if(request()->getHost() !== 'my.'.config('app.short_url')) class="public-site d-flex flex-column min-vh-100" @endif>
 
         @unless($projectHome ?? false)
             @include('layouts.header')
         @endunless
 
-        <main>
+        <main @if(request()->getHost() !== 'my.'.config('app.short_url')) class="flex-grow-1" @endif>
 
             @yield('content')
 
@@ -181,10 +181,17 @@ function loadPopup($container, callback = null)
 
         axios.get($container.data('url'), {params: {view: view, productClass: productClass, productId: productId}})
              .then(function(response) {
-                $('body').append(response.data);
+                let $modal = $(response.data);
+                let $reusable = $modal.filter('.modal[data-popup-reuse][id]').first();
+                let existing = $reusable.length ? document.getElementById($reusable.attr('id')) : null;
+                if (existing) {
+                    $modal = $(existing);
+                } else {
+                    $('body').append($modal);
+                }
 
                 if (callback)
-                    callback($(response.data));
+                    callback($modal);
              })
              .catch(function(error) {
                 console.log(error);
@@ -194,7 +201,9 @@ function loadPopup($container, callback = null)
 
 
     if (iOS())
-        $('.free-trial-launch').attr('href', "{{config('app.stores.ios')}}");
+        $('.free-trial-launch').attr({href: "{{config('app.stores.ios')}}", target: '_blank'}).each(function() {
+            this.relList.add('noopener', 'noreferrer');
+        });
 
     function iOS() {
 

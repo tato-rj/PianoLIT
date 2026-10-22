@@ -1,4 +1,4 @@
-@extends('layouts.raw')
+@extends('layouts.raw', ['bodyClass' => 'bg-white'])
 
 @section('content')
 @include('webapp.blog.components.topics')

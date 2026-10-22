@@ -1,0 +1,27 @@
+.editorial-layout__content { min-width: 0; }
+
+.promo-card {
+    color: var(--card-ink);
+    letter-spacing: 0;
+
+    &__image-link { display: block; }
+    &__image {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1.8;
+        object-fit: cover;
+        border-radius: var(--radius-sm);
+    }
+    &__image--contain { object-fit: contain; }
+    &__title {
+        color: inherit;
+        overflow-wrap: anywhere;
+
+        &:hover, &:focus-visible { color: var(--card-action); }
+    }
+    &__description {
+        font-size: var(--font-size-sm);
+        line-height: var(--line-height-body);
+    }
+}

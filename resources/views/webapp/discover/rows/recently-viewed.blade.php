@@ -8,7 +8,7 @@
 	<div class="discover-recent__rail custom-scroll dragscroll dragscroll-horizontal card-scroll-row">
 		<div class="discover-recent__items d-flex gap-3 pb-2">
 			@foreach($row['content'] as $piece)
-			<a class="discover-recent-card discover-piece-link link-none d-flex align-items-center" href="{{ route('webapp.pieces.show', $piece) }}" data-activity-label="{{ $piece->medium_name_with_composer }}">
+			<a class="discover-recent-card discover-compact-card discover-piece-link link-none d-flex align-items-center" href="{{ route('webapp.pieces.show', $piece) }}" data-activity-label="{{ $piece->medium_name_with_composer }}">
 				<img class="discover-recent-card__art" src="{{ $piece->web_image_background }}" alt="" width="72" height="72" loading="lazy">
 				<div class="discover-recent-card__copy">
 					<p class="{{ ($wrapPieceTitles ?? false) ? 'discover-compact-card__title clamp-2' : 'discover-recent-card__title' }} m-0" title="{{ $piece->name }}"><strong>{{ $piece->name }}</strong></p>

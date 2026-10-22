@@ -1,0 +1,11 @@
+.chord-finder {
+    &__notes {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+        @media (min-width: 576px) { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    }
+    #chord-editor, #chord-results-title { scroll-margin-top: 24px; }
+    #chord-label { min-height: 1.5rem; }
+    .keyboard-key { touch-action: manipulation; }
+}

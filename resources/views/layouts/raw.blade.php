@@ -24,7 +24,7 @@
 
     @stack('header')
 </head>
-<body>
+<body @isset($bodyClass) class="{{ $bodyClass }}" @endisset>
     @include('layouts.html.google.manager-body')
 
     @yield('content')
