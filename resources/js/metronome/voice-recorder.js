@@ -13,13 +13,24 @@ export class VoiceRecorder {
         this.loadVersion = 0;
         this.previewSources = [];
         this.saved = [];
+        this.library = [];
+        this.limit = 20;
+        this.activeId = null;
+        this.voiceVersion = 0;
         this.buffers = [];
         this.draft = [];
         this.revision = null;
         this.ready = false;
         this.storageKey = `metronome.voice.${root.dataset.owner}.v1`;
+        this.selectedKey = `metronome.voice.${root.dataset.owner}.selected.v1`;
         this.preferred = false;
-        try { this.preferred = localStorage.getItem(this.storageKey) === '1'; } catch (error) { /* Optional preference. */ }
+        try {
+            this.preferred = localStorage.getItem(this.storageKey) === '1';
+            this.preferredId = localStorage.getItem(this.selectedKey);
+        } catch (error) { /* Optional preference. */ }
+        this.choiceInput = root.querySelector('[name="metronome_voice_choice"]');
+        this.nameInput = root.querySelector('[name="metronome_voice_name"]');
+        this.renameInput = root.querySelector('[name="metronome_voice_rename"]');
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         this.supported = !!(navigator.mediaDevices?.getUserMedia && window.MediaRecorder && AudioContext);
         this.capture = new VoiceCapture({ mediaDevices: navigator.mediaDevices, Recorder: window.MediaRecorder,
@@ -37,6 +48,21 @@ export class VoiceRecorder {
             this.preview([this.draftBuffers[this.selected]]);
         }));
         this.ui('delete').addEventListener('click', () => { this.ui('delete-confirm').hidden = false; });
+        this.choiceInput.addEventListener('change', () => this.choose(this.choiceInput.value));
+        this.ui('rename').addEventListener('click', () => {
+            this.renameInput.value = this.current()?.name || '';
+            this.ui('rename-panel').hidden = false;
+            this.ui('delete-confirm').hidden = true;
+            this.renameInput.focus();
+        });
+        this.ui('rename-cancel').addEventListener('click', () => { this.ui('rename-panel').hidden = true; });
+        this.ui('rename-save').addEventListener('click', () => this.rename());
+        this.renameInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') { event.preventDefault(); this.rename(); }
+        });
+        this.nameInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') { event.preventDefault(); this.save(); }
+        });
         this.ui('keep').addEventListener('click', () => { this.ui('delete-confirm').hidden = true; });
         this.ui('confirm-delete').addEventListener('click', () => this.remove());
         this.ui('reload').addEventListener('click', () => { this.cancel(); this.load(); });
@@ -54,19 +80,25 @@ export class VoiceRecorder {
     remember(sound) {
         this.selection++;
         this.preferred = sound === 'my-voice';
-        try { localStorage.setItem(this.storageKey, this.preferred ? '1' : '0'); } catch (error) { /* Optional preference. */ }
+        try {
+            localStorage.setItem(this.storageKey, this.preferred ? '1' : '0');
+            if (this.activeId) localStorage.setItem(this.selectedKey, this.activeId);
+        } catch (error) { /* Optional preference. */ }
     }
 
-    async request(method = 'GET', body) {
-        const response = await fetch(this.root.dataset.url, {
+    async request(method = 'GET', body, id = null) {
+        const response = await fetch(this.root.dataset.url.replace(/\/$/, '') + (id ? '/' + encodeURIComponent(id) : ''), {
             method, credentials: 'same-origin', cache: 'no-store',
             headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.root.dataset.csrf },
             ...(body ? { body: JSON.stringify(body) } : {}),
         });
         if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
             const error = new Error(response.status === 409 ? 'Your recording changed in another tab. Reload it to continue.'
                 : [401, 419].includes(response.status) ? 'Please sign in again to use your recording.'
-                    : response.status === 429 ? 'Wait a moment, then try again.' : 'Couldn’t save your recording. Please try again.');
+                    : response.status === 404 ? 'This recording was deleted. Reload your voices to continue.'
+                        : response.status === 422 ? Object.values(data.errors || {}).flat()[0] || 'Check the recording name and try again.'
+                            : response.status === 429 ? 'Wait a moment, then try again.' : 'Couldn’t save your recording. Please try again.');
             error.status = response.status;
             throw error;
         }
@@ -75,40 +107,101 @@ export class VoiceRecorder {
 
     async load() {
         const version = ++this.loadVersion;
+        this.voiceVersion++;
+        this.loadingVoice = false;
         const selection = this.selection;
-        this.ui('start').disabled = true;
+        this.ready = false;
+        this.controls();
         this.ui('reload').hidden = true;
         this.ui('signin').hidden = true;
-        this.ui('status').textContent = 'Loading your voice…';
+        this.ui('status').textContent = 'Loading your voices…';
         try {
             const data = await this.request();
-            const buffers = data.clips.length ? await Promise.all(data.clips.map(clip => this.context().decodeAudioData(voiceBytes(clip)))) : [];
             if (version !== this.loadVersion) return;
-            this.revision = data.revision;
-            this.saved = data.clips;
-            this.buffers = buffers;
+            this.library = data.recordings;
+            this.limit = data.limit;
             this.ready = true;
-            this.clock.setVoiceBuffers(buffers);
-            this.option.disabled = buffers.length !== 4;
-            if (buffers.length === 4 && this.preferred && selection === this.selection) this.useSound('my-voice', false);
-            if (!buffers.length && this.soundInput.value === 'my-voice') this.useSound('click');
             this.summary();
+            const id = [this.activeId, this.preferredId].find(value => this.library.some(voice => voice.id === value)) || this.library[0]?.id;
+            if (id) await this.choose(id, { activate: this.preferred && selection === this.selection });
+            else { this.clearVoice(); this.summary(); }
         } catch (error) {
             if (version !== this.loadVersion) return;
-            this.ui('status').textContent = [401, 419].includes(error.status) ? error.message : 'Your voice couldn’t load. Try again.';
+            this.ui('status').textContent = [401, 419].includes(error.status) ? error.message : 'Your voices couldn’t load. Try again.';
             this.ui('reload').hidden = false;
             this.invalidateSession(error);
         }
     }
 
     summary() {
-        this.ui('summary-text').textContent = this.saved.length ? 'Your counting voice is ready.' : 'Count in your own voice.';
-        this.ui('start-label').textContent = this.saved.length ? 'Record again' : 'Record my voice';
-        this.ui('start').disabled = !this.ready || !this.supported;
-        this.ui('listen').hidden = !this.saved.length;
-        this.ui('delete').hidden = !this.saved.length;
-        this.ui('status').textContent = this.supported ? '' : window.isSecureContext
+        this.ui('summary-text').textContent = this.library.length ? 'Your counting voices' : 'Count in your own voice.';
+        this.ui('start-label').textContent = this.library.length ? 'New recording' : 'Record my voice';
+        this.ui('library').hidden = !this.library.length;
+        this.choiceInput.replaceChildren(...this.library.map(voice => new Option(voice.name, voice.id)));
+        this.choiceInput.value = this.activeId || '';
+        this.ui('delete-label').textContent = `Delete “${this.current()?.name || 'this recording'}”?`;
+        this.controls();
+        this.ui('status').textContent = this.library.length >= this.limit ? 'You have 20 saved voices. Delete one to make room.'
+            : this.supported ? '' : window.isSecureContext
             ? 'This browser can’t record audio. Try another browser.' : 'Open this page over HTTPS to record.';
+    }
+
+    current() { return this.library.find(voice => voice.id === this.activeId); }
+
+    controls() {
+        this.ui('start').disabled = !this.ready || !this.supported || this.saving || this.loadingVoice || this.library.length >= this.limit;
+        this.choiceInput.disabled = !this.ready || this.saving;
+        this.ui('listen').disabled = !this.buffers.length || this.loadingVoice || this.saving;
+        ['rename', 'delete'].forEach(name => { this.ui(name).disabled = !this.current() || this.loadingVoice || this.saving; });
+    }
+
+    clearVoice() {
+        this.activeId = this.revision = null;
+        this.saved = this.buffers = [];
+        this.clock.setVoiceBuffers(null);
+        this.option.disabled = true;
+        if (this.soundInput.value === 'my-voice') this.useSound('click');
+    }
+
+    async choose(id, { activate = true } = {}) {
+        if (!this.library.some(voice => voice.id === id)) return;
+        const version = ++this.voiceVersion;
+        const selection = this.selection;
+        this.stopPreview();
+        this.clock.stop();
+        this.activeId = id;
+        this.loadingVoice = true;
+        this.buffers = this.saved = [];
+        this.clock.setVoiceBuffers(null);
+        this.option.disabled = true;
+        this.ui('rename-panel').hidden = this.ui('delete-confirm').hidden = true;
+        this.controls();
+        this.ui('status').textContent = 'Loading recording…';
+        try {
+            const data = await this.request('GET', null, id);
+            const buffers = await Promise.all(data.clips.map(clip => this.context().decodeAudioData(voiceBytes(clip))));
+            if (version !== this.voiceVersion) return;
+            this.library = this.library.map(voice => voice.id === id ? { id, name: data.name, revision: data.revision } : voice);
+            this.revision = data.revision;
+            this.saved = data.clips;
+            this.buffers = buffers;
+            this.clock.setVoiceBuffers(buffers);
+            this.option.disabled = false;
+            this.preferredId = id;
+            try { localStorage.setItem(this.selectedKey, id); } catch (error) { /* Optional preference. */ }
+            if (activate && selection === this.selection) {
+                this.useSound('my-voice', false);
+                this.remember('my-voice');
+            }
+            this.summary();
+        } catch (error) {
+            if (version !== this.voiceVersion) return;
+            if (this.soundInput.value === 'my-voice') this.useSound('click');
+            this.failure(error);
+            this.ui('reload').hidden = false;
+        } finally {
+            if (version === this.voiceVersion) { this.loadingVoice = false; this.controls(); }
+        }
     }
 
     async delay(milliseconds, flow) {
@@ -116,13 +209,26 @@ export class VoiceRecorder {
         if (flow !== this.flow) throw new DOMException('Canceled', 'AbortError');
     }
 
+    cue(state, prompt, countdown = '') {
+        this.ui('cue').dataset.state = state;
+        this.ui('cue-label').textContent = { waiting: 'Wait', speaking: 'Speak now', success: 'Recorded', error: 'Try again' }[state] || '';
+        if (this.ui('prompt').textContent !== prompt) this.ui('prompt').textContent = prompt;
+        this.ui('countdown').textContent = countdown;
+        this.ui('countdown').hidden = !countdown;
+        this.ui('visual').hidden = ['idle', 'review'].includes(state);
+        this.ui('meter').hidden = state !== 'speaking';
+    }
+
     async record({ resume = false, redo = null } = {}) {
-        if (!this.ready || !this.supported || this.saving) return;
+        if (!this.ready || !this.supported || this.saving || this.loadingVoice || this.library.length >= this.limit) return;
         const flow = ++this.flow;
         this.stopPreview();
         this.clock.stop();
         if (!resume) {
-            if (redo === null) this.draft = [];
+            if (redo === null) {
+                this.draft = [];
+                this.nameInput.value = `Voice ${this.library.length + 1}`;
+            }
             this.nextIndex = redo === null ? 0 : redo;
             this.endIndex = redo === null ? 4 : redo + 1;
         }
@@ -130,12 +236,12 @@ export class VoiceRecorder {
         this.ui('summary').hidden = true;
         this.ui('panel').hidden = false;
         this.ui('delete-confirm').hidden = true;
+        this.ui('rename-panel').hidden = true;
         this.ui('review').hidden = true;
         this.ui('save').hidden = this.ui('retry').hidden = true;
-        this.ui('number').hidden = this.ui('meter').hidden = false;
         this.ui('number').textContent = String(this.nextIndex + 1);
         this.ui('step').textContent = 'Microphone';
-        this.ui('prompt').textContent = 'Allow microphone access';
+        this.cue('waiting', 'Allow microphone access');
         this.ui('status').textContent = '';
         this.ui('reload').hidden = true;
         this.ui('cancel').focus();
@@ -146,29 +252,30 @@ export class VoiceRecorder {
                 if (flow !== this.flow) return;
                 this.ui('number').textContent = String(index + 1);
                 this.ui('step').textContent = `${index + 1} of 4`;
-                this.ui('prompt').textContent = 'Get ready…';
                 this.level(0);
-                await this.delay(index === 0 || resume || redo !== null ? 1200 : 700, flow);
-                this.ui('prompt').textContent = `Say “${WORDS[index]}”`;
+                for (let remaining = 3; remaining > 0; remaining--) {
+                    this.cue('waiting', 'Wait for green', `Ready in ${remaining}`);
+                    await this.delay(500, flow);
+                }
+                this.cue('speaking', `Say “${WORDS[index]}”`);
                 this.draft[index] = await this.capture.record(level => this.level(level));
                 if (flow !== this.flow) return;
-                this.ui('prompt').textContent = 'Got it';
-                await this.delay(400, flow);
+                this.cue('success', 'Got it!');
+                await this.delay(600, flow);
             }
             this.capture.cancel();
             const draftBuffers = await Promise.all(this.draft.map(bytes => this.context().decodeAudioData(bytes.slice(0))));
             if (flow !== this.flow) return;
             this.draftBuffers = draftBuffers;
-            this.ui('number').hidden = this.ui('meter').hidden = true;
             this.ui('step').textContent = '4 of 4 recorded';
-            this.ui('prompt').textContent = 'How does it sound?';
+            this.cue('review', 'How does it sound?');
             this.ui('review').hidden = this.ui('save').hidden = false;
-            this.ui('save').focus();
+            this.nameInput.focus();
         } catch (error) {
             if (flow !== this.flow) return;
             this.capture.cancel();
             this.level(0);
-            this.ui('prompt').textContent = `Let’s try ${WORDS[this.nextIndex]} again`;
+            this.cue('error', `Let’s try ${WORDS[this.nextIndex]} again`);
             this.ui('status').textContent = error.name === 'NotAllowedError' ? 'Allow the microphone in your browser, then try again.'
                 : error.name === 'NotFoundError' ? 'Connect a microphone, then try again.'
                     : error.name === 'NotReadableError' ? 'Your microphone is busy. Close other recording apps and try again.'
@@ -187,11 +294,12 @@ export class VoiceRecorder {
         this.flow++;
         this.capture.cancel();
         this.stopPreview();
-        this.ui('panel').hidden = this.ui('delete-confirm').hidden = true;
+        this.ui('panel').hidden = this.ui('delete-confirm').hidden = this.ui('rename-panel').hidden = true;
         this.ui('summary').hidden = false;
         delete this.dialog.dataset.recording;
         this.draft = [];
         this.draftBuffers = [];
+        this.cue('idle', '');
         this.summary();
     }
 
@@ -228,22 +336,27 @@ export class VoiceRecorder {
 
     async save() {
         if (this.saving || this.draft.length !== 4) return;
+        const name = this.validName(this.nameInput);
+        if (!name) return;
         const flow = this.flow;
         const clips = this.draft.map(voiceBase64);
         this.saving = true;
+        this.controls();
         this.ui('save').disabled = true;
         this.ui('status').textContent = 'Saving your voice…';
         try {
             // Unlock preview audio in the button gesture, before the network.
             await this.context().resume();
             if (flow !== this.flow) return;
-            const data = await this.request('PUT', { revision: this.revision, clips });
+            const data = await this.request('PUT', { name, clips });
             if (flow !== this.flow) {
                 this.ready = false;
                 if (this.dialog.open) this.load();
                 return;
             }
             this.revision = data.revision;
+            this.activeId = this.preferredId = data.id;
+            this.library.push({ id: data.id, name: data.name, revision: data.revision });
             this.saved = data.clips;
             this.buffers = this.draftBuffers;
             this.clock.setVoiceBuffers(this.buffers);
@@ -258,37 +371,82 @@ export class VoiceRecorder {
         } finally {
             this.saving = false;
             this.ui('save').disabled = false;
+            this.controls();
         }
     }
 
-    async remove() {
-        if (this.saving || !this.revision) return;
+    validName(input) {
+        const name = input.value.trim();
+        if (!name || [...name].length > 60) {
+            this.ui('status').textContent = name ? 'Keep the name to 60 characters.' : 'Give your recording a name.';
+            input.focus();
+            return null;
+        }
+        return name;
+    }
+
+    async rename() {
+        if (this.saving || !this.current()) return;
+        const name = this.validName(this.renameInput);
+        if (!name) return;
+        const flow = this.flow;
+        const { id, revision } = this.current();
         this.saving = true;
+        this.controls();
+        this.ui('rename-save').disabled = true;
+        try {
+            const data = await this.request('PATCH', { name, revision }, id);
+            if (flow !== this.flow) {
+                this.ready = false;
+                if (this.dialog.open) this.load();
+                return;
+            }
+            this.library = this.library.map(voice => voice.id === id ? data : voice);
+            this.revision = data.revision;
+            this.ui('rename-panel').hidden = true;
+            this.summary();
+            this.ui('status').textContent = 'Name saved.';
+        } catch (error) { if (flow === this.flow) this.failure(error); }
+        finally { this.saving = false; this.ui('rename-save').disabled = false; this.controls(); }
+    }
+
+    async remove() {
+        if (this.saving || !this.current()) return;
+        const flow = this.flow;
+        const { id, revision } = this.current();
+        this.saving = true;
+        this.controls();
         this.ui('confirm-delete').disabled = true;
         this.stopPreview();
         this.clock.stop();
         try {
-            await this.request('DELETE', { revision: this.revision });
-            this.clock.setVoiceBuffers(null);
-            if (this.soundInput.value === 'my-voice') this.useSound('click');
-            this.remember('click');
-            this.saved = this.buffers = [];
-            this.revision = null;
-            this.option.disabled = true;
+            await this.request('DELETE', { revision }, id);
+            if (flow !== this.flow) {
+                this.ready = false;
+                if (this.dialog.open) this.load();
+                return;
+            }
+            const activate = this.soundInput.value === 'my-voice';
+            this.library = this.library.filter(voice => voice.id !== id);
+            this.clearVoice();
             this.cancel();
-        } catch (error) { this.failure(error); }
-        finally { this.saving = false; this.ui('confirm-delete').disabled = false; }
+            if (this.library.length) await this.choose(this.library[0].id, { activate });
+            else this.remember('click');
+        } catch (error) { if (flow === this.flow) this.failure(error); }
+        finally { this.saving = false; this.ui('confirm-delete').disabled = false; this.controls(); }
     }
 
     failure(error) {
         this.ui('status').textContent = error.message;
-        this.ui('reload').hidden = ![409, 401, 419].includes(error.status);
+        this.ui('reload').hidden = ![404, 409, 401, 419].includes(error.status);
         this.invalidateSession(error);
     }
 
     invalidateSession(error) {
         if (![401, 419].includes(error.status)) return;
         this.flow++;
+        this.voiceVersion++;
+        this.loadVersion++;
         this.capture.cancel();
         this.stopPreview();
         this.clock.stop();
@@ -296,6 +454,8 @@ export class VoiceRecorder {
         this.option.disabled = true;
         this.ready = false;
         this.buffers = this.saved = [];
+        this.library = [];
+        this.activeId = null;
         this.draft = this.draftBuffers = [];
         this.ui('panel').hidden = true;
         this.ui('summary').hidden = false;

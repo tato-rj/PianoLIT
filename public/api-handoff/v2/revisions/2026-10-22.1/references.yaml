@@ -1,0 +1,36 @@
+schema_version: 1
+status: pending_capture
+purpose: References for the next Discover design pass; no images have been approved or bundled yet.
+images: []
+capture_plan:
+  - id: discover_guest_phone
+    viewport_css_pixels: {width: 390, height: 844}
+    account_state: guest
+    coverage: Full page plus detail crops of Latest pieces, levels and Past highlights.
+  - id: discover_account_phone
+    viewport_css_pixels: {width: 390, height: 844}
+    account_state: synthetic signed-in account with recent history and recommendations
+    coverage: Recently viewed placement, For you cards and account-specific empty states.
+  - id: discover_tablet
+    viewport_css_pixels: {width: 820, height: 1180}
+    account_state: synthetic signed-in account
+    coverage: Wider card arrangements and composer feature; native iPad adaptation remains deliberate.
+required_image_metadata:
+  - id
+  - path
+  - captured_on
+  - viewport_css_pixels
+  - account_state
+  - source_revision
+  - role
+  - approved
+image_roles:
+  web_reference: Observed web behavior; does not prescribe native navigation or exact point sizes.
+  ios_target: Product-reviewed native mockup for implementation.
+  ios_result: Actual simulator/device capture for comparison with the approved target.
+rules:
+  - Put approved files under assets/ and add each path to manifest.yaml files before packaging.
+  - Use synthetic accounts and remove personal information; this bundle is intended for public static hosting.
+  - Capture current pages; existing marketing carousel images are not authoritative design references.
+  - The Swift Codex must open the images when implementing or reviewing layout.
+  - Written behavior and API contracts take precedence over incidental content in a screenshot.

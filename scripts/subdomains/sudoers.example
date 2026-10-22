@@ -1,4 +1,0 @@
-# Install using visudo validation; change the user here AND in subdomains.json.
-# No sudo access for www-data/PHP-FPM, PHP, shells, nginx or certbot directly.
-Defaults:pianolit-deploy env_reset
-pianolit-deploy ALL=(root) NOPASSWD: NOSETENV: /usr/local/sbin/pianolit-subdomain

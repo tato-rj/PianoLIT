@@ -3,8 +3,10 @@
 namespace Tests\Review;
 
 use App\{Admin, User};
+use App\Services\Metronome\VoiceRecording;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class MetronomeVoiceTest extends ReviewTestCase
 {
@@ -33,79 +35,143 @@ class MetronomeVoiceTest extends ReviewTestCase
             24000, 48000, 2, 16, 'data', strlen($pcm)).$pcm);
     }
 
-    private function payload($revision = null)
+    private function payload($name = 'Calm counting')
     {
-        return ['revision' => $revision, 'clips' => [$this->clip(1000), $this->clip(2000), $this->clip(3000), $this->clip(4000)]];
+        return ['name' => $name, 'clips' => [$this->clip(1000), $this->clip(2000), $this->clip(3000), $this->clip(4000)]];
     }
 
-    public function test_only_web_accounts_can_read_save_or_delete_recordings()
+    private function saved($name = 'Calm counting')
+    {
+        return $this->actingAs($this->user, 'web')->putJson(route('metronome.voice.store'), $this->payload($name))->assertOk()->json();
+    }
+
+    private function url($voice)
+    {
+        return route('metronome.voice.recording', ['voice' => $voice['id']]);
+    }
+
+    public function test_only_web_accounts_can_read_create_rename_or_delete_recordings()
     {
         $url = route('metronome.voice.show');
+        $detail = $url.'/'.Str::uuid();
         $this->getJson($url)->assertUnauthorized();
+        $this->getJson($detail)->assertUnauthorized();
         $this->putJson($url, $this->payload())->assertUnauthorized();
-        $this->deleteJson($url, ['revision' => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'])->assertUnauthorized();
+        $this->patchJson($detail, ['name' => 'New name', 'revision' => (string) Str::uuid()])->assertUnauthorized();
+        $this->deleteJson($detail, ['revision' => (string) Str::uuid()])->assertUnauthorized();
         $this->actingAs(create(Admin::class), 'admin')->getJson($url)->assertUnauthorized();
-        $this->assertDatabaseCount('metronome_voices', 0);
+        $this->assertDatabaseCount('metronome_voice_recordings', 0);
     }
 
-    public function test_account_ownership_private_reads_atomic_replacement_and_stale_tab_protection()
+    public function test_multiple_named_recordings_are_private_and_list_reads_omit_audio()
     {
-        $url = route('metronome.voice.show');
-        $this->actingAs($this->user, 'web');
-        $this->getJson($url)->assertExactJson(['revision' => null, 'clips' => []]);
-        $saved = $this->putJson($url, $this->payload() + ['user_id' => $this->other->id])->assertOk();
-        $revision = $saved->json('revision');
-        $this->assertStringContainsString('no-store', $saved->headers->get('Cache-Control'));
-        $this->assertDatabaseHas('metronome_voices', ['user_id' => $this->user->id, 'revision' => $revision]);
-        $this->assertDatabaseMissing('metronome_voices', ['user_id' => $this->other->id]);
-        $this->actingAs($this->other, 'web')->getJson($url.'?user_id='.$this->user->id)
-            ->assertExactJson(['revision' => null, 'clips' => []]);
-        $this->deleteJson($url, ['revision' => $revision, 'user_id' => $this->user->id])->assertStatus(409);
-        $this->actingAs($this->user, 'web');
-        $this->putJson($url, $this->payload())->assertStatus(409);
-        $next = $this->putJson($url, $this->payload($revision))->assertOk()->json('revision');
-        $this->assertNotSame($next, $revision);
-        $this->deleteJson($url, ['revision' => $revision])->assertStatus(409);
-        $read = $this->getJson($url)->assertOk()->assertJsonPath('revision', $next);
-        $this->assertSame($this->payload()['clips'], $read->json('clips'));
-        $this->assertStringContainsString('no-store', $read->headers->get('Cache-Control'));
-        $this->deleteJson($url, ['revision' => $next])->assertOk()->assertExactJson(['revision' => null, 'clips' => []]);
-        $this->assertDatabaseCount('metronome_voices', 0);
+        $this->actingAs($this->user, 'web')->getJson(route('metronome.voice.show'))
+            ->assertExactJson(['recordings' => [], 'limit' => 20]);
+        $first = $this->saved();
+        $second = $this->saved('Energetic counting');
+        $this->assertNotSame($first['id'], $second['id']);
+        $this->assertDatabaseCount('metronome_voice_recordings', 2);
+        $list = $this->getJson(route('metronome.voice.show'))->assertOk()->assertJsonCount(2, 'recordings');
+        $this->assertArrayNotHasKey('clips', $list->json('recordings.0'));
+        $this->assertArrayNotHasKey('user_id', $list->json('recordings.0'));
+        $this->assertStringContainsString('no-store', $list->headers->get('Cache-Control'));
+        $this->getJson($this->url($first))->assertExactJson($first);
+        $this->getJson($this->url($second))->assertExactJson($second);
+
+        $this->actingAs($this->other, 'web')->getJson(route('metronome.voice.show').'?user_id='.$this->user->id)
+            ->assertExactJson(['recordings' => [], 'limit' => 20]);
+        $this->getJson($this->url($first))->assertNotFound();
+        $this->patchJson($this->url($first), ['revision' => $first['revision'], 'name' => 'Stolen'])->assertNotFound();
+        $this->deleteJson($this->url($first), ['revision' => $first['revision']])->assertNotFound();
+        $new = $this->putJson(route('metronome.voice.store'), $this->payload() + ['user_id' => $this->user->id, 'id' => $first['id']])->assertOk()->json();
+        $this->assertDatabaseHas('metronome_voice_recordings', ['id' => $new['id'], 'user_id' => $this->other->id]);
+        $this->assertDatabaseHas('metronome_voice_recordings', ['id' => $first['id'], 'user_id' => $this->user->id]);
         $this->assertArrayNotHasKey('voice', $this->user->fresh()->getAttributes());
     }
 
-    public function test_malformed_audio_and_incomplete_sets_cannot_replace_a_saved_voice()
+    public function test_renaming_preserves_audio_and_stale_tabs_cannot_rename_or_delete_it()
     {
-        $this->actingAs($this->user, 'web');
+        $first = $this->saved();
+        $second = $this->saved('Second voice');
+        $url = $this->url($first);
+        $renamed = $this->patchJson($url, ['revision' => $first['revision'], 'name' => '  Gentle voice  '])->assertOk()->json();
+        $this->assertSame('Gentle voice', $renamed['name']);
+        $this->assertNotSame($first['revision'], $renamed['revision']);
+        $this->patchJson($url, ['revision' => $first['revision'], 'name' => 'Stale'])->assertStatus(409);
+        $this->deleteJson($url, ['revision' => $first['revision']])->assertStatus(409);
+        $this->getJson($url)->assertExactJson($renamed + ['clips' => $first['clips']]);
+        $this->deleteJson($url, ['revision' => $renamed['revision']])->assertOk()->assertExactJson(['deleted' => $first['id']]);
+        $this->getJson($url)->assertNotFound();
+        $this->getJson($this->url($second))->assertExactJson($second);
+        $this->assertDatabaseCount('metronome_voice_recordings', 1);
+    }
+
+    public function test_malformed_audio_names_and_incomplete_sets_cannot_change_saved_voices()
+    {
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+        $first = $this->saved();
         $url = route('metronome.voice.store');
-        $revision = $this->putJson($url, $this->payload())->assertOk()->json('revision');
-        $badRate = base64_decode($this->clip());
-        $badRate = substr_replace($badRate, pack('V', 48000), 24, 4);
+        $badRate = substr_replace(base64_decode($this->clip()), pack('V', 48000), 24, 4);
         foreach (['not audio', base64_encode('RIFF'.str_repeat('a', 4000)), base64_encode($badRate),
             base64_encode(base64_decode($this->clip()).'extra'), str_repeat('A', 128064)] as $badClip) {
-            $payload = $this->payload($revision);
+            $payload = $this->payload();
             $payload['clips'][2] = $badClip;
             $this->putJson($url, $payload)->assertUnprocessable();
         }
-        $this->putJson($url, ['revision' => $revision, 'clips' => [$this->clip()]])->assertUnprocessable();
-        $this->putJson($url, ['revision' => $revision, 'clips' => array_fill_keys(['a', 'b', 'c', 'd'], $this->clip())])->assertUnprocessable();
-        $this->getJson($url)->assertJsonPath('revision', $revision)->assertJsonPath('clips', $this->payload()['clips']);
-        $this->assertDatabaseCount('metronome_voices', 1);
+        $this->putJson($url, ['name' => 'Test', 'clips' => [$this->clip()]])->assertUnprocessable();
+        $this->putJson($url, ['name' => 'Test', 'clips' => array_fill_keys(['a', 'b', 'c', 'd'], $this->clip())])->assertUnprocessable();
+        foreach (['', '   ', str_repeat('a', 61), ['array']] as $name) {
+            $this->putJson($url, $this->payload($name))->assertUnprocessable();
+            $this->patchJson($this->url($first), ['revision' => $first['revision'], 'name' => $name])->assertUnprocessable();
+        }
+        $this->getJson($this->url($first))->assertExactJson($first);
+        $this->assertDatabaseCount('metronome_voice_recordings', 1);
     }
 
-    public function test_writes_require_csrf_and_account_deletion_removes_private_audio()
+    public function test_library_limit_is_enforced_per_account_without_affecting_existing_recordings()
     {
-        $this->actingAs($this->user, 'web');
-        $this->app['env'] = 'review-csrf';
-        $url = route('metronome.voice.store');
-        $this->withSession(['_token' => 'voice-csrf'])->putJson($url, $this->payload())->assertStatus(419);
-        $revision = $this->withHeader('X-CSRF-TOKEN', 'voice-csrf')->putJson($url, $this->payload())->assertOk()->json('revision');
-        $this->withHeader('X-CSRF-TOKEN', 'wrong')->deleteJson($url, ['revision' => $revision])->assertStatus(419);
-        DB::table('users')->where('id', $this->user->id)->delete();
-        $this->assertDatabaseCount('metronome_voices', 0);
+        $first = $this->saved();
+        for ($i = 1; $i < VoiceRecording::MAX_RECORDINGS; $i++) {
+            app(VoiceRecording::class)->save($this->user, 'Voice '.$i, $this->payload()['clips']);
+        }
+        $this->putJson(route('metronome.voice.store'), $this->payload())->assertUnprocessable()->assertJsonValidationErrors('name');
+        $this->getJson($this->url($first))->assertExactJson($first);
+        $this->getJson(route('metronome.voice.show'))->assertJsonCount(20, 'recordings');
+        $this->actingAs($this->other, 'web')->putJson(route('metronome.voice.store'), $this->payload())->assertOk();
+        $this->assertDatabaseCount('metronome_voice_recordings', 21);
     }
 
-    public function test_guest_sign_in_returns_to_the_recorder_and_signed_in_markup_uses_same_host_endpoints()
+    public function test_writes_require_csrf_and_account_deletion_removes_all_private_voices()
+    {
+        $first = $this->saved();
+        $this->saved('Second');
+        $this->app['env'] = 'review-csrf';
+        $this->withSession(['_token' => 'voice-csrf'])->putJson(route('metronome.voice.store'), $this->payload())->assertStatus(419);
+        $this->patchJson($this->url($first), ['revision' => $first['revision'], 'name' => 'No'])->assertStatus(419);
+        $this->deleteJson($this->url($first), ['revision' => $first['revision']])->assertStatus(419);
+        $this->withHeader('X-CSRF-TOKEN', 'voice-csrf')->patchJson($this->url($first), ['revision' => $first['revision'], 'name' => 'Yes'])->assertOk();
+        DB::table('users')->where('id', $this->user->id)->delete();
+        $this->assertDatabaseCount('metronome_voice_recordings', 0);
+    }
+
+    public function test_upgrade_keeps_the_existing_audio_and_deleting_it_removes_the_legacy_copy()
+    {
+        $revision = (string) Str::uuid();
+        $clips = json_encode($this->payload()['clips']);
+        DB::table('metronome_voices')->insert(['user_id' => $this->user->id, 'revision' => $revision, 'clips' => $clips, 'created_at' => now(), 'updated_at' => now()]);
+        require_once database_path('migrations/2026_10_22_210000_create_metronome_voice_recordings_table.php');
+        $migration = new \CreateMetronomeVoiceRecordingsTable;
+        $migration->down();
+        $migration->up();
+        $this->assertDatabaseHas('metronome_voice_recordings', ['id' => $revision, 'user_id' => $this->user->id, 'name' => 'My voice', 'clips' => $clips]);
+        $this->actingAs($this->user, 'web')->getJson(route('metronome.voice.show'))->assertJsonPath('recordings.0.id', $revision);
+        $renamed = $this->patchJson(route('metronome.voice.rename', $revision), ['revision' => $revision, 'name' => 'Original voice'])->assertOk()->json();
+        $this->deleteJson(route('metronome.voice.destroy', $revision), ['revision' => $renamed['revision']])->assertOk();
+        $this->assertDatabaseCount('metronome_voices', 0);
+        $this->assertDatabaseCount('metronome_voice_recordings', 0);
+    }
+
+    public function test_guest_sign_in_returns_to_the_recorder_and_signed_in_markup_uses_shared_fields()
     {
         $start = route('metronome.voice.start');
         $this->get($start)->assertRedirect();
@@ -113,6 +179,7 @@ class MetronomeVoiceTest extends ReviewTestCase
         $this->actingAs($this->user, 'web')->get($start)->assertRedirect(route('metronome.home', ['record-voice' => 1]));
         $this->get(route('metronome.home'))->assertOk()->assertSee('data-voice-recorder', false)
             ->assertSee('data-url="'.route('metronome.voice.show').'"', false)->assertSee('data-csrf=', false)
-            ->assertSee('My voice')->assertSee('Use my voice')->assertDontSee('Sign in to record my voice');
+            ->assertSee('Saved voices')->assertSee('Save and use')->assertSee('metronome_voice_name')
+            ->assertSee('form-control pianolit-input', false)->assertDontSee('Sign in to record my voice');
     }
 }

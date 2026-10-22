@@ -1,18 +1,30 @@
 <section class="voice-recorder mt-3" @if($preview ?? false) data-ds-preview @else data-voice-recorder data-url="{{ route('metronome.voice.show') }}" data-csrf="{{ csrf_token() }}" data-owner="{{ auth('web')->id() }}" @endif aria-label="Your counting voice">
     <div data-voice-summary>
         <p class="small text-muted mb-2" data-voice-summary-text>Count in your own voice.</p>
+        <div data-voice-library @unless($preview ?? false) hidden @endunless>
+            @select(['bag' => 'default', 'id' => 'metronome-voice-choice', 'name' => 'metronome_voice_choice', 'label' => 'Saved voices', 'grid' => 'mb-2', 'choices' => ($preview ?? false) ? ['sample' => 'My voice', 'soft' => 'Soft counting'] : [], 'value' => 'sample', 'required' => false])
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <button type="button" class="btn btn-secondary" data-voice-listen>@icon('play')Listen</button>
+                <button type="button" class="btn btn-secondary" data-voice-rename>Rename</button>
+                <button type="button" class="btn btn-secondary" data-voice-delete>Delete</button>
+            </div>
+            <div data-voice-rename-panel hidden>
+                @input(['bag' => 'default', 'id' => 'metronome-voice-rename', 'name' => 'metronome_voice_rename', 'label' => 'Recording name', 'grid' => 'mb-2', 'limit' => 60, 'required' => false, 'autocomplete' => 'off'])
+                <div class="d-flex gap-2 mb-3">
+                    <button type="button" class="btn btn-secondary" data-voice-rename-cancel>Cancel</button>
+                    <button type="button" class="btn btn-primary" data-voice-rename-save>Save name</button>
+                </div>
+            </div>
+        </div>
         <div class="d-flex flex-wrap gap-2">
             <button type="button" class="btn btn-secondary" data-voice-start @unless($preview ?? false) disabled @endunless>@icon('mic')<span data-voice-start-label>Record my voice</span></button>
-            <button type="button" class="btn btn-secondary" data-voice-listen hidden>@icon('play')Listen</button>
-            <button type="button" class="btn btn-secondary" data-voice-delete hidden>Delete</button>
         </div>
     </div>
     <div data-voice-panel hidden>
         <p class="small text-muted text-center mb-2" data-voice-step role="status" aria-live="polite"></p>
-        <div class="voice-recorder__number text-center" data-voice-number aria-hidden="true">1</div>
-        <h2 class="h4 text-center mb-3" data-voice-prompt aria-live="polite" aria-atomic="true">Say “one”</h2>
+        @include('components.voice-recorder-cue')
         <div class="progress mb-4" data-voice-meter role="progressbar" aria-label="Microphone level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div class="progress-bar bg-danger" data-voice-level></div>
+            <div class="progress-bar bg-success" data-voice-level></div>
         </div>
         <div data-voice-review hidden>
             <div class="row g-2 mb-3">
@@ -24,15 +36,16 @@
                 <button type="button" class="btn btn-secondary" data-voice-preview-all>@icon('play')Listen to all</button>
                 <button type="button" class="btn btn-secondary" data-voice-redo>Redo 1</button>
             </div>
+            @input(['bag' => 'default', 'id' => 'metronome-voice-name', 'name' => 'metronome_voice_name', 'label' => 'Recording name', 'placeholder' => 'e.g. Calm counting', 'limit' => 60, 'grid' => 'mb-3', 'required' => false, 'autocomplete' => 'off'])
         </div>
         <div class="d-flex gap-2">
             <button type="button" class="btn btn-secondary flex-fill" data-voice-cancel>Cancel</button>
             <button type="button" class="btn btn-primary flex-fill" data-voice-retry hidden>Try again</button>
-            <button type="button" class="btn btn-primary flex-fill" data-voice-save hidden>Use my voice</button>
+            <button type="button" class="btn btn-primary flex-fill" data-voice-save hidden>Save and use</button>
         </div>
     </div>
     <div class="mt-3" data-voice-delete-confirm hidden>
-        <p class="mb-2">Delete your recording?</p>
+        <p class="mb-2" data-voice-delete-label>Delete this recording?</p>
         <div class="d-flex gap-2">
             <button type="button" class="btn btn-secondary" data-voice-keep>Keep it</button>
             <button type="button" class="btn btn-danger" data-voice-confirm-delete>Delete recording</button>

@@ -1,0 +1,42 @@
+id: shared_design
+status: draft
+source_of_truth:
+  documentation: docs/DESIGN_TOKENS.md
+  tokens: resources/sass/shared/_tokens.scss
+  discover_cards: resources/sass/components/_cards.scss
+  visual_reference: Settings → Design System and current mobile-width Discover renders
+intent: Carry PianoLIT's visual identity and content hierarchy into native controls.
+colors:
+  background: {value: "#f8f9fa", web_token: --color-surface-subtle}
+  card: {value: "#ffffff", web_token: --color-surface}
+  primary: {value: "#0055fe", web_token: --color-primary}
+  text: {value: "#212529", web_token: --color-text}
+  muted_text: {value: "#6c757d", web_token: --color-text-muted}
+  border: {value: "#dee2e6", web_token: --color-border}
+  card_border: {value: "#e6eaf0", web_token: --color-dropdown-border}
+web_geometry_reference:
+  units: CSS pixels at a 16px root; native point sizes require visual review, not literal copying.
+  compact_card_radius: 12
+  compact_card_padding: 14
+  rail_gap: 16
+  recent_artwork_square: 72
+  compact_artwork_square: 80
+  latest_artwork_aspect_ratio: 2.15
+  section_heading: {size: 20, weight: 600, family: Poppins}
+  body: {size: 16, family: system}
+  secondary_text: {size: 14, family: system}
+  spacing_scale: [4, 8, 16, 24, 48]
+native_rules:
+  - Reuse shared native colors, typography, cards and controls rather than duplicate styles per screen.
+  - Keep the existing UIKit/SwiftUI architecture; this handoff does not request a framework rewrite.
+  - Use Dynamic Type, VoiceOver labels, safe areas and native navigation/sheets.
+  - Preserve readable titles with large text; adapt card height/width instead of shrinking text to fit.
+  - Use text and accessible labels alongside difficulty colors and media icons.
+  - Keep piece cards white, including inside pastel recommendation panels.
+  - Do not import public-site headers, footer, breadcrumbs, desktop sidebars or web membership confirmations.
+  - Respect Reduce Motion and do not add autoplay or automatic rail movement to Discover.
+  - Show only icons for media actually available; availability does not grant playback access.
+pending_native_choices:
+  - Confirm existing bundled fonts before choosing Poppins or a native heading equivalent.
+  - Review phone and iPad geometry against the actual simulator and current web references.
+  - Specify dark-mode behavior explicitly; the above values describe the current light web appearance only.

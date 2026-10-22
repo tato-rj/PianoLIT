@@ -1,0 +1,62 @@
+schema_version: 1
+revision: "2026-10-22.2"
+updated_on: "2026-10-22"
+title: PianoLIT iOS v2 handoff
+status: draft
+purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
+api_major_version: 2
+runtime:
+  implemented: false
+  staging_base_url: null
+  production_base_url: null
+  existing_api: unchanged
+entrypoints:
+  instructions: README.md
+  foundations: foundations.yaml
+  native_baseline: ios-baseline.yaml
+  contract: openapi.yaml
+  design: design.yaml
+  references: references.yaml
+files:
+  - path: README.md
+  - path: foundations.yaml
+  - path: ios-baseline.yaml
+  - path: openapi.yaml
+  - path: design.yaml
+  - path: references.yaml
+  - path: screens/discover.yaml
+features:
+  - id: foundations
+    document: foundations.yaml
+    status: draft
+    backend_status: not_started
+    ios_status: not_started
+    depends_on: []
+  - id: discover
+    document: screens/discover.yaml
+    status: draft
+    backend_status: not_started
+    ios_status: not_started
+    depends_on: [foundations]
+consumer_rules:
+  - Read README.md and foundations.yaml before any screen specification.
+  - Pin one revision per implementation task; do not mix files from different revisions.
+  - Draft permits planning and local mockups only; it does not identify a callable API.
+  - Implement against staging only when the feature is ready_for_ios and staging_base_url is populated.
+  - Production use requires feature status released and an explicit production_base_url.
+  - Open each available reference image; a YAML path alone is not a visual reference.
+  - Preserve the native app architecture and existing API until each replacement flow is verified.
+  - Record revision, feature IDs, iOS commit, build and verification in the iOS repository.
+  - Report ambiguities or missing dependencies instead of inventing endpoint or access behavior.
+changelog:
+  - revision: "2026-10-22.2"
+    changes:
+      - Recorded the developer's static UIKit/iOS 17.6/email-password baseline with its verification limits.
+      - Arthur confirmed sign-in remains required for the initial native v2 release.
+      - Identified positional Free Pick handling and legacy detail/search dependencies in Discover.
+      - No runtime implementation or deployment; retained the previous immutable handoff revision.
+  - revision: "2026-10-22.1"
+    changes:
+      - Established the handoff format, shared API proposals and compatibility boundaries.
+      - Inventoried Discover against the current web implementation.
+      - No runtime endpoints, migrations, Swift changes or deployment in this revision.

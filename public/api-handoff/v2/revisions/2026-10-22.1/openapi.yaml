@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: PianoLIT mobile API v2 — foundation draft
+  version: 0.1.0
+  description: >-
+    Planning scaffold only. No v2 operations are implemented or available.
+    Existing /api routes are outside this document and remain unchanged.
+    Add operations and fixtures when each feature contract is specified.
+servers:
+  - url: https://api-v2.invalid/api/v2
+    description: Non-routable documentation placeholder; use no live server until manifest readiness is updated.
+paths: {}
+x-handoff:
+  revision: "2026-10-22.1"
+  status: draft
+  implemented: false
+  next_operation: GET /api/v2/discover
+  specification_reference: https://spec.openapis.org/oas/v3.0.3.html
+components:
+  securitySchemes:
+    MobileBearer:
+      type: http
+      scheme: bearer
+      description: >-
+        Proposed independent native credential. Credential lifecycle is pending.
+        Never interpret legacy user_id as this credential. Public operations will
+        explicitly declare optional authentication; an invalid supplied token is 401.
+  schemas:
+    Identifier:
+      type: string
+      pattern: '^[1-9][0-9]*$'
+      example: "123"
+      description: Opaque decimal string preserving the existing database identity.
+    UtcInstant:
+      type: string
+      format: date-time
+      pattern: 'Z$'
+      example: "2026-10-22T12:00:00Z"
+    PageInfo:
+      type: object
+      required: [next_cursor, has_more]
+      properties:
+        next_cursor:
+          type: string
+          nullable: true
+          description: Opaque cursor; null exactly when has_more is false.
+        has_more:
+          type: boolean
+    ResponseMeta:
+      type: object
+      required: [request_id]
+      properties:
+        request_id:
+          type: string
+          description: Non-secret server-generated correlation identifier.
+        page:
+          $ref: '#/components/schemas/PageInfo'
+    ErrorEnvelope:
+      type: object
+      required: [error, meta]
+      properties:
+        error:
+          type: object
+          required: [code, message, fields]
+          properties:
+            code:
+              type: string
+              example: invalid_request
+            message:
+              type: string
+              example: Please check the highlighted fields.
+            fields:
+              type: object
+              description: Empty object for non-validation errors; values are arrays of safe display messages.
+              additionalProperties:
+                type: array
+                items: {type: string}
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema: {type: integer, minimum: 1, maximum: 50, default: 20}
+    Cursor:
+      name: cursor
+      in: query
+      schema: {type: string, minLength: 1}
+  responses:
+    Unauthorized:
+      description: Missing, malformed, expired or revoked credential.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+    ValidationError:
+      description: Invalid request.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+    RateLimited:
+      description: Retry after the specified number of seconds.
+      headers:
+        Retry-After:
+          schema: {type: integer, minimum: 1}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}

@@ -1,0 +1,71 @@
+schema_version: 1
+revision: 2026-10-22.1
+updated_on: '2026-10-22'
+title: PianoLIT iOS v2 handoff
+status: draft
+purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
+api_major_version: 2
+runtime:
+  implemented: false
+  staging_base_url: null
+  production_base_url: null
+  existing_api: unchanged
+entrypoints:
+  instructions: README.md
+  foundations: foundations.yaml
+  contract: openapi.yaml
+  design: design.yaml
+  references: references.yaml
+files:
+- path: README.md
+  bytes: 7366
+  sha256: 393e49ae61faecd5a9c86a4db82476fa7550e84114aad3d214835477dd590312
+- path: foundations.yaml
+  bytes: 10690
+  sha256: dbac974417bff39c0f408a5f445c4cf8493da161a561eb462b9bdc93df6a0742
+- path: openapi.yaml
+  bytes: 3440
+  sha256: 3c231d1d22538d1b486937afacd68877bc55c95ab9b1cbd862950344fabd2cde
+- path: design.yaml
+  bytes: 2423
+  sha256: af366db8ed6385c673532b3e7d140424bc4662bc71ae4eff97501c5be67977c3
+- path: references.yaml
+  bytes: 1743
+  sha256: c2baac61ce5017fabf5aef65f9cded547f412c2144608d768c19c9bacde18c44
+- path: screens/discover.yaml
+  bytes: 8542
+  sha256: 8a5d181de7c5d78824ed624ddf9be375de0053bbc0bc17861df2dbe636787a3f
+features:
+- id: foundations
+  document: foundations.yaml
+  status: draft
+  backend_status: not_started
+  ios_status: not_started
+  depends_on: []
+- id: discover
+  document: screens/discover.yaml
+  status: draft
+  backend_status: not_started
+  ios_status: not_started
+  depends_on:
+  - foundations
+consumer_rules:
+- Read README.md and foundations.yaml before any screen specification.
+- Pin one revision per implementation task; do not mix files from different revisions.
+- Draft permits planning and local mockups only; it does not identify a callable API.
+- Implement against staging only when the feature is ready_for_ios and staging_base_url
+  is populated.
+- Production use requires feature status released and an explicit production_base_url.
+- Open each available reference image; a YAML path alone is not a visual reference.
+- Preserve the native app architecture and existing API until each replacement flow
+  is verified.
+- Record revision, feature IDs, iOS commit, build and verification in the iOS repository.
+- Report ambiguities or missing dependencies instead of inventing endpoint or access
+  behavior.
+changelog:
+- revision: 2026-10-22.1
+  changes:
+  - Established the handoff format, shared API proposals and compatibility boundaries.
+  - Inventoried Discover against the current web implementation.
+  - No runtime endpoints, migrations, Swift changes or deployment in this revision.
+base_path: revisions/2026-10-22.1/

@@ -1,10 +1,119 @@
-// Common controls retain their shared finishes; only the live prompt and level
-// visualization have component-specific geometry.
+// State cues use the shared status colors; controls retain their shared finish.
+.voice-recorder__cue {
+    --cue-color: var(--color-warning);
+    --cue-text: var(--bs-warning-text-emphasis);
+    --cue-surface: var(--bs-warning-bg-subtle);
+    color: var(--cue-text);
+
+    [data-voice-prompt] { color: inherit; }
+
+    &[data-state='speaking'], &[data-state='success'] {
+        --cue-color: var(--color-success);
+        --cue-text: var(--bs-success-text-emphasis);
+        --cue-surface: var(--bs-success-bg-subtle);
+    }
+
+    &[data-state='error'] {
+        --cue-color: var(--color-danger);
+        --cue-text: var(--bs-danger-text-emphasis);
+        --cue-surface: var(--bs-danger-bg-subtle);
+    }
+
+    &[data-state='review'], &[data-state='idle'] {
+        color: var(--color-text);
+
+        .voice-recorder__label { display: none; }
+    }
+
+    @each $state in waiting, speaking, success, error {
+        &[data-state='#{$state}'] [data-cue-icon='#{$state}'] { display: inline-flex; }
+    }
+
+    &[data-state='waiting'] .voice-recorder__visual::before {
+        animation: voice-cue-ready 1.5s ease-in-out infinite;
+    }
+
+    &[data-state='speaking'] .voice-recorder__visual::before {
+        animation: voice-cue-listening 1.2s ease-out infinite;
+    }
+
+    &[data-state='success'] .voice-recorder__visual {
+        animation: voice-cue-recorded 280ms ease-out;
+    }
+
+    &[data-state='error'] .voice-recorder__visual {
+        animation: voice-cue-retry 320ms ease-out;
+    }
+}
+
+.voice-recorder__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: var(--cue-surface);
+    color: var(--cue-text);
+    font-size: 0.875rem;
+
+    .app-icon { width: 1rem; height: 1rem; }
+}
+
+.voice-recorder__state-icon { display: none; }
+
+.voice-recorder__visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: min(10rem, 100%);
+    aspect-ratio: 1;
+    border: 3px solid var(--cue-color);
+    border-radius: 50%;
+    background: var(--cue-surface);
+    transition: border-color 180ms ease, background-color 180ms ease;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -9px;
+        border: 2px solid var(--cue-color);
+        border-radius: inherit;
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
 .voice-recorder__number {
-    font-size: clamp(5rem, 20vw, 8rem);
+    font-size: clamp(4rem, 16vw, 6rem);
     font-weight: 300;
     line-height: 1.2;
     font-variant-numeric: tabular-nums;
+}
+
+@keyframes voice-cue-ready {
+    0%, 100% { transform: scale(0.97); opacity: 0.2; }
+    50% { transform: scale(1.02); opacity: 0.55; }
+}
+
+@keyframes voice-cue-listening {
+    from { transform: scale(0.98); opacity: 0.65; }
+    to { transform: scale(1.14); opacity: 0; }
+}
+
+@keyframes voice-cue-recorded {
+    50% { transform: scale(1.05); }
+}
+
+@keyframes voice-cue-retry {
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .voice-recorder__cue .voice-recorder__visual,
+    .voice-recorder__cue .voice-recorder__visual::before {
+        animation: none;
+        transition: none;
+    }
 }
 
 .voice-recorder [data-voice-level] {

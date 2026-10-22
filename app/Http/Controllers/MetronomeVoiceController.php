@@ -20,7 +20,7 @@ class MetronomeVoiceController extends Controller
     public function store(Request $request, VoiceRecording $recording)
     {
         $data = $request->validate([
-            'revision' => 'present|nullable|uuid',
+            'name' => 'required|string|max:60',
             'clips' => 'required|array|size:4',
             'clips.*' => 'required|string|max:128060',
         ]);
@@ -28,15 +28,28 @@ class MetronomeVoiceController extends Controller
             throw \Illuminate\Validation\ValidationException::withMessages(['clips' => 'Record all four numbers.']);
         }
 
-        return response()->json($recording->save(auth('web')->user(), $data['revision'], $data['clips']))
+        return response()->json($recording->save(auth('web')->user(), $data['name'], $data['clips']))
             ->header('Cache-Control', 'private, no-store');
     }
 
-    public function destroy(Request $request, VoiceRecording $recording)
+    public function recording(string $voice, VoiceRecording $recording)
+    {
+        return response()->json($recording->find(auth('web')->user(), $voice))->header('Cache-Control', 'private, no-store');
+    }
+
+    public function rename(Request $request, string $voice, VoiceRecording $recording)
+    {
+        $data = $request->validate(['revision' => 'required|uuid', 'name' => 'required|string|max:60']);
+
+        return response()->json($recording->rename(auth('web')->user(), $voice, $data['revision'], $data['name']))
+            ->header('Cache-Control', 'private, no-store');
+    }
+
+    public function destroy(Request $request, string $voice, VoiceRecording $recording)
     {
         $data = $request->validate(['revision' => 'required|uuid']);
-        $recording->delete(auth('web')->user(), $data['revision']);
+        $recording->delete(auth('web')->user(), $voice, $data['revision']);
 
-        return response()->json(['revision' => null, 'clips' => []])->header('Cache-Control', 'private, no-store');
+        return response()->json(['deleted' => $voice])->header('Cache-Control', 'private, no-store');
     }
 }

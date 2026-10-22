@@ -4,6 +4,13 @@
     @component('admin.pages.settings.sample', ['label' => 'Voice recorder', 'usage' => 'components.voice-recorder', 'properties' => 'font-size,color,padding'])
       @include('components.voice-recorder', ['preview' => true])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Recording cues', 'usage' => 'components.voice-recorder-cue', 'properties' => 'color,background-color,border-radius'])
+      <div class="row g-4" data-ds-preview>
+        @foreach(['waiting', 'speaking', 'success', 'error'] as $cuePreviewState)
+          <div class="col-12 col-md-6">@include('components.voice-recorder-cue', ['state' => $cuePreviewState])</div>
+        @endforeach
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Full-screen project watermark', 'usage' => 'components.project-watermark', 'properties' => 'width,height,padding,opacity'])
       <div class="position-relative bg-primary rounded p-5">
         @include('components.project-watermark', ['preview' => true])

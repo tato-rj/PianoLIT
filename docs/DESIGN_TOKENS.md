@@ -37,10 +37,15 @@ Website & web app download modal includes `icon-white.svg`. Regenerating brand
 icons also regenerates this derivative, without changing the two icon masters.
 
 `components.voice-recorder` supplies the standalone metronome's guided four-count
-recorder and the Components specimen. Buttons, selects and the live level meter
-reuse shared Bootstrap controls; only the large number has dedicated display
-geometry. Keep the concise recording prompts, per-number replay/redo and explicit
-Use my voice action on this component. The specimen makes no microphone or account
+recorder, named voice library and the Components specimen. Buttons, selects and the live level meter
+reuse shared Bootstrap controls. `components.voice-recorder-cue` supplies the
+large number, status badge and animated ring using shared status colors: yellow
+Wait with a countdown, green Speak now with a listening pulse, a green Recorded
+check and red Try again with a brief shake. Text/icons reinforce every color;
+reduced motion removes animations and transitions. The Components gallery shows
+all four states on this same cue component. Keep the concise recording prompts, per-number replay/redo and explicit
+Save and use action on this component. Reuse `@input` for recording names and
+renaming, and `@select` for Saved voices. The specimen makes no microphone or account
 requests. See `METRONOME.md` for capture, private storage and deployment details.
 
 Run `npm run brand:icons` with ImageMagick 7 installed after changing either

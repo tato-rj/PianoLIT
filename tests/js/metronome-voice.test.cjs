@@ -167,14 +167,15 @@ test('recording cancellation settles the capture and releases the microphone', a
 function recorderHarness({ saved = false, preferred = false } = {}) {
     const nodes = new Map();
     const node = name => {
-        if (!nodes.has(name)) nodes.set(name, { hidden: false, disabled: false, textContent: '', style: {}, listeners: {},
+        if (!nodes.has(name)) nodes.set(name, { hidden: false, disabled: false, dataset: {}, textContent: '', value: name === 'name-input' ? 'Calm counting' : '', style: {}, listeners: {},
+            replaceChildren(...children) { this.children = children; },
             addEventListener(event, callback) { this.listeners[event] = callback; }, setAttribute() {}, focus() {} });
         return nodes.get(name);
     };
     const requests = [];
     const sounds = [];
     const storage = new Map([['metronome.voice.10.v1', preferred ? '1' : '0']]);
-    const root = { dataset: { url: '/voice', owner: 10, csrf: 'csrf' }, querySelector: selector => node(selector.slice(12, -1)), querySelectorAll: () => [] };
+    const root = { dataset: { url: '/voice', owner: 10, csrf: 'csrf' }, querySelector: selector => selector.startsWith('[name=') ? node(({ '[name="metronome_voice_choice"]': 'choice-input', '[name="metronome_voice_name"]': 'name-input', '[name="metronome_voice_rename"]': 'rename-input' })[selector]) : node(selector.slice(12, -1)), querySelectorAll: () => [] };
     const dialog = { dataset: {} };
     const option = {};
     const soundInput = { value: 'click', querySelector: () => option };
@@ -182,6 +183,7 @@ function recorderHarness({ saved = false, preferred = false } = {}) {
     const audioContext = { state: 'running', resume: async () => {}, decodeAudioData: async () => ({ duration: 0.2 }),
         createBufferSource: () => ({ connect() {}, disconnect() {}, start() {}, stop() {} }), currentTime: 0 };
     const scope = vm.createContext({ console, DOMException, Uint8Array, ArrayBuffer, atob, btoa,
+        Option: function (text, value) { this.text = text; this.value = value; },
         voiceBase64: context.api.voiceBase64, voiceBytes: context.api.voiceBytes,
         localStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) },
         window: { AudioContext: function () { return audioContext; }, MediaRecorder: {}, isSecureContext: true },
@@ -192,18 +194,23 @@ function recorderHarness({ saved = false, preferred = false } = {}) {
     vm.runInContext(read('voice-recorder') + '\nglobalThis.VoiceRecorder = VoiceRecorder;', scope);
     const recorder = new scope.VoiceRecorder({ root, dialog, clock, soundInput, getBeats: () => 3,
         useSound(sound) { soundInput.value = sound; sounds.push(sound); } });
-    const data = () => ({ revision: saved ? 'old' : null, clips: saved ? ['YQ==', 'YQ==', 'YQ==', 'YQ=='] : [] });
+    const detail = (id = 'first', name = 'Calm counting') => ({ id, name, revision: 'old', clips: ['YQ==', 'YQ==', 'YQ==', 'YQ=='] });
+    const data = () => ({ recordings: saved ? [{ id: 'first', name: 'Calm counting', revision: 'old' }] : [], limit: 20 });
     const resolve = (request, body, status = 200) => request.resolve({ ok: status === 200, status, json: async () => body });
-    return { recorder, nodes, node, requests, sounds, storage, resolve, data, clock, dialog, soundInput, option };
+    return { recorder, nodes, node, requests, sounds, storage, resolve, data, detail, clock, dialog, soundInput, option };
 }
-const settle = async () => { for (let i = 0; i < 15; i++) await Promise.resolve(); };
+const settle = async () => { for (let i = 0; i < 25; i++) await Promise.resolve(); };
+const load = async page => {
+    page.resolve(page.requests[0], page.data());
+    await settle();
+    if (page.requests[1]) { page.resolve(page.requests[1], page.detail()); await settle(); }
+};
 
 test('a late voice load cannot override a sound the user just chose', async () => {
     const page = recorderHarness({ saved: true, preferred: true });
     page.recorder.remember('woodblock');
     page.soundInput.value = 'woodblock';
-    page.resolve(page.requests[0], page.data());
-    await settle();
+    await load(page);
     assert.equal(page.option.disabled, false);
     assert.equal(page.soundInput.value, 'woodblock');
     assert.equal(page.storage.get('metronome.voice.10.v1'), '0');
@@ -212,8 +219,7 @@ test('a late voice load cannot override a sound the user just chose', async () =
 test('voice preferences are restored only for the current account after its clips load', async () => {
     const page = recorderHarness({ saved: true, preferred: true });
     assert.equal(page.option.disabled, true);
-    page.resolve(page.requests[0], page.data());
-    await settle();
+    await load(page);
     assert.equal(page.soundInput.value, 'my-voice');
     assert.equal(page.clock.buffers.length, 4);
     assert.equal(page.requests[0].options.credentials, 'same-origin');
@@ -222,8 +228,7 @@ test('voice preferences are restored only for the current account after its clip
 
 test('failed saves keep all draft clips for retry; a successful save selects the voice', async () => {
     const page = recorderHarness();
-    page.resolve(page.requests[0], page.data());
-    await settle();
+    await load(page);
     page.recorder.draft = [1, 2, 3, 4].map(() => new Uint8Array([1, 2]).buffer);
     page.recorder.draftBuffers = [1, 2, 3, 4].map(() => ({ duration: 0.2 }));
     const saving = page.recorder.save();
@@ -236,7 +241,7 @@ test('failed saves keep all draft clips for retry; a successful save selects the
     const retry = page.recorder.save();
     await settle();
     assert.equal(page.requests[2].options.headers['X-CSRF-TOKEN'], 'csrf');
-    page.resolve(page.requests[2], { revision: 'new', clips: ['a', 'b', 'c', 'd'] });
+    page.resolve(page.requests[2], { id: 'new-id', name: 'Calm counting', revision: 'new', clips: ['a', 'b', 'c', 'd'] });
     await retry;
     assert.equal(page.recorder.revision, 'new');
     assert.equal(page.soundInput.value, 'my-voice');
@@ -245,13 +250,12 @@ test('failed saves keep all draft clips for retry; a successful save selects the
 
 test('closing during a save cannot reopen the recorder or play a late preview', async () => {
     const page = recorderHarness();
-    page.resolve(page.requests[0], page.data());
-    await settle();
+    await load(page);
     page.recorder.draft = [1, 2, 3, 4].map(() => new Uint8Array([1]).buffer);
     const saving = page.recorder.save();
     await settle();
     page.recorder.cancel();
-    page.resolve(page.requests[1], { revision: 'new', clips: ['a', 'b', 'c', 'd'] });
+    page.resolve(page.requests[1], { id: 'new-id', name: 'Calm counting', revision: 'new', clips: ['a', 'b', 'c', 'd'] });
     await saving;
     assert.equal(page.recorder.ready, false);
     assert.equal(page.soundInput.value, 'click');
@@ -260,10 +264,9 @@ test('closing during a save cannot reopen the recorder or play a late preview', 
 
 test('an expired session disables private playback and offers sign-in', async () => {
     const page = recorderHarness({ saved: true, preferred: true });
-    page.resolve(page.requests[0], page.data());
-    await settle();
+    await load(page);
     const reload = page.recorder.load();
-    page.resolve(page.requests[1], {}, 401);
+    page.resolve(page.requests[2], {}, 401);
     await reload;
     assert.equal(page.soundInput.value, 'click');
     assert.equal(page.clock.buffers, null);
@@ -273,20 +276,18 @@ test('an expired session disables private playback and offers sign-in', async ()
 
 test('microphone denial offers a clear retry without replacing a saved voice', async () => {
     const page = recorderHarness({ saved: true });
-    page.resolve(page.requests[0], page.data());
-    await settle();
+    await load(page);
     page.recorder.capture.open = async () => { throw new DOMException('Denied', 'NotAllowedError'); };
     await page.recorder.record();
     assert.match(page.node('status').textContent, /Allow the microphone/);
     assert.equal(page.node('retry').hidden, false);
     assert.equal(page.recorder.saved.length, 4);
-    assert.equal(page.requests.length, 1);
+    assert.equal(page.requests.length, 2);
 });
 
 test('a retry resumes at the missed count and keeps the earlier numbers', async () => {
     const page = recorderHarness();
-    page.resolve(page.requests[0], page.data());
-    await settle();
+    await load(page);
     let recordings = 0;
     page.recorder.capture.open = async () => {};
     page.recorder.capture.record = async () => {
@@ -301,4 +302,214 @@ test('a retry resumes at the missed count and keeps the earlier numbers', async 
     assert.deepEqual(Array.from(page.recorder.draft, bytes => new Uint8Array(bytes)[0]), [1, 2, 4, 5]);
     assert.equal(page.node('save').hidden, false);
     assert.equal(page.node('review').hidden, false);
+});
+
+test('saving another named recording keeps the first and remembers the new selection', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    page.recorder.draft = [1, 2, 3, 4].map(() => Uint8Array.of(2).buffer);
+    page.recorder.draftBuffers = [1, 2, 3, 4].map(() => ({ duration: 0.3 }));
+    page.node('name-input').value = '  Gentle counting  ';
+    const saving = page.recorder.save();
+    await settle();
+    assert.equal(JSON.parse(page.requests[2].options.body).name, 'Gentle counting');
+    assert.equal(JSON.parse(page.requests[2].options.body).revision, undefined);
+    page.resolve(page.requests[2], { ...page.detail('second', 'Gentle counting'), revision: 'second-revision' });
+    await saving;
+    assert.deepEqual(Array.from(page.recorder.library, voice => voice.name), ['Calm counting', 'Gentle counting']);
+    assert.equal(page.node('choice-input').value, 'second');
+    assert.equal(page.storage.get('metronome.voice.10.selected.v1'), 'second');
+    assert.equal(page.soundInput.value, 'my-voice');
+    assert.equal(page.clock.buffers[0].duration, 0.3);
+});
+
+test('the selected named voice restores on a new visit without fetching every recording', async () => {
+    const page = recorderHarness({ preferred: true });
+    page.recorder.preferredId = 'second';
+    page.resolve(page.requests[0], { recordings: [
+        { id: 'first', name: 'First', revision: 'first-rev' }, { id: 'second', name: 'Second', revision: 'second-rev' },
+    ], limit: 20 });
+    await settle();
+    assert.equal(page.requests.length, 2);
+    assert.equal(page.requests[1].url, '/voice/second');
+    page.resolve(page.requests[1], page.detail('second', 'Second'));
+    await settle();
+    assert.equal(page.recorder.activeId, 'second');
+    assert.equal(page.soundInput.value, 'my-voice');
+});
+
+test('switching voices ignores an earlier response and a later instrument choice', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    page.recorder.library.push({ id: 'second', name: 'Second', revision: 'second-rev' });
+    const older = page.recorder.choose('first');
+    const latest = page.recorder.choose('second');
+    page.resolve(page.requests[3], page.detail('second', 'Second'));
+    await latest;
+    page.resolve(page.requests[2], page.detail('first'));
+    await older;
+    assert.equal(page.recorder.activeId, 'second');
+    assert.equal(page.node('choice-input').value, 'second');
+    const pending = page.recorder.choose('first');
+    page.soundInput.value = 'cowbell';
+    page.recorder.remember('cowbell');
+    page.resolve(page.requests[4], page.detail());
+    await pending;
+    assert.equal(page.soundInput.value, 'cowbell');
+});
+
+test('renaming changes only the selected name and uses its optimistic revision', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    const buffers = page.clock.buffers;
+    page.node('rename-input').value = 'Warm voice';
+    const renaming = page.recorder.rename();
+    assert.equal(page.requests[2].url, '/voice/first');
+    assert.equal(page.requests[2].options.method, 'PATCH');
+    assert.equal(JSON.parse(page.requests[2].options.body).revision, 'old');
+    page.resolve(page.requests[2], { id: 'first', name: 'Warm voice', revision: 'new' });
+    await renaming;
+    assert.equal(page.recorder.library[0].name, 'Warm voice');
+    assert.equal(page.recorder.revision, 'new');
+    assert.equal(page.clock.buffers, buffers);
+    assert.equal(page.node('rename-panel').hidden, true);
+});
+
+test('blank names and stale rename responses preserve the library', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    page.node('rename-input').value = '   ';
+    await page.recorder.rename();
+    assert.equal(page.requests.length, 2);
+    assert.match(page.node('status').textContent, /name/);
+    page.node('rename-input').value = 'New name';
+    const renaming = page.recorder.rename();
+    page.resolve(page.requests[2], {}, 409);
+    await renaming;
+    assert.equal(page.recorder.library[0].name, 'Calm counting');
+    assert.equal(page.node('reload').hidden, false);
+    assert.equal(page.node('rename-save').disabled, false);
+});
+
+test('deleting the selected voice keeps other recordings and selects the next one', async () => {
+    const page = recorderHarness({ saved: true, preferred: true });
+    await load(page);
+    page.recorder.library.push({ id: 'second', name: 'Second', revision: 'second-rev' });
+    const deleting = page.recorder.remove();
+    assert.equal(page.requests[2].url, '/voice/first');
+    assert.equal(page.requests[2].options.method, 'DELETE');
+    page.resolve(page.requests[2], { deleted: 'first' });
+    await settle();
+    assert.equal(page.requests[3].url, '/voice/second');
+    page.resolve(page.requests[3], page.detail('second', 'Second'));
+    await deleting;
+    assert.equal(page.recorder.library.length, 1);
+    assert.equal(page.recorder.activeId, 'second');
+    assert.equal(page.soundInput.value, 'my-voice');
+});
+
+test('deleting the last recording restores an instrument and leaves recording available', async () => {
+    const page = recorderHarness({ saved: true, preferred: true });
+    await load(page);
+    const deleting = page.recorder.remove();
+    page.resolve(page.requests[2], { deleted: 'first' });
+    await deleting;
+    assert.equal(page.recorder.library.length, 0);
+    assert.equal(page.option.disabled, true);
+    assert.equal(page.soundInput.value, 'click');
+    assert.equal(page.node('start').disabled, false);
+    assert.equal(page.node('library').hidden, true);
+});
+
+test('closing during a rename cannot show a late success or change the playing voice', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    page.node('rename-input').value = 'New name';
+    const renaming = page.recorder.rename();
+    page.recorder.cancel();
+    page.resolve(page.requests[2], { id: 'first', name: 'New name', revision: 'new' });
+    await renaming;
+    assert.equal(page.recorder.ready, false);
+    assert.equal(page.recorder.library[0].name, 'Calm counting');
+    assert.equal(page.node('rename-panel').hidden, true);
+});
+
+test('server validation errors keep the named draft available for correction', async () => {
+    const page = recorderHarness();
+    await load(page);
+    page.recorder.draft = [1, 2, 3, 4].map(() => Uint8Array.of(2).buffer);
+    page.node('name-input').value = 'Voice';
+    const saving = page.recorder.save();
+    await settle();
+    page.resolve(page.requests[1], { errors: { name: ['You can save up to 20 voices. Delete one to make room.'] } }, 422);
+    await saving;
+    assert.match(page.node('status').textContent, /20 voices/);
+    assert.equal(page.recorder.draft.length, 4);
+    assert.equal(page.node('save').disabled, false);
+});
+
+test('capture starts only after the yellow countdown and each count gets clear success feedback', async () => {
+    const page = recorderHarness();
+    await load(page);
+    const cues = [];
+    const cue = page.recorder.cue.bind(page.recorder);
+    page.recorder.cue = (state, prompt, countdown) => { cues.push([state, countdown]); cue(state, prompt, countdown); };
+    page.recorder.capture.open = async () => {};
+    let recordings = 0;
+    page.recorder.capture.record = async () => {
+        assert.equal(page.node('cue').dataset.state, 'speaking');
+        assert.equal(page.node('meter').hidden, false);
+        assert.equal(page.node('cue-label').textContent, 'Speak now');
+        assert.deepEqual(cues.slice(-4).map(cue => cue[0]), ['waiting', 'waiting', 'waiting', 'speaking']);
+        assert.deepEqual(cues.slice(-4, -1).map(cue => cue[1]), ['Ready in 3', 'Ready in 2', 'Ready in 1']);
+        recordings++;
+        return Uint8Array.of(recordings).buffer;
+    };
+    await page.recorder.record();
+    assert.equal(recordings, 4);
+    assert.equal(cues.filter(cue => cue[0] === 'success').length, 4);
+    assert.equal(page.node('cue').dataset.state, 'review');
+    assert.equal(page.node('visual').hidden, true);
+    assert.equal(page.node('meter').hidden, true);
+});
+
+test('a missed number stays red and retry returns through yellow before recording again', async () => {
+    const page = recorderHarness();
+    await load(page);
+    page.recorder.capture.open = async () => {};
+    page.recorder.capture.record = async () => { throw new Error('I couldn’t hear that number. Try again.'); };
+    await page.recorder.record();
+    assert.equal(page.node('cue').dataset.state, 'error');
+    assert.equal(page.node('cue-label').textContent, 'Try again');
+    assert.equal(page.node('meter').hidden, true);
+    assert.equal(page.node('retry').hidden, false);
+    const cues = [];
+    const cue = page.recorder.cue.bind(page.recorder);
+    page.recorder.cue = (state, ...args) => { cues.push(state); cue(state, ...args); };
+    page.recorder.capture.record = async () => Uint8Array.of(1).buffer;
+    await page.recorder.record({ resume: true });
+    assert.deepEqual(cues.slice(0, 5), ['waiting', 'waiting', 'waiting', 'waiting', 'speaking']);
+    assert.equal(page.node('cue').dataset.state, 'review');
+});
+
+test('canceling the countdown never turns the cue green or starts a late recording', async () => {
+    const page = recorderHarness();
+    await load(page);
+    let release;
+    let captured = false;
+    page.recorder.capture.open = async () => {};
+    page.recorder.delay = async (milliseconds, flow) => {
+        await new Promise(resolve => { release = resolve; });
+        if (flow !== page.recorder.flow) throw new DOMException('Canceled', 'AbortError');
+    };
+    page.recorder.capture.record = async () => { captured = true; };
+    const recording = page.recorder.record();
+    await settle();
+    assert.equal(page.node('cue').dataset.state, 'waiting');
+    page.recorder.cancel();
+    release();
+    await recording;
+    assert.equal(captured, false);
+    assert.equal(page.node('cue').dataset.state, 'idle');
+    assert.equal(page.node('panel').hidden, true);
 });

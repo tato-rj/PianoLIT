@@ -1,0 +1,158 @@
+id: foundations
+status: draft
+scope: Plan the independent v2 boundary before implementing Discover.
+evidence_date: "2026-10-22"
+source_evidence:
+  - app/Providers/RouteServiceProvider.php
+  - app/Http/Kernel.php
+  - app/Http/Middleware/AttemptLoginAppUser.php
+  - app/Http/Controllers/Auth/Api/LoginController.php
+  - app/Api/Api.php
+  - app/Api/Factory.php
+  - docs/api/activity-v1.yaml
+
+fixed_constraints:
+  - Existing /api routes, names, HTTP behavior, response shapes and media URLs remain unchanged.
+  - Register v2 separately; do not add mandatory authentication to the legacy middleware group.
+  - Use explicit v2 response resources; never change shared model appends/hidden fields to shape v2 JSON.
+  - Never authenticate an account from a submitted user_id, analytics identifier or device identifier.
+  - Existing installed clients continue using the existing API throughout this project.
+  - Do not automatically import the web Access Limits matrix into native iOS.
+  - Preserve App Store billing, existing memberships and the unconditional super-user override.
+  - Preserve current original media delivery, including public PDFs; private delivery is a separate project.
+  - Do not send emails or change billing as part of migration, login or verification.
+  - Keep Journey records and legacy behavior; exclude Journey only from future v2 collection responses.
+  - Reuse ExcludedAccounts for new activity/history paths without publishing account identifiers here.
+
+proposed_decisions:
+  routing:
+    prefix: /api/v2
+    route_names: api.v2.*
+    route_file: routes/api-v2.php
+    controller_namespace: App\Http\Controllers\Api\V2
+    resource_namespace: App\Http\Resources\Api\V2
+    middleware_group: api.v2
+    registration: Register explicitly outside the existing routes/api directory and legacy api group.
+    identity_boundary: Do not run AttemptLoginAppUser or reuse legacy request-derived auth state.
+    errors: Use v2-only JSON rendering; never change the global legacy error contract.
+    cache_namespace: api.v2.*
+  identity:
+    transport: Authorization bearer credential over HTTPS
+    recommended_credential: Opaque random per-device token with only a hash stored server-side.
+    status: Credential lifecycle and Laravel-compatible implementation require a separate implementation decision.
+    guest_requests: Explicitly public reads may omit Authorization.
+    invalid_credentials: A supplied malformed, expired or revoked credential returns 401; never silently becomes a guest.
+    ownership: Resolve account from the verified v2 credential; account IDs in requests never establish ownership.
+    account_fields: Account-owned endpoints reject submitted user_id rather than use it as an override.
+    legacy_migration: Require fresh credential proof; an old app's locally stored account JSON is not a login credential.
+    provider_login: Verify provider credentials for the native app audience; do not reuse browser handoff tokens.
+    lifecycle_requirements:
+      - Define expiry, rotation, logout, revocation, password reset and account-deletion behavior.
+      - If refresh tokens are adopted, define rotation, replay handling and concurrent refresh behavior before implementation.
+      - Scope credentials per installation/session and support revocation without logging out other devices unintentionally.
+      - Store credentials in the iOS Keychain and exclude them from logs and handoff files.
+      - Rate-limit credential issuance and return consistent invalid-credential errors.
+    implementation_constraint: Do not install a latest auth package blindly; the backend currently uses Laravel 8.
+  serialization:
+    envelope: Successful JSON responses use data and meta; errors use error and meta.
+    identifiers: Serialize existing numeric database IDs as opaque decimal strings; Swift treats them as String.
+    dates: UTC RFC3339 instants with a Z suffix; use null for an absent timestamp.
+    booleans: JSON true/false; never 0/1 or string booleans.
+    empty_values: Collections are arrays (including []); documented absent scalar values are null.
+    text: Plain text by default; any rich text must have an explicit field and rendering contract.
+    urls: Absolute HTTPS URLs in deployed responses; never require the app to guess a storage host.
+    fields: Explicit allowlist; no raw Eloquent models, pivot records, provider bookkeeping or unrelated loaded relations.
+    evolution: Additive optional fields are allowed; removal/type/meaning changes require coordinated contract revision.
+    swift_decoding: Ignore unknown object fields and tolerate unknown presentation kinds without crashing.
+    access_decoding: Unknown permission values must not grant access.
+  pagination:
+    strategy: Opaque cursor with limit; document stable sort and ID tie-breaker for each endpoint.
+    default_limit: 20
+    maximum_limit: 50
+    invalid_cursor: Return 422; never silently restart at the first page.
+    filter_binding: A cursor is bound to the endpoint, ordering and filters used to create it.
+    response: meta.page contains next_cursor and has_more; omit totals unless explicitly provided.
+    discover: One bounded screen response initially; individual rail limits will be specified with Discover's contract.
+  errors:
+    body: error.code for logic, error.message for safe display, error.fields for validation, meta.request_id for diagnostics.
+    statuses:
+      "401": Missing or invalid credentials on an authenticated operation.
+      "403": Authenticated but not permitted by the explicit native policy.
+      "404": Missing resource, or deliberately hidden resource owned by someone else.
+      "409": State or revision conflict; refetch before retrying a write.
+      "422": Invalid request values or unsupported parameters.
+      "429": Rate limited; include Retry-After in seconds.
+      "503": Temporarily unavailable; client may retry reads with bounded backoff.
+    client_retry: Retry safe reads with bounded backoff; do not blindly retry mutations.
+    future_writes: Define idempotency and optimistic revisions per operation before releasing it.
+  caching:
+    public_feed: Cache only non-personal content in a separate v2 namespace.
+    personalized_feed: Compose after shared cache lookup; send Cache-Control private, no-store initially.
+    refresh: Respect the existing admin refresh signal without replacing legacy cached objects.
+    free_pick: Resolve the due UTC schedule row and include current pick identity in cache invalidation.
+    logout: Cancel requests and clear account-specific client data on logout/account switch.
+  access_and_media:
+    separation: Media availability, entitlement and playback capability are different fields/concepts.
+    native_policy: Confirm guest/registered/member/free-pick behavior separately before protected media endpoints.
+    proposed_representation: Explicit blocked, preview or full mode per medium; preview_seconds is only valid for preview.
+    server_enforcement: Enforce authenticated ownership and protected operations server-side.
+    delivery_limit: Browser/player limits do not protect existing publicly addressable original files.
+    billing: No Stripe/App Store mutations, migration or second billing source in the foundation or Discover work.
+  analytics:
+    separation: Account-owned recently viewed history is separate from analytics events.
+    legacy: Keep existing ungrouped mobile events and SQL logging contracts intact.
+    v2: Design authenticated app visit/screen/event transport in its own later feature; no legacy identity trust.
+    exclusions: Preserve existing exclusions for both analytics and recently viewed history.
+    history: No guest writes; record only a verified account's actual piece opening, never feed fetch or prefetch.
+
+milestones:
+  - id: F0
+    name: Confirm native baseline and contract decisions
+    deliverables: [native client inventory, authentication ADR, capability decisions, staging destination]
+  - id: F1
+    name: Implement isolated v2 plumbing
+    deliverables: [separate route group, v2 JSON resources/errors, request IDs, dedicated authentication, isolation tests]
+  - id: D1
+    name: Discover contract and public feed
+    deliverables: [typed sections, bounded payload, public fixtures, screenshot references, explicit navigation targets]
+  - id: D2
+    name: Authenticated Discover and native integration
+    deliverables: [personalization decision, recent-history read/write flow, account isolation checks, simulator review]
+  - id: R1
+    name: Verify the first complete native flow
+    deliverables: [legacy regression results, staging integration, iPhone and iPad review, TestFlight evidence]
+  - id: NEXT
+    name: Plan the next complete feature
+    deliverables: [piece details and playback, favorites and folders, collections, search and remaining screens]
+
+open_decisions:
+  - id: native_baseline
+    owner: ios_developer
+    needed_before: F0
+    question: Record UIKit/SwiftUI architecture, minimum iOS, supported devices, current navigation and shipped sign-in methods.
+  - id: native_authentication
+    owner: backend_and_ios
+    needed_before: F1
+    question: Choose token implementation, lifetimes/renewal and reauthentication UX after inventorying native provider sign-in.
+  - id: staging
+    owner: backend
+    needed_before: ready_for_ios
+    question: Set a verified staging base URL and synthetic test accounts; credentials travel separately from this public bundle.
+  - id: native_access
+    owner: product_and_backend_and_ios
+    needed_before: D2
+    question: Confirm guest browsing/personalization and native entitlements without assuming the web matrix applies.
+  - id: discover_navigation
+    owner: backend_and_ios
+    needed_before: D1
+    question: Inventory native piece/composer/search destinations and specify any deliberate bridge to unchanged legacy reads.
+
+verification_gates:
+  - Snapshot representative legacy payloads/routes with isolated fixtures before runtime changes and compare after each milestone.
+  - Verify legacy Discover, cache separation and mobile activity regression tests remain unchanged and pass.
+  - Prove submitted account IDs cannot authenticate or cross account boundaries in v2.
+  - Test absent, invalid, expired and revoked credentials plus logout/account switch.
+  - Validate OpenAPI and every fixture; compare actual staging responses to the published schema.
+  - Verify v2 caches contain no other account's history, recommendations, favorites or entitlements.
+  - Exercise scheduled Free Pick rotation without changing legacy response or media URLs.
+  - Do not mark ready_for_ios until routes, auth and feature dependencies exist on staging.

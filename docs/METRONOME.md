@@ -11,7 +11,7 @@ The original source was copied from `/Users/arthur/Desktop/Websites/ArthurVillar
 - One to four beats; Classic click, Woodblock, Beep and Cowbell sounds, plus My voice for signed-in accounts with a saved recording.
 - Classic pulse and Conductor modes, with Dot/Hand indicators and an optional path.
 - The same audio-clock scheduling, preparation beats, conductor paths, gesture cancellation, reduced-motion handling, recovery from stalled scheduling and native dialog animations.
-- Browser-local settings and a five-second settled-tempo save. Instruments work without an account. Private voice recordings require a web session; selecting My voice is remembered separately per account on this browser. Storage failure leaves controls usable for the current visit.
+- Browser-local settings and a five-second settled-tempo save. Instruments work without an account. Private named voice recordings require a web session; selecting My voice and the chosen recording are remembered separately per account on this browser. Storage failure leaves controls usable for the current visit.
 
 Default/reset color is `#0055fe`; the canvas CSS references `--color-primary`. The tempo numeral retains the original thin system face. The settings use PianoLIT typography, segmented controls, `@select`, `@toggle`, the shared native color field and standard buttons/shadows. The full-screen layout intentionally has no public header/footer.
 
@@ -31,7 +31,7 @@ The shared `components.project-watermark` places a transparent white PianoLIT ic
 
 ## Build and verification
 
-Mix produces/version-hashes `public/js/metronome.js`, `public/css/metronome.css` and the homepage WebP. Shared recorder styles also rebuild app/admin/shared CSS. Commit matching source, outputs and manifest entries. Deploy `2026_10_22_190000_create_metronome_voices_table.php` before the voice feature. No new dependency is required. Production needs metronome DNS/vhost/TLS pointed at this Laravel deployment.
+Mix produces/version-hashes `public/js/metronome.js`, `public/css/metronome.css` and the homepage WebP. Shared recorder styles also rebuild app/admin/shared CSS. Commit matching source, outputs and manifest entries. Deploy `2026_10_22_190000_create_metronome_voices_table.php` and `2026_10_22_210000_create_metronome_voice_recordings_table.php` before the voice library. No new dependency is required. Production needs metronome DNS/vhost/TLS pointed at this Laravel deployment.
 
 Run `node --test tests/js/metronome.test.cjs tests/js/metronome-voice.test.cjs` for the original behavior and voice regressions. The regular JavaScript runner includes these tests too. `MetronomeVoiceTest` checks private ownership, PCM validation, stale revisions, CSRF, account deletion and the sign-in return. `PublicProjectPagesTest` covers host routing and guest markup; `MetronomePreferencesTest` checks the separate web-app preference contract. Use `phpunit-review.xml`, never live storage or accounts, for these PHP checks. Browser QA uses synthetic speech in an isolated fixture, not a real microphone. Physical iOS/Android microphone, permission and background behavior remains a release check.
 
@@ -39,25 +39,49 @@ Run `node --test tests/js/metronome.test.cjs tests/js/metronome-voice.test.cjs` 
 
 Settings → Record my voice prompts for one, two, three and four in turn. Each
 number stops automatically after speech and a short silence. The review offers
-individual playback, Listen to all and a selected number's Redo button. Use my
-voice atomically saves all four numbers, selects the sound and previews the
-chosen beat count. Cancel preserves the previous saved recording. Deletion has
-an inline confirmation. Closing settings or hiding/leaving the page stops the
-microphone and preview; a late permission grant is immediately released.
+individual playback, Listen to all and a selected number's Redo button. Name the
+recording and choose Save and use to save all four numbers together, select the
+sound and preview the chosen beat count. New recording adds another voice without
+replacing existing ones. Saved voices switches between recordings, with Listen,
+Rename and Delete actions. Names use shared `@input` fields, allow up to 60
+characters, and each account can keep up to 20 recordings. Cancel preserves all
+saved recordings. Deletion confirms the selected name inline. Closing settings or
+hiding/leaving the page stops the microphone and preview; a late permission grant
+is immediately released.
 
-During the existing Get ready pause, the recorder measures background noise and
+Each number starts with a yellow Wait cue and a three-step, 1.5-second countdown.
+It turns green and pulses with Speak now only when capture starts. A successful
+number gets a green Recorded check; a missed number stays red with Try again
+until retried. Retry goes through the countdown again. Text and icons accompany
+the colors, and reduced-motion preferences disable the ring/pop/shake motion.
+The shared `components.voice-recorder-cue` also supplies the four Design System
+state previews. Cancel/exit clears the cue as well as the microphone.
+
+During the yellow countdown, the recorder measures background noise and
 adapts speech detection to the microphone. It requests automatic input gain when
 supported, detects quiet speech, and shows it clearly on the level meter. The
 browser negotiates a supported MediaRecorder format, trims surrounding silence
 without treating steady noise as a number, normalizes even quiet recordings to
 a consistent playback level and exports mono 24 kHz / 16-bit PCM WAV. The server
 checks the exact WAV structure and bounds each clip to 0.06–2 seconds. Four
-base64 clips are stored together in the private `metronome_voices` table (under
-513 KB total), with a unique owner, revision conflict checks and account-delete
-cascade. GET/PUT/DELETE `/voice` require the authenticated web session; writes
-also require CSRF. Reads are `private, no-store`. There are no public audio URLs,
+base64 clips are stored together in each private `metronome_voice_recordings` row
+(under 513 KB per recording), with an account owner, UUID, name, revision conflict
+checks and account-delete cascade. GET `/voice` lists metadata without audio;
+GET `/voice/{voice}` loads only the chosen recording. PUT `/voice` creates a new
+recording; PATCH and DELETE `/voice/{voice}` rename/delete an owned recording with
+its current revision. All require the authenticated web session; writes also
+require CSRF and are rate limited. Creation serializes on the owner to enforce
+the library cap. Reads are `private, no-store`. There are no public audio URLs,
 user-supplied ownership IDs, mobile model fields, transcription services or
 external recording uploads.
+
+The library migration copies each original `metronome_voices` recording as
+“My voice,” preserving its audio and revision. Pause metronome voice writes for
+the migration/code activation window: old code still writes the singleton table,
+while new code uses only the library. Deploy the new server code and versioned
+bundle together. The old table remains for rollback; deleting its migrated
+recording also removes that legacy copy. Rolling back the library migration drops
+new recordings, so export/preserve those before any rollback after writes resume.
 
 The existing audio clock schedules samples by beat index and wraps at the
 selected 1–4 count. At fast tempos it speeds up a syllable to fit the beat and
@@ -67,7 +91,6 @@ web-app score metronome preferences and mobile contracts are independent.
 Microphone capture needs a secure browser context. Production should serve
 HTTPS. Locally, run `valet secure metronome.pianolit` in Terminal (Mac
 administrator authentication is required), then use
-`https://metronome.pianolit.test`. The local feature migration was installed on
-October 22; HTTPS setup still needs the user's administrator authentication.
+`https://metronome.pianolit.test`.
 Reference: [browser microphone requirements](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#privacy_and_security)
 and [recording format negotiation](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/isTypeSupported_static).
