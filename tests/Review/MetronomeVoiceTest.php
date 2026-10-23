@@ -183,6 +183,26 @@ class MetronomeVoiceTest extends ReviewTestCase
             ->assertSee('form-control pianolit-input', false)->assertDontSee('Sign in to record my voice');
     }
 
+    public function test_settings_reuse_the_favorites_bottom_panel_with_native_dismissal()
+    {
+        foreach ([false, true] as $signedIn) {
+            if ($signedIn) $this->actingAs($this->user, 'web');
+            $html = $this->get(route('metronome.home'))->assertOk()->getContent();
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($html);
+            $xpath = new \DOMXPath($dom);
+            $this->assertSame(0, $xpath->query('//dialog')->length);
+            $this->assertSame(1, $xpath->query('//*[@id="metronome-settings" and contains(@class, "bottom-sheet") and contains(@class, "offcanvas-bottom") and @tabindex="-1" and @aria-labelledby="settings-title"]')->length);
+            $this->assertSame(1, $xpath->query('//*[@id="metronome-settings"]//button[contains(@class, "bottom-sheet-handle") and @data-bs-dismiss="offcanvas" and @aria-label="Close settings"]')->length);
+            $this->assertSame(1, $xpath->query('//*[@id="metronome-settings"]//button[@data-settings-close and @data-bs-dismiss="offcanvas"]')->length);
+            $this->assertSame(1, $xpath->query('//*[@id="metronome-settings"]//*[@data-sound-menu]')->length);
+        }
+        $favorite = view('webapp.piece.components.saveto.offcanvas')->render();
+        $this->assertStringContainsString('offcanvas offcanvas-bottom bottom-sheet', $favorite);
+        $this->assertStringContainsString('id="save-to-offcanvas-content"', $favorite);
+        $this->assertStringContainsString('aria-labelledby="save-to-title"', $favorite);
+    }
+
     public function test_sound_selector_groups_recorded_names_and_preserves_the_empty_and_legacy_select_states()
     {
         view()->share('errors', new \Illuminate\Support\ViewErrorBag);
@@ -206,6 +226,8 @@ class MetronomeVoiceTest extends ReviewTestCase
         $this->assertSame(3, $xpath->query('//*[@data-sound-voices]//button[@data-sound-delete]')->length);
         $this->assertSame(0, $xpath->query('//button//button')->length);
         $this->assertSame(1, $xpath->query('//button[@data-voice-start and contains(@class, "btn-sm") and contains(@class, "w-100")]')->length);
+        $this->assertSame(0, $xpath->query('//*[@data-sound-popup]//*[@data-voice-start]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-sound-popup]/following-sibling::*//button[@data-voice-start]')->length);
         $empty = view('components.metronome-sound', ['canRecord' => true])->render();
         $this->assertStringContainsString('value="my-voice"', $empty);
         $this->assertStringNotContainsString('<optgroup', $empty);

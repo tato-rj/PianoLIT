@@ -1,3 +1,4 @@
+import Offcanvas from 'bootstrap/js/dist/offcanvas';
 import { MetronomeClock } from './metronome/clock';
 import { clampTempo, DEFAULT_TEMPO, TempoGesture } from './metronome/gesture';
 import { colorPalette, DEFAULT_SETTINGS, loadSettings, loadTempo, normalizeSettings, SETTINGS_KEY, TEMPO_KEY } from './metronome/settings';
@@ -12,7 +13,8 @@ const message = document.querySelector('[data-metronome-message]');
 const edgeButtons = document.querySelectorAll('[data-tempo-step]');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const settingsButton = document.querySelector('[data-settings-open]');
-const settingsDialog = document.querySelector('[data-settings-dialog]');
+const settingsPanel = document.querySelector('[data-settings-panel]');
+const settingsOffcanvas = new Offcanvas(settingsPanel);
 const beatInputs = document.querySelectorAll('[name="metronome-beats"]');
 const typeInputs = document.querySelectorAll('[name="metronome-type"]');
 const markerInputs = document.querySelectorAll('[name="metronome-marker"]');
@@ -34,8 +36,7 @@ let backgroundPulse = null;
 let backgroundPulseTempo = DEFAULT_TEMPO;
 let edgePress = null;
 let edgeRepeatTimer = null;
-let settingsAnimation = null;
-let settingsClosing = false;
+let settingsOpen = false;
 let settings = { ...DEFAULT_SETTINGS };
 let voiceRecorder = null;
 let soundMenu = null;
@@ -122,7 +123,7 @@ function setTempo(value) {
 }
 
 function toggle() {
-    if (settingsDialog.open) return;
+    if (settingsOpen) return;
     message.hidden = true;
     if (clock.running) clock.stop();
     else clock.start({ leadInBeats: settings.type === 'conductor' ? conductorPreparationBeats(settings.beats) : 0 });
@@ -135,7 +136,7 @@ function syncConductor(force = false) {
     }
     const position = clock.getBeatPosition();
     if (reducedMotion.matches) position.progress = 0;
-    const animate = clock.ready && !settingsDialog.open && !document.hidden && !reducedMotion.matches;
+    const animate = clock.ready && !settingsOpen && !document.hidden && !reducedMotion.matches;
     conductor.sync(position, tempo, animate, force);
 }
 
@@ -181,81 +182,27 @@ function applySettings(value, persist = true) {
     }
 }
 
-function animateSettings(keyframes, duration, onFinish) {
-    if (settingsAnimation) settingsAnimation.cancel();
-    settingsAnimation = null;
-    if (reducedMotion.matches) {
-        onFinish();
-        return;
-    }
-    const animation = settingsDialog.animate(keyframes, { duration, fill: 'both' });
-    settingsAnimation = animation;
-    animation.onfinish = () => {
-        if (settingsAnimation !== animation) return;
-        settingsAnimation = null;
-        onFinish();
-        animation.cancel();
-    };
-}
-
-function closeSettings() {
-    if (!settingsDialog.open || settingsClosing) return;
-    soundMenu?.close();
-    voiceRecorder?.cancel();
-    const opening = settingsDialog.dataset.phase === 'opening';
-    const transform = settingsAnimation ? getComputedStyle(settingsDialog).transform : 'translateY(0)';
-    settingsClosing = true;
-    settingsDialog.dataset.phase = 'closing';
-    // An interrupted entrance exits from its current position without
-    // first jumping to the fully open panel's anticipation movement.
-    const keyframes = opening ? [
-        { transform, easing: 'ease-in' },
-        { transform: 'translateY(110%)' },
-    ] : [
-        { transform, offset: 0, easing: 'ease-out' },
-        { transform: 'translateY(-6px)', offset: 0.18, easing: 'cubic-bezier(.55, 0, .9, .35)' },
-        { transform: 'translateY(112%)', offset: 0.9, easing: 'ease-out' },
-        { transform: 'translateY(110%)', offset: 1 },
-    ];
-    animateSettings(keyframes, opening ? 180 : 280, () => settingsDialog.close());
-}
-
 settingsButton.addEventListener('click', () => {
-    if (settingsDialog.open) return;
+    if (!settingsOpen) settingsOffcanvas.show(settingsButton);
+});
+settingsPanel.addEventListener('show.bs.offcanvas', () => {
+    settingsOpen = true;
     stopEdgeRepeat();
     gesture = null;
     pointerId = null;
     surface.classList.remove('is-dragging');
-    settingsDialog.showModal();
     if (voiceRecorder && !voiceRecorder.ready) voiceRecorder.load();
-    settingsDialog.dataset.phase = 'opening';
     settingsButton.setAttribute('aria-expanded', 'true');
     syncConductor();
-    animateSettings([
-        { transform: 'translateY(110%)', offset: 0, easing: 'cubic-bezier(.16, 1, .3, 1)' },
-        { transform: 'translateY(-10px)', offset: 0.73, easing: 'ease-in-out' },
-        { transform: 'translateY(3px)', offset: 0.88, easing: 'ease-out' },
-        { transform: 'translateY(0)', offset: 1 },
-    ], 340, () => { settingsDialog.dataset.phase = 'open'; });
 });
-document.querySelectorAll('[data-settings-close]').forEach(button => {
-    button.addEventListener('click', closeSettings);
+settingsPanel.addEventListener('hide.bs.offcanvas', () => {
+    soundMenu?.close();
+    voiceRecorder?.cancel();
 });
-settingsDialog.addEventListener('cancel', event => {
-    event.preventDefault();
-    closeSettings();
-});
-settingsDialog.addEventListener('click', event => {
-    if (event.target === settingsDialog && event.clientY < settingsDialog.getBoundingClientRect().top) {
-        closeSettings();
-    }
-});
-settingsDialog.addEventListener('close', () => {
-    if (settingsAnimation) settingsAnimation.cancel();
-    settingsAnimation = null;
-    settingsClosing = false;
-    delete settingsDialog.dataset.phase;
+settingsPanel.addEventListener('hidden.bs.offcanvas', () => {
+    settingsOpen = false;
     settingsButton.setAttribute('aria-expanded', 'false');
+    settingsButton.focus();
     syncConductor();
 });
 beatInputs.forEach(input => input.addEventListener('change', () => {
@@ -279,13 +226,12 @@ reducedMotion.addEventListener('change', () => {
     if (reducedMotion.matches) {
         if (pulse) pulse.cancel();
         if (backgroundPulse) backgroundPulse.cancel();
-        if (settingsAnimation) settingsAnimation.finish();
     }
     syncConductor();
 });
 
 surface.addEventListener('pointerdown', event => {
-    if (settingsDialog.open || !event.isPrimary || event.button !== 0 || pointerId !== null || edgePress) return;
+    if (settingsOpen || !event.isPrimary || event.button !== 0 || pointerId !== null || edgePress) return;
     pointerId = event.pointerId;
     suppressClick = false;
     gesture = new TempoGesture(tempo, event.clientX, event.clientY, event.timeStamp);
@@ -342,7 +288,7 @@ function repeatEdgeStep() {
 edgeButtons.forEach(button => {
     const step = Number(button.dataset.tempoStep);
     button.addEventListener('pointerdown', event => {
-        if (settingsDialog.open || !event.isPrimary || event.button !== 0 || pointerId !== null || edgePress) return;
+        if (settingsOpen || !event.isPrimary || event.button !== 0 || pointerId !== null || edgePress) return;
         edgePress = { button, pointerId: event.pointerId, step };
         button.setPointerCapture(event.pointerId);
         setTempo(tempo + step);
@@ -360,12 +306,12 @@ edgeButtons.forEach(button => {
     button.addEventListener('contextmenu', event => event.preventDefault());
     button.addEventListener('click', event => {
         // Pointer presses already step immediately; keep native keyboard/AT clicks.
-        if (!settingsDialog.open && event.detail === 0) setTempo(tempo + step);
+        if (!settingsOpen && event.detail === 0) setTempo(tempo + step);
     });
 });
 
 document.addEventListener('keydown', event => {
-    if (settingsDialog.open || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (settingsOpen || event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         event.preventDefault();
         setTempo(tempo + (event.key === 'ArrowUp' ? 1 : -1) * (event.shiftKey ? 10 : 1));
@@ -407,7 +353,7 @@ if (soundMenuRoot) {
 }
 const voiceRoot = document.querySelector('[data-voice-recorder]');
 if (voiceRoot) {
-    voiceRecorder = new VoiceRecorder({ root: voiceRoot, dialog: settingsDialog, clock, soundInput,
+    voiceRecorder = new VoiceRecorder({ root: voiceRoot, dialog: settingsPanel, clock, soundInput,
         getBeats: () => settings.beats,
         onUpdate: recorder => soundMenu?.render(recorder),
         useSound: (sound, persist = true) => applySettings({ ...settings, sound }, persist) });

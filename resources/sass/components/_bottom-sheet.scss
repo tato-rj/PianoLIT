@@ -1,3 +1,57 @@
+.bottom-sheet.offcanvas.offcanvas-bottom {
+    // Share the favorites panel dimensions, including room for tall content.
+    height: auto !important;
+    max-height: calc(100vh - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+    box-shadow: 0 -12px 40px rgba(20, 29, 44, 0.12);
+    .offcanvas-body {
+        display: flex;
+        min-height: 0;
+        width: 100%;
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 0 0 env(safe-area-inset-bottom);
+        overflow: hidden;
+    }
+}
+
+.bottom-sheet__panel {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.bottom-sheet__header,
+.save-to-panel__header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 20px 16px;
+    border-bottom: 1px solid #e6eaf0;
+    h2 {
+        margin: 0;
+        font-family: Poppins, sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+    p {
+        margin: 4px 0 0;
+        color: #697386;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 575px) {
+    .bottom-sheet__header,
+    .save-to-panel__header { padding: 0 16px 16px; }
+}
+
 .bottom-sheet-handle {
     display: flex;
     align-items: flex-start;

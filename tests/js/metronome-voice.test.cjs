@@ -179,7 +179,7 @@ function recorderHarness({ saved = false, preferred = false } = {}) {
     const sounds = [];
     const storage = new Map([['metronome.voice.10.v1', preferred ? '1' : '0']]);
     const root = { dataset: { url: '/voice', owner: 10, csrf: 'csrf' }, querySelector: selector => selector.startsWith('[name=') ? node(({ '[name="metronome_voice_name"]': 'name-input', '[name="metronome_voice_rename"]': 'rename-input' })[selector]) : node(selector.slice(12, -1)), querySelectorAll: () => [] };
-    const dialog = { dataset: {} };
+    const dialog = { dataset: {}, getAttribute() { return this.open ? 'true' : null; } };
     const option = element({ value: 'my-voice', text: 'My voice' });
     const soundInput = element({ value: 'click', querySelector: () => option });
     soundInput.append(...['click', 'woodblock', 'beep', 'cowbell'].map(value => element({value})), option);

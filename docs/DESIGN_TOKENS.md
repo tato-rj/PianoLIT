@@ -36,6 +36,13 @@ navigation. The Components section previews the same link against blue; the
 Website & web app download modal includes `icon-white.svg`. Regenerating brand
 icons also regenerates this derivative, without changing the two icon masters.
 
+`components.bottom-sheet` and `components.bottom-sheet-header` provide the shared
+bottom offcanvas used by the web-app Save to panel and standalone metronome
+settings. Reuse their 1040px content width, viewport height cap, heading and
+`components.bottom-sheet-handle`; Bootstrap supplies the backdrop, focus trap,
+transitions and dismissal. Keep content scrolling inside the panel. The
+Components section includes an interactive specimen of these same components.
+
 `components.voice-recorder` supplies the standalone metronome's guided four-count
 recorder, named voice library and the Components specimen. Buttons, selects and the live level meter
 reuse shared Bootstrap controls. `components.voice-recorder-cue` supplies the
@@ -49,8 +56,9 @@ renaming. `components.metronome-sound` renders a custom Sound menu whose trigger
 uses `form-control` and the shared `form-control-select-trigger` arrow mixin, so it
 matches native PianoLIT selects. The popup reuses Bootstrap's shared dropdown
 surface/items, with Recorded voices grouped beneath instruments. The shared
-`metronome-sound-voice` row has play/stop, edit-name and delete icon buttons; the
-footer uses a full-width standard `.btn.btn-primary.btn-sm` New recording button.
+`metronome-sound-voice` row has play/stop, edit-name and delete icon buttons. A
+full-width standard `.btn.btn-sm` New recording button stays visible
+directly beneath the closed Sound control, outside the popup.
 A hidden shared `@select` retains the existing value contract (`choiceGroups`
 supports value-keyed groups beside `choices`). Only the empty library offers the
 generic My voice entry. The recorder

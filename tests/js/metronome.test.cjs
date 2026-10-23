@@ -248,6 +248,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
             classList: { toggle() {}, remove() {} },
             style: { setProperty(name, value) { this[name] = value; } },
             setAttribute: (name, value) => { attrs[name] = value; },
+            focus() { this.focused = true; },
             addEventListener(name, handler) { this.listeners[name] = handler; },
             ...extra,
         };
@@ -277,33 +278,32 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
     const documentListeners = {};
     const windowListeners = {};
     const settingsButton = element();
-    const settingsAnimations = [];
     const motionPreference = {
         matches: reducedMotion,
         addEventListener(name, handler) { this.onchange = handler; },
     };
-    const settingsDialog = element({
-        open: false,
-        showModal() { this.open = true; },
-        close() { this.open = false; this.listeners.close(); },
-        getBoundingClientRect() { return { top: 80 }; },
-        animate(keyframes, options) {
-            let timer;
-            const animation = {
-                keyframes, options, canceled: false, onfinish: null,
-                cancel() { this.canceled = true; page.context.clearTimeout(timer); },
-                finish() {
-                    if (this.canceled) return;
-                    page.context.clearTimeout(timer);
-                    if (this.onfinish) this.onfinish();
-                },
-            };
-            timer = page.context.setTimeout(() => animation.finish(), options.duration);
-            settingsAnimations.push(animation);
-            return animation;
-        },
-    });
+    const settingsDialog = element({ open: false });
+    // Bootstrap owns transitions and dismissal; expose its public lifecycle here.
+    page.context.Offcanvas = class {
+        constructor(panel) { this.panel = panel; page.offcanvas = this; }
+        show() {
+            if (this.panel.open) return;
+            this.panel.open = true;
+            this.panel.listeners['show.bs.offcanvas']();
+        }
+        hide() {
+            if (!this.panel.open || this.closing) return;
+            this.closing = true;
+            this.panel.listeners['hide.bs.offcanvas']();
+            page.context.setTimeout(() => {
+                this.panel.open = false;
+                this.closing = false;
+                this.panel.listeners['hidden.bs.offcanvas']();
+            }, 300);
+        }
+    };
     const closeButton = element();
+    closeButton.listeners.click = () => page.offcanvas.hide();
     const beatInputs = [1, 2, 3, 4].map(value => element({ value: String(value) }));
     const typeInputs = ['classic', 'conductor'].map(value => element({ value }));
     const markerInputs = ['dot', 'hand'].map(value => element({ value }));
@@ -338,7 +338,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
         querySelector: selector => ({
             '[data-metronome]': surface, '[data-tempo]': number, '[data-metronome-message]': message,
             '[data-metronome-pulse]': pulseLayer,
-            '[data-settings-open]': settingsButton, '[data-settings-dialog]': settingsDialog,
+            '[data-settings-open]': settingsButton, '[data-settings-panel]': settingsDialog,
             '[data-settings-color]': colorInput, '[data-color-value]': colorValue,
             '[data-settings-color-reset]': colorReset,
             '#metronome-sound': soundInput, '[data-conductor]': svg, 'meta[name="theme-color"]': theme,
@@ -366,7 +366,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
     return { ...page, edges, edge, attributes, number, pointer, click, listeners, documentListeners, windowListeners,
         settingsButton, settingsDialog, closeButton, beatInputs, typeInputs, markerInputs, conductorOptions,
         colorInput, soundInput, pathInput, storage, surface,
-        conductorParts, conductorAnimations, animations, pulseLayer, theme, settingsAnimations, motionPreference };
+        conductorParts, conductorAnimations, animations, pulseLayer, theme, motionPreference };
 }
 
 function ballPoint(transform) {
@@ -609,80 +609,38 @@ test('settings isolate keyboard and edge controls from playback and tempo', asyn
     assert.equal(page.attributes['aria-pressed'], 'true');
 });
 
-test('settings dismissals wait for the exit animation and reject duplicate closes', () => {
+test('Bootstrap settings dismissal isolates controls until hidden, then restores the opener', () => {
     const page = setupPage();
     page.settingsButton.listeners.click();
-    assert.equal(page.settingsDialog.dataset.phase, 'opening');
-    page.tick(400);
-    assert.equal(page.settingsDialog.dataset.phase, 'open');
-    page.closeButton.listeners.click();
-    page.closeButton.listeners.click();
-    assert.equal(page.settingsAnimations.length, 2);
-    assert.equal(page.settingsDialog.open, true);
     assert.equal(page.settingsButton.attributes['aria-expanded'], 'true');
-    assert.equal(page.settingsDialog.dataset.phase, 'closing');
+    page.offcanvas.hide();
+    page.offcanvas.hide();
     page.click();
-    page.documentListeners.keydown({ key: 'ArrowUp', preventDefault() { assert.fail('Exit keeps dialog keys isolated.'); } });
+    page.documentListeners.keydown({ key: 'ArrowUp', preventDefault() { assert.fail('Panel keys stay isolated during dismissal.'); } });
     assert.equal(page.number.textContent, '120');
     assert.equal(page.clock.running, false);
+    assert.equal(page.settingsButton.attributes['aria-expanded'], 'true');
+    page.settingsButton.listeners.click();
     page.tick(300);
     assert.equal(page.settingsDialog.open, false);
     assert.equal(page.settingsButton.attributes['aria-expanded'], 'false');
+    assert.equal(page.settingsButton.focused, true);
     page.settingsButton.listeners.click();
-    page.tick(400);
-    let prevented = false;
-    page.settingsDialog.listeners.cancel({ preventDefault() { prevented = true; } });
-    assert.equal(prevented, true);
-    assert.equal(page.settingsDialog.open, true);
+    assert.equal(page.settingsDialog.open, true, 'Settings can reopen after the Bootstrap hidden event.');
+});
+
+test('opening the shared settings panel stops an active tempo hold', () => {
+    const page = setupPage();
+    page.edge(1, 'pointerdown');
+    page.tick(180);
+    const tempo = page.number.textContent;
+    page.settingsButton.listeners.click();
+    page.tick(1500);
+    assert.equal(page.number.textContent, tempo);
+    page.offcanvas.hide();
     page.tick(300);
-    assert.equal(page.settingsDialog.open, false);
-});
-
-test('closing during the entrance starts from the current position and stale animations cannot affect a reopened sheet', () => {
-    const page = setupPage();
-    page.settingsButton.listeners.click();
-    const entrance = page.settingsAnimations[0];
-    page.tick(80);
-    page.closeButton.listeners.click();
-    assert.equal(entrance.canceled, true);
-    assert.equal(page.settingsAnimations[1].keyframes[0].transform, 'matrix(1, 0, 0, 1, 0, 120)');
-    page.tick(200);
-    assert.equal(page.settingsDialog.open, false);
-    page.settingsButton.listeners.click();
-    entrance.onfinish();
-    assert.equal(page.settingsDialog.open, true);
-    assert.equal(page.settingsDialog.dataset.phase, 'opening');
-    page.tick(400);
-    assert.equal(page.settingsDialog.dataset.phase, 'open');
-});
-
-test('tapping above the sheet dismisses it while blank space inside leaves it open', () => {
-    const page = setupPage();
-    page.settingsButton.listeners.click();
-    page.tick(400);
-    page.settingsDialog.listeners.click({ target: page.settingsDialog, clientY: 200 });
-    assert.equal(page.settingsDialog.dataset.phase, 'open');
-    page.settingsDialog.listeners.click({ target: page.settingsDialog, clientY: 40 });
-    assert.equal(page.settingsDialog.dataset.phase, 'closing');
-    page.tick(300);
-    assert.equal(page.settingsDialog.open, false);
-    assert.equal(page.clock.running, false);
-});
-
-test('reduced motion skips sheet animations and finishes an active exit immediately when enabled', () => {
-    const reduced = setupPage(null, { reducedMotion: true });
-    reduced.settingsButton.listeners.click();
-    assert.equal(reduced.settingsDialog.dataset.phase, 'open');
-    assert.equal(reduced.settingsAnimations.length, 0);
-    reduced.closeButton.listeners.click();
-    assert.equal(reduced.settingsDialog.open, false);
-    const page = setupPage();
-    page.settingsButton.listeners.click();
-    page.tick(400);
-    page.closeButton.listeners.click();
-    page.motionPreference.matches = true;
-    page.motionPreference.onchange();
-    assert.equal(page.settingsDialog.open, false);
+    page.documentListeners.keydown({ key: 'ArrowUp', preventDefault() {} });
+    assert.equal(Number(page.number.textContent), Number(tempo) + 1);
 });
 
 test('settings apply immediately, stay readable for light colors, and persist across visits', () => {

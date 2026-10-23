@@ -1,6 +1,15 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Bottom panel', 'usage' => 'components.bottom-sheet · components.bottom-sheet-header', 'properties' => 'padding,color'])
+      <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="offcanvas" data-bs-target="#ds-bottom-sheet" aria-controls="ds-bottom-sheet">Open bottom panel</button>
+      @component('components.bottom-sheet', ['id' => 'ds-bottom-sheet', 'titleId' => 'ds-bottom-sheet-title'])
+        <div class="bottom-sheet__panel">
+          @include('components.bottom-sheet-header', ['titleId' => 'ds-bottom-sheet-title', 'title' => 'Bottom panel', 'description' => 'Shared by Save to and metronome settings.', 'closeLabel' => 'Close bottom panel'])
+          <div class="p-4"><button type="button" class="btn btn-primary" data-bs-dismiss="offcanvas">Done</button></div>
+        </div>
+      @endcomponent
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Voice recorder', 'usage' => 'components.voice-recorder', 'properties' => 'font-size,color,padding'])
       @include('components.voice-recorder', ['preview' => true])
     @endcomponent

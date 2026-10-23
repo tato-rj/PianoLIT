@@ -427,7 +427,7 @@ export class VoiceRecorder {
             const data = await this.request('PUT', { name, clips });
             if (flow !== this.flow) {
                 this.ready = false;
-                if (this.dialog.open) this.load();
+                if (this.dialog.getAttribute('aria-modal') === 'true') this.load();
                 return;
             }
             this.revision = data.revision;
@@ -475,7 +475,7 @@ export class VoiceRecorder {
             const data = await this.request('PATCH', { name, revision }, id);
             if (flow !== this.flow) {
                 this.ready = false;
-                if (this.dialog.open) this.load();
+                if (this.dialog.getAttribute('aria-modal') === 'true') this.load();
                 return;
             }
             this.library = this.library.map(voice => voice.id === id ? data : voice);
@@ -503,7 +503,7 @@ export class VoiceRecorder {
             await this.request('DELETE', { revision }, id);
             if (flow !== this.flow) {
                 this.ready = false;
-                if (this.dialog.open) this.load();
+                if (this.dialog.getAttribute('aria-modal') === 'true') this.load();
                 return;
             }
             const activate = this.sound === 'my-voice';

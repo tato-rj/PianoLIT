@@ -41,12 +41,11 @@ export class SoundMenu {
 
     size() {
         const options = this.root.querySelector('[data-sound-options]');
-        const footer = options.nextElementSibling;
         const trigger = this.trigger.getBoundingClientRect();
-        const dialog = this.trigger.closest('dialog')?.getBoundingClientRect();
-        const below = Math.min(window.innerHeight, dialog?.bottom ?? window.innerHeight) - trigger.bottom - 12;
-        const above = trigger.top - Math.max(0, dialog?.top ?? 0) - 12;
-        options.style.maxHeight = `${Math.max(80, Math.min(256, Math.max(above, below) - footer.offsetHeight - 24))}px`;
+        const bounds = this.trigger.closest('[data-settings-scroll], .offcanvas')?.getBoundingClientRect();
+        const below = Math.min(window.innerHeight, bounds?.bottom ?? window.innerHeight) - trigger.bottom - 12;
+        const above = trigger.top - Math.max(0, bounds?.top ?? 0) - 12;
+        options.style.maxHeight = `${Math.max(80, Math.min(256, Math.max(above, below) - 16))}px`;
         this.dropdown.update();
     }
 

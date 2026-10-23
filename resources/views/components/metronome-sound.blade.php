@@ -33,12 +33,12 @@
                 <template data-sound-template>@include('components.metronome-sound-voice', ['recording' => ['id' => '', 'name' => '']])</template>
             @endif
         </div>
-        <div class="border-top mt-2 pt-2">
-            @if($soundCanRecord)
-                <button type="button" class="btn btn-primary btn-sm w-100" data-voice-start @unless($preview ?? false) disabled @endunless>@icon('mic')<span data-voice-start-label>New recording</span></button>
-            @else
-                <a class="btn btn-primary btn-sm w-100" href="{{ route('metronome.voice.start') }}">@icon('mic')New recording</a>
-            @endif
-        </div>
+    </div>
+    <div class="mt-2">
+        @if($soundCanRecord)
+            <button type="button" class="btn btn-secondary btn-sm w-100" data-voice-start @unless($preview ?? false) disabled @endunless>@icon('mic')<span data-voice-start-label>New recording</span></button>
+        @else
+            <a class="btn btn-secondary btn-sm w-100" href="{{ route('metronome.voice.start') }}">@icon('mic')New recording</a>
+        @endif
     </div>
 </div>

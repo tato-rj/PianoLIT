@@ -10,12 +10,12 @@ The original source was copied from `/Users/arthur/Desktop/Websites/ArthurVillar
 - Tap/hold either edge for one-BPM changes; vertical swipes retain the original speed-sensitive adjustment. Arrow keys adjust tempo; Escape stops playback.
 - One to four beats; Classic click, Woodblock, Beep and Cowbell sounds. Signed-in accounts select named recordings in the same Sound dropdown, under Recorded voices. The generic My voice entry appears only without saved recordings and opens the recorder.
 - Classic pulse and Conductor modes, with Dot/Hand indicators and an optional path.
-- The same audio-clock scheduling, preparation beats, conductor paths, gesture cancellation, reduced-motion handling, recovery from stalled scheduling and native dialog animations.
+- The same audio-clock scheduling, preparation beats, conductor paths, gesture cancellation, reduced-motion handling, recovery from stalled scheduling and keyboard isolation while settings are open.
 - Browser-local settings and a five-second settled-tempo save. Instruments work without an account. Private named voice recordings require a web session; using a recording and its selected identity are remembered separately per account on this browser. Storage failure leaves controls usable for the current visit.
 
-Default/reset color is `#0055fe`; the canvas CSS references `--color-primary`. The tempo numeral retains the original thin system face. The settings use PianoLIT typography, segmented controls, `@select`, `@toggle`, the shared native color field and standard buttons/shadows. The full-screen layout intentionally has no public header/footer.
+Default/reset color is `#0055fe`; the canvas CSS references `--color-primary`. The tempo numeral retains the original thin system face. The settings use PianoLIT typography, segmented controls, `@select`, `@toggle`, the shared native color field and standard buttons/shadows. The full-screen layout intentionally has no public header/footer. Settings use the same Bootstrap bottom offcanvas as the web-app Save to panel: shared close handle, heading, 1040px content width, backdrop, focus trap and viewport height cap. Bootstrap handles transitions, Escape/backdrop/Done dismissal and reduced motion. Closing immediately cancels capture and previews; keyboard/tempo controls stay isolated until the panel is hidden, then focus returns to Settings. There is no separate dialog animation.
 
-The shared `components.project-watermark` places a transparent white PianoLIT icon with a white rounded-square border at the top left, linking to the main homepage. Its opacity increases from 30% to 65% on hover or keyboard focus. Its 52px target stays above the tempo edge controls and respects phone safe areas; settings remain above it in the native dialog. Enter on the focused link keeps normal navigation instead of toggling playback.
+The shared `components.project-watermark` places a transparent white PianoLIT icon with a white rounded-square border at the top left, linking to the main homepage. Its opacity increases from 30% to 65% on hover or keyboard focus. Its 52px target stays above the tempo edge controls and respects phone safe areas; settings and their backdrop remain above it. Enter on the focused link keeps normal navigation instead of toggling playback.
 
 ## Editing map
 
@@ -24,7 +24,7 @@ The shared `components.project-watermark` places a transparent white PianoLIT ic
 - Behavior: `resources/js/metronome.js` and `resources/js/metronome/`.
 - Voice UI/audio: `components.voice-recorder`, `components.metronome-sound`, `components.metronome-sound-voice`, `sound-menu.js`, `voice-recorder.js` and `voice-audio.js`; the components share a Design System specimen. Sound uses Bootstrap's dropdown, shared field/menu/button finishes and a hidden native select for its existing value contract.
 - Private recording endpoints: `MetronomeVoiceController` and `App\Services\Metronome\VoiceRecording`.
-- Canvas/sheet layout: `resources/sass/metronome.scss`. Common control finishes remain in the shared design system.
+- Canvas layout and recording-state visibility: `resources/sass/metronome.scss`. Settings reuse `components.bottom-sheet` / `bottom-sheet-header` and `components/_bottom-sheet.scss`, shared with the web-app favorites panel.
 - Homepage card: `HomeController`, `components.project-card`, and `resources/images/home/editorial/metronome.webp`. The editorial artwork shows a close-up walnut-and-brass metronome on a real piano surface, with stronger natural contrast and no abstract scenery, matching the other project cards; the finite gallery lists all seven projects once.
 - The public hub menu includes the same named route. Public navigation from this host returns to the main site; campaign arrivals retain anonymous, host-local rules and account exclusions.
 - `config/newsletter.php` registers the dated tool release for the existing monthly digest. No email or queue command is needed to use the metronome.
@@ -46,9 +46,9 @@ replacing existing ones. Sound lists every named recording in a Recorded voices
 group beneath the four instruments; there is no second recording selector.
 Each voice row has play/stop, edit-name and delete icon buttons. Previewing,
 renaming or deleting another row preserves the selected sound. Deletion still
-asks for confirmation. A full-width `.btn-sm` New recording button sits at the
-bottom of the menu. The generic My voice option appears only
-when the library is empty and starts recording. Names use shared `@input` fields, allow up to 60
+asks for confirmation. A full-width `.btn-sm` New recording button stays visible
+directly below the Sound control, outside the menu. The generic My voice option
+appears only when the library is empty and starts recording. Names use shared `@input` fields, allow up to 60
 characters, and each account can keep up to 20 recordings. Cancel preserves all
 saved recordings. Deletion confirms the selected name inline. Closing settings or
 hiding/leaving the page stops the microphone and preview; a late permission grant
@@ -64,9 +64,9 @@ state previews. Cancel/exit clears the cue as well as the microphone.
 
 The trigger looks like the standard PianoLIT select: `form-control` plus the
 shared `form-control-select-trigger` arrow mixin. The popup reuses `dropdown-menu`,
-`dropdown-item` and standard buttons, with a bounded scrolling option area and
-the recording action below it. Bootstrap handles placement/outside clicks; Escape
-closes the menu before the settings sheet. Closing the menu cancels pending or
+`dropdown-item` and standard buttons, with a bounded scrolling option area.
+The recording action sits below the closed control, outside the popup. Bootstrap
+handles placement/outside clicks; Escape closes the menu before the settings sheet. Closing the menu cancels pending or
 playing row previews. There is no custom field color, border or shadow finish.
 
 The audio clock retains its internal `my-voice` sound. The hidden select uses

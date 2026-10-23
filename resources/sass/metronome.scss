@@ -268,58 +268,6 @@ body {
     .conductor-halo { display: none; }
 }
 
-// Keep the original full-width animated settings sheet. Its contents inherit
-// the site’s typography, form controls, button shadows and focus styles.
-.metronome-settings {
-    position: fixed;
-    inset: 10vh 0 -16px;
-    inset: 10dvh 0 -16px;
-    width: 100%;
-    max-width: none;
-    height: auto;
-    max-height: none;
-    margin: 0;
-    padding: max(28px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) calc(max(28px, env(safe-area-inset-bottom)) + 16px) max(24px, env(safe-area-inset-left));
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    border: 0;
-    border-radius: 24px 24px 0 0;
-    background: var(--color-surface);
-    color: var(--color-text);
-    box-shadow: var(--shadow-dark);
-    will-change: transform;
-
-    &::backdrop {
-        background: rgba(0, 0, 0, .14);
-        animation: settings-backdrop-in 180ms ease-out both;
-    }
-
-    &[data-phase="closing"]::backdrop {
-        animation: settings-backdrop-out 280ms ease-in both;
-    }
-}
-
-.metronome-settings__content {
-    width: min(100%, 480px);
-    margin: 0 auto;
-}
-
 .metronome-settings[data-recording] [data-settings-field] {
     display: none !important;
 }
-
-@keyframes settings-backdrop-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes settings-backdrop-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .metronome-settings::backdrop,
-    .metronome-settings[data-phase="closing"]::backdrop { animation: none; }
-}
-
