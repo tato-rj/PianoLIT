@@ -45,6 +45,17 @@
 		@endforeach
 		@endisset
 		@endisset
+
+		@isset($choiceGroups)
+		@php($groupSelectedValue = is_scalar(old($name)) ? old($name) : ($value ?? null))
+		@foreach($choiceGroups as $groupLabel => $groupChoices)
+		<optgroup label="{{$groupLabel}}">
+			@foreach($groupChoices as $optionValue => $optionLabel)
+			<option value="{{$optionValue}}" @if((string) $groupSelectedValue === (string) $optionValue) selected @endif>{{$optionLabel}}</option>
+			@endforeach
+		</optgroup>
+		@endforeach
+		@endisset
 	</select>
 	@include('components.form.error', ['bag' => $bag, 'field' => $name])
 </div>

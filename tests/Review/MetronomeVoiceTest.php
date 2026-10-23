@@ -179,7 +179,40 @@ class MetronomeVoiceTest extends ReviewTestCase
         $this->actingAs($this->user, 'web')->get($start)->assertRedirect(route('metronome.home', ['record-voice' => 1]));
         $this->get(route('metronome.home'))->assertOk()->assertSee('data-voice-recorder', false)
             ->assertSee('data-url="'.route('metronome.voice.show').'"', false)->assertSee('data-csrf=', false)
-            ->assertSee('Saved voices')->assertSee('Save and use')->assertSee('metronome_voice_name')
+            ->assertDontSee('metronome_voice_choice')->assertSee('Save and use')->assertSee('metronome_voice_name')
             ->assertSee('form-control pianolit-input', false)->assertDontSee('Sign in to record my voice');
+    }
+
+    public function test_sound_selector_groups_recorded_names_and_preserves_the_empty_and_legacy_select_states()
+    {
+        view()->share('errors', new \Illuminate\Support\ViewErrorBag);
+        $html = view('components.metronome-sound', ['canRecord' => true, 'recordings' => [
+            ['id' => 'one', 'name' => 'Arthur'], ['id' => 'two', 'name' => 'Arthur'],
+            ['id' => 'three', 'name' => '<Voice & piano>'],
+        ], 'value' => 'voice:two'])->render();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame(4, $xpath->query('//select/option')->length);
+        $this->assertSame(3, $xpath->query('//optgroup[@label="Recorded voices"]/option')->length);
+        $this->assertSame(1, $xpath->query('//optgroup/option[@value="voice:two" and @selected]')->length);
+        $this->assertSame(0, $xpath->query('//option[@value="my-voice"]')->length);
+        $this->assertSame('<Voice & piano>', $xpath->query('//option[@value="voice:three"]')->item(0)->textContent);
+        $this->assertSame(0, $xpath->query('//option/*')->length);
+        $this->assertSame(1, $xpath->query('//button[contains(@class, "form-control-select-trigger") and @aria-haspopup="dialog"]')->length);
+        $this->assertSame(3, $xpath->query('//*[@data-sound-voices]/*[@data-sound-row]')->length);
+        $this->assertSame(3, $xpath->query('//*[@data-sound-voices]//button[@data-sound-play]')->length);
+        $this->assertSame(3, $xpath->query('//*[@data-sound-voices]//button[@data-sound-edit]')->length);
+        $this->assertSame(3, $xpath->query('//*[@data-sound-voices]//button[@data-sound-delete]')->length);
+        $this->assertSame(0, $xpath->query('//button//button')->length);
+        $this->assertSame(1, $xpath->query('//button[@data-voice-start and contains(@class, "btn-sm") and contains(@class, "w-100")]')->length);
+        $empty = view('components.metronome-sound', ['canRecord' => true])->render();
+        $this->assertStringContainsString('value="my-voice"', $empty);
+        $this->assertStringNotContainsString('<optgroup', $empty);
+        $guest = view('components.metronome-sound', ['canRecord' => false])->render();
+        $this->assertStringNotContainsString('value="my-voice"', $guest);
+        $legacy = view('components.form.select', ['bag' => 'default', 'name' => 'key', 'optGroups' => ['Tonal' => ['C major' => 'C']], 'select' => 'C'])->render();
+        $this->assertStringContainsString('<optgroup label="Tonal">', $legacy);
+        $this->assertStringContainsString('C major', $legacy);
     }
 }

@@ -3,6 +3,7 @@ import { clampTempo, DEFAULT_TEMPO, TempoGesture } from './metronome/gesture';
 import { colorPalette, DEFAULT_SETTINGS, loadSettings, loadTempo, normalizeSettings, SETTINGS_KEY, TEMPO_KEY } from './metronome/settings';
 import { conductorPreparationBeats, ConductorView } from './metronome/conductor';
 import { VoiceRecorder } from './metronome/voice-recorder';
+import { SoundMenu } from './metronome/sound-menu';
 
 const surface = document.querySelector('[data-metronome]');
 const pulseLayer = document.querySelector('[data-metronome-pulse]');
@@ -37,6 +38,7 @@ let settingsAnimation = null;
 let settingsClosing = false;
 let settings = { ...DEFAULT_SETTINGS };
 let voiceRecorder = null;
+let soundMenu = null;
 try {
     settings = loadSettings(window.localStorage);
     tempo = loadTempo(window.localStorage);
@@ -163,7 +165,9 @@ function applySettings(value, persist = true) {
     conductorOptions.hidden = settings.type !== 'conductor';
     colorInput.value = settings.color;
     colorValue.textContent = settings.color.toUpperCase();
-    soundInput.value = settings.sound;
+    if (voiceRecorder) voiceRecorder.syncSound(settings.sound);
+    else soundInput.value = settings.sound;
+    soundMenu?.render(voiceRecorder);
     pathInput.checked = settings.showPath;
     syncConductor();
     if (persist) {
@@ -196,6 +200,7 @@ function animateSettings(keyframes, duration, onFinish) {
 
 function closeSettings() {
     if (!settingsDialog.open || settingsClosing) return;
+    soundMenu?.close();
     voiceRecorder?.cancel();
     const opening = settingsDialog.dataset.phase === 'opening';
     const transform = settingsAnimation ? getComputedStyle(settingsDialog).transform : 'translateY(0)';
@@ -265,6 +270,7 @@ markerInputs.forEach(input => input.addEventListener('change', () => {
 colorInput.addEventListener('input', () => applySettings({ ...settings, color: colorInput.value }));
 colorReset.addEventListener('click', () => applySettings({ ...settings, color: DEFAULT_SETTINGS.color }));
 soundInput.addEventListener('change', () => {
+    if (voiceRecorder?.selectSound(soundInput.value)) return;
     applySettings({ ...settings, sound: soundInput.value });
     voiceRecorder?.remember(settings.sound);
 });
@@ -375,21 +381,35 @@ document.addEventListener('keydown', event => {
 
 window.addEventListener('blur', stopEdgeRepeat);
 document.addEventListener('visibilitychange', () => {
+    if (document.hidden) soundMenu?.close();
     if (document.hidden) voiceRecorder?.cancel();
     if (document.hidden) stopEdgeRepeat();
     syncConductor();
 });
 window.addEventListener('pagehide', () => {
+    soundMenu?.close();
     voiceRecorder?.cancel();
     stopEdgeRepeat();
     clock.stop();
 });
 applySettings(settings, false);
 setTempo(tempo);
+const soundMenuRoot = document.querySelector('[data-sound-menu]');
+if (soundMenuRoot) {
+    soundMenu = new SoundMenu({ root: soundMenuRoot, input: soundInput,
+        onSelect: value => { soundInput.value = value; soundInput.dispatchEvent(new Event('change', { bubbles: true })); },
+        onPlay: id => voiceRecorder?.previewRecording(id),
+        onEdit: id => voiceRecorder?.edit(id),
+        onDelete: id => voiceRecorder?.confirmDelete(id),
+        onRecord: () => voiceRecorder?.record(),
+        onClose: () => voiceRecorder?.stopPreview() });
+    soundMenu.render();
+}
 const voiceRoot = document.querySelector('[data-voice-recorder]');
 if (voiceRoot) {
     voiceRecorder = new VoiceRecorder({ root: voiceRoot, dialog: settingsDialog, clock, soundInput,
         getBeats: () => settings.beats,
+        onUpdate: recorder => soundMenu?.render(recorder),
         useSound: (sound, persist = true) => applySettings({ ...settings, sound }, persist) });
     if (new URLSearchParams(window.location.search).get('record-voice') === '1') settingsButton.click();
 }

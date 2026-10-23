@@ -3,11 +3,15 @@ import { VoiceCapture, voiceBase64, voiceBytes } from './voice-audio';
 const WORDS = ['one', 'two', 'three', 'four'];
 
 export class VoiceRecorder {
-    constructor({ root, dialog, clock, soundInput, getBeats, useSound }) {
-        Object.assign(this, { root, dialog, clock, soundInput, getBeats, useSound });
+    constructor({ root, dialog, clock, soundInput, getBeats, useSound, onUpdate = () => {} }) {
+        Object.assign(this, { root, dialog, clock, soundInput, getBeats, useSound, onUpdate });
         this.ui = name => root.querySelector(`[data-voice-${name}]`);
-        this.option = soundInput.querySelector('[value="my-voice"]');
-        this.option.disabled = true;
+        this.emptyOption = soundInput.querySelector('[value="my-voice"]');
+        this.emptyOption.disabled = true;
+        this.emptyOption.hidden = true;
+        this.voiceGroup = document.createElement('optgroup');
+        this.voiceGroup.label = 'Recorded voices';
+        this.sound = soundInput.value;
         this.flow = 0;
         this.selection = 0;
         this.loadVersion = 0;
@@ -21,6 +25,7 @@ export class VoiceRecorder {
         this.draft = [];
         this.revision = null;
         this.ready = false;
+        this.saving = false;
         this.storageKey = `metronome.voice.${root.dataset.owner}.v1`;
         this.selectedKey = `metronome.voice.${root.dataset.owner}.selected.v1`;
         this.preferred = false;
@@ -28,7 +33,6 @@ export class VoiceRecorder {
             this.preferred = localStorage.getItem(this.storageKey) === '1';
             this.preferredId = localStorage.getItem(this.selectedKey);
         } catch (error) { /* Optional preference. */ }
-        this.choiceInput = root.querySelector('[name="metronome_voice_choice"]');
         this.nameInput = root.querySelector('[name="metronome_voice_name"]');
         this.renameInput = root.querySelector('[name="metronome_voice_rename"]');
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -39,7 +43,6 @@ export class VoiceRecorder {
         this.ui('retry').addEventListener('click', () => this.record({ resume: true }));
         this.ui('cancel').addEventListener('click', () => this.cancel());
         this.ui('save').addEventListener('click', () => this.save());
-        this.ui('listen').addEventListener('click', () => this.preview(this.buffers.slice(0, this.getBeats())));
         this.ui('preview-all').addEventListener('click', () => this.preview(this.draftBuffers));
         this.ui('redo').addEventListener('click', () => this.record({ redo: this.selected || 0 }));
         root.querySelectorAll('[data-voice-preview]').forEach(button => button.addEventListener('click', () => {
@@ -47,14 +50,6 @@ export class VoiceRecorder {
             this.ui('redo').textContent = `Redo ${this.selected + 1}`;
             this.preview([this.draftBuffers[this.selected]]);
         }));
-        this.ui('delete').addEventListener('click', () => { this.ui('delete-confirm').hidden = false; });
-        this.choiceInput.addEventListener('change', () => this.choose(this.choiceInput.value));
-        this.ui('rename').addEventListener('click', () => {
-            this.renameInput.value = this.current()?.name || '';
-            this.ui('rename-panel').hidden = false;
-            this.ui('delete-confirm').hidden = true;
-            this.renameInput.focus();
-        });
         this.ui('rename-cancel').addEventListener('click', () => { this.ui('rename-panel').hidden = true; });
         this.ui('rename-save').addEventListener('click', () => this.rename());
         this.renameInput.addEventListener('keydown', event => {
@@ -79,11 +74,47 @@ export class VoiceRecorder {
 
     remember(sound) {
         this.selection++;
+        this.sound = sound;
         this.preferred = sound === 'my-voice';
         try {
             localStorage.setItem(this.storageKey, this.preferred ? '1' : '0');
             if (this.activeId) localStorage.setItem(this.selectedKey, this.activeId);
         } catch (error) { /* Optional preference. */ }
+        this.controls();
+    }
+
+    voiceValue(id) { return `voice:${id}`; }
+
+    syncSound(sound) {
+        this.sound = sound;
+        this.soundInput.value = sound === 'my-voice' && this.activeId ? this.voiceValue(this.activeId) : sound;
+        if (sound !== 'my-voice') this.ui('rename-panel').hidden = this.ui('delete-confirm').hidden = true;
+        this.controls();
+    }
+
+    selectSound(value) {
+        if (value === 'my-voice' && !this.library.length) {
+            this.syncSound(this.sound);
+            this.record();
+            return true;
+        }
+        const recording = this.library.find(voice => this.voiceValue(voice.id) === value);
+        if (!recording) return false;
+        this.selection++;
+        this.choose(recording.id);
+        return true;
+    }
+
+    soundOptions() {
+        if (this.library.length) {
+            this.emptyOption.remove();
+            this.voiceGroup.replaceChildren(...this.library.map(voice => new Option(voice.name, this.voiceValue(voice.id))));
+            if (this.voiceGroup.parentNode !== this.soundInput) this.soundInput.append(this.voiceGroup);
+        } else {
+            this.voiceGroup.remove();
+            if (this.emptyOption.parentNode !== this.soundInput) this.soundInput.append(this.emptyOption);
+        }
+        this.syncSound(this.sound);
     }
 
     async request(method = 'GET', body, id = null) {
@@ -134,12 +165,9 @@ export class VoiceRecorder {
     }
 
     summary() {
-        this.ui('summary-text').textContent = this.library.length ? 'Your counting voices' : 'Count in your own voice.';
-        this.ui('start-label').textContent = this.library.length ? 'New recording' : 'Record my voice';
-        this.ui('library').hidden = !this.library.length;
-        this.choiceInput.replaceChildren(...this.library.map(voice => new Option(voice.name, voice.id)));
-        this.choiceInput.value = this.activeId || '';
-        this.ui('delete-label').textContent = `Delete “${this.current()?.name || 'this recording'}”?`;
+        this.soundOptions();
+        const deleteTarget = this.library.find(voice => voice.id === (this.deleteId || this.activeId));
+        this.ui('delete-label').textContent = `Delete “${deleteTarget?.name || 'this recording'}”?`;
         this.controls();
         this.ui('status').textContent = this.library.length >= this.limit ? 'You have 20 saved voices. Delete one to make room.'
             : this.supported ? '' : window.isSecureContext
@@ -150,17 +178,37 @@ export class VoiceRecorder {
 
     controls() {
         this.ui('start').disabled = !this.ready || !this.supported || this.saving || this.loadingVoice || this.library.length >= this.limit;
-        this.choiceInput.disabled = !this.ready || this.saving;
-        this.ui('listen').disabled = !this.buffers.length || this.loadingVoice || this.saving;
-        ['rename', 'delete'].forEach(name => { this.ui(name).disabled = !this.current() || this.loadingVoice || this.saving; });
+        this.voiceGroup.disabled = !this.ready || this.saving;
+        this.emptyOption.disabled = !this.ready || !this.supported || this.saving;
+        this.emptyOption.hidden = !this.ready || !!this.library.length;
+        this.onUpdate(this);
+    }
+
+    edit(id) {
+        const voice = this.library.find(voice => voice.id === id);
+        if (!voice || this.saving) return;
+        this.renameId = id;
+        this.renameInput.value = voice.name;
+        this.ui('rename-panel').hidden = false;
+        this.ui('delete-confirm').hidden = true;
+        this.renameInput.focus();
+    }
+
+    confirmDelete(id) {
+        const voice = this.library.find(voice => voice.id === id);
+        if (!voice || this.saving) return;
+        this.deleteId = id;
+        this.ui('delete-label').textContent = `Delete “${voice.name}”?`;
+        this.ui('delete-confirm').hidden = false;
+        this.ui('rename-panel').hidden = true;
+        this.ui('keep').focus();
     }
 
     clearVoice() {
         this.activeId = this.revision = null;
         this.saved = this.buffers = [];
         this.clock.setVoiceBuffers(null);
-        this.option.disabled = true;
-        if (this.soundInput.value === 'my-voice') this.useSound('click');
+        if (this.sound === 'my-voice') this.useSound('click');
     }
 
     async choose(id, { activate = true } = {}) {
@@ -173,7 +221,6 @@ export class VoiceRecorder {
         this.loadingVoice = true;
         this.buffers = this.saved = [];
         this.clock.setVoiceBuffers(null);
-        this.option.disabled = true;
         this.ui('rename-panel').hidden = this.ui('delete-confirm').hidden = true;
         this.controls();
         this.ui('status').textContent = 'Loading recording…';
@@ -186,7 +233,6 @@ export class VoiceRecorder {
             this.saved = data.clips;
             this.buffers = buffers;
             this.clock.setVoiceBuffers(buffers);
-            this.option.disabled = false;
             this.preferredId = id;
             try { localStorage.setItem(this.selectedKey, id); } catch (error) { /* Optional preference. */ }
             if (activate && selection === this.selection) {
@@ -196,7 +242,7 @@ export class VoiceRecorder {
             this.summary();
         } catch (error) {
             if (version !== this.voiceVersion) return;
-            if (this.soundInput.value === 'my-voice') this.useSound('click');
+            if (this.sound === 'my-voice') this.useSound('click');
             this.failure(error);
             this.ui('reload').hidden = false;
         } finally {
@@ -299,19 +345,47 @@ export class VoiceRecorder {
         delete this.dialog.dataset.recording;
         this.draft = [];
         this.draftBuffers = [];
+        this.renameId = this.deleteId = null;
         this.cue('idle', '');
         this.summary();
     }
 
     stopPreview() {
+        this.previewRequestVersion = (this.previewRequestVersion || 0) + 1;
+        this.previewingId = null;
         this.previewGeneration = (this.previewGeneration || 0) + 1;
         this.previewSources.forEach(source => { source.stop(); source.disconnect(); });
         this.previewSources = [];
+        this.onUpdate(this);
     }
 
-    async preview(buffers) {
+    async previewRecording(id) {
+        if (this.previewingId === id) { this.stopPreview(); return; }
+        if (!this.ready || this.saving || !this.library.some(voice => voice.id === id)) return;
+        this.stopPreview();
+        const version = this.previewRequestVersion;
+        this.clock.stop();
+        this.previewingId = id;
+        this.onUpdate(this);
+        try {
+            await this.context().resume();
+            if (version !== this.previewRequestVersion) return;
+            const data = id === this.activeId && this.buffers.length === 4 ? null : await this.request('GET', null, id);
+            const buffers = data ? await Promise.all(data.clips.map(clip => this.context().decodeAudioData(voiceBytes(clip)))) : this.buffers;
+            if (version !== this.previewRequestVersion) return;
+            await this.preview(buffers.slice(0, this.getBeats()), id);
+        } catch (error) {
+            if (version !== this.previewRequestVersion) return;
+            this.stopPreview();
+            this.failure(error);
+        }
+    }
+
+    async preview(buffers, id = null) {
         if (!buffers?.length) return;
         this.stopPreview();
+        this.previewingId = id;
+        this.onUpdate(this);
         this.clock.stop();
         const generation = this.previewGeneration;
         try {
@@ -325,13 +399,15 @@ export class VoiceRecorder {
                 source.connect(audio.destination);
                 source.onended = () => {
                     source.disconnect();
+                    if (generation !== this.previewGeneration) return;
                     this.previewSources = this.previewSources.filter(item => item !== source);
+                    if (!this.previewSources.length) { this.previewingId = null; this.onUpdate(this); }
                 };
                 source.start(time);
                 this.previewSources.push(source);
                 time += Math.max(0.65, buffer.duration + 0.12);
             });
-        } catch (error) { this.ui('status').textContent = 'Sound couldn’t start. Tap Listen to try again.'; }
+        } catch (error) { this.stopPreview(); this.ui('status').textContent = 'Sound couldn’t start. Tap Play to try again.'; }
     }
 
     async save() {
@@ -360,7 +436,7 @@ export class VoiceRecorder {
             this.saved = data.clips;
             this.buffers = this.draftBuffers;
             this.clock.setVoiceBuffers(this.buffers);
-            this.option.disabled = false;
+            this.soundOptions();
             this.useSound('my-voice');
             this.remember('my-voice');
             this.cancel();
@@ -386,11 +462,12 @@ export class VoiceRecorder {
     }
 
     async rename() {
-        if (this.saving || !this.current()) return;
+        const target = this.library.find(voice => voice.id === (this.renameId || this.activeId));
+        if (this.saving || !target) return;
         const name = this.validName(this.renameInput);
         if (!name) return;
         const flow = this.flow;
-        const { id, revision } = this.current();
+        const { id, revision } = target;
         this.saving = true;
         this.controls();
         this.ui('rename-save').disabled = true;
@@ -402,7 +479,8 @@ export class VoiceRecorder {
                 return;
             }
             this.library = this.library.map(voice => voice.id === id ? data : voice);
-            this.revision = data.revision;
+            if (id === this.activeId) this.revision = data.revision;
+            this.renameId = null;
             this.ui('rename-panel').hidden = true;
             this.summary();
             this.ui('status').textContent = 'Name saved.';
@@ -411,14 +489,16 @@ export class VoiceRecorder {
     }
 
     async remove() {
-        if (this.saving || !this.current()) return;
+        const target = this.library.find(voice => voice.id === (this.deleteId || this.activeId));
+        if (this.saving || !target) return;
         const flow = this.flow;
-        const { id, revision } = this.current();
+        const { id, revision } = target;
+        const active = id === this.activeId;
         this.saving = true;
         this.controls();
         this.ui('confirm-delete').disabled = true;
         this.stopPreview();
-        this.clock.stop();
+        if (active) this.clock.stop();
         try {
             await this.request('DELETE', { revision }, id);
             if (flow !== this.flow) {
@@ -426,12 +506,13 @@ export class VoiceRecorder {
                 if (this.dialog.open) this.load();
                 return;
             }
-            const activate = this.soundInput.value === 'my-voice';
+            const activate = this.sound === 'my-voice';
             this.library = this.library.filter(voice => voice.id !== id);
-            this.clearVoice();
+            this.deleteId = null;
+            if (active) this.clearVoice();
             this.cancel();
-            if (this.library.length) await this.choose(this.library[0].id, { activate });
-            else this.remember('click');
+            if (active && this.library.length) await this.choose(this.library[0].id, { activate });
+            else if (!this.library.length) this.remember('click');
         } catch (error) { if (flow === this.flow) this.failure(error); }
         finally { this.saving = false; this.ui('confirm-delete').disabled = false; this.controls(); }
     }
@@ -451,7 +532,6 @@ export class VoiceRecorder {
         this.stopPreview();
         this.clock.stop();
         this.clock.setVoiceBuffers(null);
-        this.option.disabled = true;
         this.ready = false;
         this.buffers = this.saved = [];
         this.library = [];
@@ -460,7 +540,7 @@ export class VoiceRecorder {
         this.ui('panel').hidden = true;
         this.ui('summary').hidden = false;
         delete this.dialog.dataset.recording;
-        if (this.soundInput.value === 'my-voice') this.useSound('click');
+        if (this.sound === 'my-voice') this.useSound('click');
         this.summary();
         this.ui('status').textContent = error.message;
         this.ui('signin').hidden = false;

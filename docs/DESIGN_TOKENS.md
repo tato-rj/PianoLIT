@@ -45,7 +45,16 @@ check and red Try again with a brief shake. Text/icons reinforce every color;
 reduced motion removes animations and transitions. The Components gallery shows
 all four states on this same cue component. Keep the concise recording prompts, per-number replay/redo and explicit
 Save and use action on this component. Reuse `@input` for recording names and
-renaming, and `@select` for Saved voices. The specimen makes no microphone or account
+renaming. `components.metronome-sound` renders a custom Sound menu whose trigger
+uses `form-control` and the shared `form-control-select-trigger` arrow mixin, so it
+matches native PianoLIT selects. The popup reuses Bootstrap's shared dropdown
+surface/items, with Recorded voices grouped beneath instruments. The shared
+`metronome-sound-voice` row has play/stop, edit-name and delete icon buttons; the
+footer uses a full-width standard `.btn.btn-primary.btn-sm` New recording button.
+A hidden shared `@select` retains the existing value contract (`choiceGroups`
+supports value-keyed groups beside `choices`). Only the empty library offers the
+generic My voice entry. The recorder
+specimen includes this same Sound component. The specimen makes no microphone or account
 requests. See `METRONOME.md` for capture, private storage and deployment details.
 
 Run `npm run brand:icons` with ImageMagick 7 installed after changing either

@@ -165,25 +165,30 @@ test('recording cancellation settles the capture and releases the microphone', a
 });
 
 function recorderHarness({ saved = false, preferred = false } = {}) {
+    const element = properties => ({ hidden: false, disabled: false, dataset: {}, textContent: '', value: '', style: {}, listeners: {}, children: [], parentNode: null,
+        append(...children) { children.forEach(child => { child.remove(); this.children.push(child); child.parentNode = this; }); },
+        replaceChildren(...children) { this.children.forEach(child => { child.parentNode = null; }); this.children = []; this.append(...children); },
+        remove() { if (this.parentNode) this.parentNode.children = this.parentNode.children.filter(child => child !== this); this.parentNode = null; },
+        addEventListener(event, callback) { this.listeners[event] = callback; }, setAttribute() {}, focus() {}, ...properties });
     const nodes = new Map();
     const node = name => {
-        if (!nodes.has(name)) nodes.set(name, { hidden: false, disabled: false, dataset: {}, textContent: '', value: name === 'name-input' ? 'Calm counting' : '', style: {}, listeners: {},
-            replaceChildren(...children) { this.children = children; },
-            addEventListener(event, callback) { this.listeners[event] = callback; }, setAttribute() {}, focus() {} });
+        if (!nodes.has(name)) nodes.set(name, element({ value: name === 'name-input' ? 'Calm counting' : '' }));
         return nodes.get(name);
     };
     const requests = [];
     const sounds = [];
     const storage = new Map([['metronome.voice.10.v1', preferred ? '1' : '0']]);
-    const root = { dataset: { url: '/voice', owner: 10, csrf: 'csrf' }, querySelector: selector => selector.startsWith('[name=') ? node(({ '[name="metronome_voice_choice"]': 'choice-input', '[name="metronome_voice_name"]': 'name-input', '[name="metronome_voice_rename"]': 'rename-input' })[selector]) : node(selector.slice(12, -1)), querySelectorAll: () => [] };
+    const root = { dataset: { url: '/voice', owner: 10, csrf: 'csrf' }, querySelector: selector => selector.startsWith('[name=') ? node(({ '[name="metronome_voice_name"]': 'name-input', '[name="metronome_voice_rename"]': 'rename-input' })[selector]) : node(selector.slice(12, -1)), querySelectorAll: () => [] };
     const dialog = { dataset: {} };
-    const option = {};
-    const soundInput = { value: 'click', querySelector: () => option };
+    const option = element({ value: 'my-voice', text: 'My voice' });
+    const soundInput = element({ value: 'click', querySelector: () => option });
+    soundInput.append(...['click', 'woodblock', 'beep', 'cowbell'].map(value => element({value})), option);
     const clock = { stop() {}, setVoiceBuffers(buffers) { this.buffers = buffers; } };
     const audioContext = { state: 'running', resume: async () => {}, decodeAudioData: async () => ({ duration: 0.2 }),
         createBufferSource: () => ({ connect() {}, disconnect() {}, start() {}, stop() {} }), currentTime: 0 };
     const scope = vm.createContext({ console, DOMException, Uint8Array, ArrayBuffer, atob, btoa,
-        Option: function (text, value) { this.text = text; this.value = value; },
+        Option: function (text, value) { return element({ text, value }); },
+        document: { createElement: tag => element({ tagName: tag.toUpperCase() }) },
         voiceBase64: context.api.voiceBase64, voiceBytes: context.api.voiceBytes,
         localStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) },
         window: { AudioContext: function () { return audioContext; }, MediaRecorder: {}, isSecureContext: true },
@@ -192,12 +197,13 @@ function recorderHarness({ saved = false, preferred = false } = {}) {
         VoiceCapture: class { cancel() {} },
     });
     vm.runInContext(read('voice-recorder') + '\nglobalThis.VoiceRecorder = VoiceRecorder;', scope);
-    const recorder = new scope.VoiceRecorder({ root, dialog, clock, soundInput, getBeats: () => 3,
-        useSound(sound) { soundInput.value = sound; sounds.push(sound); } });
+    let recorder;
+    recorder = new scope.VoiceRecorder({ root, dialog, clock, soundInput, getBeats: () => 3,
+        useSound(sound) { recorder.syncSound(sound); sounds.push(sound); } });
     const detail = (id = 'first', name = 'Calm counting') => ({ id, name, revision: 'old', clips: ['YQ==', 'YQ==', 'YQ==', 'YQ=='] });
     const data = () => ({ recordings: saved ? [{ id: 'first', name: 'Calm counting', revision: 'old' }] : [], limit: 20 });
     const resolve = (request, body, status = 200) => request.resolve({ ok: status === 200, status, json: async () => body });
-    return { recorder, nodes, node, requests, sounds, storage, resolve, data, detail, clock, dialog, soundInput, option };
+    return { recorder, nodes, node, requests, sounds, storage, resolve, data, detail, clock, dialog, soundInput, option, group: recorder.voiceGroup };
 }
 const settle = async () => { for (let i = 0; i < 25; i++) await Promise.resolve(); };
 const load = async page => {
@@ -211,7 +217,8 @@ test('a late voice load cannot override a sound the user just chose', async () =
     page.recorder.remember('woodblock');
     page.soundInput.value = 'woodblock';
     await load(page);
-    assert.equal(page.option.disabled, false);
+    assert.equal(page.group.disabled, false);
+    assert.equal(page.option.parentNode, null);
     assert.equal(page.soundInput.value, 'woodblock');
     assert.equal(page.storage.get('metronome.voice.10.v1'), '0');
 });
@@ -220,7 +227,7 @@ test('voice preferences are restored only for the current account after its clip
     const page = recorderHarness({ saved: true, preferred: true });
     assert.equal(page.option.disabled, true);
     await load(page);
-    assert.equal(page.soundInput.value, 'my-voice');
+    assert.equal(page.soundInput.value, page.recorder.voiceValue(page.recorder.activeId));
     assert.equal(page.clock.buffers.length, 4);
     assert.equal(page.requests[0].options.credentials, 'same-origin');
     assert.equal(page.requests[0].options.cache, 'no-store');
@@ -244,7 +251,7 @@ test('failed saves keep all draft clips for retry; a successful save selects the
     page.resolve(page.requests[2], { id: 'new-id', name: 'Calm counting', revision: 'new', clips: ['a', 'b', 'c', 'd'] });
     await retry;
     assert.equal(page.recorder.revision, 'new');
-    assert.equal(page.soundInput.value, 'my-voice');
+    assert.equal(page.soundInput.value, page.recorder.voiceValue(page.recorder.activeId));
     assert.equal(page.storage.get('metronome.voice.10.v1'), '1');
 });
 
@@ -317,9 +324,9 @@ test('saving another named recording keeps the first and remembers the new selec
     page.resolve(page.requests[2], { ...page.detail('second', 'Gentle counting'), revision: 'second-revision' });
     await saving;
     assert.deepEqual(Array.from(page.recorder.library, voice => voice.name), ['Calm counting', 'Gentle counting']);
-    assert.equal(page.node('choice-input').value, 'second');
+    assert.equal(page.soundInput.value, 'voice:second');
     assert.equal(page.storage.get('metronome.voice.10.selected.v1'), 'second');
-    assert.equal(page.soundInput.value, 'my-voice');
+    assert.equal(page.soundInput.value, page.recorder.voiceValue(page.recorder.activeId));
     assert.equal(page.clock.buffers[0].duration, 0.3);
 });
 
@@ -335,7 +342,7 @@ test('the selected named voice restores on a new visit without fetching every re
     page.resolve(page.requests[1], page.detail('second', 'Second'));
     await settle();
     assert.equal(page.recorder.activeId, 'second');
-    assert.equal(page.soundInput.value, 'my-voice');
+    assert.equal(page.soundInput.value, page.recorder.voiceValue(page.recorder.activeId));
 });
 
 test('switching voices ignores an earlier response and a later instrument choice', async () => {
@@ -349,7 +356,7 @@ test('switching voices ignores an earlier response and a later instrument choice
     page.resolve(page.requests[2], page.detail('first'));
     await older;
     assert.equal(page.recorder.activeId, 'second');
-    assert.equal(page.node('choice-input').value, 'second');
+    assert.equal(page.soundInput.value, 'voice:second');
     const pending = page.recorder.choose('first');
     page.soundInput.value = 'cowbell';
     page.recorder.remember('cowbell');
@@ -370,6 +377,7 @@ test('renaming changes only the selected name and uses its optimistic revision',
     page.resolve(page.requests[2], { id: 'first', name: 'Warm voice', revision: 'new' });
     await renaming;
     assert.equal(page.recorder.library[0].name, 'Warm voice');
+    assert.equal(page.group.children[0].text, 'Warm voice');
     assert.equal(page.recorder.revision, 'new');
     assert.equal(page.clock.buffers, buffers);
     assert.equal(page.node('rename-panel').hidden, true);
@@ -405,7 +413,7 @@ test('deleting the selected voice keeps other recordings and selects the next on
     await deleting;
     assert.equal(page.recorder.library.length, 1);
     assert.equal(page.recorder.activeId, 'second');
-    assert.equal(page.soundInput.value, 'my-voice');
+    assert.equal(page.soundInput.value, page.recorder.voiceValue(page.recorder.activeId));
 });
 
 test('deleting the last recording restores an instrument and leaves recording available', async () => {
@@ -415,10 +423,10 @@ test('deleting the last recording restores an instrument and leaves recording av
     page.resolve(page.requests[2], { deleted: 'first' });
     await deleting;
     assert.equal(page.recorder.library.length, 0);
-    assert.equal(page.option.disabled, true);
+    assert.equal(page.option.disabled, false);
+    assert.equal(page.option.parentNode, page.soundInput);
     assert.equal(page.soundInput.value, 'click');
     assert.equal(page.node('start').disabled, false);
-    assert.equal(page.node('library').hidden, true);
 });
 
 test('closing during a rename cannot show a late success or change the playing voice', async () => {
@@ -512,4 +520,122 @@ test('canceling the countdown never turns the cue green or starts a late recordi
     assert.equal(captured, false);
     assert.equal(page.node('cue').dataset.state, 'idle');
     assert.equal(page.node('panel').hidden, true);
+});
+
+test('Sound keeps the four instruments and groups every recording by name without My voice', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    page.recorder.library.push({ id: 'second', name: 'Calm counting', revision: 'second-rev' });
+    page.recorder.summary();
+    assert.equal(page.option.parentNode, null);
+    assert.equal(page.group.parentNode, page.soundInput);
+    assert.equal(page.group.label, 'Recorded voices');
+    assert.deepEqual(page.soundInput.children.slice(0, 4).map(option => option.value), ['click', 'woodblock', 'beep', 'cowbell']);
+    assert.deepEqual(Array.from(page.group.children, option => option.value), ['voice:first', 'voice:second']);
+    assert.deepEqual(Array.from(page.group.children, option => option.text), ['Calm counting', 'Calm counting']);
+    assert.equal(page.soundInput.value, 'click');
+});
+
+test('choosing a named Sound loads that recording and other settings keep its displayed name', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    page.recorder.library.push({ id: 'second', name: 'Second voice', revision: 'second-rev' });
+    page.recorder.summary();
+    page.soundInput.value = 'voice:second';
+    assert.equal(page.recorder.selectSound(page.soundInput.value), true);
+    assert.equal(page.requests[2].url, '/voice/second');
+    page.resolve(page.requests[2], page.detail('second', 'Second voice'));
+    await settle();
+    assert.equal(page.soundInput.value, 'voice:second');
+    assert.equal(page.recorder.sound, 'my-voice');
+    page.recorder.syncSound('my-voice');
+    assert.equal(page.soundInput.value, 'voice:second');
+    page.recorder.syncSound('beep');
+    page.recorder.remember('beep');
+    assert.equal(page.soundInput.value, 'beep');
+    assert.equal(page.recorder.selectSound('beep'), false);
+});
+
+test('My voice is available only for an empty library and starts the recorder without changing the instrument', async () => {
+    const page = recorderHarness();
+    await load(page);
+    assert.equal(page.option.parentNode, page.soundInput);
+    assert.equal(page.option.hidden, false);
+    assert.equal(page.group.parentNode, null);
+    let recording = false;
+    page.recorder.record = () => { recording = true; };
+    page.soundInput.value = 'my-voice';
+    assert.equal(page.recorder.selectSound('my-voice'), true);
+    assert.equal(recording, true);
+    assert.equal(page.soundInput.value, 'click');
+    assert.equal(page.clock.buffers, null);
+});
+
+test('a row preview plays another recording without replacing the selected sound', async () => {
+    const page = recorderHarness({ saved: true, preferred: true });
+    await load(page);
+    page.recorder.library.push({ id: 'second', name: 'Second voice', revision: 'second-rev' });
+    const playing = page.recorder.previewRecording('second');
+    await settle();
+    assert.equal(page.requests[2].url, '/voice/second');
+    page.resolve(page.requests[2], page.detail('second', 'Second voice'));
+    await playing;
+    assert.equal(page.recorder.activeId, 'first');
+    assert.equal(page.soundInput.value, 'voice:first');
+    assert.equal(page.recorder.previewingId, 'second');
+    assert.equal(page.recorder.previewSources.length, 3);
+    await page.recorder.previewRecording('second');
+    assert.equal(page.recorder.previewingId, null);
+    assert.equal(page.recorder.previewSources.length, 0);
+});
+
+test('closing a menu during preview loading prevents late sound', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    page.recorder.library.push({ id: 'second', name: 'Second', revision: 'second-rev' });
+    const playing = page.recorder.previewRecording('second');
+    await settle();
+    page.recorder.stopPreview();
+    page.resolve(page.requests[2], page.detail('second'));
+    await playing;
+    assert.equal(page.recorder.previewSources.length, 0);
+    assert.equal(page.recorder.previewingId, null);
+    assert.equal(page.soundInput.value, 'click');
+});
+
+test('the edit row action renames its target while preserving another selected voice', async () => {
+    const page = recorderHarness({ saved: true, preferred: true });
+    await load(page);
+    const buffers = page.clock.buffers;
+    page.recorder.library.push({ id: 'second', name: 'Second', revision: 'second-rev' });
+    page.recorder.edit('second');
+    assert.equal(page.node('rename-input').value, 'Second');
+    page.node('rename-input').value = 'Gentle voice';
+    const renaming = page.recorder.rename();
+    assert.equal(page.requests[2].url, '/voice/second');
+    assert.equal(JSON.parse(page.requests[2].options.body).revision, 'second-rev');
+    page.resolve(page.requests[2], { id: 'second', name: 'Gentle voice', revision: 'new-second-rev' });
+    await renaming;
+    assert.equal(page.recorder.library[1].name, 'Gentle voice');
+    assert.equal(page.recorder.activeId, 'first');
+    assert.equal(page.soundInput.value, 'voice:first');
+    assert.equal(page.clock.buffers, buffers);
+});
+
+test('the delete row action removes only its target while preserving the selected voice', async () => {
+    const page = recorderHarness({ saved: true, preferred: true });
+    await load(page);
+    const buffers = page.clock.buffers;
+    page.recorder.library.push({ id: 'second', name: 'Second', revision: 'second-rev' });
+    page.recorder.confirmDelete('second');
+    assert.equal(page.node('delete-label').textContent, 'Delete “Second”?');
+    const deleting = page.recorder.remove();
+    assert.equal(page.requests[2].url, '/voice/second');
+    page.resolve(page.requests[2], { deleted: 'second' });
+    await deleting;
+    assert.equal(page.recorder.library.length, 1);
+    assert.equal(page.recorder.activeId, 'first');
+    assert.equal(page.soundInput.value, 'voice:first');
+    assert.equal(page.clock.buffers, buffers);
+    assert.equal(page.node('delete-confirm').hidden, true);
 });

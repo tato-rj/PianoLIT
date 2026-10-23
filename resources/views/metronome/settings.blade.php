@@ -20,14 +20,10 @@
                 </div>
             </div>
             <div>
-                <div data-settings-field>
-                    <label class="h6 mb-2" for="metronome-sound">Sound</label>
-                    @select(['bag' => 'default', 'id' => 'metronome-sound', 'name' => 'metronome-sound', 'label' => null, 'grid' => 'mb-0', 'choices' => ['click' => 'Classic click', 'woodblock' => 'Woodblock', 'beep' => 'Beep', 'cowbell' => 'Cowbell'] + (auth('web')->check() ? ['my-voice' => 'My voice'] : []), 'value' => 'click', 'required' => false])
-                </div>
                 @auth('web')
                     @include('components.voice-recorder')
                 @else
-                    <a href="{{ route('metronome.voice.start') }}" class="btn btn-secondary mt-3">@icon('mic')Sign in to record my voice</a>
+                    @include('components.metronome-sound')
                 @endauth
             </div>
             <fieldset data-settings-field>

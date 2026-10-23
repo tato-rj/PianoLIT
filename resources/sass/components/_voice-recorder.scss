@@ -1,4 +1,11 @@
 // State cues use the shared status colors; controls retain their shared finish.
+.metronome-sound__options {
+    max-height: min(16rem, 40dvh);
+    overflow-y: auto;
+}
+
+.metronome-sound [data-sound-choice] { min-width: 0; }
+
 .voice-recorder__cue {
     --cue-color: var(--color-warning);
     --cue-text: var(--bs-warning-text-emphasis);

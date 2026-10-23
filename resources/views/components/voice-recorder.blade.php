@@ -1,24 +1,17 @@
-<section class="voice-recorder mt-3" @if($preview ?? false) data-ds-preview @else data-voice-recorder data-url="{{ route('metronome.voice.show') }}" data-csrf="{{ csrf_token() }}" data-owner="{{ auth('web')->id() }}" @endif aria-label="Your counting voice">
+<section class="voice-recorder" @if($preview ?? false) data-ds-preview @else data-voice-recorder data-url="{{ route('metronome.voice.show') }}" data-csrf="{{ csrf_token() }}" data-owner="{{ auth('web')->id() }}" @endif aria-label="Your counting voice">
+    @if($preview ?? false)
+        @include('components.metronome-sound', ['id' => 'ds-voice-sound', 'canRecord' => true, 'recordings' => [['id' => 'sample', 'name' => 'Calm counting'], ['id' => 'soft', 'name' => 'Soft counting']], 'value' => 'voice:sample'])
+    @else
+        @include('components.metronome-sound')
+    @endif
     <div data-voice-summary>
-        <p class="small text-muted mb-2" data-voice-summary-text>Count in your own voice.</p>
-        <div data-voice-library @unless($preview ?? false) hidden @endunless>
-            @select(['bag' => 'default', 'id' => 'metronome-voice-choice', 'name' => 'metronome_voice_choice', 'label' => 'Saved voices', 'grid' => 'mb-2', 'choices' => ($preview ?? false) ? ['sample' => 'My voice', 'soft' => 'Soft counting'] : [], 'value' => 'sample', 'required' => false])
-            <div class="d-flex flex-wrap gap-2 mb-2">
-                <button type="button" class="btn btn-secondary" data-voice-listen>@icon('play')Listen</button>
-                <button type="button" class="btn btn-secondary" data-voice-rename>Rename</button>
-                <button type="button" class="btn btn-secondary" data-voice-delete>Delete</button>
-            </div>
-            <div data-voice-rename-panel hidden>
+            <div class="mt-3" data-voice-rename-panel hidden>
                 @input(['bag' => 'default', 'id' => 'metronome-voice-rename', 'name' => 'metronome_voice_rename', 'label' => 'Recording name', 'grid' => 'mb-2', 'limit' => 60, 'required' => false, 'autocomplete' => 'off'])
                 <div class="d-flex gap-2 mb-3">
                     <button type="button" class="btn btn-secondary" data-voice-rename-cancel>Cancel</button>
                     <button type="button" class="btn btn-primary" data-voice-rename-save>Save name</button>
                 </div>
             </div>
-        </div>
-        <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-secondary" data-voice-start @unless($preview ?? false) disabled @endunless>@icon('mic')<span data-voice-start-label>Record my voice</span></button>
-        </div>
     </div>
     <div data-voice-panel hidden>
         <p class="small text-muted text-center mb-2" data-voice-step role="status" aria-live="polite"></p>

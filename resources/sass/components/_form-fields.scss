@@ -73,6 +73,7 @@ textarea.form-control {
 // Multiple/size selects remain list boxes and keep their native row count.
 select.form-control,
 select.form-select,
+.form-control-select-trigger,
 .admin-text-improve-options select {
     @include pianolit-select-arrow;
 
