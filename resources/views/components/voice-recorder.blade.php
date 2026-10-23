@@ -37,13 +37,6 @@
             <button type="button" class="btn btn-primary flex-fill" data-voice-save hidden>Save and use</button>
         </div>
     </div>
-    <div class="mt-3" data-voice-delete-confirm hidden>
-        <p class="mb-2" data-voice-delete-label>Delete this recording?</p>
-        <div class="d-flex gap-2">
-            <button type="button" class="btn btn-secondary" data-voice-keep>Keep it</button>
-            <button type="button" class="btn btn-danger" data-voice-confirm-delete>Delete recording</button>
-        </div>
-    </div>
     <p class="small mt-3 mb-0" data-voice-status role="status" aria-live="polite"></p>
     <button type="button" class="btn btn-secondary mt-2" data-voice-reload hidden>Reload recording</button>
     <a href="{{ route('metronome.voice.start') }}" class="btn btn-secondary mt-2" data-voice-signin hidden>Sign in</a>

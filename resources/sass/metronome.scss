@@ -268,6 +268,11 @@ body {
     .conductor-halo { display: none; }
 }
 
+.metronome-settings .bottom-sheet__panel {
+    max-width: 560px;
+    margin: 0 auto;
+}
+
 .metronome-settings[data-recording] [data-settings-field] {
     display: none !important;
 }

@@ -61,8 +61,9 @@ welcome messages. ImageMagick 7 rebuilds the static assets with:
 python3 scripts/build-welcome-email-assets.py
 ```
 
-These are compositions of existing artwork and real screenshots, without AI
-illustrations. The approved rounded icon is upright within an image displayed
+The logo and device assets are compositions of existing artwork and real
+screenshots. The hub thumbnails reuse the approved editorial artwork already on
+the homepage; this update generates no new illustrations. The approved rounded icon is upright within an image displayed
 at 130px wide with proportional height. A thin light-gray outline follows the
 icon's own silhouette so the white keys remain visible against the email's white
 background. The image retains a small floating gap above a soft floor shadow.
@@ -81,18 +82,26 @@ Rebuild these two variants without touching the website composition using:
 python3 scripts/build-welcome-email-assets.py --platform-mockups-only
 ```
 
-The resource
-mockup uses a browser capture of the current local Circle of Fifths tool; its crop
-excludes debug chrome and local test promotions. The source capture is kept in
-`resources/email-sources/welcome/theory.png`, outside the published image tree.
-The six runtime assets live in `resources/images/emails/welcome/`; production
-copies them to `public/images/emails/welcome/` and versions them in the Mix manifest.
-Each message loads its matching device composite, the shared logo and resource
-image, plus the App Store badge when it offers the iOS app. The welcome hero and
-resource section remain the same.
+The shared `welcome/hubs.blade.php` section highlights Learn, Blog, Metronome,
+Shop and Games in compact alternating rows, followed by one Explore PianoLIT.com
+button. The existing app section covers the homepage's other two projects.
+Learn includes the retained theory tools, courses and quizzes; Shop's new hub and
+Games explicitly say coming soon because their root destinations still do.
+No retired standalone games are restored or advertised as available.
 
-The resource copy promotes retained theory tools, quizzes and the blog through
-the main website. It does not restore retired standalone games. URLs use the
+The five `hub-*.jpg` files are 420px square crops of the existing approved
+`resources/images/home/editorial/` artwork, displayed at up to 140px. JPEG avoids
+depending on inbox WebP support. Use `--hubs-only` to rebuild these thumbnails.
+The original resource-browser asset and source capture are retained, but no
+longer appear in the welcomes. All eleven welcome assets live in
+`resources/images/emails/welcome/`; production copies them to the matching public
+directory and versions them in the Mix manifest. A message loads seven images
+(logo, device composite and five hubs), plus the App Store badge when applicable.
+HTML uses inline-styled presentation tables with alternating `dir` and left-to-right
+text, retaining compact two-column rows on narrow screens. Plain text includes
+all hub descriptions and availability labels with the same final link.
+
+URLs use the
 configured public main host, named web app route and existing App Store URL;
 assets cannot inherit the admin preview's host. Scheme-less `APP_URL` is normalized
 to HTTPS in production. For a `.test` host it uses the current request's scheme,

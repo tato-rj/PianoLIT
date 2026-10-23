@@ -180,7 +180,9 @@ class MetronomeVoiceTest extends ReviewTestCase
         $this->get(route('metronome.home'))->assertOk()->assertSee('data-voice-recorder', false)
             ->assertSee('data-url="'.route('metronome.voice.show').'"', false)->assertSee('data-csrf=', false)
             ->assertDontSee('metronome_voice_choice')->assertSee('Save and use')->assertSee('metronome_voice_name')
-            ->assertSee('form-control pianolit-input', false)->assertDontSee('Sign in to record my voice');
+            ->assertSee('form-control pianolit-input', false)->assertDontSee('Sign in to record my voice')
+            ->assertDontSee('data-voice-delete-confirm', false)
+            ->assertDontSee('Keep it')->assertDontSee('data-voice-confirm-delete', false);
     }
 
     public function test_settings_reuse_the_favorites_bottom_panel_with_native_dismissal()

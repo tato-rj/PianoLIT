@@ -38,7 +38,8 @@ icons also regenerates this derivative, without changing the two icon masters.
 
 `components.bottom-sheet` and `components.bottom-sheet-header` provide the shared
 bottom offcanvas used by the web-app Save to panel and standalone metronome
-settings. Reuse their 1040px content width, viewport height cap, heading and
+settings. The favorites panel keeps its 1040px content cap; metronome settings
+center their content at a maximum of 560px. Reuse the viewport height cap, heading and
 `components.bottom-sheet-handle`; Bootstrap supplies the backdrop, focus trap,
 transitions and dismissal. Keep content scrolling inside the panel. The
 Components section includes an interactive specimen of these same components.
@@ -56,7 +57,9 @@ renaming. `components.metronome-sound` renders a custom Sound menu whose trigger
 uses `form-control` and the shared `form-control-select-trigger` arrow mixin, so it
 matches native PianoLIT selects. The popup reuses Bootstrap's shared dropdown
 surface/items, with Recorded voices grouped beneath instruments. The shared
-`metronome-sound-voice` row has play/stop, edit-name and delete icon buttons. A
+`metronome-sound-voice` row has play/stop, edit-name and delete icon buttons.
+Deleting a voice uses the browser’s native `window.confirm` with its name;
+there is no inline delete message or custom modal. A
 full-width standard `.btn.btn-sm` New recording button stays visible
 directly beneath the closed Sound control, outside the popup.
 A hidden shared `@select` retains the existing value contract (`choiceGroups`
@@ -510,7 +513,8 @@ retains typography, colors and link states. Web app, admin and embedded mobile
 layouts retain their own footers.
 
 The Shop and Games root placeholders use
-`projects.coming-soon`, their matching versioned card SVGs and the shared header.
+`projects.coming-soon` with the shared header/footer, centered Coming up soon
+message and return link. Arthur removed all illustrations from these placeholders.
 Their layout lives in `pages/_project-coming-soon.scss`; content URLs below those
 roots remain available. Return links use the named main-site route, including
 from Games and when `APP_URL` has no scheme.
@@ -604,8 +608,8 @@ Versioned artwork lives under `resources/images/home/editorial/`. Card WebPs are
 720 × 960; the piano is a transparent 1402 × 1122 WebP. See
 `docs/HOMEPAGE_ARTWORK.md` for source references and the exact built-in imagegen
 prompts. The older SVGs under `resources/images/home/projects/` and
-`scripts/build-home-project-mockups.js` remain for existing hub illustrations;
-the homepage no longer consumes them.
+`scripts/build-home-project-mockups.js` are retained; homepage cards use the
+editorial WebPs, while coming-soon pages show no artwork.
 
 ### Decorative homepage piano
 
@@ -738,4 +742,4 @@ when notes change. The standalone Chord Finder script also uses versioned `mix()
 
 ### Standalone metronome settings
 
-`metronome.index` retains Arthur’s original full-screen canvas and animated native dialog sheet. Only this page loads `css/metronome.css` and `js/metronome.js`. The canvas defaults to `--color-primary`, with the matching `#0055fe` reset value in the local preference module. Its tempo numeral retains the original thin system face; the settings inherit PianoLIT body/heading typography and standard sizes from `app.css`. Reuse `components.segmented-control`, `@select`, `@toggle`, `.btn-close`, `.btn.btn-secondary` and `.btn.btn-primary`, including their existing shadows. `components.form.color` supplies the native `.form-control.form-control-color` control, also shown in Settings → Design System. Local settings CSS owns only the sheet geometry, scrolling and animation.
+`metronome.index` retains Arthur’s original full-screen canvas and uses the shared Bootstrap bottom sheet for settings. Only this page loads `css/metronome.css` and `js/metronome.js`. The canvas defaults to `--color-primary`, with the matching `#0055fe` reset value in the local preference module. Its tempo numeral retains the original thin system face; the settings inherit PianoLIT body/heading typography and standard sizes from `app.css`. Reuse `components.segmented-control`, `@select`, `@toggle`, `.btn-close`, `.btn.btn-secondary` and `.btn.btn-primary`, including their existing shadows. `components.form.color` supplies the native `.form-control.form-control-color` control, also shown in Settings → Design System. Local settings CSS caps the centered content at 560px and hides unrelated fields during recording; shared bottom-sheet styles and Bootstrap own the panel geometry, scrolling and transitions.

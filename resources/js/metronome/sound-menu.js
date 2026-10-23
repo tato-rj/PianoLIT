@@ -33,7 +33,7 @@ export class SoundMenu {
             if (!id) return;
             if (button.matches('[data-sound-play]')) this.onPlay(id);
             if (button.matches('[data-sound-edit]')) { this.close(); this.onEdit(id); }
-            if (button.matches('[data-sound-delete]')) { this.close(); this.onDelete(id); }
+            if (button.matches('[data-sound-delete]')) { this.close(); this.trigger.focus(); this.onDelete(id); }
         });
     }
 

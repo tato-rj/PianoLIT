@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compose the welcome assets from approved artwork and real product screenshots.
 
-Requires ImageMagick 7. No generated illustrations or app UI are used.
+Requires ImageMagick 7. Reuses existing assets without generating artwork or UI.
 The tool source is a local browser capture; crop excludes debug UI/test products.
 """
 from pathlib import Path
@@ -16,6 +16,7 @@ selection = parser.add_mutually_exclusive_group()
 selection.add_argument('--logo-only', action='store_true', help='Rebuild only the floating logo, preserving the screenshot mockups.')
 selection.add_argument('--platform-mockups-only', action='store_true', help='Rebuild only the web app/iOS device variants, preserving the website mockup.')
 selection.add_argument('--badge-only', action='store_true', help='Export only the supplied Apple download badge for email use.')
+selection.add_argument('--hubs-only', action='store_true', help='Export compact JPEG crops of the approved homepage hub artwork.')
 args = parser.parse_args()
 
 
@@ -27,6 +28,17 @@ def app_store_badge():
     # The supplied vector matches the existing approved Apple download artwork.
     magick('-background', 'none', '-density', '288', ROOT / 'resources/images/apple/download.svg',
            '-resize', '540x160!', '-strip', OUTPUT / 'app-store.png')
+
+
+def hub_artwork():
+    # Remove the homepage's empty heading space. JPEGs work in email clients
+    # without WebP support, and 420px supplies a 3x source for the 140px rows.
+    for name in ['learn', 'blog', 'metronome', 'shop', 'games']:
+        top = 180 if name == 'metronome' else 240
+        magick(ROOT / f'resources/images/home/editorial/{name}.webp',
+               '-crop', f'720x720+0+{top}', '+repage', '-resize', '420x420',
+               '-strip', '-sampling-factor', '4:2:0', '-quality', '85',
+               OUTPUT / f'hub-{name}.jpg')
 
 
 def rounded_screen(source, width, height, radius, output, temp):
@@ -69,6 +81,9 @@ def platform_mockups(temp):
 
 with tempfile.TemporaryDirectory(prefix='pianolit-welcome-') as temp:
     temp = Path(temp)
+    if args.hubs_only:
+        hub_artwork()
+        raise SystemExit(0)
     if args.badge_only:
         app_store_badge()
         print(OUTPUT / 'app-store.png')
@@ -121,5 +136,6 @@ with tempfile.TemporaryDirectory(prefix='pianolit-welcome-') as temp:
 
     platform_mockups(temp)
     app_store_badge()
+    hub_artwork()
     for name in ['floating-logo.png', 'app-devices.jpg', 'tablet-iphone.jpg', 'webapp-devices.jpg', 'resource-browser.jpg', 'app-store.png']:
         print(OUTPUT / name)

@@ -13,7 +13,7 @@ The original source was copied from `/Users/arthur/Desktop/Websites/ArthurVillar
 - The same audio-clock scheduling, preparation beats, conductor paths, gesture cancellation, reduced-motion handling, recovery from stalled scheduling and keyboard isolation while settings are open.
 - Browser-local settings and a five-second settled-tempo save. Instruments work without an account. Private named voice recordings require a web session; using a recording and its selected identity are remembered separately per account on this browser. Storage failure leaves controls usable for the current visit.
 
-Default/reset color is `#0055fe`; the canvas CSS references `--color-primary`. The tempo numeral retains the original thin system face. The settings use PianoLIT typography, segmented controls, `@select`, `@toggle`, the shared native color field and standard buttons/shadows. The full-screen layout intentionally has no public header/footer. Settings use the same Bootstrap bottom offcanvas as the web-app Save to panel: shared close handle, heading, 1040px content width, backdrop, focus trap and viewport height cap. Bootstrap handles transitions, Escape/backdrop/Done dismissal and reduced motion. Closing immediately cancels capture and previews; keyboard/tempo controls stay isolated until the panel is hidden, then focus returns to Settings. There is no separate dialog animation.
+Default/reset color is `#0055fe`; the canvas CSS references `--color-primary`. The tempo numeral retains the original thin system face. The settings use PianoLIT typography, segmented controls, `@select`, `@toggle`, the shared native color field and standard buttons/shadows. The full-screen layout intentionally has no public header/footer. Settings use the same Bootstrap bottom offcanvas as the web-app Save to panel: shared close handle, heading, backdrop, focus trap and viewport height cap. Metronome content is centered at a maximum of 560px, shrinking to the available phone width. Bootstrap handles transitions, Escape/backdrop/Done dismissal and reduced motion. Closing immediately cancels capture and previews; keyboard/tempo controls stay isolated until the panel is hidden, then focus returns to Settings. There is no separate dialog animation.
 
 The shared `components.project-watermark` places a transparent white PianoLIT icon with a white rounded-square border at the top left, linking to the main homepage. Its opacity increases from 30% to 65% on hover or keyboard focus. Its 52px target stays above the tempo edge controls and respects phone safe areas; settings and their backdrop remain above it. Enter on the focused link keeps normal navigation instead of toggling playback.
 
@@ -45,12 +45,12 @@ sound and preview the chosen beat count. New recording adds another voice withou
 replacing existing ones. Sound lists every named recording in a Recorded voices
 group beneath the four instruments; there is no second recording selector.
 Each voice row has play/stop, edit-name and delete icon buttons. Previewing,
-renaming or deleting another row preserves the selected sound. Deletion still
-asks for confirmation. A full-width `.btn-sm` New recording button stays visible
+renaming or deleting another row preserves the selected sound. Deletion asks for confirmation with the browser’s native confirm dialog, naming
+the target recording. Cancel sends no delete request. A full-width `.btn-sm` New recording button stays visible
 directly below the Sound control, outside the menu. The generic My voice option
 appears only when the library is empty and starts recording. Names use shared `@input` fields, allow up to 60
 characters, and each account can keep up to 20 recordings. Cancel preserves all
-saved recordings. Deletion confirms the selected name inline. Closing settings or
+saved recordings. There is no inline deletion message or custom delete modal. Closing settings or
 hiding/leaving the page stops the microphone and preview; a late permission grant
 is immediately released.
 

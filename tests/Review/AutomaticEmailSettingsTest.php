@@ -218,14 +218,14 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
             $dom = new \DOMDocument; @$dom->loadHTML($sample['html']);
             $xpath = new \DOMXPath($dom);
             $this->assertCount(2, $xpath->query('//h2'));
-            $this->assertCount($key === 'account-welcome-ios' ? 3 : 4, $xpath->query('//img[@alt and @width]'));
+            $this->assertCount($key === 'account-welcome-ios' ? 7 : 8, $xpath->query('//img[@alt and @width]'));
             $buttons = $xpath->query('//a[contains(concat(" ", normalize-space(@class), " "), " welcome-button ")]');
             $this->assertCount($buttonCount, $buttons);
             $this->assertSame('http://localhost', $buttons[$buttonCount - 1]->getAttribute('href'));
             $appUrls = array_map(function ($button) { return $button->getAttribute('href'); }, iterator_to_array($buttons));
             $this->assertSame($key !== 'account-welcome', in_array(route('webapp.discover'), $appUrls));
             $this->assertSame($key !== 'account-welcome-ios', in_array(config('app.stores.ios'), $appUrls));
-            foreach ($xpath->query('//h2') as $heading) {
+            foreach ($xpath->query('//h2 | //h3') as $heading) {
                 $this->assertStringContainsString($heading->textContent, $sample['text']);
             }
             foreach (['Welcome, Jamie.', 'same', 'account', 'theory tools', 'quiz', 'blog', 'contact@pianolit.com'] as $copy) {
@@ -258,7 +258,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $file = $directory.'/emails/welcome/webapp.blade.php';
         $view = file_get_contents(resource_path('views/emails/welcome/webapp.blade.php'));
         file_put_contents($file, str_replace(
-            ['A world of piano music, ready to explore.', 'Take PianoLIT with you.', 'Get the iOS app'],
+            ['PianoLIT is where pianists discover new pieces and find inspiration', 'Take PianoLIT with you.', 'Get the iOS app'],
             ['Your edited welcome introduction.', 'Your edited app paragraph.', 'Your edited button'], $view
         ));
         $finder = app('view')->getFinder();
@@ -293,7 +293,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
                 $sample = app(\App\Services\Admin\AutomaticEmails::class)->render($key);
                 $dom = new \DOMDocument; @$dom->loadHTML($sample['html']);
                 $images = (new \DOMXPath($dom))->query('//img');
-                $this->assertCount($key === 'account-welcome-ios' ? 3 : 4, $images);
+                $this->assertCount($key === 'account-welcome-ios' ? 7 : 8, $images);
                 foreach ($images as $image) {
                     $url = $image->getAttribute('src');
                     $this->assertStringStartsWith($scheme.'://pianolit.test/images/emails/welcome/', $url);

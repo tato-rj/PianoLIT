@@ -13,9 +13,11 @@ while PHP mail classes handle runtime data and delivery.
 | Web app signup | `welcome/webapp.blade.php` |
 | iOS signup | `welcome/ios.blade.php` |
 
-Each file contains that email's introduction, section headings, paragraphs,
-button labels and screenshot filename. Changes to a section in one version do
-not change the other versions. The same view supplies HTML and plain text.
+Each variant contains its introduction, platform section, button labels and
+screenshot filename. Changes there affect only that version. The hub section is
+shared: edit `welcome/hubs.blade.php` to change its heading, introduction, five
+hub descriptions, status labels, artwork or final PianoLIT.com button across
+all three welcomes. The same views supply HTML and plain text.
 Keep `{{ $firstName }}`, URL variables, Blade directives and component arguments
 when editing the surrounding wording. Leave `mix(...)` around screenshot paths
 so browsers load the correct asset version.
@@ -26,13 +28,26 @@ Shared welcome layout parts are here:
 | --- | --- |
 | Logo markup and greeting | `components/html/welcome/hero.blade.php` |
 | Section markup | `components/html/welcome/section.blade.php` |
+| Shared hub copy and image choices | `welcome/hubs.blade.php` |
+| Alternating hub section and rows | `components/html/welcome/{hubs,hub}.blade.php` |
 | Button markup | `components/html/welcome/button.blade.php` |
 | Outer layout, preheader and footer | `components/html/welcome/message.blade.php` |
 | Plain-text layout counterparts | `components/text/welcome/` |
 
 Shared component changes affect all three welcomes. If changing shared greeting
 or footer wording, update its plain-text counterpart too. Introduction and section
-copy are automatically taken from each variant's body view in both formats.
+copy are automatically taken from the body views in both formats. The hub rows
+alternate text/image, then image/text using `imageLeft => true` on every second
+row. Their table columns stay side by side on phones, with images scaling down.
+Shop's new hub and Games are labeled as coming soon; update these labels when
+their homepage destinations launch.
+
+The hub thumbnails reuse the existing homepage artwork as small JPEGs for email
+compatibility. Rebuild only these images without changing the device mockups:
+
+```sh
+python3 scripts/build-welcome-email-assets.py --hubs-only
+```
 
 For shared colors, font sizes, logo size or spacing, edit
 `resources/sass/emails/welcome.scss` and run:

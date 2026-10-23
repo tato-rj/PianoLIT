@@ -34,7 +34,7 @@ class LocalEmailImagesTest extends ReviewTestCase
     private function assertWelcomeImages($message, $hasAppStoreBadge)
     {
         $images = $this->images($message);
-        $this->assertCount($hasAppStoreBadge ? 4 : 3, $images);
+        $this->assertCount($hasAppStoreBadge ? 8 : 7, $images);
         $filenames = array_map(function ($image) { return $image->getFilename(); }, $images);
         $this->assertSame($hasAppStoreBadge, in_array('app-store.png', $filenames, true));
         $this->assertStringNotContainsString('src="http', $message->getBody());

@@ -24,7 +24,8 @@ if (config('database.default') !== 'sqlite' || config('database.connections.sqli
 config(['app.short_url' => 'pianolit.com', 'app.debug' => false, 'activity.enabled' => false, 'attribution.enabled' => false]);
 $output = $argv[1] ?? sys_get_temp_dir().'/pianolit-welcome-preview';
 if (!is_dir($output.'/assets')) mkdir($output.'/assets', 0755, true);
-foreach (['floating-logo.png', 'app-devices.jpg', 'tablet-iphone.jpg', 'webapp-devices.jpg', 'resource-browser.jpg', 'app-store.png'] as $file) {
+foreach (['floating-logo.png', 'app-devices.jpg', 'tablet-iphone.jpg', 'webapp-devices.jpg', 'resource-browser.jpg', 'app-store.png',
+    'hub-learn.jpg', 'hub-blog.jpg', 'hub-metronome.jpg', 'hub-shop.jpg', 'hub-games.jpg'] as $file) {
     copy(resource_path('images/emails/welcome/'.$file), $output.'/assets/'.$file);
 }
 foreach (['website' => 'account-welcome-website', 'webapp' => 'account-welcome', 'ios' => 'account-welcome-ios'] as $file => $key) {

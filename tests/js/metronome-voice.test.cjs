@@ -164,7 +164,7 @@ test('recording cancellation settles the capture and releases the microphone', a
     assert.equal(disconnected, true);
 });
 
-function recorderHarness({ saved = false, preferred = false } = {}) {
+function recorderHarness({ saved = false, preferred = false, confirmDeletion = true } = {}) {
     const element = properties => ({ hidden: false, disabled: false, dataset: {}, textContent: '', value: '', style: {}, listeners: {}, children: [], parentNode: null,
         append(...children) { children.forEach(child => { child.remove(); this.children.push(child); child.parentNode = this; }); },
         replaceChildren(...children) { this.children.forEach(child => { child.parentNode = null; }); this.children = []; this.append(...children); },
@@ -177,6 +177,7 @@ function recorderHarness({ saved = false, preferred = false } = {}) {
     };
     const requests = [];
     const sounds = [];
+    const confirmations = [];
     const storage = new Map([['metronome.voice.10.v1', preferred ? '1' : '0']]);
     const root = { dataset: { url: '/voice', owner: 10, csrf: 'csrf' }, querySelector: selector => selector.startsWith('[name=') ? node(({ '[name="metronome_voice_name"]': 'name-input', '[name="metronome_voice_rename"]': 'rename-input' })[selector]) : node(selector.slice(12, -1)), querySelectorAll: () => [] };
     const dialog = { dataset: {}, getAttribute() { return this.open ? 'true' : null; } };
@@ -191,7 +192,8 @@ function recorderHarness({ saved = false, preferred = false } = {}) {
         document: { createElement: tag => element({ tagName: tag.toUpperCase() }) },
         voiceBase64: context.api.voiceBase64, voiceBytes: context.api.voiceBytes,
         localStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) },
-        window: { AudioContext: function () { return audioContext; }, MediaRecorder: {}, isSecureContext: true },
+        window: { AudioContext: function () { return audioContext; }, MediaRecorder: {}, isSecureContext: true,
+            confirm(message) { confirmations.push(message); return confirmDeletion; } },
         navigator: { mediaDevices: { getUserMedia() {} } }, setTimeout: fn => fn(),
         fetch: (url, options) => new Promise(resolve => requests.push({ url, options, resolve })),
         VoiceCapture: class { cancel() {} },
@@ -203,7 +205,7 @@ function recorderHarness({ saved = false, preferred = false } = {}) {
     const detail = (id = 'first', name = 'Calm counting') => ({ id, name, revision: 'old', clips: ['YQ==', 'YQ==', 'YQ==', 'YQ=='] });
     const data = () => ({ recordings: saved ? [{ id: 'first', name: 'Calm counting', revision: 'old' }] : [], limit: 20 });
     const resolve = (request, body, status = 200) => request.resolve({ ok: status === 200, status, json: async () => body });
-    return { recorder, nodes, node, requests, sounds, storage, resolve, data, detail, clock, dialog, soundInput, option, group: recorder.voiceGroup };
+    return { recorder, nodes, node, requests, sounds, confirmations, storage, resolve, data, detail, clock, dialog, soundInput, option, group: recorder.voiceGroup };
 }
 const settle = async () => { for (let i = 0; i < 25; i++) await Promise.resolve(); };
 const load = async page => {
@@ -627,9 +629,8 @@ test('the delete row action removes only its target while preserving the selecte
     await load(page);
     const buffers = page.clock.buffers;
     page.recorder.library.push({ id: 'second', name: 'Second', revision: 'second-rev' });
-    page.recorder.confirmDelete('second');
-    assert.equal(page.node('delete-label').textContent, 'Delete “Second”?');
-    const deleting = page.recorder.remove();
+    const deleting = page.recorder.confirmDelete('second');
+    assert.deepEqual(page.confirmations, ['Delete “Second”?']);
     assert.equal(page.requests[2].url, '/voice/second');
     page.resolve(page.requests[2], { deleted: 'second' });
     await deleting;
@@ -637,5 +638,19 @@ test('the delete row action removes only its target while preserving the selecte
     assert.equal(page.recorder.activeId, 'first');
     assert.equal(page.soundInput.value, 'voice:first');
     assert.equal(page.clock.buffers, buffers);
-    assert.equal(page.node('delete-confirm').hidden, true);
+});
+
+
+test('canceling the native delete confirmation preserves every voice and sends no request', async () => {
+    const page = recorderHarness({ saved: true, preferred: true, confirmDeletion: false });
+    await load(page);
+    page.recorder.library.push({ id: 'second', name: 'Second', revision: 'second-rev' });
+    const buffers = page.clock.buffers;
+    await page.recorder.confirmDelete('second');
+    assert.deepEqual(page.confirmations, ['Delete “Second”?']);
+    assert.equal(page.requests.length, 2);
+    assert.equal(page.recorder.library.length, 2);
+    assert.equal(page.recorder.activeId, 'first');
+    assert.equal(page.soundInput.value, 'voice:first');
+    assert.equal(page.clock.buffers, buffers);
 });

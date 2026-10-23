@@ -58,8 +58,6 @@ export class VoiceRecorder {
         this.nameInput.addEventListener('keydown', event => {
             if (event.key === 'Enter') { event.preventDefault(); this.save(); }
         });
-        this.ui('keep').addEventListener('click', () => { this.ui('delete-confirm').hidden = true; });
-        this.ui('confirm-delete').addEventListener('click', () => this.remove());
         this.ui('reload').addEventListener('click', () => { this.cancel(); this.load(); });
         this.load();
     }
@@ -88,7 +86,7 @@ export class VoiceRecorder {
     syncSound(sound) {
         this.sound = sound;
         this.soundInput.value = sound === 'my-voice' && this.activeId ? this.voiceValue(this.activeId) : sound;
-        if (sound !== 'my-voice') this.ui('rename-panel').hidden = this.ui('delete-confirm').hidden = true;
+        if (sound !== 'my-voice') this.ui('rename-panel').hidden = true;
         this.controls();
     }
 
@@ -166,8 +164,6 @@ export class VoiceRecorder {
 
     summary() {
         this.soundOptions();
-        const deleteTarget = this.library.find(voice => voice.id === (this.deleteId || this.activeId));
-        this.ui('delete-label').textContent = `Delete “${deleteTarget?.name || 'this recording'}”?`;
         this.controls();
         this.ui('status').textContent = this.library.length >= this.limit ? 'You have 20 saved voices. Delete one to make room.'
             : this.supported ? '' : window.isSecureContext
@@ -190,18 +186,15 @@ export class VoiceRecorder {
         this.renameId = id;
         this.renameInput.value = voice.name;
         this.ui('rename-panel').hidden = false;
-        this.ui('delete-confirm').hidden = true;
         this.renameInput.focus();
     }
 
     confirmDelete(id) {
         const voice = this.library.find(voice => voice.id === id);
         if (!voice || this.saving) return;
-        this.deleteId = id;
-        this.ui('delete-label').textContent = `Delete “${voice.name}”?`;
-        this.ui('delete-confirm').hidden = false;
+        if (!window.confirm(`Delete “${voice.name}”?`)) return;
         this.ui('rename-panel').hidden = true;
-        this.ui('keep').focus();
+        return this.remove(id);
     }
 
     clearVoice() {
@@ -221,7 +214,7 @@ export class VoiceRecorder {
         this.loadingVoice = true;
         this.buffers = this.saved = [];
         this.clock.setVoiceBuffers(null);
-        this.ui('rename-panel').hidden = this.ui('delete-confirm').hidden = true;
+        this.ui('rename-panel').hidden = true;
         this.controls();
         this.ui('status').textContent = 'Loading recording…';
         try {
@@ -281,7 +274,6 @@ export class VoiceRecorder {
         this.dialog.dataset.recording = 'true';
         this.ui('summary').hidden = true;
         this.ui('panel').hidden = false;
-        this.ui('delete-confirm').hidden = true;
         this.ui('rename-panel').hidden = true;
         this.ui('review').hidden = true;
         this.ui('save').hidden = this.ui('retry').hidden = true;
@@ -340,12 +332,12 @@ export class VoiceRecorder {
         this.flow++;
         this.capture.cancel();
         this.stopPreview();
-        this.ui('panel').hidden = this.ui('delete-confirm').hidden = this.ui('rename-panel').hidden = true;
+        this.ui('panel').hidden = this.ui('rename-panel').hidden = true;
         this.ui('summary').hidden = false;
         delete this.dialog.dataset.recording;
         this.draft = [];
         this.draftBuffers = [];
-        this.renameId = this.deleteId = null;
+        this.renameId = null;
         this.cue('idle', '');
         this.summary();
     }
@@ -488,15 +480,14 @@ export class VoiceRecorder {
         finally { this.saving = false; this.ui('rename-save').disabled = false; this.controls(); }
     }
 
-    async remove() {
-        const target = this.library.find(voice => voice.id === (this.deleteId || this.activeId));
+    async remove(recordingId = this.activeId) {
+        const target = this.library.find(voice => voice.id === recordingId);
         if (this.saving || !target) return;
         const flow = this.flow;
         const { id, revision } = target;
         const active = id === this.activeId;
         this.saving = true;
         this.controls();
-        this.ui('confirm-delete').disabled = true;
         this.stopPreview();
         if (active) this.clock.stop();
         try {
@@ -508,13 +499,12 @@ export class VoiceRecorder {
             }
             const activate = this.sound === 'my-voice';
             this.library = this.library.filter(voice => voice.id !== id);
-            this.deleteId = null;
             if (active) this.clearVoice();
             this.cancel();
             if (active && this.library.length) await this.choose(this.library[0].id, { activate });
             else if (!this.library.length) this.remember('click');
         } catch (error) { if (flow === this.flow) this.failure(error); }
-        finally { this.saving = false; this.ui('confirm-delete').disabled = false; this.controls(); }
+        finally { this.saving = false; this.controls(); }
     }
 
     failure(error) {

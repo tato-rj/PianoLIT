@@ -114,7 +114,7 @@ class PublicProjectPagesTest extends ReviewTestCase
     }
 
     /** @dataProvider hubs */
-    public function test_hub_roots_share_the_header_and_matching_artwork_with_absolute_navigation($website, $hub, $name)
+    public function test_hub_roots_share_the_header_with_absolute_navigation($website, $hub, $name)
     {
         $this->useDomain($website);
         $origin = str_replace('://', '://'.$hub.'.', $website);
@@ -130,7 +130,10 @@ class PublicProjectPagesTest extends ReviewTestCase
         if ($hub === 'learn') {
             $response->assertSee('PianoLIT Learn')->assertSee('Interactive tools')->assertSee('Courses &amp; guides', false)->assertDontSee('Coming up soon!');
         } else {
-            $response->assertSee('Coming up soon!')->assertSee('images/home/projects/'.$hub.'.svg?id=', false);
+            $response->assertSee('Coming up soon!')
+                ->assertDontSee('images/home/editorial/'.$hub.'.webp', false)
+                ->assertDontSee('images/home/projects/'.$hub.'.svg', false);
+            $this->assertSame(0, $this->xpath($response->getContent())->query('//main//img')->length);
         }
         $xpath = $this->xpath($response->getContent());
         $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header")]')->length);
