@@ -32,7 +32,7 @@ def app_store_badge():
 
 def hub_artwork():
     # Remove the homepage's empty heading space. JPEGs work in email clients
-    # without WebP support, and 420px supplies a 3x source for the 140px rows.
+    # without WebP support, and 420px supplies a sharp source for the 160px rows.
     for name in ['learn', 'blog', 'metronome', 'shop', 'games']:
         top = 180 if name == 'metronome' else 240
         magick(ROOT / f'resources/images/home/editorial/{name}.webp',

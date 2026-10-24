@@ -4,6 +4,14 @@ use Illuminate\Support\Str;
 
 return [
 
+    // Opt-in only. Keep SESSION_DOMAIN unset so administration/native sessions
+    // retain their original host-only boundary. No database migration is needed.
+    'shared' => [
+        'enabled' => env('SHARED_WEB_SESSIONS', false),
+        'domain' => env('SHARED_SESSION_DOMAIN'),
+        'lock_store' => env('SHARED_SESSION_LOCK_STORE', 'file'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Default Session Driver

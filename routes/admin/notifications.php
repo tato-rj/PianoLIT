@@ -4,8 +4,10 @@ Route::prefix('notifications')->name('notifications.')->group(function() {
 
 	Route::get('', 'Admin\AdminsController@notifications')->name('index');
 
-	Route::get('read', 'NotificationsController@read')->name('read');
+	Route::get('panel', 'NotificationsController@panel')->name('panel');
 
-	Route::get('unread', 'NotificationsController@unread')->name('unread');
+	Route::match(['get', 'post'], 'read', 'NotificationsController@read')->name('read');
+
+	Route::match(['get', 'post'], 'unread', 'NotificationsController@unread')->name('unread');
 
 });

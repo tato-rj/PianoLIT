@@ -90,7 +90,7 @@ Games explicitly say coming soon because their root destinations still do.
 No retired standalone games are restored or advertised as available.
 
 The five `hub-*.jpg` files are 420px square crops of the existing approved
-`resources/images/home/editorial/` artwork, displayed at up to 140px. JPEG avoids
+`resources/images/home/editorial/` artwork, displayed at up to 160px. JPEG avoids
 depending on inbox WebP support. Use `--hubs-only` to rebuild these thumbnails.
 The original resource-browser asset and source capture are retained, but no
 longer appear in the welcomes. All eleven welcome assets live in
@@ -98,7 +98,10 @@ longer appear in the welcomes. All eleven welcome assets live in
 directory and versions them in the Mix manifest. A message loads seven images
 (logo, device composite and five hubs), plus the App Store badge when applicable.
 HTML uses inline-styled presentation tables with alternating `dir` and left-to-right
-text, retaining compact two-column rows on narrow screens. Plain text includes
+text, retaining compact two-column rows on narrow screens. Hub bands use the
+shared mint/rose/sky/peach/butter pastel surfaces and matching ink, with 4px gaps
+and responsive text padding. Select each band's `color` in the shared hub view.
+Plain text includes
 all hub descriptions and availability labels with the same final link.
 
 URLs use the

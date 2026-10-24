@@ -3,36 +3,46 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Support\AdminPagination;
 
 class NotificationsController extends Controller
 {
+    public function panel()
+    {
+        $query = auth('admin')->user()->unreadNotifications();
+        $count = (clone $query)->count();
+        $notifications = $count ? $query->limit(AdminPagination::PER_PAGE)->get(['id', 'data', 'created_at']) : collect();
+
+        return response()->json([
+            'unreadCount' => $count,
+            'html' => view('components.panel.notification-list', ['unreadNotifications' => $notifications])->render(),
+        ]);
+    }
+
     public function read(Request $request)
     {
-    	if ($request->has('ids')) {
-    		foreach ($request->ids as $id) {
-		    	auth()->user()->notifications()->find($id)->markAsRead();
-    		}
-    	} else {
-	    	auth()->user()->notifications()->update(['read_at' => now()]);
-    	}
+        $data = $request->validate(['ids' => 'sometimes|array', 'ids.*' => 'required|uuid']);
+        $query = auth('admin')->user()->unreadNotifications();
+        if (isset($data['ids'])) $query->whereIn('id', $data['ids']);
+        $query->update(['read_at' => now()]);
 
         if ($request->wantsJson())
-            return response(200);
+            return $this->panel();
 
-    	return redirect()->to($request->url);
+        return redirect()->to($request->input('url', route('admin.home')));
     }
 
     public function unread(Request $request)
     {
-        if ($request->has('ids')) {
-            foreach ($request->ids as $id) {
-                auth()->user()->notifications()->find($id)->update(['read_at' => null]);
-            }
+        $data = $request->validate(['ids' => 'sometimes|array', 'ids.*' => 'required|uuid']);
+        if (isset($data['ids'])) {
+            auth('admin')->user()->notifications()->whereNotNull('read_at')
+                ->whereIn('id', $data['ids'])->update(['read_at' => null]);
         }
 
         if ($request->wantsJson())
-            return response(200);
+            return $this->panel();
 
-        return redirect()->to($request->url); 
+        return redirect()->to($request->input('url', route('admin.home')));
     }
 }

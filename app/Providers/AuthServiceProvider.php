@@ -33,6 +33,20 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        // Keep the original middleware identity so Apple's stateless POST keeps
+        // its existing withoutMiddleware boundary.
+        $this->app->singleton(\Illuminate\Session\Middleware\StartSession::class, function ($app) {
+            return new \App\Http\Middleware\StartWebSession($app['session'], function () use ($app) { return $app['cache']; });
+        });
+
+        \Auth::extend('shared-web-session', function ($app, $name, $config) {
+            $guard = new \App\Auth\SharedSessionGuard($name, $app['auth']->createUserProvider($config['provider']), $app['session.store']);
+            $guard->setCookieJar($app['cookie']);
+            $guard->setDispatcher($app['events']);
+            $guard->setRequest($app->refresh('request', $guard, 'setRequest'));
+            return $guard;
+        });
+
         \Gate::before(function($user) {
             if ($user->role == 'manager')
                 return true;

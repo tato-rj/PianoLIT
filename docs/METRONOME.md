@@ -110,5 +110,15 @@ Microphone capture needs a secure browser context. Production should serve
 HTTPS. Locally, run `valet secure metronome.pianolit` in Terminal (Mac
 administrator authentication is required), then use
 `https://metronome.pianolit.test`.
+On 2026-10-24, the expired local Valet CA was renewed with its existing key and
+Metronome's server certificate was reissued with `extendedKeyUsage=serverAuth`,
+valid until 2027-10-24. The installed Valet version's generated certificate
+template omits that extension; when renewing again, verify the generated
+certificate against macOS SSL policy as well as its expiry. Nginx's existing
+loopback bindings and application settings were preserved. Shared login/logout
+was browser-verified in both directions between HTTPS Metronome and the other
+local hubs. Recovery materials and proof are in
+`/Users/arthur/.codex/recovery/pianolit-metronome-tls-20261024-135407/`.
+See [Apple's TLS certificate requirements](https://support.apple.com/en-us/103769).
 Reference: [browser microphone requirements](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#privacy_and_security)
 and [recording format negotiation](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/isTypeSupported_static).

@@ -13,6 +13,23 @@ use Illuminate\Validation\ValidationException;
 
 class AppleAuthenticationTest extends ReviewTestCase
 {
+    public function test_apple_stateless_post_resumes_the_original_parent_session_on_get_completion()
+    {
+        config(['app.short_url' => 'pianolit.test', 'app.url' => 'http://pianolit.test',
+            'session.shared.enabled' => true, 'session.shared.domain' => 'pianolit.test', 'session.shared.lock_store' => 'array']);
+        $this->app['auth']->forgetGuards(); $this->app['session']->forgetDrivers(); $this->app->forgetInstance('session.store');
+        $user = $this->user(); $this->link($user);
+        $query = $this->start('pianolit.test');
+        $this->defaultCookies = [\App\Auth\SharedWebSessions::COOKIE => session()->getId()];
+        $attempt = $this->receive($query, 'pianolit.test');
+        $response = $this->get('http://pianolit.test/auth/apple/complete/'.$attempt)->assertRedirect('http://pianolit.test/');
+        $this->assertAuthenticatedAs($user, 'web');
+        $this->assertInstanceOf(\App\Auth\SharedSessionGuard::class, auth('web'));
+        $cookie = collect($response->headers->getCookies())->first(function ($c) { return $c->getName() === \App\Auth\SharedWebSessions::COOKIE; });
+        $this->assertSame('pianolit.test', $cookie->getDomain());
+        $this->assertDatabaseCount('auth_browser_handoffs', 0);
+    }
+
     private $rsa, $ec, $keyPath, $randomPath, $previousRandom, $nonce;
     private $subject = '000001.review-apple-subject', $email = 'apple@example.test';
 

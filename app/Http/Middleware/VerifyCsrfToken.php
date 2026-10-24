@@ -24,4 +24,16 @@ class VerifyCsrfToken extends Middleware
         '/subscriptions/*/unsubscribe/*',
         'crashcourses/cancel'
     ];
+
+    protected function addCookieToResponse($request, $response)
+    {
+        if (!app(\App\Auth\SharedWebSessions::class)->active($request)) return parent::addCookieToResponse($request, $response);
+        $domain = config('session.domain');
+        try {
+            config(['session.domain' => null]);
+            return parent::addCookieToResponse($request, $response);
+        } finally {
+            config(['session.domain' => $domain]);
+        }
+    }
 }

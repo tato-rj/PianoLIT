@@ -59,7 +59,7 @@ abstract class Factory
 
         if ($user && ($this->for ?? null) === 'webapp') $user->loadMissing('favorites.tags');
 
-        $collection = $user ? $user->suggestions(20)->shuffle()->take(10) : Piece::inRandomOrder()->take($this->limit)->get();
+        $collection = $user ? $user->suggestions(20)->shuffle()->take(($this->for ?? null) === 'webapp' ? 6 : 10) : Piece::inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 

@@ -51,6 +51,7 @@
     @endif
 
     <script type="text/javascript" src="{{mix('js/admin.js')}}"></script>
+    <script src="{{mix('js/views/admin-notifications.js')}}"></script>
 
     <script type="text/javascript">
 $('.editable-star').on('mouseover', function() {

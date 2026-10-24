@@ -19,7 +19,7 @@ class GoogleHandoffController extends Controller
         $config = app(Configuration::class);
         $destination = $config->destination($destination, $request);
         $host = parse_url($destination, PHP_URL_HOST);
-        if ($host === $request->getHost()) return redirect($destination);
+        if ($host === $request->getHost() || app(\App\Auth\SharedWebSessions::class)->sharesWith($request, $host)) return redirect($destination);
         $id = (string) Str::uuid();
         DB::table('auth_browser_handoffs')->insert([
             'id' => $id, 'user_id' => $user->id, 'source_host' => $request->getHost(), 'target_host' => $host,

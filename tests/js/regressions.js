@@ -34,6 +34,7 @@ function element(value = '') {
 }
 
 async function main() {
+    await require('./admin-notifications')();
     await require('./admin-playlist-tags')();
     await require('./admin-playlist-editor')();
     require('./access-prompts')();

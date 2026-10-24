@@ -88,7 +88,12 @@ class Icon
             // The icon-filled CSS class supports toggles; an inline fill lets an
             // explicit solid color override it without changing the outline.
             $fillStyle = $solidColor !== null ? ' style="fill: '.e($solidColor).'"' : '';
-            $html .= '<svg data-lucide-name="'.$name.'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="'.e($fill).'"'.$fillStyle.' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'.static::$icons[$name].'</svg>';
+            $geometry = static::$icons[$name];
+            if ($name === 'circle-check' && (!empty($options['filled']) || $solid)) {
+                // Keep the check visible against its filled circle.
+                $geometry = str_replace('<path ', '<path fill="none" stroke="var(--color-surface, #fff)" ', $geometry);
+            }
+            $html .= '<svg data-lucide-name="'.$name.'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="'.e($fill).'"'.$fillStyle.' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'.$geometry.'</svg>';
         }
         return new HtmlString($html.'</i>');
     }

@@ -11,6 +11,22 @@ use Illuminate\Support\Facades\{Cache, DB, Event, Hash, Http, Notification, Pass
 
 class GoogleAuthenticationTest extends ReviewTestCase
 {
+    public function test_google_callback_uses_the_parent_session_when_shared_sessions_are_enabled()
+    {
+        config(['app.short_url' => 'pianolit.test', 'app.url' => 'http://pianolit.test',
+            'session.shared.enabled' => true, 'session.shared.domain' => 'pianolit.test', 'session.shared.lock_store' => 'array']);
+        $this->app['auth']->forgetGuards(); $this->app['session']->forgetDrivers(); $this->app->forgetInstance('session.store');
+        $user = $this->user(); $this->connectRecord($user);
+        $query = $this->start('pianolit.test');
+        $this->withCookies([\App\Auth\SharedWebSessions::COOKIE => session()->getId()]);
+        $response = $this->googleCallback($query, 'pianolit.test')->assertRedirect('http://pianolit.test/');
+        $this->assertAuthenticatedAs($user, 'web');
+        $this->assertInstanceOf(\App\Auth\SharedSessionGuard::class, auth('web'));
+        $cookie = collect($response->headers->getCookies())->first(function ($c) { return $c->getName() === \App\Auth\SharedWebSessions::COOKIE; });
+        $this->assertSame('pianolit.test', $cookie->getDomain());
+        $this->assertDatabaseCount('auth_browser_handoffs', 0);
+    }
+
     private $rsa, $public, $nonce, $googleEmail = 'existing@example.test', $subject = 'google-subject-one';
     private $randomFile, $originalRandomFile;
 

@@ -80,8 +80,9 @@ class FeedbackNotificationsTest extends ReviewTestCase
         $this->actingAs($admin, 'admin');
 
         $this->get(route('admin.notifications.index'))->assertOk()
-            ->assertSee('admin-notification-dot')->assertSee('1 unread notification')
-            ->assertSee('new feedback')->assertSee('A guest')->assertSee('Not bad');
+            ->assertSee('admin-notification-dot')->assertSee('Notifications (1 unread)');
+        $panel = $this->getJson(route('admin.notifications.panel'))->assertOk()->assertJsonPath('unreadCount', 1);
+        foreach (['new feedback', 'A guest', 'Not bad'] as $text) $this->assertStringContainsString($text, $panel->json('html'));
         $history = $this->getJson(route('admin.notifications.index'), ['X-Requested-With' => 'XMLHttpRequest'])
             ->assertOk()->assertJsonPath('recordsTotal', 1);
         $this->assertSame($notification->id, $history->json('data.0.id'));
@@ -108,8 +109,9 @@ class FeedbackNotificationsTest extends ReviewTestCase
         $this->assertStringNotContainsString('<img', $message);
         $this->assertStringNotContainsString($note, $message);
         $this->assertSame($note, FeedbackSubmission::sole()->message);
-        $this->actingAs($admin, 'admin')->get(route('admin.notifications.index'))->assertOk()
-            ->assertSee(e($member->full_name), false)->assertDontSee($member->full_name, false);
+        $panel = $this->actingAs($admin, 'admin')->getJson(route('admin.notifications.panel'))->assertOk();
+        $this->assertStringContainsString(e($member->full_name), $panel->json('html'));
+        $this->assertStringNotContainsString($member->full_name, $panel->json('html'));
     }
 
     public function test_invalid_feedback_creates_neither_a_submission_nor_an_alert()

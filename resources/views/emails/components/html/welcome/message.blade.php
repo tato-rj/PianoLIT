@@ -12,6 +12,7 @@
     .welcome-padding { padding-left: 24px !important; padding-right: 24px !important; }
     .welcome-hero h1 { font-size: 30px !important; }
     .welcome-actions td { display: block !important; padding: 5px 0 !important; }
+    .welcome-hub-copy { padding: 8px 10px !important; }
 }
 </style>
 </head>

@@ -1,5 +1,9 @@
 @extends('admin.layouts.app')
 
+@section('head')
+<link rel="stylesheet" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}">
+@endsection
+
 @section('content')
 <div class="content-wrapper"><div class="container-fluid user-profile" data-user-profile>
     @component('admin.components.page.title', ['breadcrumbs' => [['label' => 'Users', 'url' => route('admin.users.index')]], 'title' => 'User details', 'subtitle' => 'Profile, membership and saved music.'])

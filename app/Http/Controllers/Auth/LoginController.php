@@ -32,6 +32,10 @@ class LoginController extends Controller
         if (! auth()->guard('admin')->check())
             abort(403, 'You are not authorized to do this.');
 
+        if (config('session.shared.enabled')) {
+            return app(\App\Auth\SharedWebSessions::class)->impersonate(request(), $user);
+        }
+
         session(['impersonator' => true]);
 
         auth()->guard('web')->login($user);

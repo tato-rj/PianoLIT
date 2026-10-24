@@ -4,7 +4,12 @@
         <span class="up-eyebrow">ACCOUNT #{{ $user->id }}</span>
         <h2 id="up-name">{{ trim($user->full_name) }}</h2>
         <a class="up-email" href="mailto:{{ $user->email }}">{{ $user->email }}</a>
-        <div class="up-pills"><span class="up-pill">@icon($user->email_verified_at ? 'circle-check' : 'mail', ['mr' => 1]){{ $user->email_verified_at ? 'Email confirmed' : 'Email not confirmed' }}</span>@if($user->location && $user->location->countryName)<span class="up-pill">{{ $user->location->countryName }}</span>@endif</div>
+        <div class="up-pills">
+            <span class="up-pill">@icon($user->email_verified_at ? 'circle-check' : 'mail', ['mr' => 1, 'filled' => (bool) $user->email_verified_at, 'color' => $user->email_verified_at ? 'green' : null]){{ $user->email_verified_at ? 'Email confirmed' : 'Email not confirmed' }}</span>
+            @if($user->location && $user->location->countryName)
+            <span class="up-pill">@if($user->location->countryCode)@flag(['code' => $user->location->countryCode])@endif{{ $user->location->countryName }}</span>
+            @endif
+        </div>
     </div>
     <div class="up-hero-access"><span class="up-access-badge" data-profile-status data-base-label="{{ $billingStatus }}">{{ $status }}</span><strong data-profile-access data-billing-access="{{ $billingAccess ? '1' : '0' }}">{{ $hasAccess ? 'Full media access' : 'Preview access' }}</strong><small>Joined {{ optional($user->created_at)->format('M j, Y') ?: 'date not recorded' }}</small></div>
 </section>

@@ -39,6 +39,9 @@ or footer wording, update its plain-text counterpart too. Introduction and secti
 copy are automatically taken from the body views in both formats. The hub rows
 alternate text/image, then image/text using `imageLeft => true` on every second
 row. Their table columns stay side by side on phones, with images scaling down.
+Each row's `color` selects a shared pastel (`mint`, `rose`, `sky`, `peach` or
+`butter`). The compiled email theme supplies the band background and matching
+text color. Hub images display at up to 160px wide, with 4px between bands.
 Shop's new hub and Games are labeled as coming soon; update these labels when
 their homepage destinations launch.
 
