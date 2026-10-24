@@ -8,7 +8,7 @@ export const SOUND_PROFILES = {
 };
 
 export const DEFAULT_SETTINGS = {
-    beats: 1, color: '#0055fe', sound: 'click', type: 'classic', showPath: false, conductorMarker: 'dot',
+    beats: 1, color: '#0055fe', sound: 'click', type: 'classic', showPath: false, conductorMarker: 'dot', font: 'nunito',
 };
 export const SETTINGS_KEY = 'metronome.settings.v1';
 export const TEMPO_KEY = 'metronome.tempo.v1';
@@ -33,6 +33,7 @@ export function normalizeSettings(value) {
         type: input.type === 'conductor' ? 'conductor' : 'classic',
         showPath: typeof input.showPath === 'boolean' ? input.showPath : DEFAULT_SETTINGS.showPath,
         conductorMarker: input.conductorMarker === 'hand' ? 'hand' : 'dot',
+        font: ['nunito', 'outfit', 'playfair', 'pattaya', 'sail'].includes(input.font) ? input.font : DEFAULT_SETTINGS.font,
     };
 }
 

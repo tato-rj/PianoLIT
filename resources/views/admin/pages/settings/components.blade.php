@@ -13,6 +13,9 @@
     @component('admin.pages.settings.sample', ['label' => 'Voice recorder', 'usage' => 'components.voice-recorder', 'properties' => 'font-size,color,padding'])
       @include('components.voice-recorder', ['preview' => true])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Number font picker', 'usage' => 'components.form.font-select', 'properties' => 'font-size,padding,color,border,border-radius'])
+      @include('components.form.font-select', ['id' => 'ds-number-font', 'preview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Recording cues', 'usage' => 'components.voice-recorder-cue', 'properties' => 'color,background-color,border-radius'])
       <div class="row g-4" data-ds-preview>
         @foreach(['waiting', 'speaking', 'success', 'error'] as $cuePreviewState)

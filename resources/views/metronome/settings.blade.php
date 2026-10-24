@@ -17,6 +17,9 @@
                         @include('components.form.color', ['id' => 'metronome-color', 'name' => 'metronome-color', 'value' => '#0055fe', 'dataAttribute' => 'settings-color'])
                     </div>
                 </div>
+                <div data-settings-field>
+                    @include('components.form.font-select', ['id' => 'metronome-font', 'previewSource' => '[data-tempo]'])
+                </div>
                 <div>
                     @auth('web')
                         @include('components.voice-recorder')

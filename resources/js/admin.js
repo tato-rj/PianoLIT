@@ -29,6 +29,8 @@ require('./components/admin-daily-activity-chart');
 require('./components/checkbox-menu');
 require('./components/admin-back-to-top');
 require('./components/tab-navigation')(window);
+const { FontSelect } = require('./controls/font-select');
+document.querySelectorAll('[data-font-select]').forEach(root => new FontSelect(root, window.bootstrap.Dropdown));
 
 require('./startup');
 

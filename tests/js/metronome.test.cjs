@@ -272,7 +272,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
         closest: selector => selector.includes('[data-tempo-step]'),
         addEventListener(name, callback) { this.listeners[name] = callback; },
     }));
-    const number = { textContent: '120', animate };
+    const number = { textContent: '120', dataset: {}, animate };
     const pulseLayer = element({ animate });
     const message = { hidden: true };
     const documentListeners = {};
@@ -312,6 +312,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
     const colorValue = element();
     const colorReset = element();
     const soundInput = element();
+    const fontInput = element();
     const pathInput = element();
     const conductorAnimations = [];
     const conductorParts = Object.fromEntries(['path', 'ball'].map(name => [name, element()]));
@@ -342,6 +343,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
             '[data-settings-color]': colorInput, '[data-color-value]': colorValue,
             '[data-settings-color-reset]': colorReset,
             '#metronome-sound': soundInput, '[data-conductor]': svg, 'meta[name="theme-color"]': theme,
+            '#metronome-font': fontInput,
             '[name="metronome-path"]': pathInput,
             '[data-conductor-options]': conductorOptions,
         })[selector],
@@ -365,7 +367,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
     });
     return { ...page, edges, edge, attributes, number, pointer, click, listeners, documentListeners, windowListeners,
         settingsButton, settingsDialog, closeButton, beatInputs, typeInputs, markerInputs, conductorOptions,
-        colorInput, soundInput, pathInput, storage, surface,
+        colorInput, soundInput, fontInput, pathInput, storage, surface,
         conductorParts, conductorAnimations, animations, pulseLayer, theme, motionPreference };
 }
 
@@ -662,7 +664,7 @@ test('settings apply immediately, stay readable for light colors, and persist ac
     assert.equal(page.theme.attributes.content, '#ffffff');
     const saved = page.storage.get('metronome.settings.v1');
     assert.deepEqual(JSON.parse(saved), {
-        beats: 4, color: '#ffffff', sound: 'cowbell', type: 'conductor', showPath: false, conductorMarker: 'hand',
+        beats: 4, color: '#ffffff', sound: 'cowbell', type: 'conductor', showPath: false, conductorMarker: 'hand', font: 'nunito',
     });
     const next = setupPage(saved);
     assert.equal(next.beatInputs[3].checked, true);
@@ -802,7 +804,7 @@ test('missing, corrupt, or out-of-range saved tempos fall back to 120 BPM', () =
 test('invalid or unavailable saved settings fall back to usable defaults', () => {
     const { normalizeSettings, loadSettings } = setup().context.api;
     const defaults = {
-        beats: 1, color: '#0055fe', sound: 'click', type: 'classic', showPath: false, conductorMarker: 'dot',
+        beats: 1, color: '#0055fe', sound: 'click', type: 'classic', showPath: false, conductorMarker: 'dot', font: 'nunito',
     };
     assert.deepEqual(JSON.parse(JSON.stringify(normalizeSettings({ beats: 99, color: 'invalid', sound: 'toString', type: 'unknown' }))), defaults);
     assert.deepEqual(JSON.parse(JSON.stringify(loadSettings({ getItem() { throw new Error('Blocked'); } }))), defaults);

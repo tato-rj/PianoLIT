@@ -7,6 +7,7 @@
     <title>Metronome | PianoLIT</title>
     <link rel="canonical" href="{{ route('metronome.home') }}">
     @include('layouts.html.google.fonts')
+    @include('components.form.number-fonts')
     @include('layouts.html.theme')
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/metronome.css') }}" rel="stylesheet">
@@ -24,7 +25,7 @@
             aria-describedby="metronome-instructions"
         >
             <span class="metronome__pulse" data-metronome-pulse aria-hidden="true"></span>
-            <span class="metronome__tempo" data-tempo aria-hidden="true">120</span>
+            <span class="metronome__tempo" data-tempo data-number-font="nunito" aria-hidden="true">120</span>
             <span class="metronome__conductor" data-conductor aria-hidden="true">
                 <svg viewBox="0 0 400 600">
                     <path data-conductor-path class="conductor-path" fill="none"/>

@@ -1,0 +1,26 @@
+// Shared number faces for the picker previews and their selected display.
+[data-number-font] {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: normal;
+}
+[data-number-font='outfit'] { font-family: 'Outfit', sans-serif; }
+[data-number-font='playfair'] { font-family: 'Playfair Display', serif; font-weight: 400; }
+[data-number-font='pattaya'] { font-family: 'Pattaya', cursive; font-weight: 400; }
+[data-number-font='sail'] { font-family: 'Sail', cursive; font-weight: 400; }
+
+.font-select__options {
+    max-height: min(22rem, 45dvh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.font-select__description { min-width: 0; white-space: normal; }
+.font-select__preview {
+    flex: 0 0 auto;
+    min-width: 2.5em;
+    font-size: 40px;
+    line-height: 1.2;
+    text-align: center;
+}
+.font-select__preview--current { font-size: 28px; }

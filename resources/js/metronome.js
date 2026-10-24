@@ -1,10 +1,12 @@
 import Offcanvas from 'bootstrap/js/dist/offcanvas';
+import Dropdown from 'bootstrap/js/dist/dropdown';
 import { MetronomeClock } from './metronome/clock';
 import { clampTempo, DEFAULT_TEMPO, TempoGesture } from './metronome/gesture';
 import { colorPalette, DEFAULT_SETTINGS, loadSettings, loadTempo, normalizeSettings, SETTINGS_KEY, TEMPO_KEY } from './metronome/settings';
 import { conductorPreparationBeats, ConductorView } from './metronome/conductor';
 import { VoiceRecorder } from './metronome/voice-recorder';
 import { SoundMenu } from './metronome/sound-menu';
+import { FontSelect } from './controls/font-select';
 
 const surface = document.querySelector('[data-metronome]');
 const pulseLayer = document.querySelector('[data-metronome-pulse]');
@@ -23,6 +25,9 @@ const colorInput = document.querySelector('[data-settings-color]');
 const colorValue = document.querySelector('[data-color-value]');
 const colorReset = document.querySelector('[data-settings-color-reset]');
 const soundInput = document.querySelector('#metronome-sound');
+const fontInput = document.querySelector('#metronome-font');
+const fontMenuRoot = document.querySelector('[data-font-select]');
+const fontMenu = fontMenuRoot ? new FontSelect(fontMenuRoot, Dropdown) : null;
 const pathInput = document.querySelector('[name="metronome-path"]');
 const conductor = new ConductorView(document.querySelector('[data-conductor]'), { pulseLayer, number });
 
@@ -100,6 +105,7 @@ function setTempo(value) {
     const previousTempo = tempo;
     tempo = Math.round(clampTempo(value));
     number.textContent = String(tempo);
+    fontMenu?.render();
     if (backgroundPulse && backgroundPulse.playState === 'running') {
         // Keep the current fade in step with tempo changes during a swipe.
         backgroundPulse.updatePlaybackRate(tempo / backgroundPulseTempo);
@@ -157,6 +163,9 @@ function applySettings(value, persist = true) {
     surface.dataset.mode = settings.type;
     surface.dataset.showPath = String(settings.showPath);
     surface.dataset.conductorMarker = settings.conductorMarker;
+    number.dataset.numberFont = settings.font;
+    fontInput.value = settings.font;
+    fontMenu?.render();
     clock.setBeats(settings.beats);
     clock.setSound(settings.sound);
     if (conductor.beats !== settings.beats) conductor.setBeats(settings.beats);
@@ -215,6 +224,7 @@ markerInputs.forEach(input => input.addEventListener('change', () => {
     if (input.checked) applySettings({ ...settings, conductorMarker: input.value });
 }));
 colorInput.addEventListener('input', () => applySettings({ ...settings, color: colorInput.value }));
+fontInput.addEventListener('change', () => applySettings({ ...settings, font: fontInput.value }));
 colorReset.addEventListener('click', () => applySettings({ ...settings, color: DEFAULT_SETTINGS.color }));
 soundInput.addEventListener('change', () => {
     if (voiceRecorder?.selectSound(soundInput.value)) return;

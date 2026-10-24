@@ -2,6 +2,7 @@
 
 @section('head')
   @include('layouts.html.google.fonts')
+  @include('components.form.number-fonts')
 @endsection
 
 @section('content')
