@@ -315,6 +315,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
     const fontInput = element();
     const pathInput = element();
     const conductorAnimations = [];
+    const beatNumbers = [1, 2, 3, 4].map(value => element({ textContent: String(value), animate }));
     const conductorParts = Object.fromEntries(['path', 'ball'].map(name => [name, element()]));
     conductorParts.ball.animate = (keyframes, options) => {
         const animation = animate.call(conductorParts.ball, keyframes, options);
@@ -323,6 +324,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
     };
     const svg = element({
         querySelector: selector => conductorParts[selector.replace('[data-conductor-', '').replace(']', '')],
+        querySelectorAll: selector => selector === '[data-conductor-count]' ? beatNumbers : [],
     });
     const theme = element();
     const storage = new Map(savedSettings ? [['metronome.settings.v1', savedSettings]] : []);
@@ -368,7 +370,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
     return { ...page, edges, edge, attributes, number, pointer, click, listeners, documentListeners, windowListeners,
         settingsButton, settingsDialog, closeButton, beatInputs, typeInputs, markerInputs, conductorOptions,
         colorInput, soundInput, fontInput, pathInput, storage, surface,
-        conductorParts, conductorAnimations, animations, pulseLayer, theme, motionPreference };
+        conductorParts, conductorAnimations, beatNumbers, animations, pulseLayer, theme, motionPreference };
 }
 
 function ballPoint(transform) {
@@ -1147,7 +1149,7 @@ test('the conductor downbeat flash and number pulse reach the bottom on the same
         assertBallNear(animatedBallPoint(page), [200, 540]);
         assert.ok(visualPhase(background) < 0.000001);
         assert.ok(visualPhase(number) < 0.000001);
-        assert.equal(page.animations.length, 3, 'Beats reuse the three continuous visual effects.');
+        assert.equal(page.animations.length, 3 + count, 'Beats reuse continuous effects, including one per count digit.');
     }
 });
 
@@ -1166,6 +1168,42 @@ test('conductor flashes only on beat one while the number pulses on every beat',
     }
 });
 
+function countOpacity(animation) {
+    const phase = visualPhase(animation);
+    if (phase === null) return 0;
+    const before = animation.keyframes.filter(frame => frame.offset <= phase).at(-1);
+    const after = animation.keyframes.find(frame => frame.offset > phase);
+    return before.opacity + (after.opacity - before.opacity) * (phase - before.offset) / (after.offset - before.offset);
+}
+
+test('conductor counts wrap at the selected beats and fade over one beat at slow and fast tempos', async () => {
+    for (const count of [1, 2, 3, 4]) {
+        for (const tempo of [20, 120, 300]) {
+            const page = setupPage(JSON.stringify({ beats: count, type: 'conductor' }), { savedTempo: String(tempo) });
+            page.click();
+            await new Promise(setImmediate);
+            const counters = page.animations.filter(animation => page.beatNumbers.includes(animation.target));
+            assert.equal(counters.length, count);
+            const interval = 60 / tempo;
+            const firstBeat = interval / 2;
+            page.audio.currentTime = firstBeat - 0.001;
+            assert.ok(counters.every(animation => countOpacity(animation) === 0), 'The silent opening drop has no count.');
+            for (let beat = 0; beat <= count; beat++) {
+                let previousOpacity = 0.12;
+                for (const progress of [0.0001, 0.25, 0.75, 0.9999]) {
+                    page.audio.currentTime = firstBeat + (beat + progress) * interval;
+                    const visible = counters.filter(animation => countOpacity(animation) > 0);
+                    assert.equal(visible.length, 1, 'Only the current count is visible.');
+                    assert.equal(visible[0].target.textContent, String(beat % count + 1));
+                    const opacity = countOpacity(visible[0]);
+                    assert.ok(opacity < previousOpacity, 'The current digit fades throughout its beat.');
+                    previousOpacity = opacity;
+                }
+            }
+        }
+    }
+});
+
 test('tempo edits, recovered stalls, and reopened settings keep all conductor effects on one timeline', async () => {
     const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
     page.click();
@@ -1180,6 +1218,12 @@ test('tempo edits, recovered stalls, and reopened settings keep all conductor ef
         assert.equal(background.options.duration, ball.options.duration);
         assert.equal(number.options.duration, ball.options.duration / 4);
         assert.ok(Math.abs(number.keyframes[1].offset * number.options.duration - 180) < 0.000001);
+        for (const digit of page.beatNumbers) {
+            const count = live(digit);
+            assert.equal(count.startTime, ball.startTime);
+            assert.equal(count.options.duration, ball.options.duration);
+            assert.equal(count.options.delay, background.options.delay);
+        }
     };
     page.advance(0.1);
     vm.runInContext('setTempo(80)', page.context);
@@ -1193,6 +1237,7 @@ test('tempo edits, recovered stalls, and reopened settings keep all conductor ef
     page.settingsButton.listeners.click();
     assert.equal(live(page.pulseLayer), undefined);
     assert.equal(live(page.number), undefined);
+    assert.ok(page.beatNumbers.every(digit => !live(digit)));
     page.tick(400);
     page.closeButton.listeners.click();
     page.tick(300);
@@ -1201,10 +1246,12 @@ test('tempo edits, recovered stalls, and reopened settings keep all conductor ef
     page.motionPreference.onchange();
     assert.equal(live(page.pulseLayer), undefined);
     assert.equal(live(page.number), undefined);
+    assert.ok(page.beatNumbers.every(digit => !live(digit)));
     page.motionPreference.matches = false;
     page.motionPreference.onchange();
     check();
     page.click();
     assert.equal(live(page.pulseLayer), undefined);
     assert.equal(live(page.number), undefined);
+    assert.ok(page.beatNumbers.every(digit => !live(digit)));
 });

@@ -82,7 +82,7 @@ const clock = new MetronomeClock({
         }
         if (pulse) pulse.cancel();
         pulse = number.animate([
-            { transform: 'scale(1.1)', opacity: 1 },
+            { transform: 'scale(1.35)', opacity: 1 },
             { transform: 'scale(1)', opacity: 0.88 },
         ], { duration: 180, easing: 'ease-out' });
     },

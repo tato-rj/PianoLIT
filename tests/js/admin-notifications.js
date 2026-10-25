@@ -14,7 +14,7 @@ module.exports = async function () {
         };
     }
     const requests = [], alerts = [], panel = node(), form = node(), submit = node(), body = node();
-    const summary = node(), error = node(), retry = node(), close = node(), badge = node(), bell = node(), link = node();
+    const summary = node(), error = node(), retry = node(), badge = node(), bell = node(), link = node();
     panel.isConnected = true;
     panel.classList.toggle('show', true);
     panel.dataset = {panelUrl: '/notifications/panel', previewLimit: '12'};
@@ -22,7 +22,7 @@ module.exports = async function () {
     form.querySelector = selector => selector === 'button' ? submit : {value: 'session-csrf'};
     panel.querySelector = selector => ({
         '[data-notification-read-all]': form, '[data-notification-body]': body, '[data-notification-summary]': summary,
-        '[data-notification-error]': error, '[data-notification-retry]': retry, '[data-bs-dismiss="offcanvas"]': close,
+        '[data-notification-error]': error, '[data-notification-retry]': retry,
     })[selector];
     link.querySelector = selector => selector === '.admin-notification-dot' ? badge : bell;
     function historyRow(id) {
@@ -40,11 +40,18 @@ module.exports = async function () {
         querySelectorAll: selector => selector === '.notifications-link' ? [link] : actions,
         addEventListener(name, callback) { this.events[name] = callback; },
     };
-    const window = {location: {href: 'http://admin.test/?days=30&platform=web'}, alert: message => alerts.push(message)};
+    let hideCalls = 0;
+    const window = {
+        location: {href: 'http://admin.test/?days=30&platform=web'}, alert: message => alerts.push(message),
+        bootstrap: {Offcanvas: {getOrCreateInstance(element) {
+            assert.strictEqual(element, panel);
+            return {hide() { hideCalls++; panel.classList.toggle('show', false); }};
+        }}},
+    };
     function fetch(url, options) { return new Promise((resolve, reject) => requests.push({url, options, resolve, reject})); }
     vm.runInNewContext(fs.readFileSync('resources/js/views/admin-notifications.js', 'utf8'), {document, window, fetch, URL});
     const tick = () => new Promise(resolve => setImmediate(resolve));
-    const show = () => panel.events['show.bs.offcanvas']();
+    const show = () => { panel.classList.toggle('show', true); panel.events['show.bs.offcanvas'](); };
     const markAll = () => form.events.submit({preventDefault() {}});
     const click = button => document.events.click({target: button, preventDefault() {}});
     function respond(unreadCount, html = '<p>Alerts</p>') {
@@ -62,6 +69,7 @@ module.exports = async function () {
     assert.strictEqual(badge.hidden, false);
     assert.strictEqual(form.hidden, false);
     assert(bell.classList.contains('icon-filled'));
+    assert.strictEqual(hideCalls, 0, 'Loading notifications keeps the panel open.');
 
     markAll(); markAll(); show();
     assert.strictEqual(requests.length, 2, 'A mutation blocks duplicate submits and competing panel loads.');
@@ -69,19 +77,25 @@ module.exports = async function () {
     assert.strictEqual(requests[1].options.method, 'POST');
     assert.strictEqual(requests[1].options.credentials, 'same-origin');
     assert.strictEqual(requests[1].options.headers['X-CSRF-TOKEN'], 'session-csrf');
+    assert.strictEqual(hideCalls, 0, 'The panel stays open until marking all has succeeded.');
     requests[1].reject(new Error('Offline')); await tick();
     assert.strictEqual(error.textContent, 'Offline');
     assert.strictEqual(error.hidden, false);
     assert.strictEqual(submit.disabled, false);
     assert.strictEqual(badge.textContent, 250, 'Failed writes preserve the unread state.');
     assert.strictEqual(form.hidden, false);
+    assert.strictEqual(hideCalls, 0, 'Failed writes keep the panel open.');
+
+    markAll(); respond(1); await tick();
+    assert.strictEqual(hideCalls, 0, 'The panel stays open if unread notifications remain.');
 
     markAll(); respond(0, '<p>No new notifications</p>'); await tick();
     assert.strictEqual(body.innerHTML, '<p>No new notifications</p>');
     assert.strictEqual(summary.textContent, "You're all caught up");
     assert.strictEqual(badge.hidden, true);
     assert.strictEqual(form.hidden, true);
-    assert.strictEqual(close.focused, true);
+    assert.strictEqual(hideCalls, 1, 'Mark all closes the panel once every notification is read.');
+    assert(!panel.classList.contains('show'));
     assert(!bell.classList.contains('icon-filled'));
     assert.strictEqual(link.attributes['aria-label'], 'Notifications (0 unread)');
     assert.strictEqual(window.location.href, 'http://admin.test/?days=30&platform=web', 'Marking read never navigates or drops dashboard filters.');
@@ -91,6 +105,10 @@ module.exports = async function () {
         assert.strictEqual(item.unread.style.display, 'inline-block');
     });
 
+    show(); respond(0); await tick();
+    assert.strictEqual(hideCalls, 1, 'Reopening an empty panel does not immediately dismiss it.');
+    assert(panel.classList.contains('show'));
+
     click(first.unread); respond(1); await tick();
     assert.strictEqual(first.unread.disabled, false);
     assert.strictEqual(first.read.style.display, 'inline-block');
@@ -99,6 +117,7 @@ module.exports = async function () {
     assert.strictEqual(summary.textContent, '1 unread notification');
     click(first.read); respond(0); await tick();
     assert(first.row.classList.contains('opacity-4'));
+    assert.strictEqual(hideCalls, 1, 'Individual history actions do not dismiss the panel.');
 
     show(); requests.at(-1).resolve({ok: false, status: 419}); await tick();
     assert.match(error.textContent, /session has expired/);
@@ -117,7 +136,7 @@ module.exports = async function () {
     assert.strictEqual(badge.textContent, 2, 'Malformed replies never clear the current state.');
     show(); panel.isConnected = false; respond(99, '<p>Late</p>'); await tick();
     assert.notStrictEqual(body.innerHTML, '<p>Late</p>', 'Responses cannot modify a replaced page.');
-    console.log('Passed: lazy notification loading, single-request marking, CSRF, duplicate guards, count/history sync, failures/retry and detached responses.');
+    console.log('Passed: lazy notification loading, single-request marking, successful mark-all dismissal, CSRF, duplicate guards, count/history sync, failures/retry and detached responses.');
 };
 
 if (require.main === module) module.exports().catch(error => { console.error(error); process.exitCode = 1; });

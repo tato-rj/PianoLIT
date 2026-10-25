@@ -56,7 +56,7 @@
                     action.style.display = read === isRead ? 'none' : 'inline-block';
                     action.closest('tr').classList.toggle('opacity-4', isRead);
                 });
-                if (form.hidden && !button && panel.classList.contains('show')) panel.querySelector('[data-bs-dismiss="offcanvas"]').focus();
+                if (form.hidden && !button && panel.classList.contains('show')) window.bootstrap.Offcanvas.getOrCreateInstance(panel).hide();
             }
         } catch (failure) {
             if (!panel.isConnected) return;

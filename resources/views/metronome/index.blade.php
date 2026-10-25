@@ -27,6 +27,9 @@
             <span class="metronome__pulse" data-metronome-pulse aria-hidden="true"></span>
             <span class="metronome__tempo" data-tempo data-number-font="nunito" aria-hidden="true">120</span>
             <span class="metronome__conductor" data-conductor aria-hidden="true">
+                @for ($beat = 1; $beat <= 4; $beat++)
+                    <span class="conductor-count" data-conductor-count>{{ $beat }}</span>
+                @endfor
                 <svg viewBox="0 0 400 600">
                     <path data-conductor-path class="conductor-path" fill="none"/>
                 </svg>
