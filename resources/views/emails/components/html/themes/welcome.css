@@ -1039,3 +1039,146 @@ h1, h2 {
 .snapshot-email .welcome-footer .welcome-copyright {
   margin-top: 6px;
 }
+
+.snapshot-panel {
+  width: 100%;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.snapshot-panel-content {
+  padding: 24px;
+}
+
+.snapshot-panel .snapshot-panel-description {
+  margin: -6px 0 18px;
+}
+
+.snapshot-report {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.snapshot-panel .snapshot-source-note {
+  margin-top: 16px;
+}
+
+.snapshot-country-list td {
+  padding: 10px 0;
+  border-bottom: 1px solid #edf0f3;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.snapshot-flag {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  padding-right: 10px;
+}
+
+.snapshot-country-number {
+  font-weight: 600;
+  white-space: nowrap;
+  padding-left: 8px !important;
+}
+
+.snapshot-country-number .snapshot-note {
+  font-weight: 400;
+  padding-left: 5px;
+}
+
+.snapshot-campaign-totals {
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.snapshot-campaign-list {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.snapshot-campaign-list th {
+  font-weight: 400;
+  color: #6c757d;
+  font-size: 12px;
+  padding: 0 0 8px;
+}
+
+.snapshot-campaign-list td {
+  padding: 12px 0;
+  border-top: 1px solid #edf0f3;
+  font-size: 16px;
+  vertical-align: top;
+}
+
+.snapshot-campaign-name {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  padding-right: 8px !important;
+}
+
+.snapshot-campaign-name strong {
+  font-weight: 600;
+}
+
+.snapshot-campaign-name .snapshot-note {
+  margin-top: 4px;
+}
+
+.snapshot-campaign-paid {
+  color: #0055fe;
+  font-weight: 600;
+}
+
+.snapshot-panel .snapshot-subheading {
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 20px 0 6px;
+}
+
+.snapshot-growing-list {
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+.snapshot-growing-list td {
+  padding: 10px 0;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.snapshot-growing-copy {
+  padding-right: 12px !important;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.snapshot-growing-copy a {
+  color: #212529;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.snapshot-growing-copy p {
+  margin-top: 4px;
+}
+
+.snapshot-growing-count {
+  width: 66px;
+  vertical-align: middle;
+}
+
+.snapshot-growing-count span {
+  display: inline-block;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: #edf3ff;
+  color: #0055fe;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.snapshot-panel .snapshot-piece-art img {
+  width: 72px;
+}

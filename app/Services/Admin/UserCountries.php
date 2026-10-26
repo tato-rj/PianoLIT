@@ -6,11 +6,18 @@ use Illuminate\Support\Facades\DB;
 
 class UserCountries
 {
+    public function labels(?array $world = null): array
+    {
+        $world = $world ?? json_decode(file_get_contents(resource_path('data/admin-world-map.json')), true, 512, JSON_THROW_ON_ERROR);
+        $names = json_decode(file_get_contents(resource_path('data/country-continents.json')), true, 512, JSON_THROW_ON_ERROR);
+        foreach ($world['countries'] as $shape) $names[$shape['code']]['name'] = $shape['name'];
+        return array_map(function ($country) { return $country['name']; }, $names);
+    }
+
     public function data(): array
     {
         $world = json_decode(file_get_contents(resource_path('data/admin-world-map.json')), true, 512, JSON_THROW_ON_ERROR);
-        $names = json_decode(file_get_contents(resource_path('data/country-continents.json')), true, 512, JSON_THROW_ON_ERROR);
-        foreach ($world['countries'] as $shape) $names[$shape['code']]['name'] = $shape['name'];
+        $names = $this->labels($world);
 
         // locations.user_id is unique. Start from users to exclude orphan locations
         // and retain accounts whose country has not been recorded.
@@ -21,7 +28,7 @@ class UserCountries
         $total = (int) $rows->sum('total');
         foreach ($rows as $row) {
             if (!isset($names[$row->country])) continue;
-            $countries[] = ['code' => $row->country, 'name' => $names[$row->country]['name'], 'total' => (int) $row->total];
+            $countries[] = ['code' => $row->country, 'name' => $names[$row->country], 'total' => (int) $row->total];
         }
         usort($countries, function ($a, $b) { return ($b['total'] <=> $a['total']) ?: strcmp($a['name'], $b['name']); });
         $located = array_sum(array_column($countries, 'total'));

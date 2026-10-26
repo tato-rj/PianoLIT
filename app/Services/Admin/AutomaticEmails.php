@@ -73,7 +73,7 @@ class AutomaticEmails
             $mail = $this->sample($key);
             app()->call([$mail, 'build']);
             if ($key === 'admin-weekly-snapshot') {
-                $mail->with(['analyticsUrl' => '#email-preview', 'membershipsUrl' => '#email-preview']);
+                $mail->with(['analyticsUrl' => '#email-preview', 'membershipsUrl' => '#email-preview', 'campaignsUrl' => '#email-preview']);
             }
             $markdown = clone app(Markdown::class);
             $markdown->theme($mail->theme ?: config('mail.markdown.theme', 'default'));

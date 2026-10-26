@@ -27,11 +27,11 @@
         <article>
             <header class="row g-4 align-items-center mb-5">
                 @if($pianist->cover_path)
-                    <div class="col-sm-4 col-md-3">
+                    <div class="col-4 col-md-3">
                         <img src="{{ storage($pianist->cover_path) }}" class="pianist-portrait d-block" alt="Portrait of {{ rtrim($pianist->name, '. ') }}" decoding="async">
                     </div>
                 @endif
-                <div class="{{ $pianist->cover_path ? 'col-sm-8 col-md-9' : 'col-12' }}">
+                <div class="{{ $pianist->cover_path ? 'col-8 col-md-9' : 'col-12' }}">
                     @if($nationality)<p class="small text-muted mb-2">{{ $nationality }}</p>@endif
                     <h1 class="h2 mb-3">{{ rtrim($pianist->name, '. ') }}</h1>
                     @if($pianist->born_at || $pianist->died_at)

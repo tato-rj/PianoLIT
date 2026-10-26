@@ -1,0 +1,11 @@
+.code[class*=language-], pre[class*=language-] {padding-right: 56px; overflow-x: scroll;}
+
+.markup-limit {
+    max-height: 200px;
+    overflow: scroll;
+}
+
+pre[class*=language-] {
+    background: #fbfbfd;
+    box-shadow: 0 1px 1px rgb(0 0 0 / 8%);
+}

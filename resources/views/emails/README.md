@@ -311,7 +311,12 @@ serve report jobs queued before this redesign.
 
 The Sunday email now shows new/active/returning accounts, new users exploring
 music, a daily chart, web/iOS behavior, current membership status and use, and
-three ranked pieces. PHP supplies aggregate numbers, not subscriber email lists.
+compact rankings for active accounts' saved countries, campaign results and music.
+Campaigns show weekly tagged arrivals, trial starts and first Stripe payments;
+music shows both the biggest increases in exploring accounts and the most explored
+pieces. Countries/campaigns/music share `snapshot/panel.blade.php`; edit the
+paired `countries`, `campaigns` and `pieces` components for their row layouts.
+PHP supplies aggregate numbers, not subscriber email lists.
 See `docs/WEEKLY_ADMIN_SNAPSHOT.md` for exact definitions, source limitations and
 release notes. Render a clearly labeled fictional preview with:
 

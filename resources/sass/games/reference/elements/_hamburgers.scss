@@ -1,0 +1,58 @@
+.hamburger {
+  padding: map-get($hamburger, padding-y) map-get($hamburger, padding-x);
+  transition-duration: map-get($hamburger, transition);
+
+  &.is-active {
+    .hamburger-inner,
+    .hamburger-inner::before,
+    .hamburger-inner::after {
+      background-color: map-get($hamburger, active-color-dark);
+    }
+  }
+}
+
+.hamburger-light {
+  &.is-active {
+    .hamburger-inner,
+    .hamburger-inner::before,
+    .hamburger-inner::after {
+      background-color: map-get($hamburger, active-color-light);
+    }
+  }
+
+  .hamburger-inner {
+    &,
+    &::before,
+    &::after {
+      background-color: map-get($hamburger, color-light);
+    }
+  }
+}
+
+.hamburger-box {
+  width: map-get($hamburger, line-width);
+  height: map-get($hamburger, line-height) * 3 + map-get($hamburger, line-spacing) * 2;
+  margin-bottom: map-get($hamburger, y-offset);
+}
+
+.hamburger-inner {
+  margin-top: map-get($hamburger, line-height) / -2;
+
+  &,
+  &::before,
+  &::after {
+    width: map-get($hamburger, line-width);
+    height: map-get($hamburger, line-height);
+    background-color: map-get($hamburger, color-dark);
+    border-radius: map-get($hamburger, border-radius);
+    transition-duration: map-get($hamburger, transition);
+  }
+
+  &::before {
+    top: (map-get($hamburger, line-spacing) + map-get($hamburger, line-height)) * -1;
+  }
+
+  &::after {
+    bottom: (map-get($hamburger, line-spacing) + map-get($hamburger, line-height)) * -1;
+  }
+}

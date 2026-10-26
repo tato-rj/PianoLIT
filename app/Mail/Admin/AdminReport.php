@@ -42,6 +42,7 @@ class AdminReport extends Mailable implements ShouldQueue
                     'from' => $this->reports['period']['start'], 'to' => $this->reports['period']['end'],
                     'platform' => ['webapp', 'app'], 'audience' => 'registered']),
                 'membershipsUrl' => route('admin.analytics.memberships'),
+                'campaignsUrl' => route('admin.analytics.campaigns'),
             ]);
     }
 }

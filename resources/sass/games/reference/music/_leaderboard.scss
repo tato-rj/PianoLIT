@@ -1,0 +1,103 @@
+.leaderboard-modal {
+  .modal-dialog { max-width: 520px; }
+  .modal-content { border: 1px solid $dark-color !important; border-radius: $corner-radius; }
+  .modal-header { padding: 24px 24px 0; }
+  .modal-title { color: $dark-color !important; font-size: 20px; }
+  .modal-body { padding: 16px 20px 20px; }
+}
+.leaderboard-players { max-height: min(600px, 70vh); overflow-y: auto; overscroll-behavior: contain; }
+.leaderboard-podium {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 45px 4px 25px;
+  color: $dark-color;
+  &__player { position: relative; min-width: 0; text-align: center; grid-row: 1; padding-top: 26px; }
+  &__player--1 { grid-column: 2; padding-top: 0; }
+  &__player--2 { grid-column: 1; }
+  &__player--3 { grid-column: 3; }
+  &__portrait {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 18px;
+    img { width: 100%; height: 100%; object-fit: cover; border: 1px solid $dark-color; border-radius: 50%; background: #f7f7f7; }
+  }
+  &__player--1 &__portrait { width: 88px; height: 88px; }
+  &__player--1 img { box-shadow: 0 0 0 4px #ffe54c; }
+  &__crown {
+    position: absolute;
+    left: 50%;
+    top: -32px;
+    transform: translateX(-50%) rotate(-9deg);
+    font-size: 28px;
+    color: #ffe54c;
+    filter: drop-shadow(0 1px 0 $dark-color);
+  }
+  &__rank {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 27px;
+    height: 27px;
+    display: grid;
+    place-items: center;
+    border: 1px solid $dark-color;
+    border-radius: 50%;
+    background: #f0f0f0;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  &__player--1 &__rank { background: #ffe54c; }
+  &__player--3 &__rank { background: #f7e4cd; }
+  &__name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; line-height: 1.5; }
+  &__score { display: block; margin-top: 3px; font-size: 15px; font-variant-numeric: tabular-nums; small { font-size: 11px; font-weight: 400; } }
+  .is-you &__name { text-decoration: underline; text-decoration-color: #ffe54c; text-decoration-thickness: 3px; text-underline-offset: 3px; }
+}
+.leaderboard-ranks {
+  margin: 0;
+  padding: 12px;
+  list-style: none;
+  border-radius: $corner-radius;
+  background: #f7f7f7;
+}
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 62px;
+  padding: 10px 14px;
+  border: 1px solid rgba($dark-color, .18);
+  border-radius: $corner-radius;
+  background: white;
+  color: $dark-color;
+  & + & { margin-top: 8px; }
+  &__rank { width: 18px; flex-shrink: 0; text-align: center; font-size: 13px; font-variant-numeric: tabular-nums; }
+  &__avatar { width: 36px; height: 36px; flex-shrink: 0; object-fit: cover; border-radius: 50%; }
+  &__identity { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; }
+  &__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+  &__score { flex-shrink: 0; font-size: 14px; font-variant-numeric: tabular-nums; small { font-size: 11px; } }
+  &.is-you { background: #ffe54c; border-color: $dark-color; }
+}
+.leaderboard-you { display: inline-block; flex-shrink: 0; font-size: 10px; font-weight: 700; }
+.leaderboard-podium .leaderboard-you { margin-top: 5px; padding: 2px 9px; background: #ffe54c; border-radius: $corner-radius; }
+.leaderboard-empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: $dark-color;
+  font-size: 14px;
+  p { margin: 14px 0 0; }
+  &__icon { display: inline-grid; place-items: center; width: 64px; height: 64px; border: 1px solid $dark-color; border-radius: 50%; background: #ffe54c; font-size: 24px; }
+}
+@media (max-width: 400px) {
+  .leaderboard-modal .modal-body { padding: 16px 12px 12px; }
+  .leaderboard-podium { gap: 5px; }
+  .leaderboard-podium__portrait { width: 62px; height: 62px; }
+  .leaderboard-podium__player--1 .leaderboard-podium__portrait { width: 78px; height: 78px; }
+  .leaderboard-ranks { padding: 8px; }
+  .leaderboard-row { gap: 8px; padding: 9px 10px; }
+}

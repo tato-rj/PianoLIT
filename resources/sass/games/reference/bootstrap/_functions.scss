@@ -1,0 +1,19 @@
+@function getColor($color) {
+  @return nth(map-get($colors, $color), 2);
+}
+
+@function getShade($color) {
+  @return nth(map-get($colors, $color), 1);
+}
+
+@function getFontFamily($type) {
+  @return nth(map-get($font-family, $type), 1);
+}
+
+@function getFontWeight($type) {
+  @return nth(map-get($font-family, $type), 2);
+}
+
+@function prepend($list, $value) {
+  @return join($value, $list);
+}

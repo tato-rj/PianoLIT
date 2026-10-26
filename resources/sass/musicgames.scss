@@ -1,0 +1,24 @@
+// Reference game UI is isolated from PianoLIT's public shell and other projects.
+@import "~animate.css/animate.min.css";
+@import "~@fortawesome/fontawesome-free/css/all.min";
+.music-games {
+  @import "games/reference/musicgames";
+  --bs-body-font-family: 'Nunito', sans-serif;
+  --bs-body-line-height: 1.3;
+  --bs-body-color: #212529;
+  color: #212529;
+  h1, h2, h3, h4, h5, h6 { font-family: inherit; }
+  .fas, .fa-solid { font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+  .far, .fa-regular { font-family: 'Font Awesome 6 Free'; font-weight: 400; }
+  .btn-white { color: black !important; }
+  #user-avatar { width: 52px; height: 52px; border-radius: 50%; border: 0; background: none; font-size: 2.4rem; color: lightgrey; }
+  @media (max-width: 767.98px) { .game-card { margin-right: auto !important; margin-left: auto !important; } }
+  button, input, select { font-family: inherit; }
+  .btn { box-shadow: none; font-weight: 400; letter-spacing: normal; text-transform: none; min-height: 0; }
+  .btn:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #0055fe !important; outline-offset: 3px; }
+  [hidden] { display: none !important; }
+}
+
+@media (max-width: 767.98px) {
+  .games-hub-header .hub-header__title { padding-right: 64px; }
+}

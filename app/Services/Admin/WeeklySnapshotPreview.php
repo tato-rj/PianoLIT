@@ -23,6 +23,23 @@ class WeeklySnapshotPreview
             'web' => ['active' => 189, 'explorers' => 154, 'players' => 113, 'readers' => 87, 'savers' => 42],
             'ios' => ['active' => 172, 'requests' => 2436, 'piece_requests' => 684, 'search_requests' => 219],
             'members' => ['total' => 124, 'engaged' => 89, 'percent' => 72, 'active' => 102, 'trial' => 16, 'ending' => 6, 'review' => 2],
+            'countries' => ['total' => 326, 'located' => 298, 'unlocated' => 28, 'rows' => [
+                ['code' => 'US', 'name' => 'United States', 'flag' => '🇺🇸', 'total' => 128, 'share' => 39.3],
+                ['code' => 'GB', 'name' => 'United Kingdom', 'flag' => '🇬🇧', 'total' => 54, 'share' => 16.6],
+                ['code' => 'BR', 'name' => 'Brazil', 'flag' => '🇧🇷', 'total' => 38, 'share' => 11.7],
+                ['code' => 'DE', 'name' => 'Germany', 'flag' => '🇩🇪', 'total' => 26, 'share' => 8.0],
+                ['code' => 'CA', 'name' => 'Canada', 'flag' => '🇨🇦', 'total' => 20, 'share' => 6.1],
+            ]],
+            'campaigns' => ['totals' => ['arrivals' => 428, 'trials' => 9, 'first_paid' => 4], 'rows' => [
+                ['campaign' => 'repertoire_october', 'source' => 'youtube.com', 'medium' => 'organic_video', 'arrivals' => 186, 'trials' => 5, 'first_paid' => 2],
+                ['campaign' => 'free_pick', 'source' => 'pianolit', 'medium' => 'email', 'arrivals' => 122, 'trials' => 3, 'first_paid' => 1],
+                ['campaign' => 'autumn_practice', 'source' => 'instagram.com', 'medium' => 'social', 'arrivals' => 84, 'trials' => 1, 'first_paid' => 1],
+            ]],
+            'pieces_growing' => [
+                ['id' => 0, 'title' => 'Prelude in E minor · Frédéric Chopin', 'total' => 64, 'previous' => 38, 'change' => 26],
+                ['id' => 0, 'title' => 'Waltz in A minor · Frédéric Chopin', 'total' => 27, 'previous' => 7, 'change' => 20],
+                ['id' => 0, 'title' => 'Arabesque No. 1 · Claude Debussy', 'total' => 51, 'previous' => 39, 'change' => 12],
+            ],
             'pieces' => [
                 ['id' => 0, 'title' => 'Prelude in E minor, Op. 28 No. 4 · Frédéric Chopin', 'cover' => 'preview/preview-prelude.jpg', 'total' => 64, 'web' => 42, 'ios' => 28],
                 ['id' => 0, 'title' => 'Arabesque No. 1 · Claude Debussy', 'cover' => 'preview/preview-arabesque.jpg', 'total' => 51, 'web' => 31, 'ios' => 24],
@@ -33,6 +50,8 @@ class WeeklySnapshotPreview
             $piece['url'] = '#email-preview';
             $piece['image'] = (string) mix('images/emails/welcome/'.basename($piece['cover']));
         }
+        unset($piece);
+        foreach ($snapshot['pieces_growing'] as &$piece) $piece['url'] = '#email-preview';
         unset($piece);
         return $snapshot;
     }

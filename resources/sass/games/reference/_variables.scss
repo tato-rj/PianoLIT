@@ -1,0 +1,40 @@
+$primary-color: #ffe54c;
+$secondary-color: #262626;
+$light-color: getColor(grey-light);
+$dark-color: getColor(grey-dark);
+
+$alert: (
+	border-width: 1px
+);
+
+$form: (
+	gap: 3,
+	padding-x: 1rem,
+	padding-y: .65rem,
+	background: #edf2f7
+);
+
+$hamburger: (
+	padding-x: 15px,
+	padding-y: 15px,
+	transition: 0.15s,
+	color-light: white,
+	active-color-light: white,
+	color-dark: #000,
+	active-color-dark: #000,
+	border-radius: 4px,
+	line-width: 32px,
+	line-height: 2px, // 4
+	line-spacing: 7px, // 6
+	y-offset: -2px, // 6
+);
+
+$corner-radius: 2rem;
+$btn-font-weight: normal;
+
+$shadow-color: black;
+$shadow-opacity: .1;
+
+//BOOTSTRAP VARIABLES
+$transition-collapse: height .2s ease;
+$transition-collapse-width: width .2s ease;

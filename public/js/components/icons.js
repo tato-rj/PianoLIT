@@ -12,6 +12,8 @@ function resolve(name) {
 
 function refreshIcon(element) {
     if (!element.matches || !element.matches(selector)) return;
+    // Copied standalone projects can retain their original icon artwork.
+    if (element.closest?.('[data-preserve-icons]')) return;
     // Legacy HTML can still arrive from mobile-shared models/messages. Convert
     // its presentation here without changing those serialized API contracts.
     if (!element.classList.contains('app-icon')) {

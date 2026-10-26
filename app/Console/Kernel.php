@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('pianolit:admin-report')->weeklyOn(7, '22:30')
             ->timezone('America/New_York')->withoutOverlapping();
 
+        $schedule->command('games:cleanup-duels')->everyMinute()->withoutOverlapping();
         $schedule->command('attribution:prune')->daily();
         $schedule->command('freepicks:sync-history')->everyMinute()->withoutOverlapping();
         $schedule->command('memberships:sync-apple')->hourly()->withoutOverlapping(120);

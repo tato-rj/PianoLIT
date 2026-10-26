@@ -26,7 +26,7 @@
     @component('components.editorial-layout')
         <form method="GET" action="{{ route('resources.pianists.index') }}" class="row g-3 align-items-end mb-4" aria-label="Find a pianist">
             <div class="col-md">
-                @input(['bag' => 'default', 'name' => 'search', 'id' => 'search-pianist', 'label' => 'Find a pianist', 'value' => $filters['search'], 'placeholder' => 'Name, country or nationality', 'required' => false, 'grid' => 'mb-0'])
+                @input(['bag' => 'default', 'name' => 'search', 'type' => 'search', 'id' => 'search-pianist', 'label' => 'Find a pianist', 'value' => $filters['search'], 'placeholder' => 'Name, country or nationality', 'limit' => 160, 'required' => false, 'grid' => 'mb-0'])
             </div>
             <div class="col-sm-7 col-md-auto">
                 @select(['bag' => 'default', 'name' => 'country', 'id' => 'pianist-country', 'label' => 'Country', 'choices' => $countryChoices, 'value' => $filters['country'], 'required' => false, 'grid' => 'mb-0'])

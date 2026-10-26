@@ -1,0 +1,136 @@
+.btn-fancy {
+    border-radius: 0;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 200;
+    letter-spacing: 1px;
+    padding: 13px 20px 13px;
+    outline: 0;
+    border: 1px solid black;
+    cursor: pointer;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    color: black !important;
+}
+
+.btn-fancy:hover {
+    color: black !important;
+    border: 1px solid black !important;
+}
+
+.btn-fancy:after {
+    content: "";
+    background-color: #ffe54c;
+    width: 100%;
+    z-index: -1;
+    position: absolute;
+    height: 100%;
+    top: 7px;
+    left: 7px;
+    transition: 0.2s;
+}
+
+.btn-fancy:hover:after {
+    top: 0px;
+    left: 0px;
+}
+
+.btn-floating .btn {
+  transform: translateY(-0.25em);
+  transition: transform 0.1s ease;
+}
+
+/* pressed */
+.btn-floating .btn:active {
+  transform: translateY(0);
+}
+
+/* disabled looks the same */
+.btn-floating .btn:disabled {
+  opacity: 1;
+  transform: translateY(-0.25em);
+  filter: none;
+  box-shadow: inherit;
+  cursor: default;
+}
+
+/* prevent any visual change on click when disabled */
+.btn-floating .btn:disabled:active {
+  transform: translateY(-0.25em);
+}
+
+.btn-floating {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: $corner-radius;
+}
+
+@media (min-width: 768px) {
+    .btn-fancy {
+      padding: 13px 50px 13px;
+    }
+}
+
+
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.btn-raw {
+    background: 0 0;
+    border: none;
+    padding: 0;
+    -webkit-text-stroke: 0;
+}
+
+.btn-wide, .btn-lg {
+    @extend .px-4;
+}
+
+.btn-float, .btn-float:focus {
+    @extend .shadow-xl;
+}
+
+.btn-float:active {
+    @extend .shadow-none;
+}
+
+.btn-white {
+    color: black;
+    background-color: white !important;
+    border-color: black !important;
+    border-radius: $corner-radius !important;
+}
+
+.btn-floating .btn-white:hover {
+    background-color: white !important;
+}
+
+.btn-white:hover {
+    background-color: #f1f3f4 !important;
+}
+
+.btn-white:active {
+    background-color: rgba(0,0,0,0.04) !important;
+}
+
+.btn-transparent {
+    &:hover {
+        border-color: transparent !important;
+        outline: none !important;
+    }
+
+    &:active {
+        border-color: transparent !important;
+        outline: none !important;
+    }
+
+    &:focus {
+        border-color: transparent !important;
+        outline: none !important;
+    }
+}

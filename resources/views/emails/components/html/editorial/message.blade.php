@@ -31,6 +31,8 @@
     .snapshot-piece-art { width: 64px !important; }
     .snapshot-piece-art img { width: 64px !important; }
     .snapshot-member-content { padding: 20px 16px !important; }
+    .snapshot-panel-content { padding: 20px 16px !important; }
+    .snapshot-campaign-list th { font-size: 11px !important; }
 }
 </style>
 </head>

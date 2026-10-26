@@ -1,0 +1,27 @@
+.d-center {
+	@extend .d-flex, .align-items-center, .justify-content-center;
+}
+
+.d-apart {
+	@extend .d-flex, .justify-content-between, .align-items-center;
+}
+
+.flex-grow {
+	flex-grow: 1;
+}
+
+.hover-show {
+	display: none;
+}
+
+.hover-show:hover {
+	display: block !important;
+}
+
+.hover-hide {
+	display: block;
+}
+
+.hover-hide:hover {
+	display: none !important;
+}

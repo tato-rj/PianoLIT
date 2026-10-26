@@ -1,0 +1,71 @@
+$maincolors: (
+	slate: (white, #4b4b4b),
+	grey: (white, #6b7280),
+	stone: (white, #78716c),
+	red: (white, #ff4b4b),
+	orange: (white, #ff9600),
+	yellow: (white, #ffc800),
+	green: (white, #58cc02),
+	teal: (white, #14b8a6),
+	blue: (white, #1cb0f6),
+	indigo: (white, #6366f1),
+	purple: (white, #ce82ff),
+	fuchsia: (white, #d946ef),
+	pink: (white, #ec4899)
+);
+
+$shades: (
+	slate-lighter: (dark, #f8fafc),
+	slate-light: (dark, #e2e8f0),
+	slate-dark: (white, #1e293b),
+
+	grey-lighter: (dark, #f9fafb),
+	grey-light: (dark, #b9bec7),
+	grey-dark: (white, #374151),
+
+	stone-lighter: (dark, #fafaf9),
+	stone-light: (dark, #e7e5e4),
+	stone-dark: (white, #44403c),
+
+	red-lighter: (dark, #fef2f2),
+	red-light: (dark, #fca5a5),
+	red-dark: (white, #991b1b),
+
+	orange-lighter: (dark, #fff7ed),
+	orange-light: (dark, #fed7aa),
+	orange-dark: (white, #9a3412),
+
+	yellow-lighter: (dark, #fefce8),
+	yellow-light: (dark, #fef08a),
+	yellow-dark: (white, #a16207),
+
+	green-lighter: (dark, #f0fdf4),
+	green-light: (dark, #bbf7d0),
+	green-dark: (white, #166534),
+
+	teal-lighter: (dark, #f0fdfa),
+	teal-light: (dark, #99f6e4),
+	teal-dark: (white, #115e59),
+
+	blue-lighter: (dark, #eff6ff),
+	blue-light: (dark, #bae6fd),
+	blue-dark: (white, #075985),
+
+	indigo-lighter: (dark, #eef2ff),
+	indigo-light: (dark, #c7d2fe),
+	indigo-dark: (white, #3730a3),
+
+	purple-lighter: (dark, #faf5ff),
+	purple-light: (dark, #d8b4fe),
+	purple-dark: (white, #6b21a8),
+
+	fuchsia-lighter: (dark, #fdf4ff),
+	fuchsia-light: (dark, #f5d0fe),
+	fuchsia-dark: (white, #86198f),
+
+	pink-lighter: (dark, #fdf2f8),
+	pink-light: (dark, #fbcfe8),
+	pink-dark: (white, #9d174d),
+);
+
+$colors: map-merge($maincolors, $shades);

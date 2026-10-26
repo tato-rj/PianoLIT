@@ -4,5 +4,5 @@
 <p class="snapshot-eyebrow">WEEKLY SNAPSHOT</p>
 <h1>{{ $title }}</h1>
 <p>{{ $period['label'] }}</p>
-<p class="snapshot-note">Sunday–Saturday · New York time</p>
+<p class="snapshot-note">Sunday–Saturday</p>
 </td></tr>

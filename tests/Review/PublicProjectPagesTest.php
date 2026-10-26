@@ -129,6 +129,9 @@ class PublicProjectPagesTest extends ReviewTestCase
             ->assertSee('<link rel="canonical" href="'.$origin.'"', false);
         if ($hub === 'learn') {
             $response->assertSee('PianoLIT Learn')->assertSee('Interactive tools')->assertSee('Courses &amp; guides', false)->assertDontSee('Coming up soon!');
+        } elseif ($hub === 'games') {
+            $response->assertSee('PianoLIT Games')->assertSee('Set up game')->assertDontSee('Coming up soon!');
+            $this->assertSame(11, $this->xpath($response->getContent())->query('//*[@data-game-card]')->length);
         } else {
             $response->assertSee('Coming up soon!')
                 ->assertDontSee('images/home/editorial/'.$hub.'.webp', false)

@@ -6,6 +6,7 @@ require('./timeline-events-admin');
 require('./admin-freepick-schedule')();
 require('./admin-playlists')();
 require('./admin-pianists')();
+require('./pianists.test.cjs')();
 require('./admin-pianist-editor')();
 require('./google-auth');
 require('./apple-auth');

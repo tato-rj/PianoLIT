@@ -1,0 +1,60 @@
+
+.dropzone-container {
+	min-height: 150px;
+	position: relative;
+}
+
+.dropzone-container, .dropzone {
+	@extend .rounded;
+}
+
+.dropzone-label {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-weight: bold;
+	font-size: 1.5rem;
+	color: lightgrey;
+	z-index: -1;
+}
+
+.dropzone {
+	display: none;
+	border: none !important;
+	background: transparent !important;
+}
+
+.dropzone .dz-preview .dz-image {
+	background: transparent;
+}
+
+.dropzone .dz-preview:hover .dz-image img {
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+  -o-transform: none !important;
+  transform: none !important;
+  -webkit-filter: none !important;
+  filter: none !important;
+}
+
+.dropzone .dz-preview .dz-image img {
+    width: 100%;
+}
+
+.dropzone.dz-clickable * {
+    cursor: pointer !important;
+}
+
+.dropzone .dz-preview .dz-details, .dropzone .dz-preview:hover .dz-details {
+	display: none;
+}
+
+.dropzone .dz-preview {
+	@extend .t-2;
+}
+
+.dropzone .dz-preview:hover {
+	transform: scale(1.035);
+}

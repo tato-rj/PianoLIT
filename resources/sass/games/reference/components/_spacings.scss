@@ -1,0 +1,45 @@
+// MARGIN
+.mr-1 {@extend .me-1;}
+.mr-2 {@extend .me-2;}
+.mr-3 {@extend .me-3;}
+.mr-4 {@extend .me-4;}
+.mr-5 {@extend .me-5;}
+.mr-auto {@extend .me-auto;}
+
+.ml-1 {@extend .ms-1;}
+.ml-2 {@extend .ms-2;}
+.ml-3 {@extend .ms-3;}
+.ml-4 {@extend .ms-4;}
+.ml-5 {@extend .ms-5;}
+.ml-auto {@extend .ms-auto;}
+
+.pr-1 {@extend .pe-1;}
+.pr-2 {@extend .pe-2;}
+.pr-3 {@extend .pe-3;}
+.pr-4 {@extend .pe-4;}
+.pr-5 {@extend .pe-5;}
+
+.pl-1 {@extend .ps-1;}
+.pl-2 {@extend .ps-2;}
+.pl-3 {@extend .ps-3;}
+.pl-4 {@extend .ps-4;}
+.pl-5 {@extend .ps-5;}
+
+$levels: 6, 7, 8, 9;
+$increment: 4.5;
+
+@each $level in $levels {
+	.m-#{$level} {margin: $spacer * $increment !important}
+	.mt-#{$level} {margin-top: $spacer * $increment !important}
+	.mr-#{$level} {margin-right: $spacer * $increment !important}
+	.mb-#{$level} {margin-bottom: $spacer * $increment !important}
+	.ml-#{$level} {margin-left: $spacer * $increment !important}
+
+	.p-#{$level} {padding: $spacer * $increment !important}
+	.pt-#{$level} {padding-top: $spacer * $increment !important}
+	.pr-#{$level} {padding-right: $spacer * $increment !important}
+	.pb-#{$level} {padding-bottom: $spacer * $increment !important}
+	.pl-#{$level} {padding-left: $spacer * $increment !important}
+
+	$increment: $increment + 1.5;
+}

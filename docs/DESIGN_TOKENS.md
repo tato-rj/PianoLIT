@@ -866,3 +866,15 @@ Correct/incorrect answer borders use the shared success/danger tokens, with
 visible answer labels and live feedback so color is not the only indicator.
 `pages/_quizzes.scss` scopes these states to `.quiz-page`; it does not restyle
 promotions or other tools. See `QUIZZES.md` for the view/script map.
+
+### Great Pianists
+
+Public artist pages reuse Learn's breadcrumb, hub header, editorial layout,
+resource cards and unchanged card promotions. `pianists.card` supplies the saved
+nationality, name and biography excerpt to the shared card. Its
+`resource-card__art--portrait` variant uses a 4:3 image crop with top-biased face
+positioning; the Design System includes this same variant. Profile portraits use
+4:5 framing beside the name/dates on both desktop and phones. Recording cards use
+the standard white surface, border, small radius and lift, with 80px square album
+art and shared type/links. Layout-specific rules stay in `pages/_pianists.scss`.
+See `PIANISTS.md` for controls, data states and the editing map.

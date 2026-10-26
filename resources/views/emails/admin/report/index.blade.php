@@ -25,10 +25,20 @@
 ]])
 @endcomponent
 
+@if(isset($snapshot['countries']))
+@component('mail::snapshot.countries', ['title' => 'Top countries', 'description' => 'Active web app + iOS accounts · saved country', 'countries' => $snapshot['countries']])
+@endcomponent
+@endif
+
 @component('mail::snapshot.members', ['title' => 'Members', 'members' => $snapshot['members'], 'url' => $membershipsUrl, 'asOf' => $snapshot['period']['as_of'], 'labels' => ['active' => 'Active', 'trial' => 'Trials', 'ending' => 'Ending']])
 @endcomponent
 
-@component('mail::snapshot.pieces', ['title' => 'Music of the week', 'pieces' => $snapshot['pieces'], 'websiteUrl' => $websiteUrl])
+@if(isset($snapshot['campaigns']))
+@component('mail::snapshot.campaigns', ['title' => 'Campaign results', 'description' => 'Top 3 by first payments, then trials and arrivals', 'campaigns' => $snapshot['campaigns'], 'url' => $campaignsUrl, 'reportLabel' => 'View campaign analytics'])
+@endcomponent
+@endif
+
+@component('mail::snapshot.pieces', ['title' => 'Music of the week', 'pieces' => $snapshot['pieces'], 'growing' => $snapshot['pieces_growing'] ?? [], 'websiteUrl' => $websiteUrl])
 @endcomponent
 
 @component('mail::snapshot.closing', ['url' => $analyticsUrl, 'button' => 'Open analytics'])

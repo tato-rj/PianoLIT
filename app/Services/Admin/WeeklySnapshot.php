@@ -73,6 +73,11 @@ class WeeklySnapshot
                 'trial' => (int) ($states['trial'] ?? 0), 'ending' => (int) ($states['ending'] ?? 0),
                 'review' => (int) ($states['needs_review'] ?? 0) + (int) ($states['pending'] ?? 0) + (int) ($states['payment_issue'] ?? 0)],
             'pieces' => $this->topPieces($start, $end),
+            'pieces_growing' => $this->growingPieces($previousStart, $start, $end),
+            'countries' => $this->countries($active, $activeCount),
+            'campaigns' => app(\App\Services\CampaignAttributionReport::class)->weekly(
+                $start->copy()->timezone(config('app.timezone')), $end->copy()->timezone(config('app.timezone'))
+            ),
         ];
     }
 
@@ -186,5 +191,39 @@ class WeeklySnapshot
                 'cover' => $covers[$row->piece_id] ?? null, 'total' => (int) $row->total,
                 'web' => (int) $row->web, 'ios' => (int) $row->ios];
         })->all();
+    }
+
+    private function growingPieces(Carbon $previousStart, Carbon $start, Carbon $end): array
+    {
+        $current = $this->pieceAccounts($start, $end)->select('piece_id')->selectRaw('COUNT(DISTINCT account_id) as total')->groupBy('piece_id');
+        $previous = $this->pieceAccounts($previousStart, $start)->select('piece_id')->selectRaw('COUNT(DISTINCT account_id) as total')->groupBy('piece_id');
+        $ranked = DB::query()->fromSub($current, 'this_week')->leftJoinSub($previous, 'last_week', 'last_week.piece_id', '=', 'this_week.piece_id')
+            ->select('this_week.piece_id', 'this_week.total')
+            ->selectRaw('COALESCE(last_week.total, 0) as prior_total, this_week.total - COALESCE(last_week.total, 0) as growth')
+            ->whereRaw('this_week.total > COALESCE(last_week.total, 0)')
+            ->orderByDesc('growth')->orderByDesc('this_week.total')->orderBy('this_week.piece_id')->limit(3)->get();
+        $titles = Queries::pieces($ranked->pluck('piece_id'));
+        return $ranked->map(function ($row) use ($titles) {
+            return ['id' => (int) $row->piece_id, 'title' => $titles[$row->piece_id]->medium_name_with_composer,
+                'total' => (int) $row->total, 'previous' => (int) $row->prior_total, 'change' => (int) $row->growth];
+        })->all();
+    }
+
+    private function countries($active, int $total): array
+    {
+        $labels = app(UserCountries::class)->labels();
+        $rows = ExcludedAccounts::users(DB::table('users as u'), 'u.email')
+            ->whereIn('u.id', (clone $active)->select('account_id'))->leftJoin('locations as l', 'l.user_id', '=', 'u.id')
+            ->selectRaw('UPPER(TRIM(l.countryCode)) as code, COUNT(*) as total')->groupByRaw('UPPER(TRIM(l.countryCode))')->get();
+        $countries = [];
+        foreach ($rows as $row) {
+            if (!isset($labels[$row->code])) continue;
+            $countries[] = ['code' => $row->code, 'name' => $labels[$row->code], 'total' => (int) $row->total,
+                'share' => $total ? round($row->total / $total * 100, 1) : 0,
+                'flag' => mb_chr(127397 + ord($row->code[0])).mb_chr(127397 + ord($row->code[1]))];
+        }
+        usort($countries, function ($a, $b) { return ($b['total'] <=> $a['total']) ?: strcmp($a['name'], $b['name']); });
+        $located = array_sum(array_column($countries, 'total'));
+        return ['total' => $total, 'located' => $located, 'unlocated' => $total - $located, 'rows' => array_slice($countries, 0, 5)];
     }
 }

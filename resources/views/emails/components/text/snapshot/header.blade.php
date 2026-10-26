@@ -1,2 +1,2 @@
 # {{ $title }}
-{{ $period['label'] }} · Sunday–Saturday · New York time
+{{ $period['label'] }} · Sunday–Saturday

@@ -30,6 +30,9 @@ email lists appear in the body.
 | Members using PianoLIT | Accounts with a currently active, billing-grace, trial or ending Stripe/Apple membership that had activity in the reporting week |
 | Membership status | Current status from the same read-only query as the admin membership directory, with Active (including billing grace), Trials and Ending separated; unknown/stale/payment-issue records appear under review |
 | Music of the week | Up to three existing pieces ranked by distinct accounts opening them on the web or requesting their details on iOS; one account using both platforms counts once in the total |
+| Gaining momentum | Up to three pieces with the largest positive increase in distinct exploring accounts over the preceding complete week; shows prior/current counts and the absolute increase, with current total then piece ID breaking ties |
+| Top countries | Up to five countries among this week's active accounts, using each account's saved location; shares divide by all active accounts, including unknown locations; the coverage note includes known countries outside the top five |
+| Campaign results | UTM-tagged arrivals, attributed trial starts and first positive Stripe membership invoice payments that occurred during the reporting week, ranked by first payments, then trials, then arrivals |
 
 Activity queries prefer recorded UTC instants, falling back to application-local
 occurrence dates for older records. They use event time rather than import time
@@ -56,10 +59,37 @@ Current statuses cannot establish historical paid growth or churn, so the email
 does not invent those figures or imply trial starts are payments. Apple status
 still depends on the existing receipt monitor's saved verification/freshness.
 
+Countries reuse the admin dashboard's controlled country names and normalized
+two-letter codes. Missing/invalid codes stay unknown; saved location names are
+not trusted as labels. This is the **saved country of active accounts**, not
+geolocation of this week's requests or a historical signup location. Cross-platform
+accounts count once; inactive, deleted and excluded accounts do not enter the
+ranking. Tied countries sort by name. Flag emoji are decorative; country names and
+numbers remain readable when a mail client does not display flags.
+
+Campaigns reuse `CampaignAttributionReport`'s filtered arrivals and matching
+customer/subscription first-payment query, with a separate `weekly()` aggregate.
+Each event uses its own stored date: an earlier arrival can produce a trial or
+first payment this week. Anonymous arrivals count; outcomes require saved consent.
+Renewals, zero-value invoices, unmatched customers, shop charges and excluded
+accounts do not become membership conversions. Conversion totals count attributed
+subscriptions, not unique people. The top three group by campaign/source/medium,
+merging placements and landing destinations; totals cover **all** groups, not just
+those displayed. Missing campaign labels fall back to the recorded source or
+medium. No signup attribution, Apple campaign conversion, revenue estimate or
+conversion rate is inferred. Arrival and outcome counts have different cohorts,
+so dividing them would produce a misleading rate.
+
+The campaign link opens the existing admin analytics page, whose filters still
+describe **arrival cohorts** and may show a different date window; it is not
+labeled as an exact weekly drilldown. Its existing admin/CLI behavior and all
+collection, consent, attribution and billing flows remain unchanged.
+
 ## Editing and preview
 
 - Body composition, primary labels and CTA: `resources/views/emails/admin/report/index.blade.php`
 - Section layouts/captions: `resources/views/emails/components/{html,text}/snapshot/`
+- Countries, campaigns and music share `snapshot/panel.blade.php`; their rows live in `countries`, `campaigns` and `pieces`
 - Shared logo, outer shell and footer: `components/{html,text}/editorial/`
 - Styles: `resources/sass/emails/welcome.scss`, compiled into the tracked `components/html/themes/welcome.css`
 - Aggregate query: `app/Services/Admin/WeeklySnapshot.php`
@@ -93,8 +123,9 @@ with the existing `[Preview]` subject prefix.
 Deploy the service, mail class, views and compiled theme together; restart
 long-running queue workers through the normal release process. No new migration
 or public asset build is required. Existing SQL activity/UTC/link and membership
-reporting tables must already be deployed. Old queued report payloads retain their
-legacy view so changing the template does not break pending jobs. Do not run the
+reporting and existing campaign/subscription/payment-receipt tables must already
+be deployed. Old queued report payloads retain their legacy view, and already-queued
+snapshots without the added audience/campaign fields remain renderable. Do not run the
 normal report command as a preview: it queues email to actual managers.
 
 Local review covers HTML/text, a 600px email canvas and 390/320px phone widths,

@@ -12,6 +12,13 @@ return [
     //     'published_at' => '2026-12-01 09:00:00', // America/New_York
     // ],
     'releases' => [
+        'games-2026' => [
+            'title' => 'Play your way through music theory',
+            'description' => 'Explore eleven music theory games, compare your scores and challenge a friend to a multiplayer duel.',
+            'hub' => 'Games', 'type' => 'Games',
+            'route' => 'games.home', 'parameters' => [],
+            'published_at' => '2026-10-26 13:00:00',
+        ],
         'metronome-own-voice-2026' => [
             'title' => 'Let your own voice keep the beat',
             'description' => 'Record four quick counts, then practice with your own voice in the PianoLIT Metronome. Your recording is saved to your account.',

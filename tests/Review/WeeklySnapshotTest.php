@@ -171,11 +171,65 @@ class WeeklySnapshotTest extends ReviewTestCase
         $this->assertNull($snapshot['returning']['percent']);
         $this->assertNull($snapshot['members']['percent']);
         $this->assertSame([], $snapshot['pieces']);
+        $this->assertSame([], $snapshot['pieces_growing']);
+        $this->assertSame(['total' => 0, 'located' => 0, 'unlocated' => 0, 'rows' => []], $snapshot['countries']);
+        $this->assertSame(['arrivals' => 0, 'trials' => 0, 'first_paid' => 0], $snapshot['campaigns']['totals']);
+        $this->assertSame([], $snapshot['campaigns']['rows']);
         $mail = new AdminReport($snapshot, new Admin(['name' => 'Preview']));
         $mail->build();
         $renderer = clone app(Markdown::class);
         $renderer->theme($mail->theme);
         $this->assertStringContainsString('No piece exploration recorded this week', (string) $renderer->render($mail->markdown, $mail->buildViewData()));
+    }
+
+    public function test_countries_rank_this_weeks_accounts_with_known_labels_and_honest_coverage()
+    {
+        foreach ([' us ', 'US', 'GB', 'BR', 'DE', 'CA', 'FR', 'XX', '', null] as $code) {
+            $user = $this->user();
+            if ($code !== null) DB::table('locations')->insert(['user_id' => $user->id, 'countryCode' => $code, 'countryName' => '<script>untrusted</script>']);
+            $this->event($user, '2026-10-20 12:00:00');
+            $this->web($user, '2026-10-20 13:00:00'); // Cross-platform activity still counts once.
+        }
+        $excluded = $this->user(['email' => ' Elena.Dare@Gmail.com ']);
+        $inactive = $this->user();
+        foreach ([$excluded, $inactive] as $user) DB::table('locations')->insert(['user_id' => $user->id, 'countryCode' => 'US']);
+        $this->event($excluded, '2026-10-20 12:00:00');
+        $this->event($inactive, '2026-10-17 23:59:59');
+        DB::table('locations')->insert(['user_id' => 987654, 'countryCode' => 'US']);
+        $countries = (new WeeklySnapshot)->build()['countries'];
+        $this->assertSame(10, $countries['total']);
+        $this->assertSame(7, $countries['located']); // Includes known countries outside the top five.
+        $this->assertSame(3, $countries['unlocated']);
+        $this->assertSame(['US', 'BR', 'CA', 'FR', 'DE'], array_column($countries['rows'], 'code'));
+        $this->assertSame(['United States', 'Brazil', 'Canada', 'France', 'Germany'], array_column($countries['rows'], 'name'));
+        $this->assertSame([2, 1, 1, 1, 1], array_column($countries['rows'], 'total'));
+        $this->assertSame([20.0, 10.0, 10.0, 10.0, 10.0], array_column($countries['rows'], 'share'));
+        $this->assertSame('🇺🇸', $countries['rows'][0]['flag']);
+        $this->assertStringNotContainsString('untrusted', json_encode($countries));
+    }
+
+    public function test_growing_pieces_use_distinct_people_and_positive_changes_between_complete_weeks()
+    {
+        $people = [$this->user(), $this->user(), $this->user()];
+        $pieces = [$this->piece(), $this->piece(), $this->piece(), $this->piece()];
+        foreach ([[0], [], [0, 1], [0, 1]] as $index => $viewers) {
+            foreach ($viewers as $viewer) $this->web($people[$viewer], '2026-10-17 23:59:59', ['resource_type' => 'piece', 'resource_id' => $pieces[$index]->id]);
+        }
+        foreach ([[0, 1, 2], [0, 1], [0, 1], [0]] as $index => $viewers) {
+            foreach ($viewers as $viewer) {
+                $this->web($people[$viewer], '2026-10-18 00:00:00', ['resource_type' => 'piece', 'resource_id' => $pieces[$index]->id]);
+                $this->web($people[$viewer], '2026-10-20 12:00:00', ['resource_type' => 'piece', 'resource_id' => $pieces[$index]->id]);
+                $this->event($people[$viewer], '2026-10-24 23:59:59', ['route_name' => 'api.pieces.find', 'metadata' => json_encode(['data' => ['search' => $pieces[$index]->id]])]);
+            }
+        }
+        $this->web($people[2], '2026-10-25 00:00:00', ['resource_type' => 'piece', 'resource_id' => $pieces[2]->id]);
+        $excluded = $this->user(['email' => 'arthurvillar@gmail.com']);
+        $this->web($excluded, '2026-10-20 12:00:00', ['resource_type' => 'piece', 'resource_id' => $pieces[3]->id]);
+        $growing = (new WeeklySnapshot)->build()['pieces_growing'];
+        $this->assertSame([$pieces[0]->id, $pieces[1]->id], array_column($growing, 'id'));
+        $this->assertSame([3, 2], array_column($growing, 'total'));
+        $this->assertSame([1, 0], array_column($growing, 'previous'));
+        $this->assertSame([2, 2], array_column($growing, 'change'));
     }
 
     public function test_verified_apple_statuses_and_private_memberships_follow_the_existing_directory()
@@ -212,6 +266,10 @@ class WeeklySnapshotTest extends ReviewTestCase
         $views = $mail->views();
         $this->assertStringContainsString('The week at PianoLIT', (string) $views['html']);
         $this->assertSame($theme, $before->getValue($renderer));
+        unset($snapshot['countries'], $snapshot['campaigns'], $snapshot['pieces_growing']);
+        $queued = new AdminReport($snapshot, new Admin(['name' => 'Preview']));
+        $queued->build();
+        $this->assertStringContainsString('Music of the week', (string) (clone $renderer)->theme($queued->theme)->render($queued->markdown, $queued->buildViewData()));
         $legacy = new AdminReport([], new Admin(['name' => 'Preview']));
         $legacy->build();
         $this->assertSame('default', $legacy->theme);
@@ -223,6 +281,7 @@ class WeeklySnapshotTest extends ReviewTestCase
         config(['app.url' => 'pianolit.com']);
         $snapshot = (new \App\Services\Admin\WeeklySnapshotPreview)->data();
         $snapshot['pieces'][0]['title'] = 'Example <script>unsafe</script>';
+        $snapshot['campaigns']['rows'][0]['campaign'] = 'Example <script>unsafe campaign</script>';
         $mail = new AdminReport($snapshot, new Admin(['name' => 'Private Admin', 'email' => 'private@example.test']));
         $mail->build();
         $renderer = clone app(Markdown::class);
@@ -232,10 +291,17 @@ class WeeklySnapshotTest extends ReviewTestCase
         foreach ([$html, $text] as $body) {
             $this->assertStringContainsString('The week at PianoLIT', $body);
             $this->assertStringContainsString('326', $body);
+            $this->assertStringContainsString('Top countries', $body);
+            $this->assertStringContainsString('United States', $body);
+            $this->assertStringContainsString('39.3%', $body);
+            $this->assertStringContainsString('Campaign results', $body);
+            $this->assertStringContainsString('428', $body);
+            $this->assertStringContainsString('Gaining momentum', $body);
             $this->assertStringContainsString('unverified', $body);
             $this->assertStringNotContainsString('private@example.test', $body);
             $this->assertStringNotContainsString('Unsubscribe', $body);
             $this->assertStringNotContainsString('@if', $body);
+            $this->assertStringNotContainsString('New York time', $body);
         }
         $this->assertStringNotContainsString('<script>', $html);
         $this->assertStringContainsString('https://pianolit.com/images/emails/welcome/logo.png', $html);

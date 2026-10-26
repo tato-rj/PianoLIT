@@ -1,0 +1,19 @@
+////////////////////////////////////////
+// SECOND BREAKPOINT: less than 768px //
+////////////////////////////////////////
+@include media-breakpoint-down(sm) {
+	.alert-container {
+		width: 90% !important;
+	}
+
+	.pagination {
+		flex-wrap: wrap !important;
+	}
+}
+
+/////////////////////////////
+// Between 768px and 992px //
+/////////////////////////////
+@include media-breakpoint-between(sm, md) {
+	//
+}

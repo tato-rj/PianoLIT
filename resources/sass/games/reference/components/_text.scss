@@ -1,0 +1,36 @@
+a, i, strong, u {
+	font-family: inherit;
+}
+
+.text-left {@extend .text-start;}
+.text-right {@extend .text-end;}
+
+a {text-decoration: none;}
+
+a.link-primary {
+	color: $primary-color !important;
+
+	&:hover {
+		color: lighten($primary-color, 10%) !important;
+	}
+
+	&:active {
+		color: darken($primary-color, 10%) !important;
+	}
+
+	&:focus {
+		color: $primary-color !important;
+	}
+}
+
+a.link-secondary {
+	color: $secondary-color !important;
+
+	&:hover {
+		color: lighten($secondary-color, 20%) !important;
+	}
+}
+
+.no-stroke {
+    -webkit-text-stroke: 0 !important;
+}

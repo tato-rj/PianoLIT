@@ -103,10 +103,11 @@ class AdminEmailsTest extends ReviewTestCase
         $this->assertFalse($settings->enabled('admin-weekly-snapshot'));
         $this->get(route('admin.emails.index'))->assertOk()->assertSee('Weekly admin snapshot');
         $response = $this->get(route('admin.emails.preview', 'admin-weekly-snapshot'))
-            ->assertOk()->assertSee('The week at PianoLIT')->assertSee('Sample data')->assertSee('326');
+            ->assertOk()->assertSee('The week at PianoLIT')->assertSee('Sample data')->assertSee('326')
+            ->assertSee('Top countries')->assertSee('Campaign results')->assertSee('Gaining momentum');
         $xpath = $this->xpath($response);
         $this->assertCount(0, $xpath->query('//a[contains(@href,"/analytics/") or contains(@href,"/pieces/")]'));
-        $this->assertCount(9, $xpath->query('//a[starts-with(@href,"#email-preview")]'));
+        $this->assertCount(13, $xpath->query('//a[starts-with(@href,"#email-preview")]'));
         $this->assertCount(3, $xpath->query('//img[contains(@src,"/images/emails/welcome/preview-")]'));
         $this->assertSame(0, \App\User::count());
         $this->assertSame(0, \App\Piece::count());

@@ -59,6 +59,11 @@ module.exports = function () {
     icon.classList.remove('spinner-border'); icons.refreshIcon(icon);
     assert.equal(icon.children[0].getAttribute('data-lucide-name'), 'circle-stop');
 
+    const preserved = element('i', 'fas fa-flask');
+    preserved.closest = selector => selector === '[data-preserve-icons]' ? {} : null;
+    icons.refreshIcon(preserved);
+    assert(preserved.classList.contains('fas'));
+    assert.equal(preserved.children.length, 0, 'Copied projects retain their original icon artwork');
     const legacy = element('i', 'fas fa-money-bill-wave mr-1');
     icons.refreshIcon(legacy);
     assert(legacy.classList.contains('app-icon')); assert(legacy.classList.contains('mr-1'));

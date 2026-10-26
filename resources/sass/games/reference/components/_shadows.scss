@@ -1,0 +1,37 @@
+.shadow {
+	box-shadow: 0 4px 6px -1px rgba($shadow-color, $shadow-opacity) !important;
+	&-sm {box-shadow: 0 1px 3px 0 rgba($shadow-color, $shadow-opacity) !important;}
+	&-lg {box-shadow: 0 12px 25px -2px rgba($shadow-color, $shadow-opacity) !important;}
+	&-xl {box-shadow: 0 24px 64px rgba($shadow-color, $shadow-opacity) !important;}
+	&-inner {box-shadow: inset 0 2px 4px 0 rgba($shadow-color, .05) !important;}
+
+	@each $name, $color in $colors {
+		&-#{$name} {box-shadow: 0 4px 6px -1px rgba(nth($color, 2), $shadow-opacity) !important;}
+		&-sm-#{$name} {box-shadow: 0 1px 3px 0 rgba(nth($color, 2), $shadow-opacity) !important;}
+		&-lg-#{$name} {box-shadow: 0 12px 25px -2px rgba(nth($color, 2), $shadow-opacity) !important;}
+		&-xl-#{$name} {box-shadow: 0 24px 64px rgba(nth($color, 2), $shadow-opacity) !important;}
+		&-inner-#{$name} {box-shadow: inset 0 2px 4px 0 rgba(nth($color, 2), .05) !important;}
+	}
+}
+
+.shadow-none {box-shadow: 0 0 #0000 !important;}
+
+.hover {
+	&-shadow:hover {@extend .shadow;}
+	&-shadow-sm:hover {@extend .shadow-sm;}
+	&-shadow-lg:hover {@extend .shadow-lg;}
+	&-shadow-xl:hover {@extend .shadow-xl;}
+	&-shadow-inner:hover {@extend .shadow-inner;}
+
+	@each $name, $color in $colors {
+		&-shadow-#{$name}:hover {@extend .shadow-#{$name};}
+		&-shadow-sm-#{$name}:hover {@extend .shadow-sm-#{$name};}
+		&-shadow-lg-#{$name}:hover {@extend .shadow-lg-#{$name};}
+		&-shadow-xl-#{$name}:hover {@extend .shadow-xl-#{$name};}
+		&-shadow-inner-#{$name}:hover {@extend .shadow-inner-#{$name};}
+	}
+}
+
+.shadow-center {
+    box-shadow: 0 0 1rem rgba(0,0,0,.085)!important;
+}

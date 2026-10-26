@@ -55,6 +55,41 @@ class CampaignAttributionReport
         })->all();
     }
 
+    /** Actual events in a complete week, independently of arrival cohort. */
+    public function weekly($start, $end): array
+    {
+        $fields = ['utm_campaign', 'utm_source', 'utm_medium'];
+        $columns = array_map(function ($field) { return 'v.'.$field; }, $fields);
+        $arrivals = $this->visits(null)->where('v.created_at', '>=', $start)->where('v.created_at', '<', $end)
+            ->select($columns)->selectRaw('COUNT(*) as arrivals, 0 as trials, 0 as first_paid')->groupBy($columns);
+        $trials = $this->visits(null)->whereNotNull('v.consented_at')
+            ->join('campaign_subscriptions as s', 's.visit_id', '=', 'v.id')
+            ->where('s.trial_started_at', '>=', $start)->where('s.trial_started_at', '<', $end)
+            ->select($columns)->selectRaw('0 as arrivals, COUNT(*) as trials, 0 as first_paid')->groupBy($columns);
+        $firstPaid = $this->firstPayments()->where('p.amount', '>', 0)
+            ->where('p.paid_at', '>=', $start)->where('p.paid_at', '<', $end)
+            ->select('s.visit_id')->selectRaw('COUNT(*) as total')->groupBy('s.visit_id');
+        $payments = $this->visits(null)->whereNotNull('v.consented_at')
+            ->joinSub($firstPaid, 'paid', 'paid.visit_id', '=', 'v.id')
+            ->select($columns)->selectRaw('0 as arrivals, 0 as trials, SUM(paid.total) as first_paid')->groupBy($columns);
+        // Collapse placements/landing pages without multiplying visits by their
+        // subscription/payment children. Earliest paid receipts exclude renewals.
+        $events = $arrivals->unionAll($trials)->unionAll($payments);
+        $totals = DB::query()->fromSub(clone $events, 'events')
+            ->selectRaw('COALESCE(SUM(arrivals), 0) as arrivals, COALESCE(SUM(trials), 0) as trials, COALESCE(SUM(first_paid), 0) as first_paid')->first();
+        $rows = DB::query()->fromSub($events, 'events')->select($fields)
+            ->selectRaw('SUM(arrivals) as arrivals, SUM(trials) as trials, SUM(first_paid) as first_paid')
+            ->groupBy($fields)->orderByDesc('first_paid')->orderByDesc('trials')->orderByDesc('arrivals')
+            ->orderBy('utm_campaign')->orderBy('utm_source')->orderBy('utm_medium')->limit(3)->get();
+        return [
+            'totals' => ['arrivals' => (int) $totals->arrivals, 'trials' => (int) $totals->trials, 'first_paid' => (int) $totals->first_paid],
+            'rows' => $rows->map(function ($row) {
+                return ['campaign' => $row->utm_campaign, 'source' => $row->utm_source, 'medium' => $row->utm_medium,
+                    'arrivals' => (int) $row->arrivals, 'trials' => (int) $row->trials, 'first_paid' => (int) $row->first_paid];
+            })->all(),
+        ];
+    }
+
     private function visits($since, $search = '', $fields = CampaignParameters::FIELDS)
     {
         $query = ExcludedAccounts::owned(DB::table('campaign_visits as v'), 'v.user_id')->where(function ($query) {

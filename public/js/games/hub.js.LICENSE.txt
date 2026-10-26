@@ -1,0 +1,7 @@
+/*!
+  @mojs/core – The motion graphics toolbelt for the web
+  Oleg Solomka @legomushroom 2023 MIT
+  1.7.1
+*/
+
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */
