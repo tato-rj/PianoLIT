@@ -453,10 +453,18 @@ h1, h2 {
   text-decoration: none;
 }
 
-.freepick-cover-edge {
+.freepick-cover-edge, .freepick-cover-edge-frame {
   height: 24px;
   font-size: 0;
-  line-height: 24px;
+  line-height: 0;
+}
+
+.freepick-cover-edge-frame {
+  overflow: visible;
+}
+
+.freepick-cover-edge-fill {
+  height: 26px;
   background: white;
   border-radius: 24px 24px 0 0;
 }

@@ -192,7 +192,10 @@ separate square app icon. Freepick begins with the smaller centered logo and
 and the familiar piece identity/description/action. The content panel has
 24px rounded top corners overlapping the cover's bottom by 24px. The cover is a
 linked table background with a rounded white edge in its last 24px, followed by
-the white content table. Keep this structure instead of negative margins or
+the white content table. Its 26px rounded fill paints 2px beyond a 24px frame
+with visible overflow to prevent a photo-colored hairline at fractional zoom.
+Keep the rounding on the fill, not the cell, and do not clip this overpaint.
+Keep this structure instead of negative margins or
 positioned layers, which Gmail does not retain; the cover keeps its 240px/170px
 responsive heights and a regular image fallback for Word-based Outlook. This panel is
 white through the end of the resource features; More music to discover returns

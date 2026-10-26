@@ -6,7 +6,7 @@
 <!--[if !mso]><!-->
 <table class="freepick-cover-frame" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr><td class="freepick-cover-space" height="216"><a class="freepick-cover-link" href="{{ $url }}" title="{{ $piece->medium_name }}" aria-label="{{ $piece->medium_name }}">&nbsp;</a></td></tr>
-<tr><td class="freepick-cover-edge" height="24" bgcolor="#ffffff">&nbsp;</td></tr>
+<tr><td class="freepick-cover-edge" height="24"><div class="freepick-cover-edge-frame" aria-hidden="true"><div class="freepick-cover-edge-fill">&nbsp;</div></div></td></tr>
 </table>
 <!--<![endif]-->
 </td></tr>

@@ -13,7 +13,10 @@ extends from the piece identity through the end of the resource features. It ret
 top corners, overlapping the bottom of the cover by 24px. The rounded white edge
 occupies the cover table's last 24px, with the white content table continuing
 directly below it. This preserves the effect in Gmail without negative margins
-or positioned layers. The linked cover has an accessible piece label and a
+or positioned layers. The rounded white fill is 26px tall inside a 24px frame
+with visible overflow: its extra 2px paints across the join so fractional zoom
+cannot expose the photo as a hairline. Keep that overpaint instead of rounding
+the table cell itself or clipping the fill. The linked cover has an accessible piece label and a
 regular image fallback for Word-based Outlook. It leads into the familiar composer portrait,
 colored level marker, piece
 title and composer credit. The primary action links directly to the pinned

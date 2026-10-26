@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-10-25 — Remove the Free Pick seam at fractional zoom (P3, complete locally)
+
+- **Evidence / change:** Arthur confirmed the rounded cover works in Gmail, then supplied a zoom-dependent hairline at its lower join. Reproduced it in the static export, including a gray center pixel (225/255) between white rows at a fractional vertical coordinate. Changed the cover edge to a 26px rounded white fill inside a 24px frame with visible overflow. Its final 2px paints across the join; the cover, corner radius and content positions retain their dimensions. A border or clipped fill did not remove the reproduced seam and was not shipped. Recompiled the shared theme and documented the overpaint.
+- **Verification:** Pixel samples spanning the join are entirely white at **11 preview scales from 50% through 200%** and at the 390px mobile width. Desktop/mobile covers remain 240px/170px high with 24px edge frames and no horizontal overflow. Existing isolated email checks pass **30 tests / 889 assertions**; theme compilation and whitespace checks pass. Proofs and scale/pixel measurements are under `freepick-corners/` in this chat's visualization directory, including `seam-fixed-{desktop,mobile}.png` and `zoom-{measurements,pixel-results}.json`. No new tests for this cosmetic adjustment.
+- **Compatibility / remaining:** No recipient, delivery, tracking, plain-text, media or mobile/API changes. No live send or deployment performed; a fresh Gmail preview after deployment remains the inbox-specific confirmation.
+
 ### 2026-10-25 — Keep the Free Pick rounded cover edge visible in Gmail (P3, complete locally)
 
 - **Evidence / change:** Arthur confirmed delivery works, then supplied Gmail desktop and iPhone Mail screenshots: the desktop white panel started below the photo instead of overlapping it. Replaced the negative-margin/positioned table in `components/html/freepick/hero.blade.php` with a linked cover background and a rounded white edge occupying its last 24px. The white content table follows directly, preserving the existing portrait/content inset. Kept the desktop/mobile 240px/170px cover heights, 24px corners, cover link, no-cover panel and a regular linked image fallback for Word-based Outlook. Recompiled the shared email theme and updated its editing documentation.
