@@ -15,7 +15,7 @@ class NotificationsController extends Controller
 
         return response()->json([
             'unreadCount' => $count,
-            'html' => view('components.panel.notification-list', ['unreadNotifications' => $notifications])->render(),
+            'html' => view('admin.components.notifications.list', ['unreadNotifications' => $notifications])->render(),
         ]);
     }
 

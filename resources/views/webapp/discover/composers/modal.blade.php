@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'composers-modal'])
+@component('components.dialogs.modal', ['id' => 'composers-modal'])
 @slot('header')
 Composers
 @endslot

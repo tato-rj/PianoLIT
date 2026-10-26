@@ -7,7 +7,7 @@
         <small><a href="{{ youtube($item->long_name.' by '.optional($item->composer)->name) }}" target="_blank" rel="noopener noreferrer">Find a recording @icon('external-link', ['mr' => 0, 'classes' => 'icon-size-xs'])</a></small>
         @endif
     </td>
-    <td class="text-nowrap">@include('components.composer-label', ['composer' => $item->composer])</td>
+    <td class="text-nowrap">@include('components.music.composer-label', ['composer' => $item->composer])</td>
     <td class="text-nowrap">
         <span class="d-inline-flex align-items-center">
             @if($item->level_name)

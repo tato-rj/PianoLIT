@@ -1,4 +1,4 @@
-@component('components.modal', [
+@component('components.dialogs.modal', [
 	'id' => $modalId ?? 'match-modal',
 	'data' => ['piece-id' => $piece->id],
 	'options' => [

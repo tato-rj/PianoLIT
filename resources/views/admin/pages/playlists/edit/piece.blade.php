@@ -1,4 +1,4 @@
-@component('components.draggable.cards.small', ['model' => $piece])
+@component('admin.components.sortable-item', ['model' => $piece])
 
 {{$piece->short_name}} by {{$piece->composer->short_name}}
 

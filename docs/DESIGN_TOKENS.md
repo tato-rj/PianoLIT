@@ -36,7 +36,7 @@ regenerate `resources/icons/custom.json` and the browser bundles. The PHP render
 and dynamic icon handler use this same catalog; the Icons specimen previews it.
 Keep the full app/admin artwork and model/API origin values unchanged.
 
-Full-screen public projects use `components.project-watermark`: a white,
+Full-screen public projects use `components.branding.watermark`: a white,
 transparent SVG with a white rounded-square border, fixed at the top left with
 safe-area spacing. Its hand-tuned small-size drawing retains the open score and
 six evenly spaced keys, with two stronger lines per page, an open gap above the
@@ -49,28 +49,28 @@ navigation. The Components section previews the same link against blue; the
 Website & web app download modal includes `icon-white.svg`. Regenerating brand
 icons copies this artwork unchanged instead of recreating it from the Safari mask.
 
-`components.bottom-sheet` and `components.bottom-sheet-header` provide the shared
+`components.dialogs.bottom-sheet.panel` and `components.dialogs.bottom-sheet.header` provide the shared
 bottom offcanvas used by the web-app Save to panel and standalone metronome
 settings. The favorites panel keeps its 1040px content cap; metronome settings
 center their content at a maximum of 560px. Reuse the viewport height cap, heading and
-`components.bottom-sheet-handle`; Bootstrap supplies the backdrop, focus trap,
+`components.dialogs.bottom-sheet.handle`; Bootstrap supplies the backdrop, focus trap,
 transitions and dismissal. Keep content scrolling inside the panel. The
 Components section includes an interactive specimen of these same components.
 
-`components.voice-recorder` supplies the standalone metronome's guided four-count
+`metronome.components.voice-recorder` supplies the standalone metronome's guided four-count
 recorder, named voice library and the Components specimen. Buttons, selects and the live level meter
-reuse shared Bootstrap controls. `components.voice-recorder-cue` supplies the
+reuse shared Bootstrap controls. `metronome.components.voice-recorder-cue` supplies the
 large number, status badge and animated ring using shared status colors: yellow
 Wait with a countdown, green Speak now with a listening pulse, a green Recorded
 check and red Try again with a brief shake. Text/icons reinforce every color;
 reduced motion removes animations and transitions. The Components gallery shows
 all four states on this same cue component. Keep the concise recording prompts, per-number replay/redo and explicit
 Save and use action on this component. Reuse `@input` for recording names and
-renaming. `components.metronome-sound` renders a custom Sound menu whose trigger
+renaming. `metronome.components.sound-menu` renders a custom Sound menu whose trigger
 uses `form-control` and the shared `form-control-select-trigger` arrow mixin, so it
 matches native PianoLIT selects. The popup reuses Bootstrap's shared dropdown
 surface/items, with Recorded voices grouped beneath instruments. The shared
-`metronome-sound-voice` row has play/stop, edit-name and delete icon buttons.
+`metronome.components.sound-voice` row has play/stop, edit-name and delete icon buttons.
 Deleting a voice uses the browser’s native `window.confirm` with its name;
 there is no inline delete message or custom modal. A
 full-width standard `.btn.btn-sm` New recording button stays visible
@@ -88,7 +88,7 @@ no transparency or baked corner mask; installing it in the native iOS app is a
 separate release task. Apple/Android/Windows exports are also opaque squares so
 their platform can apply its own mask. Browser PNG/ICO exports retain rounding.
 
-`components.brand-theme` supplies the shared user/admin browser metadata.
+`components.branding.theme` supplies the shared user/admin browser metadata.
 All runtime artwork uses content-versioned URLs from `scripts/brand-assets.js`;
 the web manifests and Windows configs also version their nested icon URLs.
 Regenerate and deploy the images, metadata, views and Mix manifest together.
@@ -101,7 +101,7 @@ The public website/web app uses a white launch background; administration uses
 `#181e22`. Both center the approved icon at 80 CSS pixels. The blue icon has a
 thin, light `#dee2e6` outline (one CSS pixel) so its white keys remain distinct
 from the launch background. These splash treatments leave the icon masters
-unchanged. `components.brand-splash` supplies
+unchanged. `components.branding.splash` supplies
 content-versioned iOS/iPadOS startup-image links from the shared
 `resources/data/brand-splash-screens.json` catalog: 23 screen profiles with both
 portrait and landscape files. The shared brand head also declares standalone
@@ -166,11 +166,11 @@ Use `.admin-editor-grid` for a wide main column and narrower sidebar on desktop;
 it stacks on smaller screens. `.admin-editor-stack`, `.admin-editor-options` and
 `.admin-editor-save` supply the shared layout. Controls keep their standard
 components and finishes. The Design System previews the same section component.
-Native file fields use `components.form.upload.file` with `id`, `name`, `label`,
+Native file fields use `components.forms.upload.file` with `id`, `name`, `label`,
 optional `accept` and `currentUrl` / `currentLabel`. Their IDs and labels remain
 unique; existing files open safely in a new tab.
 
-Collapsible lists use `components.accordion` and `components.accordion-item`,
+Collapsible lists use `components.layout.accordion` and `components.layout.accordion-item`,
 with the native Bootstrap accordion styling and behavior. Pass a unique wrapper
 `id`, then each item's unique `id`, `title` and optional `parentId` to keep one
 item open at a time. `open: true` sets the initial expanded state. The wrapper
@@ -181,7 +181,7 @@ rounded card headers with separate card borders inside an accordion.
 Date and time displays omit timezone names and explanatory timezone captions.
 Use the configured application timezone for formatting and calculations.
 
-Use `@input` (`components.form.input`) for standard text/email fields, including
+Use `@input` (`components.forms.input`) for standard text/email fields, including
 labels and validation feedback. Supply `id` to associate its label, `autocomplete`
 for browser completion and `describedBy` for help text. The component preserves
 scalar old input and safely ignores malformed array values. Avoid field-specific
@@ -199,7 +199,7 @@ ignoring malformed array values. Pass `textImprover: false` for structured data
 such as subscriber email lists, where the prose-improvement action is unsuitable.
 
 Admin table search fields use `@input` and their filter/sort/page-size fields use
-`@select` (`components.form.select`), with the same default field dimensions and
+`@select` (`components.forms.select`), with the same default field dimensions and
 states as the Design System. `@select` accepts a `choices` value/label map and
 selected `value`; its existing `options`, `select` and grouped-option API remains
 available for older forms. Pass `required: false` for optional GET filters and a
@@ -241,7 +241,7 @@ selects. Their colors, 12px corners, chevrons, padding, focus treatment and touc
 text stay aligned. Keep only panel/menu layout in their component styles; no
 white/translucent filter-control variant remains.
 
-Multiple-choice filter menus use `components.form.checkbox-menu`. Pass a field
+Multiple-choice filter menus use `components.forms.checkbox-menu`. Pass a field
 `name`, accessible `label`, an `options` value/label map, the `selected` array and
 an optional `allLabel`. The shared admin filter trigger, Bootstrap dropdown and
 native checkbox styles stay in sync with the Design System's Checkbox menu
@@ -252,14 +252,14 @@ the containing form's Apply action; at least one is required. The component send
 an empty array sentinel so an unchecked menu can be rejected on the server.
 Consumers must validate allowed values and discard the sentinel before querying.
 
-Small, mutually exclusive choices use `components.segmented-control`: pass a
+Small, mutually exclusive choices use `components.forms.segmented-control`: pass a
 unique `id` and radio `name`, an accessible `label`, an `options` value/label map
 and the selected `value`. The shared component fills its container with equal
 segments and uses native radios for a single selection and arrow-key navigation.
 Its neutral tray, selected surface and focus border use the shared tokens. The
 Design System's Segmented selection specimen renders this same component.
 
-Switches use `@toggle` (`components.form.toggle`) and the shared `.switch` /
+Switches use `@toggle` (`components.forms.toggle`) and the shared `.switch` /
 `.slider.round` classes. Supply `toggle` and `ariaLabel` for the state and accessible
 name. Switches have no visible On/Off label by default; add visible labels only
 when explicitly needed. Always retain an accessible name. `autoToggle: true`
@@ -371,20 +371,20 @@ stylesheet precedence. Page templates request only their main bundle.
 
 ## Membership cards and account tabs
 
-`components.membership-plan-card` is the single plan card used by Pricing and Change plan. Pass a plan, a unique `headingId`, an optional `monthlyPlan` for yearly savings, and an `action` slot containing a shared button or button link. Optional `trial`, `accessNote`, `context` and `selected` values adapt its content and selection state. Pass `current: true` for the existing membership plan to apply the shared `shadow-none border border-light` utilities. Its gradient panel, shadow and layout live in `components/_membership-plan-card.scss`, imported by both app and admin so the Design System specimen uses the same component and styles. These catalog cards belong to plan selection; the current membership overview uses ordinary `.card.rounded.shadow-light` content cards and saved billing dates, without guessing an existing subscriber’s charge from a catalog price.
+`components.billing.membership-plan-card` is the single plan card used by Pricing and Change plan. Pass a plan, a unique `headingId`, an optional `monthlyPlan` for yearly savings, and an `action` slot containing a shared button or button link. Optional `trial`, `accessNote`, `context` and `selected` values adapt its content and selection state. Pass `current: true` for the existing membership plan to apply the shared `shadow-none border border-light` utilities. Its gradient panel, shadow and layout live in `components/_membership-plan-card.scss`, imported by both app and admin so the Design System specimen uses the same component and styles. These catalog cards belong to plan selection; the current membership overview uses ordinary `.card.rounded.shadow-light` content cards and saved billing dates, without guessing an existing subscriber’s charge from a catalog price.
 
-`components.tab-navigation` is a Blade `@component` with its `.tab-content` and panes in the default slot. It provides accessible Bootstrap tab triggers for an `items` array of `target`/`label` pairs, with a unique `id` and accessible `label`. The `segmented` variant is the shared compact account navigation in `components/_tabs.scss`; it uses a compact row on phones and two columns below 360px. Panels use the target as their ID and `aria-labelledby="{id}-{target}"`. Items may supply an explicit `id` and a `data` map when an existing tool needs stable trigger IDs or data attributes; the matching panel must reference that explicit ID. Summary shortcuts activate the matching real tab trigger so keyboard focus and lazy loading remain consistent. It encloses the menu and panes in one frame and embeds its small shared controller once, selecting the URL fragment synchronously before revealing that frame. This avoids a flash of the default tab or a Bootstrap fade while the main bundle loads. With JavaScript disabled, the server default remains visible; an interrupted response reveals that default at DOM ready. Keep the panels inside the component slot, rather than after an `@include`. The navigation automatically marks each instance with `data-tab-navigation`. The shared `components/tab-navigation.js` controller, loaded in both app and admin bundles, saves the selected panel as a URL fragment and restores it on refresh or fragment navigation. It uses `history.replaceState` to preserve query strings and existing Back-button state without adding history entries; ordinary page anchors and unrelated tab implementations keep their own behavior. Both components are demonstrated under Settings → Design System → Components.
+`components.navigation.tab-navigation` is a Blade `@component` with its `.tab-content` and panes in the default slot. It provides accessible Bootstrap tab triggers for an `items` array of `target`/`label` pairs, with a unique `id` and accessible `label`. The `segmented` variant is the shared compact account navigation in `components/_tabs.scss`; it uses a compact row on phones and two columns below 360px. Panels use the target as their ID and `aria-labelledby="{id}-{target}"`. Items may supply an explicit `id` and a `data` map when an existing tool needs stable trigger IDs or data attributes; the matching panel must reference that explicit ID. Summary shortcuts activate the matching real tab trigger so keyboard focus and lazy loading remain consistent. It encloses the menu and panes in one frame and embeds its small shared controller once, selecting the URL fragment synchronously before revealing that frame. This avoids a flash of the default tab or a Bootstrap fade while the main bundle loads. With JavaScript disabled, the server default remains visible; an interrupted response reveals that default at DOM ready. Keep the panels inside the component slot, rather than after an `@include`. The navigation automatically marks each instance with `data-tab-navigation`. The shared `components/tab-navigation.js` controller, loaded in both app and admin bundles, saves the selected panel as a URL fragment and restores it on refresh or fragment navigation. It uses `history.replaceState` to preserve query strings and existing Back-button state without adding history entries; ordinary page anchors and unrelated tab implementations keep their own behavior. Both components are demonstrated under Settings → Design System → Components.
 
 ## Saved payment cards and secure fields
 
-`components.payment-card-preview` is shared by checkout, Billing and the Design System. Its default mode renders the live card preview. Pass `saved: ['brand' => ..., 'last4' => ...]` for the current membership card and its check mark, and optionally `selectable: true` for a checkout selection button, or `add: true` for the monochromatic Add new card button. Add tiles take either `controlsId` for an inline disclosure (checkout), or `modalId` for a Bootstrap modal trigger with the appropriate dialog semantics (Billing and the Design System). The artwork, brand colors, check mark and add-card styling live in `components/_payment-card.scss`, imported by app and admin. Only the currently stored membership method is shown; the card editor explicitly describes replacement after verification.
+`components.billing.payment-card-preview` is shared by checkout, Billing and the Design System. Its default mode renders the live card preview. Pass `saved: ['brand' => ..., 'last4' => ...]` for the current membership card and its check mark, and optionally `selectable: true` for a checkout selection button, or `add: true` for the monochromatic Add new card button. Add tiles take either `controlsId` for an inline disclosure (checkout), or `modalId` for a Bootstrap modal trigger with the appropriate dialog semantics (Billing and the Design System). The artwork, brand colors, check mark and add-card styling live in `components/_payment-card.scss`, imported by app and admin. Only the currently stored membership method is shown; the card editor explicitly describes replacement after verification.
 
-`components.payment-card-fields` supplies the three Stripe-hosted mounts and native cardholder/postal fields. Pass a unique `prefix` and the initial `cardholder` value. Native fields use `@input` and shared labels; field layout lives in `components/_payment-card-fields.scss`. Checkout and Billing use this same component. Billing's editor uses `components.modal` at body level; its `data-deferred-card` form mounts after the modal is shown, focuses the card number once ready without overriding another user-selected field, and clears its draft after any dismissal while reusing the hosted fields on reopen. The dialog blocks dismissal during verification and temporarily releases its focus trap for Stripe's bank challenge, restoring it on failure. The existing verified SetupIntent flow remains responsible for saving the card.
+`components.billing.payment-card-fields` supplies the three Stripe-hosted mounts and native cardholder/postal fields. Pass a unique `prefix` and the initial `cardholder` value. Native fields use `@input` and shared labels; field layout lives in `components/_payment-card-fields.scss`. Checkout and Billing use this same component. Billing's editor uses `components.dialogs.modal` at body level; its `data-deferred-card` form mounts after the modal is shown, focuses the card number once ready without overriding another user-selected field, and clears its draft after any dismissal while reusing the hosted fields on reopen. The dialog blocks dismissal during verification and temporarily releases its focus trap for Stripe's bank challenge, restoring it on failure. The existing verified SetupIntent flow remains responsible for saving the card.
 
 
 ## Public hub breadcrumbs
 
-Use `components.breadcrumb` above the content of every redesigned public hub
+Use `components.navigation.breadcrumb` above the content of every redesigned public hub
 page. Blog now uses Home → Blog on its directory and Home → Blog → Article title
 on articles. Apply the same component automatically when Shop, Games and Learn
 and their nested pages are redesigned; their temporary and legacy pages can wait
@@ -430,13 +430,13 @@ The admin layout embeds `admin.components.page-loading` first in the body so its
 
 ## Standard confirmation dialogs
 
-Use `components.modal` for ordinary dialogs and confirmations. Its `header`, `body` and `footer` slots retain shared typography, button classes and `--radius-modal`. Pass `centered: true` for a centered confirmation and `descriptionId` for the ID of its explanatory text. The component supplies a focusable dialog root, a title association when a header is present, and an accessible Close button. Bootstrap handles the backdrop, Escape, focus trap and return to the opener. Keep destructive actions behind an explicit submit button, with a separate dismiss button. Web app views can push markup into `page-modals` to render it at body level, outside tab panes and other stacking containers. Settings → Design System’s interactive modal uses this same component.
+Use `components.dialogs.modal` for ordinary dialogs and confirmations. Its `header`, `body` and `footer` slots retain shared typography, button classes and `--radius-modal`. Pass `centered: true` for a centered confirmation and `descriptionId` for the ID of its explanatory text. The component supplies a focusable dialog root, a title association when a header is present, and an accessible Close button. Bootstrap handles the backdrop, Escape, focus trap and return to the opener. Keep destructive actions behind an explicit submit button, with a separate dismiss button. Web app views can push markup into `page-modals` to render it at body level, outside tab panes and other stacking containers. Settings → Design System’s interactive modal uses this same component.
 
-`components.download-offer` supplies the free-poster popup and article-specific blog gift dialog. It composes the shared modal, `@input` and primary button, with a cream poster preview, explicit email-delivery copy and a Maybe later dismissal. Desktop uses two Bootstrap columns; phone previews are capped at 150px. Pass a unique `id`, image/alt text, heading, description, `giftUrl` and `actionLabel`; the automatic poster keeps its existing cookie and timing. Its Design System specimen renders the same component with `preview: true`, replacing the form with a non-submitting container. Only preview layout lives in `components/_download-offer.scss`; input and button finishes stay shared.
+`components.promotions.download-offer` supplies the free-poster popup and article-specific blog gift dialog. It composes the shared modal, `@input` and primary button, with a cream poster preview, explicit email-delivery copy and a Maybe later dismissal. Desktop uses two Bootstrap columns; phone previews are capped at 150px. Pass a unique `id`, image/alt text, heading, description, `giftUrl` and `actionLabel`; the automatic poster keeps its existing cookie and timing. Its Design System specimen renders the same component with `preview: true`, replacing the form with a non-submitting container. Only preview layout lives in `components/_download-offer.scss`; input and button finishes stay shared.
 
-Signup and Premium invitations use `components.access-modal`, with `kind`, `id`, `title`, `description` and a string array of up to six `benefits`. It composes the shared modal, `access-prompt-icon`, `access-prompt-body` and green-check `access-benefits` list. Signup uses a user icon, emphasizes **free** in the description and **Sign up free** action, and includes a login link. Premium uses a crown and **Go Premium**. Titles belong in the body; the modal's optional `titleId` points its accessible label there. Default body spacing is `px-4 pb-4 pt-0`; an explicit numeric `options.body.padding` still produces `p-N`.
+Signup and Premium invitations use `components.account.access-modal`, with `kind`, `id`, `title`, `description` and a string array of up to six `benefits`. It composes the shared modal, `access-prompt-icon`, `access-prompt-body` and green-check `access-benefits` list. Signup uses a user icon, emphasizes **free** in the description and **Sign up free** action, and includes a login link. Premium uses a crown and **Go Premium**. Titles belong in the body; the modal's optional `titleId` points its accessible label there. Default body spacing is `px-4 pb-4 pt-0`; an explicit numeric `options.body.padding` still produces `p-N`.
 
-`App\Services\WebApp\AccessPrompts` supplies concise action copy and benefits derived from the saved Access Limits matrix. Lists describe actual improvements to the next account tier, respect annotation/score dependencies and limited caps, and never promise a paid feature for free. The shared `components/access-prompts.js` updates Premium titles from server-rendered action copy for native modal triggers (`data-access-action`) and media/favorite callbacks (`PianoLITAccessPrompts.show`). Both modal kinds and the reusable `components.signup-card` specimen are demonstrated in Settings → Design System. The live blurred-score overlay stays lightweight: one friendly sentence and the shared Sign up free / Go Premium button, without an embedded card.
+`App\Services\WebApp\AccessPrompts` supplies concise action copy and benefits derived from the saved Access Limits matrix. Lists describe actual improvements to the next account tier, respect annotation/score dependencies and limited caps, and never promise a paid feature for free. The shared `components/access-prompts.js` updates Premium titles from server-rendered action copy for native modal triggers (`data-access-action`) and media/favorite callbacks (`PianoLITAccessPrompts.show`). Both modal kinds and the reusable `components.account.signup-card` specimen are demonstrated in Settings → Design System. The live blurred-score overlay stays lightweight: one friendly sentence and the shared Sign up free / Go Premium button, without an embedded card.
 
 
 ## Focus appearance
@@ -445,10 +445,10 @@ By user preference, PianoLIT has no extra outline or focus halo in any state, ac
 
 ### Access status select
 
-`components.status-select` reuses the admin table's green/warning/red badges as a native select. Its reusable styles are in `components/_status-select.scss`; the shared script in `views/admin-access-limits.js` updates the selected tone and optional helper note. The Design System table includes the same control. Limited options are supplied by the policy's feature definition. Locked account-owned guest cells show Account required inside a muted/light grey disabled pill, with no repeated note beneath it. Its hidden submitted value remains Blocked. The shared component accepts `selectedLabel` and `tone` for this display without adding another access state.
+`admin.components.filters.status-select` reuses the admin table's green/warning/red badges as a native select. Its reusable styles are in `components/_status-select.scss`; the shared script in `views/admin-access-limits.js` updates the selected tone and optional helper note. The Design System table includes the same control. Limited options are supplied by the policy's feature definition. Locked account-owned guest cells show Account required inside a muted/light grey disabled pill, with no repeated note beneath it. Its hidden submitted value remains Blocked. The shared component accepts `selectedLabel` and `tone` for this display without adding another access state.
 ## Calendar fields
 
-`components.form.date-picker` is the reusable inline calendar for forms that must
+`components.forms.date-picker` is the reusable inline calendar for forms that must
 disable individual dates. It wraps the shared `@input` field and the already
 installed jQuery UI calendar. Pass `name`, `id`, `label`, `bag`, `value`,
 `minDate` (`YYYY-MM-DD`) and `blockedDates` (date strings). Its input is read-only;
@@ -461,12 +461,12 @@ administrator changes availability after a page was loaded.
 
 ## Homepage project cards
 
-The standard public header is `components.public-header`, with shared layout in
+The standard public header is `components.layout.public.header`, with shared layout in
 `resources/sass/components/_public-header.scss`. Reuse it for public pages:
 brand icon left and the circular account control right. The YouTube button is
 shown only on the main homepage (`home` route).
-Other public pages add `components.public-hub-menu-button` after the account
-control. Its Bootstrap offcanvas, `components.public-hub-menu`, links to the
+Other public pages add `components.navigation.hub-menu.button` after the account
+control. Its Bootstrap offcanvas, `components.navigation.hub-menu.panel`, links to the
 main website, Web app, iOS app, Shop, Games, Learn, Blog and Metronome using named routes
 or the configured App Store URL. It uses a compact 18rem width, capped at the
 viewport width. The hamburger/panel is absent on `home`
@@ -482,7 +482,7 @@ indicators. Avoid colored icons, pill outlines and shadows. Hover/current rows
 use the subtle surface token; the current hub also has a semibold label, and
 keyboard focus uses a stronger neutral background. `components/_hub-menu.scss` owns this
 shared finish; the Design System renders the same complete menu in preview mode.
-Both this menu and the piece Options panel reuse `components.side-menu-header`:
+Both this menu and the piece Options panel reuse `components.layout.side-menu-header`:
 a 16px heading, Bootstrap `px-4 py-3` spacing with a `gap-3` between the title
 and close button, no divider and the standard
 Bootstrap close button at 0.75rem. Its styles live in the shared stylesheet,
@@ -494,7 +494,7 @@ stack so it does not affect header layout or inherit a page stacking context.
 account-security screens use the same component. Web app, admin and mobile
 embedded layouts retain their existing navigation.
 
-The public account control is `components.account-circle` with `.btn-raw` and
+The public account control is `components.account.account-circle` with `.btn-raw` and
 shared styles in `components/_account-circle.scss`. Its actual button surface
 provides a consistent white-bordered light-grey circle using `--color-border`,
 with `--color-text-dark` for the icon/initial and `--color-text` on interaction.
@@ -504,6 +504,8 @@ their first initial, opening the retained account dropdown. Both states use the
 shared field-height token for size and are shown in the Design System. Bootstrap
 flex alignment on header list items centers YouTube beside the circle without
 inline baseline spacing.
+
+On the signed-in Games hub, a second `.account-circle` control opens the separate Game player dropdown. `games.challenges.profile.dropdown` keeps its 21px trophy icon, shared field-height circle size and white border; the Games stylesheet supplies the reference primary yellow (`#ffe54c`) and dark icon color. Keep account links in the account dropdown and game records in this separate menu. Guests keep their direct sign-in link.
 
 All public and web-app login/register URLs share `auth.webapp.login`,
 `auth.webapp.register` and their layout; there are no separate website versions.
@@ -530,7 +532,7 @@ Their forms retain the existing same-host endpoints, CSRF fields and reset token
 The homepage footer is also shared across all full public pages, including the
 temporary project pages and public account-security screens. Standalone login
 and registration are excluded. Use
-`components.public-footer` through `layouts.footer`; its `.site-footer` styles
+`components.layout.public.footer` through `layouts.footer`; its `.site-footer` styles
 live in `components/_public-footer.scss`. Keep the existing message,
 Contact/Privacy/Terms links and copyright. The `.public-site` shell uses Bootstrap
 flex/height utilities to keep the footer at the bottom of short pages. Both
@@ -547,7 +549,7 @@ Their layout lives in `pages/_project-coming-soon.scss`; content URLs below thos
 roots remain available. Return links use the named main-site route, including
 from Games and when `APP_URL` has no scheme.
 
-`components.project-card` renders the homepage's seven destination links and its
+`home.components.project-card` renders the homepage's seven destination links and its
 Design System specimen. Its gallery finish lives in
 `resources/sass/components/_project-card.scss`; the wall, room and responsive
 arrangement live in `pages/_home.scss`. Following Arthur's October 22 reference,
@@ -580,7 +582,7 @@ card/shadow without changing the resting layout or piano position. These rules
 live in `_project-card.scss`; Blog and web-app piece cards keep the shared 3px /
 180ms `.card-lift` behavior in `components/_card-lift.scss`.
 
-The gallery uses `components.project-deck` and its standalone, versioned
+The gallery uses `home.components.project-deck` and its standalone, versioned
 `js/components/project-deck.js`. Cards are 244px wide on desktop and 264px on
 phones, retaining the 35:48 ratio, responsive 20–32px gaps (20px on phones) and Web app / iOS / Shop /
 Learn / Games / Metronome / Blog order. Titles use `--font-size-h4` (24px); descriptions use
@@ -664,14 +666,14 @@ their normal color on hover; `.card-lift` shares the piece cards' 3px upward hov
 movement and reduced-motion behavior. The existing 12-story page size, published
 content filter and topic queries are retained; pagination preserves the query.
 
-`components.editorial-layout` provides the Bootstrap content/sidebar columns,
+`components.layout.editorial` provides the Bootstrap content/sidebar columns,
 stacking the sidebar after the content below the desktop breakpoint. Reuse it
 as other public directories and editorial pages are redesigned.
 Hub detail content sits directly on the page surface and uses the available
 content column, without an enclosing white card, shadow or extra inset padding.
 Keep cards for individual stories/resources, promotions and purposeful controls.
-`components.display.ads` accepts `variant: cards` to render the existing latest
-published crash course, eBook and eScore through `components.promo-card`, in the
+`components.promotions.ads` accepts `variant: cards` to render the existing latest
+published crash course, eBook and eScore through `components.cards.promotion`, in the
 requested order. Legacy banners on other pages retain their existing layout.
 The shared promotion card uses `.pastel-card`, its existing soft action button,
 color/radius/type tokens and the original course/shop destinations and media.
@@ -680,7 +682,7 @@ styles live in `components/_editorial-layout.scss`; blog-specific typography and
 story grid styles remain in `pages/_blog.scss`.
 
 Public article pages use the same subtle surface, fluid headline, shared
-`components.editorial-layout` and pastel promotion cards as the directory. The
+`components.layout.editorial` and pastel promotion cards as the directory. The
 article has no outer card or inset padding; topic links render shared `@pill`
 badges above its heading. The date and reading
 time remain visible, with a simple text byline. `.blog-article #blog-content`
@@ -694,7 +696,7 @@ opener used in the Blog and Learn introductions and newsletter invitations.
 Its modal URL stays on the request host; `label` changes the caption and
 `preview: true` makes a Design System sample inert.
 
-`components.hub-header` owns the shared landing-page heading, description and
+`components.layout.hub-header` owns the shared landing-page heading, description and
 placement of that newsletter action. Blog and Learn pass a plain `heading`
 (`PianoLIT Blog` / `PianoLIT Learn`) and their description as the slot. Every
 redesigned hub root uses this same simple title treatment, matching Blog's
@@ -726,7 +728,7 @@ pianists. The introduction leads directly into those groups, without an
 additional section-navigation strip. Each project has a clear description, format label and
 action. Scales and arpeggios stay in a smaller More practice tools row.
 
-Reuse `components.resource-card` for project/resource navigation cards. It uses
+Reuse `components.cards.resource` for project/resource navigation cards. It uses
 a white surface, fine border, shared small radius and `.card-lift`, with full-width
 2:1 artwork instead of an inset pastel panel. The whole card is one named link
 and titles keep their normal color on hover. Pass a unique `id`, `title`,
@@ -740,11 +742,11 @@ dynamics reference, yellow quiz and typographic pianist poster. These illustrati
 pigments are local to the artwork; shared brand/surface/type tokens remain in use.
 They contain no screenshots, invented content totals or external image requests.
 The introduction leads with the plain PianoLIT Learn title and names concrete
-activities in its description. It uses the same `components.hub-header`, title
+activities in its description. It uses the same `components.layout.hub-header`, title
 and description styles and newsletter placement as Blog.
-Learn retains the public header/footer, breadcrumb and `components.editorial-layout`.
-Its sidebar ads always use `components.display.ads` with `variant: cards`, which
-renders the same `components.promo-card` as Blog, including the existing pastel
+Learn retains the public header/footer, breadcrumb and `components.layout.editorial`.
+Its sidebar ads always use `components.promotions.ads` with `variant: cards`, which
+renders the same `components.cards.promotion` as Blog, including the existing pastel
 surfaces, category tags, spacing and buttons. Do not add a hub-specific ads design,
 appearance variant or introductory heading. This reusable ads area stays consistent
 across public hubs. Learn has no bottom newsletter invitation card. Its introduction
@@ -765,7 +767,7 @@ piano sampler. Changing key/mode, playing a note, opening a dialog or leaving th
 page stops the sequence. Theoretical spellings missing from the keyboard aliases
 are matched locally by pitch; shared note data and media URLs remain unchanged.
 
-`components.piano.keyboard` supports an opt-in `responsive: true` layout with
+`components.music.piano.keyboard` supports an opt-in `responsive: true` layout with
 proportional key widths, responsive height/dots and solid white keys, including
 after a played note is released. Put the tool keyboard directly on the page,
 without a padded, rounded pastel wrapper. Existing callers retain their fixed key
@@ -795,12 +797,12 @@ when notes change. The standalone Chord Finder script also uses versioned `mix()
 
 ### Standalone metronome settings
 
-`metronome.index` retains Arthur’s original full-screen canvas and uses the shared Bootstrap bottom sheet for settings. Only this page loads `css/metronome.css` and `js/metronome.js`. The canvas defaults to `--color-primary`, with the matching `#0055fe` reset value in the local preference module. Its tempo numeral retains the original thin system face; the settings inherit PianoLIT body/heading typography and standard sizes from `app.css`. Reuse `components.segmented-control`, `@select`, `@toggle`, `.btn-close`, `.btn.btn-secondary` and `.btn.btn-primary`, including their existing shadows. `components.form.color` supplies the native `.form-control.form-control-color` control, also shown in Settings → Design System. Local settings CSS caps the centered content at 560px and hides unrelated fields during recording; shared bottom-sheet styles and Bootstrap own the panel geometry, scrolling and transitions.
+`metronome.index` retains Arthur’s original full-screen canvas and uses the shared Bootstrap bottom sheet for settings. Only this page loads `css/metronome.css` and `js/metronome.js`. The canvas defaults to `--color-primary`, with the matching `#0055fe` reset value in the local preference module. Its tempo numeral retains the original thin system face; the settings inherit PianoLIT body/heading typography and standard sizes from `app.css`. Reuse `components.forms.segmented-control`, `@select`, `@toggle`, `.btn-close`, `.btn.btn-secondary` and `.btn.btn-primary`, including their existing shadows. `components.forms.color` supplies the native `.form-control.form-control-color` control, also shown in Settings → Design System. Local settings CSS caps the centered content at 560px and hides unrelated fields during recording; shared bottom-sheet styles and Bootstrap own the panel geometry, scrolling and transitions.
 
 
 ### Section navigation
 
-`components.section-navigation` renders the shared Support center and My profile menus. Pass a unique `id`, an accessible `label`, and ordered `items` with `target` (section ID), `label`, and optional `icon`; optional `heading` adds the muted introduction. The single `_section-navigation.scss` in `shared.scss` owns wrapping mobile links, sticky desktop placement, and the primary-color/semibold current link. Neither page defines its own menu markup or finish.
+`components.navigation.section-navigation` renders the shared Support center and My profile menus. Pass a unique `id`, an accessible `label`, and ordered `items` with `target` (section ID), `label`, and optional `icon`; optional `heading` adds the muted introduction. The single `_section-navigation.scss` in `shared.scss` owns wrapping mobile links, sticky desktop placement, and the primary-color/semibold current link. Neither page defines its own menu markup or finish.
 
 The component includes the versioned `components/section-navigation.js` once. It highlights the visible section on initial load, manual scrolling, resizing, page restoration and FAQ expansion/collapse, with a bottom-of-page fallback for short final sections. Exactly one valid link per menu receives `aria-current="location"`; ordinary fragment links and keyboard navigation remain native. Keep scroll behavior here rather than in page scripts. The Design System renders this same component with `preview: true`, which shows a static current item without attaching scroll listeners.
 
@@ -808,14 +810,14 @@ The component includes the versioned `components/section-navigation.js` once. It
 ## Infographics
 
 `infographics.index` uses the shared breadcrumb (`Home → Learn → Infographics`),
-`components.hub-header`, topic links, `components.editorial-layout` and the same
-sidebar promotions as Blog. `components.topic-navigation` supplies the common
+`components.layout.hub-header`, topic links, `components.layout.editorial` and the same
+sidebar promotions as Blog. `components.navigation.topic-navigation` supplies the common
 link buttons for Blog and Infographics, preserving each directory's query names
 and active state. Its items accept `label`, `url`, `active` and an optional
 Bootstrap button `variant`. Both shared components have Design System specimens.
 There is no bottom newsletter invitation.
 
-`infographics.card` reuses `components.resource-card`; its optional `artworkClass`
+`infographics.card` reuses `components.cards.resource`; its optional `artworkClass`
 adds `resource-card__art--poster`. That variant fits the entire poster inside a
 neutral 4:3 preview area, with a one-rem inset. Default SVG resource cards keep
 their existing 2:1 artwork area. The directory uses a responsive Bootstrap grid,
@@ -834,10 +836,10 @@ shared primary download action; other product confirmation flows stay intact.
 ## Crash Courses
 
 `crashcourses.index` follows the Infographics/Learn directory pattern: shared
-breadcrumb, `components.hub-header`, `components.topic-navigation`, resource
-cards, native pagination and `components.editorial-layout` with standard sidebar
+breadcrumb, `components.layout.hub-header`, `components.navigation.topic-navigation`, resource
+cards, native pagination and `components.layout.editorial` with standard sidebar
 promotions. Topic filters survive pagination; draft-only topics are omitted.
-`crashcourses.course` renders `components.resource-card` with its existing cover
+`crashcourses.course` renders `components.cards.resource` with its existing cover
 image, actual lesson count and a normal same-tab course link. Bootstrap positioning
 and object-fit utilities keep covers inside the standard 2:1 artwork area. Missing
 covers reuse the native Learn course illustration. There is no footer newsletter
@@ -864,7 +866,7 @@ The other funnel and lesson-video views retain their existing styles and behavio
 
 Public quizzes use Learn's shared breadcrumb, hub header, topic navigation,
 editorial layout and unchanged promo-card sidebar. `games.quizzes.card` delegates
-to `components.resource-card` with `resource-card__art--cover`, a 2:1 crop of the
+to `components.cards.resource` with `resource-card__art--cover`, a 2:1 crop of the
 existing cover. This image variant is shared by app/admin styles and represented
 in the Design System; the SVG and full-poster variants retain their behavior.
 Question panels use white surfaces, shared controls and the standard small radius.

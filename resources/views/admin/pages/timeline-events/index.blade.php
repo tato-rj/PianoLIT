@@ -18,7 +18,7 @@
           <legend class="small text-muted mb-2">Event types</legend>
           <div class="timeline-type-options">
             @foreach(\App\Services\Timeline\WikimediaDiscovery::TYPES as $type => $label)
-              @include('components.form.checkbox', ['id' => 'timeline-type-'.$type, 'name' => 'types[]', 'value' => $type, 'label' => $label, 'checked' => true, 'inputClasses' => 'timeline-type', 'classes' => 'mb-0'])
+              @include('components.forms.checkbox', ['id' => 'timeline-type-'.$type, 'name' => 'types[]', 'value' => $type, 'label' => $label, 'checked' => true, 'inputClasses' => 'timeline-type', 'classes' => 'mb-0'])
             @endforeach
           </div>
         </fieldset>

@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'delete-modal', 'header' => 'Delete'])
+@component('components.dialogs.modal', ['id' => 'delete-modal', 'header' => 'Delete'])
 @slot('body')
   {{ $deleteDescription ?? 'Are you sure you want to do this?' }}
   <p class="text-danger"><small>This action cannot be undone</small></p>

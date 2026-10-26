@@ -78,7 +78,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('videoPreviewSeconds', $policy->mediaLimit($content ?? 'performance', $user, $piece));
         });
 
-        \View::composer('components.display.ads', function($view) {
+        \View::composer('components.promotions.ads', function($view) {
             $view->with(['ad' => [
                 'ebook' => \App\Shop\eBook::published()->latest()->first(),
                 'escore' => \App\Shop\eScore::published()->latest()->first(),
@@ -86,7 +86,7 @@ class AppServiceProvider extends ServiceProvider
             ]]);
         });
 
-        \View::composer('components.popups.crashcourse', function($view) {
+        \View::composer('components.promotions.popups.crashcourse', function($view) {
             $highlightedCrashcourse = \Cache::remember('highlightedCrashcourse', days(7), function() {
                 return \App\CrashCourse\CrashCourse::published()->first();
             });
@@ -94,7 +94,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['highlightedCrashcourse' => $highlightedCrashcourse]);
         });
 
-        \View::composer('components.popups.gift', function($view) {
+        \View::composer('components.promotions.popups.gift', function($view) {
             $gift = \Cache::remember('infographs.gift', minutes(2), function() {
                 return \App\Infograph\Infograph::gifts()->inRandomOrder()->first();
             });

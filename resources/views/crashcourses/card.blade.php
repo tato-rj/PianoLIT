@@ -8,7 +8,7 @@
     <{{ $coursePreview ? 'div' : 'form' }} id="{{ $courseFormId }}" class="cc-form" @unless($coursePreview) method="POST" action="{{ route('crashcourses.signup', $crashcourse) }}" disable-on-submit @endunless>
         @unless($coursePreview)
             @csrf
-            @include('components.form.subscription.hidden', ['formId' => $courseFormId])
+            @include('components.subscriptions.hidden-fields', ['formId' => $courseFormId])
         @endunless
         @input([
             'bag' => 'crashcourse', 'id' => $courseFormId.'-first-name', 'name' => 'first_name',

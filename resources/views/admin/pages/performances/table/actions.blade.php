@@ -1,11 +1,11 @@
-  @component('components.datatable.actions', ['actions' => [
+  @component('admin.components.datatables.actions', ['actions' => [
       'other' => [['route' => $item->video_url, 'title' => 'Watch video', 'icon' => 'eye']],
       'delete' => route('admin.users.performances.destroy', $item)
   ]])
 {{--   <div>
     <button class="btn-raw text-muted align-middle" data-bs-toggle="modal" data-bs-target="#update-performance-{{$item->id}}-modal">@icon('square-pen')</button>
 
-  @component('components.modal', [
+  @component('components.dialogs.modal', [
     'id' => 'update-performance-'.$item->id.'-modal',
     'header' => 'Update performance'])
   @slot('body')

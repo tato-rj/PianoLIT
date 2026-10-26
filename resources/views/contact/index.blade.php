@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container support-page py-4 py-md-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Support'],
     ]])
@@ -19,7 +19,7 @@
 
     <div class="row g-4 g-lg-5">
         <aside class="col-lg-3">
-            @include('components.section-navigation', ['id' => 'support-navigation', 'label' => 'Support topics', 'heading' => 'On this page', 'items' => [
+            @include('components.navigation.section-navigation', ['id' => 'support-navigation', 'label' => 'Support topics', 'heading' => 'On this page', 'items' => [
                 ['target' => 'start-here', 'label' => 'Start here'],
                 ['target' => 'explore', 'label' => 'Explore PianoLIT'],
                 ['target' => 'memberships', 'label' => 'Memberships & billing'],

@@ -9,7 +9,7 @@
             <div><h3 class="h6 mb-2" id="chord-playing-title">Hear this chord</h3><div id="chord-label" class="d-flex flex-wrap gap-2"></div></div>
             <button type="button" class="btn btn-secondary btn-sm" data-chord-stop disabled>@icon('square')Stop playback</button>
         </div>
-        <div id="chord-output-piano">@include('components.piano.keyboard', ['centered' => true, 'responsive' => true, 'octaves' => [3 => [], 4 => []]])</div>
+        <div id="chord-output-piano">@include('components.music.piano.keyboard', ['centered' => true, 'responsive' => true, 'octaves' => [3 => [], 4 => []]])</div>
         <p id="chord-result-audio-status" class="small text-muted mt-3 mb-0" role="status" hidden></p>
     </div>
     <div id="info-container">

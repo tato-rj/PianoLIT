@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'Add emails', 'show' => $errors->has('emails') || $errors->has('origin_url') ? true : null])
+@component('components.dialogs.modal', ['id' => 'add-modal', 'header' => 'Add emails', 'show' => $errors->has('emails') || $errors->has('origin_url') ? true : null])
 @slot('body')
 <form method="POST" action="{{route('admin.subscriptions.store')}}">
   @csrf

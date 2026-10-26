@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    @component('components.modal', ['id' => 'new-folder-modal', 'header' => 'New folder'])
+    @component('components.dialogs.modal', ['id' => 'new-folder-modal', 'header' => 'New folder'])
         @slot('body')
             <form method="POST" action="{{ route('webapp.users.favorites.folders.store') }}">
                 @csrf

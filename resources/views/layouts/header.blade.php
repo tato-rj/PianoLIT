@@ -8,6 +8,6 @@
     @include('layouts.menu')
 </header>
 @else
-    @include('components.public-header')
+    @include('components.layout.public.header')
 @endif
 @endempty

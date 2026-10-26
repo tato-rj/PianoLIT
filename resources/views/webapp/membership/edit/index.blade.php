@@ -9,7 +9,7 @@
 @include('webapp.layouts.header', ['title' => 'My Membership', 'subtitle' => 'Your plan, payments, and billing details, all in one place.'])
 <div class="membership-management">
 <section class="mb-5">
-    @component('components.tab-navigation', ['id' => 'membership-tabs', 'label' => 'Membership sections', 'variant' => 'segmented', 'class' => 'mx-auto mb-4', 'items' => [
+    @component('components.navigation.tab-navigation', ['id' => 'membership-tabs', 'label' => 'Membership sections', 'variant' => 'segmented', 'class' => 'mx-auto mb-4', 'items' => [
         ['target' => 'overview-tab', 'label' => 'Overview'],
         ['target' => 'update-plan-tab', 'label' => $overview['ended'] ? 'Choose plan' : 'Change plan'],
         ['target' => 'update-card-tab', 'label' => 'Billing'],

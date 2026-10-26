@@ -54,7 +54,7 @@
 
 	@include('shop.components.reviews.layout')
 
-	@include('components.display.suggestions', [
+	@include('components.cards.suggestions', [
 		'title' => 'You might also be interested in',
 		'card' => 'shop.components.card',
 		'collection' => $product->suggestions(8)->get()])

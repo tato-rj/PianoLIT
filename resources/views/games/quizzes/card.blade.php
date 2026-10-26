@@ -1,4 +1,4 @@
-@component('components.resource-card', [
+@component('components.cards.resource', [
     'id' => $cardId ?? 'quiz-'.$quiz->id, 'title' => rtrim($quiz->title, '. '),
     'description' => Str::limit($quiz->description, 180),
     'format' => ($quiz->level ? ucfirst($quiz->level->name).' · ' : '').count($quiz->questions).' '.Str::plural('question', count($quiz->questions)).' · '.$quiz->duration,

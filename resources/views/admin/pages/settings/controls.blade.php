@@ -26,14 +26,14 @@
     @component('admin.pages.settings.sample', ['label' => 'With icon', 'usage' => '.btn .btn-secondary + Lucide icon'])
       <button type="button" class="btn btn-secondary" data-ds-preview>@icon('plus')Add piece</button>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Guest account', 'usage' => 'components.account-circle · .btn-raw + user-round', 'properties' => 'width,height,font-size,color,background-color,border'])
-      @include('components.account-circle', ['account' => null, 'designSystemPreview' => true])
+    @component('admin.pages.settings.sample', ['label' => 'Guest account', 'usage' => 'components.account.account-circle · .btn-raw + user-round', 'properties' => 'width,height,font-size,color,background-color,border'])
+      @include('components.account.account-circle', ['account' => null, 'designSystemPreview' => true])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Public hub menu', 'usage' => 'components.public-hub-menu-button · Bootstrap offcanvas', 'properties' => 'padding,color'])
-      @include('components.public-hub-menu-button', ['designSystemPreview' => true])
+    @component('admin.pages.settings.sample', ['label' => 'Public hub menu', 'usage' => 'components.navigation.hub-menu.button · Bootstrap offcanvas', 'properties' => 'padding,color'])
+      @include('components.navigation.hub-menu.button', ['designSystemPreview' => true])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Signed-in account', 'usage' => 'components.account-circle · first initial', 'properties' => 'width,height,font-size,color,background-color,border'])
-      @include('components.account-circle', ['account' => (object) ['first_name' => 'Arthur'], 'menuId' => 'ds-account-circle', 'designSystemPreview' => true])
+    @component('admin.pages.settings.sample', ['label' => 'Signed-in account', 'usage' => 'components.account.account-circle · first initial', 'properties' => 'width,height,font-size,color,background-color,border'])
+      @include('components.account.account-circle', ['account' => (object) ['first_name' => 'Arthur'], 'menuId' => 'ds-account-circle', 'designSystemPreview' => true])
     @endcomponent
   </div>
 </section>
@@ -42,15 +42,15 @@
   <header class="design-system__section-heading"><span class="design-system__eyebrow">07 / FORMS</span><h2 id="ds-inputs-title">Inputs & selection</h2><p>Shared form fields with their real focus, validation and disabled styles. Values stay on this page.</p></header>
   <div class="design-system__grid">
     @foreach(['sm' => 'Small', '' => 'Default', 'lg' => 'Large'] as $size => $label)
-      @component('admin.pages.settings.sample', ['label' => $label.' input', 'usage' => '@input · components.form.input'.($size ? ' · .form-control-'.$size : '')])
+      @component('admin.pages.settings.sample', ['label' => $label.' input', 'usage' => '@input · components.forms.input'.($size ? ' · .form-control-'.$size : '')])
         @input(['bag' => 'default', 'id' => 'ds-input-'.($size ?: 'default'), 'name' => 'ds_piece_title_'.($size ?: 'default'), 'label' => 'Piece title', 'classes' => $size ? 'form-control-'.$size : '', 'value' => '', 'placeholder' => 'Search the repertoire', 'required' => false, 'autocomplete' => 'off', 'designSystemPreview' => true])
       @endcomponent
     @endforeach
-    @component('admin.pages.settings.sample', ['label' => 'Select', 'usage' => '@select · components.form.select'])
+    @component('admin.pages.settings.sample', ['label' => 'Select', 'usage' => '@select · components.forms.select'])
       @select(['bag' => 'default', 'id' => 'ds-select', 'name' => 'ds_level', 'label' => 'Level', 'choices' => ['' => 'All levels', 'beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'], 'value' => '', 'required' => false, 'designSystemPreview' => true])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Calendar with unavailable dates', 'usage' => 'components.form.date-picker · shared field and button styles'])
-      @include('components.form.date-picker', ['bag' => 'default', 'id' => 'ds-calendar', 'name' => 'ds_calendar', 'label' => 'Date', 'value' => '', 'minDate' => now()->toDateString(), 'blockedDates' => [now()->addDay()->toDateString()], 'required' => false, 'designSystemPreview' => true])
+    @component('admin.pages.settings.sample', ['label' => 'Calendar with unavailable dates', 'usage' => 'components.forms.date-picker · shared field and button styles'])
+      @include('components.forms.date-picker', ['bag' => 'default', 'id' => 'ds-calendar', 'name' => 'ds_calendar', 'label' => 'Date', 'value' => '', 'minDate' => now()->toDateString(), 'blockedDates' => [now()->addDay()->toDateString()], 'required' => false, 'designSystemPreview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Filter select', 'usage' => 'admin.components.filters.select · @select'])
       @include('admin.components.filters.select', ['label' => 'Period', 'name' => 'ds-period', 'options' => \App\Support\AdminDateRanges::LABELS, 'value' => '7', 'designSystemPreview' => true])
@@ -74,34 +74,34 @@
       <label for="ds-disabled">Unavailable field</label><input id="ds-disabled" class="form-control" value="Disabled input" disabled data-ds-preview>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'File upload', 'usage' => '.form-control [type=file]'])
-      @include('components.form.upload.file', ['id' => 'ds-upload', 'name' => 'ds_upload', 'label' => 'Choose a local file', 'designSystemPreview' => true])
+      @include('components.forms.upload.file', ['id' => 'ds-upload', 'name' => 'ds_upload', 'label' => 'Choose a local file', 'designSystemPreview' => true])
       <small>Sample only. No file is uploaded.</small>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Checkboxes', 'usage' => '.form-check-input', 'properties' => 'width,height,border,border-radius,background-color'])
-      @include('components.form.checkbox', ['id' => 'ds-checkbox', 'name' => 'ds_checkbox', 'label' => 'Save to favorites', 'checked' => true, 'designSystemPreview' => true])
-      @include('components.form.checkbox', ['id' => 'ds-checkbox-disabled', 'name' => 'ds_checkbox_disabled', 'label' => 'Disabled option', 'disabled' => true])
+      @include('components.forms.checkbox', ['id' => 'ds-checkbox', 'name' => 'ds_checkbox', 'label' => 'Save to favorites', 'checked' => true, 'designSystemPreview' => true])
+      @include('components.forms.checkbox', ['id' => 'ds-checkbox-disabled', 'name' => 'ds_checkbox_disabled', 'label' => 'Disabled option', 'disabled' => true])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Compact checkboxes', 'usage' => 'components.form.checkbox · .small .text-muted'])
+    @component('admin.pages.settings.sample', ['label' => 'Compact checkboxes', 'usage' => 'components.forms.checkbox · .small .text-muted'])
       <div class="small text-muted">
-        @include('components.form.checkbox', ['id' => 'ds-checkbox-compact', 'name' => 'ds_checkbox_compact', 'label' => 'Missing video', 'classes' => 'mb-0', 'designSystemPreview' => true])
+        @include('components.forms.checkbox', ['id' => 'ds-checkbox-compact', 'name' => 'ds_checkbox_compact', 'label' => 'Missing video', 'classes' => 'mb-0', 'designSystemPreview' => true])
       </div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Radio buttons', 'usage' => '.form-check-input [type=radio]', 'properties' => 'width,height,border,border-radius,background-color'])
       <div class="form-check"><input id="ds-radio-one" class="form-check-input" type="radio" name="ds-format" checked data-ds-preview><label class="form-check-label" for="ds-radio-one">Audio</label></div>
       <div class="form-check"><input id="ds-radio-two" class="form-check-input" type="radio" name="ds-format"><label class="form-check-label" for="ds-radio-two">Video</label></div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Checkbox menu', 'usage' => 'components.form.checkbox-menu'])
-      @include('components.form.checkbox-menu', ['name' => 'ds-platform', 'label' => 'Platform', 'options' => \App\Activity\Filters::PLATFORMS, 'selected' => ['webapp', 'app'], 'allLabel' => 'All platforms', 'designSystemPreview' => true])
+    @component('admin.pages.settings.sample', ['label' => 'Checkbox menu', 'usage' => 'components.forms.checkbox-menu'])
+      @include('components.forms.checkbox-menu', ['name' => 'ds-platform', 'label' => 'Platform', 'options' => \App\Activity\Filters::PLATFORMS, 'selected' => ['webapp', 'app'], 'allLabel' => 'All platforms', 'designSystemPreview' => true])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Switch', 'usage' => '@toggle · components.form.toggle', 'properties' => 'width,height,border-radius,background-color'])
+    @component('admin.pages.settings.sample', ['label' => 'Switch', 'usage' => '@toggle · components.forms.toggle', 'properties' => 'width,height,border-radius,background-color'])
       <div class="design-system__row">@toggle(['toggle' => true, 'autoToggle' => false, 'ariaLabel' => 'Enable practice reminders', 'designSystemPreview' => true])<span>Practice reminders</span></div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Range', 'usage' => '.form-range', 'properties' => 'width,height'])
       <label for="ds-range">Volume</label><input id="ds-range" type="range" class="form-range" min="0" max="100" value="60" data-ds-preview>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Color', 'usage' => 'components.form.color · .form-control-color'])
+    @component('admin.pages.settings.sample', ['label' => 'Color', 'usage' => 'components.forms.color · .form-control-color'])
       <label for="ds-color">Background color</label>
-      @include('components.form.color', ['id' => 'ds-color', 'name' => 'ds_color', 'value' => '#0055fe', 'designSystemPreview' => true])
+      @include('components.forms.color', ['id' => 'ds-color', 'name' => 'ds_color', 'value' => '#0055fe', 'designSystemPreview' => true])
     @endcomponent
   </div>
 </section>

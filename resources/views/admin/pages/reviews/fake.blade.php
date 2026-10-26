@@ -8,7 +8,7 @@
 	'data' => ['toggle' => 'modal', 'target' => '#review-modal']])
 </div>
 
-@component('components.modal', ['id' => 'review-modal', 'header' => 'My review'])
+@component('components.dialogs.modal', ['id' => 'review-modal', 'header' => 'My review'])
 @slot('body')
 <form method="POST" action="{{$product->reviewRoute('admin')}}">
 	@csrf

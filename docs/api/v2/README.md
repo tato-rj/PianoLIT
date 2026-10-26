@@ -1,6 +1,6 @@
 # PianoLIT iOS v2 handoff
 
-Revision **2026-10-26.2 remains a draft pending deployment/staging verification**.
+Revision **2026-10-26.3 remains a draft pending deployment/staging verification**.
 The backend now implements password login, independent bearer authentication,
 account-session read/logout, the shared Discover endpoint and authenticated
 piece-open history. These operations are HTTP-tested locally. The new session
@@ -11,6 +11,11 @@ The existing Swift handoff sync script is the delivery mechanism for this update
 It fetches the new YAML, `CONNECT_DISCOVER.md` and synthetic fixtures declared
 in the manifest. Read that connection file for the exact steps to implement in
 the current iOS project. Downloading YAML alone does not rewrite Swift requests.
+
+Swift development targets only the updated app. The old Swift source/build is
+not maintained; its already-installed binaries remain supported by the legacy
+backend API and media delivery. No old Swift branch or parallel shipping mode
+is required. Any temporary legacy endpoint adapter belongs to the updated app.
 
 ## Reading the handoff
 
@@ -78,7 +83,7 @@ is live. `runtime.implemented`, base URLs, feature statuses, and OpenAPI's
 `x-handoff` must agree. Record verification before advancing status; the package
 checker cannot prove a server exists or that its behavior matches the contract.
 
-Use a new revision (for example `2026-10-26.3`) for any published content change,
+Use a new revision (for example `2026-10-26.4`) for any published content change,
 including a status or URL change. Published revision directories are immutable.
 Update the source manifest, this revision statement, OpenAPI's `x-handoff`, and
 the changelog together. The build refuses to overwrite different content at an
@@ -140,7 +145,7 @@ After the documentation has been deployed:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-10-26.2 \
+  --revision 2026-10-26.3 \
   --output ./PianoLITHandoff
 ```
 

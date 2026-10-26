@@ -1,6 +1,6 @@
 <form method="POST" action="{{ route('newsletter.subscribe') }}" id="{{ $formId ?? 'newsletter-subscription-form' }}">
     @csrf
-    @include('components.form.subscription.hidden', ['formId' => $formId ?? 'newsletter-subscription-form'])
+    @include('components.subscriptions.hidden-fields', ['formId' => $formId ?? 'newsletter-subscription-form'])
     @input([
         'id' => ($formId ?? 'newsletter-subscription-form').'-email', 'name' => 'email', 'type' => 'email',
         'label' => 'Email address', 'placeholder' => 'you@example.com', 'autocomplete' => 'email',

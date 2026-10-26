@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'synthesia-request-modal'])
+@component('components.dialogs.modal', ['id' => 'synthesia-request-modal'])
 @slot('header')
 Synthesia tutorial
 @endslot

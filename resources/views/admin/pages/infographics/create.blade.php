@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'New infographic'])
+@component('components.dialogs.modal', ['id' => 'add-modal', 'header' => 'New infographic'])
 @slot('body')
 <form method="POST" action="{{route('admin.infographs.store')}}" enctype="multipart/form-data">
 	@csrf

@@ -1,4 +1,4 @@
-@component('components.checkout-modal', [
+@component('components.billing.checkout.modal', [
     'cancelUrl' => route('webapp.membership.pricing'), 'directCheckout' => $directCheckout ?? false,
     'checkoutKey' => $plan->name, 'checkoutController' => mix('js/views/membership-billing.js')
 ])

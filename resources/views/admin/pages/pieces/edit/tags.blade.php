@@ -4,7 +4,7 @@
         <legend class="small text-muted mb-2">{{ ucfirst($type) }}</legend>
         <div class="d-flex flex-wrap gap-2">
             @foreach($tags as $tag)
-                @include('components.form.checkbox', ['id' => 'piece-tag-'.$tag->id, 'name' => 'tags[]', 'value' => $tag->id, 'label' => ucfirst($tag->name), 'checked' => in_array($tag->id, $selectedTags), 'classes' => 'me-2 mb-0'])
+                @include('components.forms.checkbox', ['id' => 'piece-tag-'.$tag->id, 'name' => 'tags[]', 'value' => $tag->id, 'label' => ucfirst($tag->name), 'checked' => in_array($tag->id, $selectedTags), 'classes' => 'me-2 mb-0'])
             @endforeach
         </div>
     </fieldset>

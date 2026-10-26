@@ -20,7 +20,7 @@
 
 @if($canUpload)
 
-	@component('components.modal', ['id' => 'confirm-performance-modal'])
+	@component('components.dialogs.modal', ['id' => 'confirm-performance-modal'])
 	@slot('body')
 	<div class="mb-2">
 		<video id="preview-performance" class="w-100" height="240" controls>
@@ -53,7 +53,7 @@
 
 @else
 
-	@component('components.modal', ['id' => 'no-credits-modal', 'header' => 'No credits left'])
+	@component('components.dialogs.modal', ['id' => 'no-credits-modal', 'header' => 'No credits left'])
 	@slot('body')
 		<p class="m-0">Sorry, you can only upload <u>one video per month</u>.</p>
 	@endslot

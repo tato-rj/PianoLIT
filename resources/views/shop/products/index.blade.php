@@ -15,7 +15,7 @@
 @pagetitle
 
 <div class="container mb-5">
-	@component('components.display.layout', [
+	@component('components.layout.catalog', [
 		'collection' => $products,
 		'topics' => $topics,
 		'ads' => $ads

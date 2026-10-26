@@ -73,7 +73,7 @@ class AdminDesignSystemTest extends ReviewTestCase
     public function test_browser_metadata_and_standalone_login_use_the_matching_versioned_brand()
     {
         foreach ([false, true] as $admin) {
-            $html = view('components.brand-theme', compact('admin'))->render();
+            $html = view('components.branding.theme', compact('admin'))->render();
             $prefix = $admin ? 'admin-' : '';
             $this->assertStringContainsString('name="apple-mobile-web-app-capable" content="yes"', $html);
             $this->assertStringContainsString('name="mobile-web-app-capable" content="yes"', $html);

@@ -1,5 +1,5 @@
 <div class="text-end">
-	@component('components.datatable.actions', ['actions' => [
+	@component('admin.components.datatables.actions', ['actions' => [
 		'edit' => route('admin.infographs.edit', $item->slug),
 		'delete' => route('admin.infographs.destroy', $item->slug)
 	]])

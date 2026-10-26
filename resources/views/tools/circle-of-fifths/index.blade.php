@@ -17,7 +17,7 @@
 @section('content')
 
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Circle of fifths'],
@@ -28,7 +28,7 @@
         <p class="text-muted mb-0">Find the connections between keys, chords, and scales. <br class="d-none d-md-block">Turn the wheel, compare modes, and hear the notes on the piano.</p>
     </header>
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         <section id="circle-workspace" aria-labelledby="circle-workspace-title">
             <div class="mb-4">
                 <h2 id="circle-workspace-title" class="h5 mb-2">Explore a key</h2>
@@ -49,7 +49,7 @@
                 </div>
                 <div class="col-xl-7" id="labels-container">
                     <div id="mode-controls">
-                        @component('components.tab-navigation', [
+                        @component('components.navigation.tab-navigation', [
                             'id' => 'mode-tabs', 'label' => 'Key mode', 'variant' => 'segmented', 'class' => 'mode-tabs mb-4',
                             'items' => [
                                 ['id' => 'major-tab', 'target' => 'mode-major', 'label' => 'Major', 'data' => ['name' => 'major']],
@@ -78,7 +78,7 @@
                     <span data-play-icon>@icon('play')</span><span data-stop-icon class="d-none">@icon('square')</span><span data-play-label>Play scale</span>
                 </button>
             </div>
-            @include('components.piano.keyboard', [
+            @include('components.music.piano.keyboard', [
                 'centered' => true, 'responsive' => true,
                 'octaves' => [
                     3 => [[true, false], [true, false], [true, false], [true, false], [true, false], [true, false], [true, false]],
@@ -97,7 +97,7 @@
                 <h2 class="h5 mb-2">Explore PianoLIT</h2>
                 <p class="text-muted small mb-0">Keep your curiosity playing.</p>
             </div>
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

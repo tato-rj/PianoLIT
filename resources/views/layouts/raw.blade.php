@@ -48,7 +48,7 @@
     @include('webapp.components.campaign-attribution')
 
     <script src="{{ mix('js/app.js') }}"></script>
-    @include('components.activity')
+    @include('components.tracking.activity')
 
     @stack('scripts')
 

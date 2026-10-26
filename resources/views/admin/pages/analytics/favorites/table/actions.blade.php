@@ -1,7 +1,7 @@
 <div class="text-end">
 	@include('admin.components.table-action', ['tableAction' => ['label' => 'View pieces', 'icon' => 'eye', 'attributes' => ['disabled' => $item->favorites_count == 0, 'data-bs-target' => '#view-pieces-'.$item->id, 'data-bs-toggle' => 'modal']]])
 
-	@component('components.modal', ['id' => 'view-pieces-'.$item->id, 'header' => 'Folder pieces'])
+	@component('components.dialogs.modal', ['id' => 'view-pieces-'.$item->id, 'header' => 'Folder pieces'])
 	@slot('body')
 	<div class="text-start">
 		@foreach($item->favorites as $favorite)

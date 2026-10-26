@@ -1,5 +1,5 @@
 <div class="text-end">
-  @component('components.datatable.actions', ['actions' => []])
+  @component('admin.components.datatables.actions', ['actions' => []])
 
 	@if(! $item->isCompleted && ! $item->isCancelled)
     @include('admin.components.table-action', ['tableAction' => ['label' => 'Resend', 'icon' => 'rotate-cw', 'attributes' => ['data-url' => route('admin.crashcourses.subscriptions.resend', $item), 'data-action' => 'resend the last lesson to '.$item->email, 'data-bs-toggle' => 'modal', 'data-bs-target' => '#confirm-modal']]])

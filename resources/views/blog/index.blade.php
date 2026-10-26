@@ -8,12 +8,12 @@
 @endphp
 
 <div class="container py-4">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Blog'],
     ]])
 
-    @component('components.hub-header', ['heading' => 'PianoLIT Blog', 'preview' => false])
+    @component('components.layout.hub-header', ['heading' => 'PianoLIT Blog', 'preview' => false])
         Stories, ideas, and discoveries from the world of piano.<br class="d-none d-md-block">A little inspiration for wherever music takes you.
     @endcomponent
 
@@ -23,9 +23,9 @@
             $topicLinks[] = ['label' => ucfirst($topic->name), 'url' => route('posts.index', ['topics' => $topic->slug]), 'active' => in_array($topic->slug, $selectedTopics, true)];
         }
     @endphp
-    @include('components.topic-navigation', ['items' => $topicLinks, 'label' => 'Article topics', 'class' => 'blog-home__topics'])
+    @include('components.navigation.topic-navigation', ['items' => $topicLinks, 'label' => 'Article topics', 'class' => 'blog-home__topics'])
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         @if($posts->isNotEmpty())
             <section aria-labelledby="blog-stories-title">
                 <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-4">
@@ -53,7 +53,7 @@
         @endif
 
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

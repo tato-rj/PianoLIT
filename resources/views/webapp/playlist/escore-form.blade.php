@@ -1,4 +1,4 @@
-@component('components.fullscreen-modal', ['id' => $escoreModalId, 'headingId' => $escoreId.'-heading', 'classes' => 'escore-modal'])
+@component('components.dialogs.fullscreen.panel', ['id' => $escoreModalId, 'headingId' => $escoreId.'-heading', 'classes' => 'escore-modal'])
 @php
     $imageCover = !empty($escoreCoverImage);
     $coverDefaultColor = $imageCover ? \App\PDF\EscoreOptions::IMAGE_COVER_DEFAULT_COLOR : \App\PDF\EscoreOptions::DEFAULT_COLOR;
@@ -9,7 +9,7 @@
     @csrf
     <input type="hidden" name="cover_style" value="modern">
     <input type="hidden" name="title_page" value="0">
-    @component('components.fullscreen-modal-header', ['headingId' => $escoreId.'-heading', 'title' => 'Create eScore', 'closeLabel' => 'Close eScore editor', 'headerClasses' => 'escore-header', 'closeClasses' => 'escore-close'])
+    @component('components.dialogs.fullscreen.header', ['headingId' => $escoreId.'-heading', 'title' => 'Create eScore', 'closeLabel' => 'Close eScore editor', 'headerClasses' => 'escore-header', 'closeClasses' => 'escore-close'])
         @slot('subtitle')Your eScore will include <strong data-escore-count>{{ $scoreCount }}</strong> <span data-escore-piece-label>{{ str_plural('piece', $scoreCount) }}</span> from this {{ isset($folder) ? 'folder' : 'collection' }}.@endslot
     @endcomponent
     <span hidden data-folder-score-count>{{ $scoreCount }}</span>

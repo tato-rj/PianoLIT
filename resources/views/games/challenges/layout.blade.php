@@ -18,7 +18,7 @@
     @include('games.challenges.components.duel')
     <script src="{{ mix('js/app.js') }}"></script>
     <script src="{{ mix('js/games/hub.js') }}"></script>
-    @include('components.activity')
+    @include('components.tracking.activity')
     @include('webapp.components.campaign-attribution')
     @stack('scripts')
 </body>

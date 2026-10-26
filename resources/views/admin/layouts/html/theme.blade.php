@@ -1,1 +1,1 @@
-@include('components.brand-theme', ['admin' => true])
+@include('components.branding.theme', ['admin' => true])

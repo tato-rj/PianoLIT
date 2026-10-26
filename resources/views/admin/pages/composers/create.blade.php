@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'Add new composer', 'options' => ['size' => 'lg'], 'show' => $errors->getBag('composerCreate')->any() ? true : null])
+@component('components.dialogs.modal', ['id' => 'add-modal', 'header' => 'Add new composer', 'options' => ['size' => 'lg'], 'show' => $errors->getBag('composerCreate')->any() ? true : null])
 @slot('body')
     <p class="text-muted mb-4">Add a profile and biography. You can manage the composer’s repertoire from the editor.</p>
     <form method="POST" action="{{ route('admin.composers.store') }}" enctype="multipart/form-data">

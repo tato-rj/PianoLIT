@@ -14,16 +14,16 @@
     foreach ($countries as $country) $countryChoices[$country->id] = $country->name;
 @endphp
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Great Pianists'],
     ]])
-    @component('components.hub-header', ['heading' => 'Great Pianists', 'preview' => false])
+    @component('components.layout.hub-header', ['heading' => 'Great Pianists', 'preview' => false])
         Remarkable artists. A lifetime of music.<br class="d-none d-md-block"> Get to know the pianists, then discover their recordings.
     @endcomponent
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         <form method="GET" action="{{ route('resources.pianists.index') }}" class="row g-3 align-items-end mb-4" aria-label="Find a pianist">
             <div class="col-md">
                 @input(['bag' => 'default', 'name' => 'search', 'type' => 'search', 'id' => 'search-pianist', 'label' => 'Find a pianist', 'value' => $filters['search'], 'placeholder' => 'Name, country or nationality', 'limit' => 160, 'required' => false, 'grid' => 'mb-0'])
@@ -57,7 +57,7 @@
             @endif
         </section>
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

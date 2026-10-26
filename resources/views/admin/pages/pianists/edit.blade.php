@@ -36,7 +36,7 @@
         @csrf
         @method('PATCH')
         <input type="hidden" name="editor_section" value="{{ $activeSection }}" data-pianist-section>
-        @component('components.tab-navigation', [
+        @component('components.navigation.tab-navigation', [
             'id' => 'pianist-editor-tabs', 'label' => 'Pianist editor sections', 'variant' => 'segmented', 'active' => $activeSection,
             'items' => [
                 ['target' => 'pianist-profile', 'label' => 'Profile'],
@@ -54,7 +54,7 @@
                         @endcomponent
                         @component('admin.components.editor.section', ['id' => 'pianist-portrait', 'title' => 'Portrait', 'description' => 'Choose an image for this pianist.'])
                             <img src="{{ storage($pianist->cover_path) }}" alt="Portrait of {{ $pianist->name }}" width="120" height="120" class="rounded-circle object-fit-cover d-block mb-4" data-pianist-portrait>
-                            @include('components.form.upload.file', ['bag' => 'default', 'id' => 'pianist-edit-cover', 'name' => 'cover', 'label' => 'Replace portrait (optional)', 'accept' => 'image/jpeg,image/png,image/gif,image/webp', 'disabled' => !$canEdit])
+                            @include('components.forms.upload.file', ['bag' => 'default', 'id' => 'pianist-edit-cover', 'name' => 'cover', 'label' => 'Replace portrait (optional)', 'accept' => 'image/jpeg,image/png,image/gif,image/webp', 'disabled' => !$canEdit])
                             <p class="small text-muted mb-0" role="status" aria-live="polite" data-portrait-status>JPG, PNG, GIF or WebP · up to 10 MB.</p>
                         @endcomponent
                     </div>

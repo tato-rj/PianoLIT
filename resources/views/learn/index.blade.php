@@ -31,15 +31,15 @@
 @endphp
 
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')], ['label' => 'Learn'],
     ]])
 
-    @component('components.hub-header', ['heading' => 'PianoLIT Learn', 'preview' => false])
+    @component('components.layout.hub-header', ['heading' => 'PianoLIT Learn', 'preview' => false])
         Find a chord. Explore a key. Take a short course.<br class="d-none d-md-block"> Tools, visual guides, quizzes, and great pianists to learn from.
     @endcomponent
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         @foreach($sections as $section)
             <section id="{{ $section['id'] }}" class="learn-home__section mb-5" aria-labelledby="learn-{{ $section['id'] }}-title">
                 <div class="mb-4">
@@ -49,7 +49,7 @@
                 <div class="row g-4">
                     @foreach($section['projects'] as $project)
                         <div class="col-md-6">
-                            @component('components.resource-card', [
+                            @component('components.cards.resource', [
                                 'id' => 'learn-'.$project['key'], 'title' => $project['title'],
                                 'description' => $project['description'], 'format' => $project['format'],
                                 'url' => route($project['route']), 'action' => $project['action'],
@@ -72,7 +72,7 @@
         @endforeach
 
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

@@ -2,7 +2,7 @@
     $recentlySent = $list->last_sent_at && $list->last_sent_at->gt(now()->subDay());
     $sendDisabled = !$list->subscribers_count || $recentlySent;
 @endphp
-@component('components.modal', ['id' => 'list-send-'.$list->id, 'header' => 'Send '.e($list->name).' email', 'centered' => true, 'options' => ['footer' => ['raw' => true]], 'show' => (($errors->has('email') || old('email') !== null) && is_scalar(old('preview_list_id')) && (string) old('preview_list_id') === (string) $list->id) ? true : null])
+@component('components.dialogs.modal', ['id' => 'list-send-'.$list->id, 'header' => 'Send '.e($list->name).' email', 'centered' => true, 'options' => ['footer' => ['raw' => true]], 'show' => (($errors->has('email') || old('email') !== null) && is_scalar(old('preview_list_id')) && (string) old('preview_list_id') === (string) $list->id) ? true : null])
     @slot('body')
         <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
             <h6 class="mb-0">Preview</h6>

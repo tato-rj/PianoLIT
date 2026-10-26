@@ -16,9 +16,9 @@ class ActivityTrafficFilterTest extends ReviewTestCase
         $this->travelTo(\Carbon\Carbon::parse('2026-10-12T20:00:00Z'));
         $this->withExceptionHandling();
         Route::middleware(['web', \App\Http\Middleware\Logs\RecordWebLog::class])->group(function () {
-            Route::get('/review/traffic/{number?}', function () { return response('<html>'.view('components.activity')->render().'</html>'); })->name('review.traffic');
+            Route::get('/review/traffic/{number?}', function () { return response('<html>'.view('components.tracking.activity')->render().'</html>'); })->name('review.traffic');
             Route::get('/review/traffic-error', function () { abort(404); })->name('review.traffic-error');
-            Route::get('/review/traffic-piece/{piece}', function (Piece $piece) { return response('<html>'.view('components.activity')->render().'</html>'); })->name('review.traffic-piece');
+            Route::get('/review/traffic-piece/{piece}', function (Piece $piece) { return response('<html>'.view('components.tracking.activity')->render().'</html>'); })->name('review.traffic-piece');
         });
     }
 

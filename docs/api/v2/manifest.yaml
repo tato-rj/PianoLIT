@@ -1,5 +1,5 @@
 schema_version: 1
-revision: 2026-10-26.2
+revision: 2026-10-26.3
 updated_on: '2026-10-26'
 title: PianoLIT iOS v2 handoff
 status: draft
@@ -60,14 +60,24 @@ consumer_rules:
   is populated.
 - Production use requires feature status released and an explicit production_base_url.
 - Open each available reference image; a YAML path alone is not a visual reference.
-- Preserve the native app architecture and existing API until each replacement flow
-  is verified.
+- Develop only the updated Swift app. Preserve legacy backend API compatibility for
+  old installed builds; no old Swift branch or shipping mode maintenance is required.
 - Record revision, feature IDs, iOS commit, build and verification in the iOS repository.
 - Report ambiguities or missing dependencies instead of inventing endpoint or access
   behavior.
 - Fetch CONNECT_DISCOVER.md and fixtures from this same manifest revision; the sync
   script downloads instructions/contracts and does not rewrite Swift networking.
 changelog:
+- revision: 2026-10-26.3
+  changes:
+  - Arthur clarified that all Swift work targets the updated app; the old Swift app/source
+    is no longer maintained.
+  - Legacy support remains a backend API/authentication/media compatibility obligation
+    for users who never update, without requiring v2 tokens or forced app updates.
+  - Clarified that any temporary legacy-endpoint adapter belongs to the updated app,
+    not a separate maintained old Swift branch or shipping mode.
+  - Documentation clarification only; runtime, schemas, fixtures and deployment readiness
+    are unchanged.
 - revision: 2026-10-26.2
   changes:
   - Implemented isolated password login, bearer guard, account-session read, per-session

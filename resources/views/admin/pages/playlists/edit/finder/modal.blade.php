@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'playlist-piece-finder', 'header' => 'Add pieces', 'options' => ['size' => 'xl']])
+@component('components.dialogs.modal', ['id' => 'playlist-piece-finder', 'header' => 'Add pieces', 'options' => ['size' => 'xl']])
 @slot('body')
     <div data-playlist-finder data-url="{{ route('admin.playlists.pieces', $playlist) }}">
         <p class="text-muted">Search the repertoire and add pieces to your playlist. Your selection stays here while you browse.</p>

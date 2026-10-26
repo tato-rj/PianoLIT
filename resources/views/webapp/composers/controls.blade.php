@@ -1,7 +1,7 @@
 <div class="offcanvas offcanvas-bottom" id="composer-controls" tabindex="-1" aria-labelledby="composer-controls-title">
     <div class="offcanvas-body">
         <form class="save-to-panel search-controls" id="composer-controls-form">
-            @include('components.bottom-sheet-handle', ['label' => 'Close composer Sort & Filter panel'])
+            @include('components.dialogs.bottom-sheet.handle', ['label' => 'Close composer Sort & Filter panel'])
             <div class="save-to-panel__header">
                 <div>
                     <h2 id="composer-controls-title">Sort & Filter</h2>

@@ -12,8 +12,8 @@
         @if($piece->score_url)<a class="small d-inline-block mb-3" href="{{ $piece->score_url }}" target="_blank" rel="noopener noreferrer">@icon('external-link')Open current score link</a>@endif
     </div>
     <div class="row g-3">
-        @include('components.form.upload.file', ['id' => 'piece-audio', 'name' => 'audio', 'label' => 'Audio · both hands', 'accept' => 'audio/*', 'currentUrl' => storage($piece->audio_path), 'currentLabel' => 'Open current audio', 'grid' => 'col-sm-6'])
-        @include('components.form.upload.file', ['id' => 'piece-score-file', 'name' => 'score', 'label' => 'Score · PDF', 'accept' => '.pdf', 'currentUrl' => storage($piece->score_path), 'currentLabel' => 'Open current score', 'grid' => 'col-sm-6'])
+        @include('components.forms.upload.file', ['id' => 'piece-audio', 'name' => 'audio', 'label' => 'Audio · both hands', 'accept' => 'audio/*', 'currentUrl' => storage($piece->audio_path), 'currentLabel' => 'Open current audio', 'grid' => 'col-sm-6'])
+        @include('components.forms.upload.file', ['id' => 'piece-score-file', 'name' => 'score', 'label' => 'Score · PDF', 'accept' => '.pdf', 'currentUrl' => storage($piece->score_path), 'currentLabel' => 'Open current score', 'grid' => 'col-sm-6'])
     </div>
     <div class="d-flex justify-content-between align-items-center gap-3 mt-2">
         <span>Show this piece in the tour</span>

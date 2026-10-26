@@ -6,7 +6,7 @@
     <div class="membership-plans mb-5">
         @foreach($plans->sortBy(function ($plan) { return $plan->name === 'yearly' ? 1 : 0; }) as $plan)
             @php($current = !$overview['ended'] && $source->plan === $plan->name)
-            @component('components.membership-plan-card', ['plan' => $plan, 'monthlyPlan' => $monthlyPlan, 'headingId' => 'change-plan-'.$plan->name, 'current' => $current, 'selected' => false, 'accessNote' => 'Full Premium access on both plans'])
+            @component('components.billing.membership-plan-card', ['plan' => $plan, 'monthlyPlan' => $monthlyPlan, 'headingId' => 'change-plan-'.$plan->name, 'current' => $current, 'selected' => false, 'accessNote' => 'Full Premium access on both plans'])
 {{--                 @slot('context')
                 <p class="text-center text-muted small mb-3">{{ $current ? 'Your current plan' : ($source->pending_plan === $plan->name ? 'Scheduled for your next renewal' : 'Prices in USD') }}</p>
                 @endslot --}}

@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'tutorial-request-modal'])
+@component('components.dialogs.modal', ['id' => 'tutorial-request-modal'])
 @slot('header')
 Request tutorial
 @endslot

@@ -1,5 +1,5 @@
 <div class="text-end">
-  @include('components.datatable.actions', ['actions' => [
+  @include('admin.components.datatables.actions', ['actions' => [
       'other' => [
 	['route' => route('crashcourses.show', $item->slug), 'title' => 'Preview this course', 'icon' => 'eye']
       ],

@@ -34,7 +34,7 @@
 
 @include('admin.components.modals.delete', ['model' => 'editor'])
 
-@component('components.modal', ['id' => 'add-modal', 'header' => 'New editor'])
+@component('components.dialogs.modal', ['id' => 'add-modal', 'header' => 'New editor'])
 @slot('body')
 <form method="POST" action="{{route('admin.editors.store')}}">
   {{csrf_field()}}

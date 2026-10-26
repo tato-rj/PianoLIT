@@ -18,6 +18,6 @@
 	</div>
 </footer>
 @else
-    @include('components.public-footer')
+    @include('components.layout.public.footer')
 @endif
 @endempty

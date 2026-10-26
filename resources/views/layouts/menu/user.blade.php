@@ -1,7 +1,7 @@
 @php($menuAccount = auth('web')->user())
 <li class="nav-item dropdown{{ ($accountCircle ?? false) ? ' d-flex align-items-center' : ' mx-2' }}">
   @if($accountCircle ?? false)
-    @include('components.account-circle', ['account' => $menuAccount, 'guestMenu' => true])
+    @include('components.account.account-circle', ['account' => $menuAccount])
   @else
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     {{auth()->user()->first_name}}
@@ -9,7 +9,7 @@
   </a>
   @endif
 
-  <div class="dropdown-menu dropdown-menu-end py-2 px-3{{ ($showGamesProfile ?? false) ? ' games-account-menu' : '' }}" style="min-width: auto" aria-labelledby="navbarDropdown">
+  <div class="dropdown-menu dropdown-menu-end py-2 px-3" style="min-width: auto" aria-labelledby="navbarDropdown">
     @if($menuAccount)
         <a class="nav-link" style="white-space: nowrap;" href="{{route('users.profile')}}">My profile</a>
         <div class="dropdown-divider my-1"></div>
@@ -20,11 +20,6 @@
     <div class="dropdown-divider my-1"></div>
 
     <a class="nav-link" style="white-space: nowrap;" href="{{route('contact')}}">Help & Support</a>
-
-    @if($showGamesProfile ?? false)
-        <div class="dropdown-divider my-2"></div>
-        @include('games.challenges.profile.menu')
-    @endif
 
     @if($menuAccount)
     <div class="dropdown-divider my-1"></div>

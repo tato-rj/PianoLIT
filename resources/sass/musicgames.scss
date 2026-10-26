@@ -41,9 +41,14 @@
   .form-range { border-radius: 0; accent-color: auto; }
   .btn:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #0055fe !important; outline-offset: 3px; }
   [hidden] { display: none !important; }
+
+  @at-root .games-player-circle.account-circle.btn-raw {
+    background: $primary-color;
+    color: $secondary-color;
+  }
 }
 
-.games-account-menu {
+.games-player-menu {
   width: 320px;
   max-width: calc(100vw - 32px);
   [hidden] { display: none !important; }

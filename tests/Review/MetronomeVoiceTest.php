@@ -208,7 +208,7 @@ class MetronomeVoiceTest extends ReviewTestCase
     public function test_sound_selector_groups_recorded_names_and_preserves_the_empty_and_legacy_select_states()
     {
         view()->share('errors', new \Illuminate\Support\ViewErrorBag);
-        $html = view('components.metronome-sound', ['canRecord' => true, 'recordings' => [
+        $html = view('metronome.components.sound-menu', ['canRecord' => true, 'recordings' => [
             ['id' => 'one', 'name' => 'Arthur'], ['id' => 'two', 'name' => 'Arthur'],
             ['id' => 'three', 'name' => '<Voice & piano>'],
         ], 'value' => 'voice:two'])->render();
@@ -230,12 +230,12 @@ class MetronomeVoiceTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('//button[@data-voice-start and contains(@class, "btn-sm") and contains(@class, "w-100")]')->length);
         $this->assertSame(0, $xpath->query('//*[@data-sound-popup]//*[@data-voice-start]')->length);
         $this->assertSame(1, $xpath->query('//*[@data-sound-popup]/following-sibling::*//button[@data-voice-start]')->length);
-        $empty = view('components.metronome-sound', ['canRecord' => true])->render();
+        $empty = view('metronome.components.sound-menu', ['canRecord' => true])->render();
         $this->assertStringContainsString('value="my-voice"', $empty);
         $this->assertStringNotContainsString('<optgroup', $empty);
-        $guest = view('components.metronome-sound', ['canRecord' => false])->render();
+        $guest = view('metronome.components.sound-menu', ['canRecord' => false])->render();
         $this->assertStringNotContainsString('value="my-voice"', $guest);
-        $legacy = view('components.form.select', ['bag' => 'default', 'name' => 'key', 'optGroups' => ['Tonal' => ['C major' => 'C']], 'select' => 'C'])->render();
+        $legacy = view('components.forms.select', ['bag' => 'default', 'name' => 'key', 'optGroups' => ['Tonal' => ['C major' => 'C']], 'select' => 'C'])->render();
         $this->assertStringContainsString('<optgroup label="Tonal">', $legacy);
         $this->assertStringContainsString('C major', $legacy);
     }

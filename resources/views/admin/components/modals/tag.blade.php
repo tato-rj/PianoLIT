@@ -1,5 +1,5 @@
 @php($tagFormFailed = $errors->getBag('tagForm')->any())
-@component('components.modal', ['id' => 'tag-modal', 'header' => $editingTag ? 'Edit tag' : 'Create a tag', 'show' => $tagFormFailed ? true : null])
+@component('components.dialogs.modal', ['id' => 'tag-modal', 'header' => $editingTag ? 'Edit tag' : 'Create a tag', 'show' => $tagFormFailed ? true : null])
 @slot('body')
     <form method="POST" id="tag-form"
         action="{{ $editingTag ? route('admin.tags.update', ['tag' => $editingTag->id] + $returnFilters) : route('admin.tags.store', $returnFilters) }}"

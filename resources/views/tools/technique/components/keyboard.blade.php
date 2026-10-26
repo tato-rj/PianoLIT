@@ -1,4 +1,4 @@
-@include('components.piano.keyboard', [
+@include('components.music.piano.keyboard', [
 	'centered' => true,
 	'octaves' => [
 		3 => [],

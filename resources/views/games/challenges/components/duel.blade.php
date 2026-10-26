@@ -41,7 +41,11 @@ window.__duelState = @json($duelState ?? null);
             <span class="duel-create-tip__icon" aria-hidden="true">@include('games.challenges.components.icon', ['icon' => 'gear', 'mr' => 0])</span>
             <div>
                 <h5 id="duel-create-tip-title">Want to create a duel?</h5>
-                <p>Open the settings menu in any game, then choose <strong>“Start Multiplayer Duel”</strong>.</p>
+                @auth('web')
+                    <p>Open the settings menu in any game, then choose <strong>“Start Multiplayer Duel”</strong>.</p>
+                @else
+                    <p><a href="{{ route('login') }}">Sign in</a> to start a duel from any game’s settings. You can join a duel with a code without an account.</p>
+                @endauth
             </div>
         </section>
         <button type="submit" class="btn btn-primary w-100 mt-3">@include('games.challenges.components.icon', ['icon' => 'gamepad'])Join duel</button>

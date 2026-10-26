@@ -1,7 +1,7 @@
 @foreach($composers as $composer)
 <tr>
     <td>
-        <a class="admin-table__primary" href="{{ route('admin.composers.edit', ['composer' => $composer] + $returnFilters) }}">@include('components.composer-label')</a>
+        <a class="admin-table__primary" href="{{ route('admin.composers.edit', ['composer' => $composer] + $returnFilters) }}">@include('components.music.composer-label')</a>
         @if($composer->alive_on)<small>{{ $composer->alive_on }}</small>@endif
     </td>
     <td class="text-nowrap">{{ $composer->period ?: 'Not set' }}@if($composer->is_pedagogical)<small>Pedagogical</small>@endif</td>

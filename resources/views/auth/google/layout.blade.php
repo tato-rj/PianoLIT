@@ -14,7 +14,7 @@
 @php($publicHeader = ! in_array(request()->getHost(), ['my.'.config('app.short_url'), 'admin.'.config('app.short_url')], true))
 <body class="bg-light{{ $publicHeader ? ' public-site d-flex flex-column min-vh-100' : '' }}">
   @if($publicHeader)
-    @include('components.public-header')
+    @include('components.layout.public.header')
   @endif
   <main class="container py-5{{ $publicHeader ? ' flex-grow-1' : '' }}">
     <div class="row"><div class="col-lg-5 col-md-8 col-12 mx-auto">
@@ -29,7 +29,7 @@
     </div></div>
   </main>
   @if($publicHeader)
-    @include('components.public-footer')
+    @include('components.layout.public.footer')
   @endif
   <script src="{{ mix('js/app.js') }}"></script>
   @stack('scripts')

@@ -10,7 +10,7 @@
 
 <section class="container mb-5 {{ $infographicDownload ? 'py-4' : '' }}">
 	@if($infographicDownload)
-		@include('components.breadcrumb', ['items' => [
+		@include('components.navigation.breadcrumb', ['items' => [
 			['label' => 'Home', 'url' => route('home')],
 			['label' => 'Learn', 'url' => route('learn.home')],
 			['label' => 'Infographics', 'url' => route('resources.infographs.index')],

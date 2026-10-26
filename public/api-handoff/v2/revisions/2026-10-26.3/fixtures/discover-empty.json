@@ -1,0 +1,46 @@
+{
+    "data": {
+        "sections": [
+            {
+                "id": "free_pick",
+                "title": "Free weekly pick",
+                "kind": "featured_piece",
+                "items": []
+            },
+            {
+                "id": "composers",
+                "title": "Composers",
+                "kind": "composer_rail",
+                "items": []
+            },
+            {
+                "id": "latest_pieces",
+                "title": "Latest pieces",
+                "kind": "artwork_piece_rail",
+                "items": []
+            },
+            {
+                "id": "past_highlights",
+                "title": "Past highlights",
+                "kind": "featured_piece_list",
+                "items": [],
+                "query": "black composers"
+            },
+            {
+                "id": "mood",
+                "title": "Pieces that are ",
+                "kind": "compact_piece_rail",
+                "items": []
+            },
+            {
+                "id": "similar_to_free_pick",
+                "title": "Like this week's free pick",
+                "kind": "compact_piece_rail",
+                "items": []
+            }
+        ]
+    },
+    "meta": {
+        "request_id": "00000000-0000-4000-8000-000000000001"
+    }
+}

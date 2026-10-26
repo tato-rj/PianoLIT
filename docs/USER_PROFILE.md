@@ -12,7 +12,7 @@ session-authenticated and enforce account ownership and the new security flow.
 The page uses the public header/footer, shared fields/buttons/switches and the
 shared subtle background. Its four anchor sections are Profile, Security &
 linked accounts, Email preferences, and Delete account. The section menu reuses
-`components.section-navigation` with the Support center, including its shared
+`components.navigation.section-navigation` with the Support center, including its shared
 stylesheet and versioned script; profile.js only handles profile-specific behavior.
 The shared menu follows
 scroll position with one blue, bold `aria-current="location"` link, including

@@ -1,5 +1,5 @@
 @isset($piece)
-@component('components.modal', ['id' => 'share-modal'])
+@component('components.dialogs.modal', ['id' => 'share-modal'])
 @slot('header')
 Share with a friend!
 @endslot

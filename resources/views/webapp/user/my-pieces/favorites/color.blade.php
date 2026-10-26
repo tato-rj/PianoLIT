@@ -11,5 +11,5 @@
             </label>
         @endforeach
     </div>
-    @include('components.form.error', ['field' => 'color'])
+    @include('components.forms.error', ['field' => 'color'])
 </fieldset>

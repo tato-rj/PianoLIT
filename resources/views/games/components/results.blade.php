@@ -1,4 +1,4 @@
-@component('components.modal', [
+@component('components.dialogs.modal', [
   'id' => 'game-results',
   'options' => [
     'header' => ['show' => false],
@@ -17,7 +17,7 @@
   <div class="w-100 text-center">
     <p class="mb-1"><strong>Did you like this game?</strong></p>
     <p>Subscribe and we'll keep you in the loop about the new ones!</p>
-    @include('components.form.subscription')
+    @include('components.subscriptions.form')
   </div>
 @endslot --}}
 @endcomponent

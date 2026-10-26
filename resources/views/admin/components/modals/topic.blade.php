@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'topic-modal', 'header' => 'Edit topic'])
+@component('components.dialogs.modal', ['id' => 'topic-modal', 'header' => 'Edit topic'])
 @slot('body')
 <form method="POST" id="edit-topic">
   @csrf

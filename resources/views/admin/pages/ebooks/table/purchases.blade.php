@@ -1,6 +1,6 @@
 <button class="btn-raw" data-bs-toggle="modal" data-bs-target="#purchases-{{$item->id}}-modal">{{$item->purchases_count}}</button>
 
-@component('components.modal', ['id' => 'purchases-'.$item->id.'-modal'])
+@component('components.dialogs.modal', ['id' => 'purchases-'.$item->id.'-modal'])
 @slot('body')
 @foreach($item->purchases()->with('user')->latest()->get() as $purchase)
 <div class="text-muted"><small>Purchased at {{$purchase->created_at->toFormattedDateString()}}</small></div>

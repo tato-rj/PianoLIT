@@ -1,4 +1,4 @@
-@component('components.draggable.cards.small', ['model' => $playlist])
+@component('admin.components.sortable-item', ['model' => $playlist])
 <span class="badge alert-{{ $playlist->is_featured ? 'green' : 'grey' }} align-text-bottom rounded-pill">{{ $playlist->order + 1 }}</span>
 <span>{{ $playlist->name }} <small class="text-muted">&middot; {{ $playlist->pieces_count }} pieces</small></span>
 @slot('controls')

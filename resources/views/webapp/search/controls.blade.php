@@ -1,7 +1,7 @@
 <div class="offcanvas offcanvas-bottom" id="search-controls" tabindex="-1" aria-labelledby="search-controls-title">
     <div class="offcanvas-body">
         <form id="search-controls-form" class="save-to-panel search-controls">
-            @include('components.bottom-sheet-handle', ['label' => 'Close Sort & Filter panel'])
+            @include('components.dialogs.bottom-sheet.handle', ['label' => 'Close Sort & Filter panel'])
             <div class="save-to-panel__header">
                 <div>
                     <h2 id="search-controls-title">Sort & Filter</h2>

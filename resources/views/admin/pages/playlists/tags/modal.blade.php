@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'playlist-tags-modal', 'header' => 'Manage tags', 'options' => ['size' => 'lg']])
+@component('components.dialogs.modal', ['id' => 'playlist-tags-modal', 'header' => 'Manage tags', 'options' => ['size' => 'lg']])
 @slot('body')
     <div data-playlist-tags data-csrf="{{ csrf_token() }}">
         <p class="text-muted">Use tags to group playlists. Renaming updates associated playlists; deleting removes their tag.</p>

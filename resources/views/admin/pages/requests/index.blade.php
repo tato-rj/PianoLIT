@@ -16,7 +16,7 @@
 
 @include('admin.components.modals.delete')
 
-@component('components.modal', ['id' => 'publish-tutorial'])
+@component('components.dialogs.modal', ['id' => 'publish-tutorial'])
 @slot('header')
 Publish Tutorial
 @endslot

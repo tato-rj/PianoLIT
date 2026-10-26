@@ -42,7 +42,7 @@
 	@endif
 </div>
 
-@component('components.modal', ['id' => 'review-modal', 'header' => 'My review'])
+@component('components.dialogs.modal', ['id' => 'review-modal', 'header' => 'My review'])
 @slot('body')
 <form method="POST" action="{{$product->reviewRoute()}}">
 	@csrf

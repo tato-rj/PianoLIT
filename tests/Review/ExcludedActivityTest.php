@@ -22,7 +22,7 @@ class ExcludedActivityTest extends ReviewTestCase
         $this->travelTo(carbon('2026-10-13 12:00:00'));
         config(['activity.minimum_visit_seconds' => 0, 'activity.filter_bots' => false]);
         Route::middleware(['web', RecordWebLog::class])->group(function () {
-            Route::get('/review/private-page', function () { return response('<html>'.view('components.activity')->render().'</html>'); })->name('review.private-page');
+            Route::get('/review/private-page', function () { return response('<html>'.view('components.tracking.activity')->render().'</html>'); })->name('review.private-page');
             Route::post('/review/private-login/{user}', function (User $user) { auth('web')->login($user); return response()->noContent(); })->name('review.private-login');
             Route::post('/review/private-logout', function () { auth('web')->logout(); request()->session()->invalidate(); return response()->noContent(); })->name('review.private-logout');
         });

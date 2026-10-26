@@ -1,5 +1,5 @@
-@component('components.fullscreen-modal', ['id' => 'match-tour-modal', 'headingId' => 'match-tour-heading', 'classes' => 'match-tour-modal', 'data' => ['tour-url' => route('webapp.tour'), 'auto-open' => !empty($autoOpen) ? 'true' : 'false']])
-    @component('components.fullscreen-modal-header', ['headingId' => 'match-tour-heading', 'title' => 'Find your match', 'closeLabel' => 'Close Find your match'])
+@component('components.dialogs.fullscreen.panel', ['id' => 'match-tour-modal', 'headingId' => 'match-tour-heading', 'classes' => 'match-tour-modal', 'data' => ['tour-url' => route('webapp.tour'), 'auto-open' => !empty($autoOpen) ? 'true' : 'false']])
+    @component('components.dialogs.fullscreen.header', ['headingId' => 'match-tour-heading', 'title' => 'Find your match', 'closeLabel' => 'Close Find your match'])
         @slot('headerContent')@include('webapp.tour.progress')@endslot
     @endcomponent
     <div class="match-ambience" aria-hidden="true"><span></span><span></span><span></span><span></span></div>

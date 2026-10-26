@@ -7,6 +7,16 @@ use Illuminate\Routing\RouteCollection;
 
 abstract class GamesTestCase extends ReviewTestCase
 {
+    private ?\App\User $gameAccount = null;
+
+    protected function signInPlayer(): \App\User
+    {
+        $this->gameAccount ??= \Illuminate\Database\Eloquent\Model::withoutEvents(fn () => create(\App\User::class));
+        $this->actingAs($this->gameAccount, 'web');
+
+        return $this->gameAccount;
+    }
+
     public function setUp(): void
     {
         parent::setUp();

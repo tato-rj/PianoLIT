@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'New clip'])
+@component('components.dialogs.modal', ['id' => 'add-modal', 'header' => 'New clip'])
 @slot('body')
 <form method="POST" action="{{route('admin.clips.store')}}">
 	@csrf

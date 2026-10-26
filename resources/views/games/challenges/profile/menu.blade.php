@@ -1,5 +1,5 @@
 <section data-games-profile data-preserve-icons data-avatar-base="{{ asset('images/games/avatars') }}/" aria-labelledby="games-profile-title">
-    <h2 id="games-profile-title" class="dropdown-header px-0 mb-2">Games</h2>
+    <h2 id="games-profile-title" class="dropdown-header px-0 mb-2">Game player</h2>
     <p class="small text-muted mb-0" data-profile-intro>Post a score on a leaderboard to choose an avatar and start tracking your scores.</p>
     <div data-profile-details hidden>
         <div class="d-flex align-items-center gap-3 mb-3">

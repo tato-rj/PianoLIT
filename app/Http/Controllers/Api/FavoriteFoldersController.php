@@ -109,7 +109,7 @@ class FavoriteFoldersController extends Controller
 
         $folder = FavoriteFolder::find($request->folder_id)->sort($request->ids);
 
-        return view('components.alert', [
+        return view('components.feedback.alert', [
             'color' => 'green',
             'message' => '<i class="fas fa-check-circle mr-2"></i>The order has been updated',
             'temporary' => true,

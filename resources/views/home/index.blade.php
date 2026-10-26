@@ -2,14 +2,14 @@
 
 @section('content')
 <div class="project-home__page">
-    @include('components.public-header')
+    @include('components.layout.public.header')
 
     <section class="project-home__hero" aria-labelledby="home-heading">
         <h1 id="home-heading">Welcome to <span>PianoLIT</span></h1>
         <p>A world of music, learning, and inspiration for everyone who loves piano.</p>
     </section>
 
-    @include('components.project-deck', ['projects' => $projects])
+    @include('home.components.project-deck', ['projects' => $projects])
 
     <div class="project-home__room">
         <div class="project-home__instrument" aria-hidden="true">
@@ -17,6 +17,6 @@
         </div>
     </div>
 
-    @include('components.public-footer')
+    @include('components.layout.public.footer')
 </div>
 @endsection

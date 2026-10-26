@@ -6,7 +6,7 @@
         @select(['bag' => $bag, 'id' => $prefix.'-gender', 'name' => 'gender', 'label' => 'Gender', 'placeholder' => 'Choose a gender', 'choices' => ['male' => 'Male', 'female' => 'Female'], 'value' => optional($composer)->gender, 'required' => $composer ? false : 'required'])
     </div>
     <div class="col-md-6">
-        @include('components.form.upload.file', ['bag' => $bag, 'id' => $prefix.'-cover', 'name' => 'cover_image', 'label' => $composer ? 'Replace portrait (optional)' : 'Portrait', 'accept' => 'image/*', 'required' => !$composer])
+        @include('components.forms.upload.file', ['bag' => $bag, 'id' => $prefix.'-cover', 'name' => 'cover_image', 'label' => $composer ? 'Replace portrait (optional)' : 'Portrait', 'accept' => 'image/*', 'required' => !$composer])
     </div>
     <div class="col-md-6">
         @select(['bag' => $bag, 'id' => $prefix.'-period', 'name' => 'period', 'label' => 'Period', 'placeholder' => 'Choose a period', 'choices' => \App\Tag::periods()->get()->mapWithKeys(function ($period) { return [$period->name => ucfirst($period->name)]; })->all(), 'value' => strtolower(optional($composer)->period ?? ''), 'required' => $composer ? false : 'required'])

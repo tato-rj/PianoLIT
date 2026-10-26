@@ -34,7 +34,7 @@ class SubscriptionsController extends Controller
             $view = 'newsletter-subscription';
         }
 
-        return view('components.popups.popup', compact('view', 'product'))->render();
+        return view('components.promotions.popups.popup', compact('view', 'product'))->render();
     }
 
     /**

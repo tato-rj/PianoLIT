@@ -56,7 +56,7 @@
     @include('admin.components.pagination', ['paginator' => $pages, 'label' => 'Visit pages'])
     @if($unplaced->total())@include('admin.components.pagination', ['paginator' => $unplaced, 'label' => 'Additional activity'])@endif
 </div></div>
-@component('components.modal', ['id' => 'delete-visit-modal', 'header' => 'Delete this visit?', 'centered' => true, 'descriptionId' => 'delete-visit-description', 'options' => ['body' => ['padding' => 3]]])
+@component('components.dialogs.modal', ['id' => 'delete-visit-modal', 'header' => 'Delete this visit?', 'centered' => true, 'descriptionId' => 'delete-visit-description', 'options' => ['body' => ['padding' => 3]]])
     @slot('body')
         <p>{{ \App\Activity\Presentation::name($visit) }} · {{ \App\Activity\Time::date($visit, 'started_at')->format('M j, Y, g:i A') }}</p>
         <p id="delete-visit-description" class="mb-0">Permanently delete this visit and all its recorded pages and actions. This cannot be undone.</p>

@@ -2,7 +2,7 @@
     $nationality = optional($pianist->country)->nationality ?: optional($pianist->country)->name;
     $description = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $pianist->biography)));
 @endphp
-@component('components.resource-card', [
+@component('components.cards.resource', [
     'id' => $cardId ?? 'pianist-'.$pianist->id, 'title' => rtrim($pianist->name, '. '),
     'format' => $nationality ?: 'Meet the artist',
     'description' => $description ? Str::limit($description, 140) : 'Explore the pianist’s life and recordings.',

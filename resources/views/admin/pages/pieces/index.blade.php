@@ -32,7 +32,7 @@
                 <legend class="small text-muted mb-1">Missing content (temporary)</legend>
                 <div class="d-flex flex-wrap gap-3 small text-muted">
                     @foreach(['without_videos' => 'Missing video', 'without_moments' => 'Missing moments', 'without_synthesia' => 'Missing synthesia'] as $filter => $label)
-                    @include('components.form.checkbox', ['id' => 'pieces-filter-'.$filter, 'name' => $filter, 'value' => '1', 'label' => $label, 'checked' => !empty($filters[$filter]), 'classes' => 'mb-0'])
+                    @include('components.forms.checkbox', ['id' => 'pieces-filter-'.$filter, 'name' => $filter, 'value' => '1', 'label' => $label, 'checked' => !empty($filters[$filter]), 'classes' => 'mb-0'])
                     @endforeach
                 </div>
                 <p class="small text-muted mt-1 mb-0">Matches all checked options. Moments apply to performance videos only.</p>

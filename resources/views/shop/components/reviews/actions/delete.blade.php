@@ -8,7 +8,7 @@
 	'classes' => 'rounded',
 	'data' => ['toggle' => 'modal', 'target' => '#delete-review-modal']])
 
-@component('components.modal', ['id' => 'delete-review-modal', 'header' => 'Delete my review'])
+@component('components.dialogs.modal', ['id' => 'delete-review-modal', 'header' => 'Delete my review'])
 @slot('body')
 <form method="POST" action="{{route('reviews.destroy', $review)}}" class="text-start">
 	@method('DELETE')

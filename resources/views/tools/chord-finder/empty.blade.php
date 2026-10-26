@@ -3,14 +3,14 @@
         <div><h2 id="chord-editor-title" class="h5 mb-2">Choose your notes</h2><p class="small text-muted mb-0">Tap the piano keys or build your chord by note name.</p></div>
         <button type="button" class="btn btn-secondary btn-sm" id="chord-clear">@icon('rotate-ccw')Clear notes</button>
     </div>
-    @component('components.tab-navigation', [
+    @component('components.navigation.tab-navigation', [
         'id' => 'chord-input-tabs', 'label' => 'Choose how to enter notes', 'variant' => 'segmented', 'class' => 'mb-4',
         'items' => [['target' => 'chord-keyboard', 'label' => 'Piano keyboard'], ['target' => 'chord-note-names', 'label' => 'Note names']],
     ])
         <div class="tab-content">
             <div class="tab-pane fade show active" id="chord-keyboard" role="tabpanel" aria-labelledby="chord-input-tabs-chord-keyboard">
                 <div class="keyboard-input" id="chord-input-piano">
-                    @include('components.piano.keyboard', ['centered' => true, 'responsive' => true, 'octaves' => [3 => [], 4 => []]])
+                    @include('components.music.piano.keyboard', ['centered' => true, 'responsive' => true, 'octaves' => [3 => [], 4 => []]])
                 </div>
             </div>
             <div class="tab-pane fade" id="chord-note-names" role="tabpanel" aria-labelledby="chord-input-tabs-chord-note-names">
@@ -32,8 +32,8 @@
         <button type="button" class="btn btn-secondary" id="chord-example">Try C major</button>
     </div>
     <div id="chord-options" class="mt-4" hidden>
-        @component('components.accordion', ['id' => 'chord-options-accordion'])
-            @component('components.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling & root (optional)'])
+        @component('components.layout.accordion', ['id' => 'chord-options-accordion'])
+            @component('components.layout.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling & root (optional)'])
                 <div id="options-container" hidden>
                     <h3 class="h6 mb-2">Note names</h3>
                     <p class="small text-muted mb-3">Change a spelling if you need an enharmonic equivalent.</p>

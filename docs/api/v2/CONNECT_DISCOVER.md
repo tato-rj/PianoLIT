@@ -1,11 +1,17 @@
 # Connect iOS Discover to the shared feed
 
-Handoff revision **2026-10-26.2** implements the backend operations below locally.
+Handoff revision **2026-10-26.3** documents the backend operations implemented locally.
 It has **not been deployed or verified on staging**. Read `manifest.yaml` for
 readiness and the verified base URL. Do not treat the `.invalid` OpenAPI server
 or an example token as a callable service. The existing sync script fetches
 this file, the YAML contract and fixtures through the manifest; it does not
 rewrite Swift code.
+
+All Swift development targets the updated app. The old Swift app/source is no
+longer maintained. The backend still supports its already-installed binaries
+through the unchanged legacy API, authentication behavior and media URLs. Do
+not maintain an old Swift branch, parser or shipping mode for this purpose.
+Any temporary legacy endpoint adapter below belongs to the updated app only.
 
 ## Instructions for the iOS developer
 
@@ -29,8 +35,9 @@ current checkout and record the native commit/build in your handoff receipt.
    associated with that account and environment. Do not parse its prefix, log
    it, put it in UserDefaults, or retain the password. Validate HTTP status and
    the JSON envelope before accepting login success.
-3. Existing installations must sign in with their password once. A saved
-   legacy `userID`/`isLoggedIn` value cannot be exchanged for a v2 token. Keep
+3. Users moving to the updated app must sign in with their password once;
+   users staying on an old build keep its existing API/authentication flow.
+   A saved legacy `userID`/`isLoggedIn` value cannot be exchanged for a v2 token. Keep
    current registration and password-recovery flows; after successful
    registration, obtain the v2 token through the same password login. After
    password recovery, require login with the new password. Do not infer v2

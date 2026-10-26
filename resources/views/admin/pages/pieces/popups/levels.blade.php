@@ -2,7 +2,7 @@
     <legend class="fs-6">Choose a level</legend>
     <div class="d-flex flex-wrap gap-3">
         @foreach($levels as $level)
-        @include('components.form.checkbox', ['type' => 'radio', 'id' => 'level-'.$piece->id.'-'.$level->id, 'name' => 'level-'.$piece->id, 'value' => $level->id, 'label' => ucfirst($level->name), 'checked' => optional($piece->level)->id === $level->id])
+        @include('components.forms.checkbox', ['type' => 'radio', 'id' => 'level-'.$piece->id.'-'.$level->id, 'name' => 'level-'.$piece->id, 'value' => $level->id, 'label' => ucfirst($level->name), 'checked' => optional($piece->level)->id === $level->id])
         @endforeach
     </div>
 </fieldset>

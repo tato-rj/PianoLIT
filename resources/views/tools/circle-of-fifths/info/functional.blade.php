@@ -1,4 +1,4 @@
-@component('components.modal', [
+@component('components.dialogs.modal', [
 	'id' => 'modal-functional-harmony', 
 	'options' => [
 		'size' => 'lg',

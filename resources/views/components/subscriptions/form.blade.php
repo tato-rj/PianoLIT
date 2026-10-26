@@ -1,0 +1,29 @@
+<form method="POST" action="{{route('subscriptions.store')}}" id="{{$formId ?? null}}">
+	@csrf
+
+	@include('components.subscriptions.hidden-fields')
+
+	<div class="form-group">
+		<input required type="email" name="email" placeholder="EMAIL ADDRESS" class="input-center form-control w-100 input-light">
+	</div>
+	@include('components.forms.error', ['field' => 'email'])
+	
+	@isset($recaptcha)
+
+	@include('auth.fields.recaptcha')
+
+	@endisset
+
+	@button([
+		'label' => $label ?? 'SIGN UP',
+		'submit' => true,
+		'styles' => [
+			'shadow' => true,
+			'size' => 'block',
+			'mb' => 2,
+			'theme' => 'primary',
+		]])
+
+	<div class="text-muted"><small>Ps: we'll never share your email with anyone</small></div>
+
+</form>

@@ -1,1 +1,0 @@
-<p><a href="{{$url}}">@icon('arrow-left', ['mr' => 1, 'classes' => 'align-middle'])back to the {{$to}}</a></p>

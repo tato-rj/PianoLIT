@@ -52,7 +52,7 @@
     @endforeach
   </div>
   @foreach($brandVariants as $variant)
-    @component('components.modal', ['id' => $variant['modalId'], 'header' => e($variant['label']).' icon downloads', 'descriptionId' => $variant['modalId'].'-description', 'centered' => true, 'options' => ['size' => 'lg']])
+    @component('components.dialogs.modal', ['id' => $variant['modalId'], 'header' => e($variant['label']).' icon downloads', 'descriptionId' => $variant['modalId'].'-description', 'centered' => true, 'options' => ['size' => 'lg']])
       @slot('body')
         <p id="{{ $variant['modalId'] }}-description" class="text-muted">Choose a version below. Dimensions describe the actual download file.</p>
         @foreach($variant['groups'] as $group => $downloads)

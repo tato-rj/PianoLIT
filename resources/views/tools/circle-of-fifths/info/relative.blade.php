@@ -1,4 +1,4 @@
-@component('components.modal', [
+@component('components.dialogs.modal', [
 	'id' => 'modal-relative-key', 
 	'options' => [
 		'size' => 'lg',

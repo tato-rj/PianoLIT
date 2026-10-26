@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'modal-error'])
+@component('components.dialogs.modal', ['id' => 'modal-error'])
 @slot('body')
 <div class="text-center">
   <img src="{{asset('images/misc/confused.svg')}}" class="m-4" style="width: 80px">

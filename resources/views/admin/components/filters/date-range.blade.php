@@ -13,7 +13,7 @@
     $dateSummary = (empty($periodName) || $dateSelected === 'all') && $dateSelected && $dateSelected !== 'custom' ? $datePresets[$dateSelected]['label'] : ($dateSelected === 'custom' ? 'Custom range' : $datePlaceholder);
 @endphp
 <details class="admin-date-range" data-admin-date-range data-period-name="{{ $periodName ?? '' }}" data-current-preset="{{ $dateSelected }}" data-default-preset="{{ $defaultPreset ?? (empty($periodName) ? 'all' : '') }}" data-required="{{ !empty($requireBoth) ? 'true' : 'false' }}" data-placeholder="{{ $datePlaceholder }}" data-label="{{ $dateFieldLabel }}">
-    @if(!empty($showLabel))@include('components.form.label', ['label' => $dateFieldLabel, 'labelTag' => 'span', 'labelId' => $dateId.'-field-label'])@endif
+    @if(!empty($showLabel))@include('components.forms.label', ['label' => $dateFieldLabel, 'labelTag' => 'span', 'labelId' => $dateId.'-field-label'])@endif
     <summary class="form-control admin-filter-select" aria-haspopup="dialog" aria-controls="{{ $dateId }}" aria-expanded="false" aria-label="{{ $dateFieldLabel }}: {{ $dateSummary }}" @if(!empty($designSystemPreview)) data-ds-preview @endif>
         <span data-date-range-summary>{{ $dateSummary }}</span>
     </summary>

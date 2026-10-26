@@ -100,7 +100,7 @@
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
-    @include('components.activity')
+    @include('components.tracking.activity')
     @include('webapp.components.campaign-attribution')
 
     <script type="text/javascript">

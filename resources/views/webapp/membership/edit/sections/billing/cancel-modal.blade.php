@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'membership-cancel-confirmation', 'header' => 'Cancel your membership?', 'centered' => true, 'descriptionId' => 'membership-cancel-description', 'options' => ['body' => ['padding' => 3]]])
+@component('components.dialogs.modal', ['id' => 'membership-cancel-confirmation', 'header' => 'Cancel your membership?', 'centered' => true, 'descriptionId' => 'membership-cancel-description', 'options' => ['body' => ['padding' => 3]]])
     @slot('body')
         <p class="text-muted small mb-3">{{ $source->plan_name }} Premium</p>
         <div id="membership-cancel-description">

@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'journey-modal', 'headerNoborder' => true])
+@component('components.dialogs.modal', ['id' => 'journey-modal', 'headerNoborder' => true])
 @slot('body')
 @foreach($journey as $playlist)
 <div class="text-center mb-4">

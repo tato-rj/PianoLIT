@@ -7,14 +7,14 @@
     <title>Metronome | PianoLIT</title>
     <link rel="canonical" href="{{ route('metronome.home') }}">
     @include('layouts.html.google.fonts')
-    @include('components.form.number-fonts')
+    @include('components.forms.number-fonts')
     @include('layouts.html.theme')
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/metronome.css') }}" rel="stylesheet">
     <script src="{{ mix('js/metronome.js') }}" defer></script>
 </head>
 <body>
-    @include('components.project-watermark')
+    @include('components.branding.watermark')
     <main>
         <button
             class="metronome"
@@ -75,6 +75,6 @@
         <noscript><p class="metronome__message">Enable JavaScript to use the metronome.</p></noscript>
     </main>
     @include('metronome.settings')
-    @include('components.activity')
+    @include('components.tracking.activity')
 </body>
 </html>

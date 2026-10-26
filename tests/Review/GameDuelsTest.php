@@ -21,6 +21,7 @@ class GameDuelsTest extends GamesTestCase
 
     private function create(string $game = 'intervals-lab', array $settings = []): array
     {
+        $this->signInPlayer();
         return $this->postJson(route('games.duels.store'), ['game' => $game, 'settings' => $settings + ['numOfChallenges' => 2]])->assertOk()->json();
     }
 
@@ -31,6 +32,7 @@ class GameDuelsTest extends GamesTestCase
 
     private function switchSession(array $data = []): void
     {
+        $this->app['auth']->forgetGuards();
         session()->flush();
         session()->save();
         $this->withSession($data);
@@ -430,6 +432,7 @@ class GameDuelsTest extends GamesTestCase
 
     public function test_invalid_games_settings_and_unbounded_practice_do_not_create_duels(): void
     {
+        $this->signInPlayer();
         foreach ([['game' => 'open-staff', 'settings' => ['numOfChallenges' => 2]], ['game' => 'intervals-lab', 'settings' => ['practiceMode' => true]],
             ['game' => 'intervals-lab', 'settings' => ['numOfChallenges' => 999]], ['game' => 'intervals-lab', 'settings' => ['intervals' => ['bad']]]] as $data) {
             $this->postJson(route('games.duels.store'), $data)->assertUnprocessable();
@@ -456,14 +459,17 @@ class GameDuelsTest extends GamesTestCase
         $this->assertNull(collect($state['players'])->firstWhere('role', 'host')['answer']);
     }
 
-    public function test_creation_and_join_require_csrf_even_for_anonymous_players()
+    public function test_registered_creation_and_anonymous_join_require_csrf()
     {
+        $this->signInPlayer();
         $this->app['env'] = 'review-csrf';
         $this->withSession(['_token' => 'game-csrf']);
         $data = ['game' => 'intervals-lab', 'settings' => ['numOfChallenges' => 2]];
         $this->postJson(route('games.duels.store'), $data)->assertStatus(419);
+        $this->app['auth']->forgetGuards();
         $this->postJson(route('games.duels.join'), ['code' => '1234'])->assertStatus(419);
         $this->assertSame(0, Duel::count());
+        $this->signInPlayer();
         $this->withHeader('X-CSRF-TOKEN', 'game-csrf')->postJson(route('games.duels.store'), $data)->assertOk();
     }
 }

@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'delete-tag-modal', 'header' => 'Delete tag', 'centered' => true, 'descriptionId' => 'delete-tag-description'])
+@component('components.dialogs.modal', ['id' => 'delete-tag-modal', 'header' => 'Delete tag', 'centered' => true, 'descriptionId' => 'delete-tag-description'])
 @slot('body')
     <p id="delete-tag-description">Delete <strong data-delete-tag-name></strong>? This removes the tag from <span data-delete-tag-pieces></span>. The pieces themselves are kept.</p>
     <p class="small text-danger">This action cannot be undone.</p>

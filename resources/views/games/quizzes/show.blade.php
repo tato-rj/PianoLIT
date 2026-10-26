@@ -9,13 +9,13 @@
 
 @section('content')
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Quizzes', 'url' => route('quizzes.index')],
         ['label' => rtrim($quiz->title, '. ')],
     ]])
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         <article id="quiz" data-url="{{ route('quizzes.feedback', $quiz->slug) }}" data-quiz>
             @if(!empty($preview))
                 <div class="alert alert-secondary mb-4" role="status">@icon('eye')Admin preview · This quiz has not been published</div>
@@ -80,7 +80,7 @@
         @endif
         <div class="mt-5">@include('components.newsletter.invitation', ['headingId' => 'quiz-newsletter-title', 'preview' => false])</div>
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

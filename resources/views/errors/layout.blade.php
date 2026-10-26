@@ -44,7 +44,7 @@
                 padding: 20px;
             }
         </style>
-        @include('components.brand-theme', ['admin' => request()->getHost() === 'admin.'.config('app.short_url')])
+        @include('components.branding.theme', ['admin' => request()->getHost() === 'admin.'.config('app.short_url')])
     </head>
     <body>
         <div class="flex-center position-ref full-height">

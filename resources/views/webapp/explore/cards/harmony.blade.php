@@ -24,7 +24,7 @@
 	</div>
 
 	@if($isAuthorized)
-	@component('components.modal', ['id' => 'harmony-' . $loop->iteration])
+	@component('components.dialogs.modal', ['id' => 'harmony-' . $loop->iteration])
 	@slot('header')
 	{{$tutorial->piece->medium_name}}
 	@endslot

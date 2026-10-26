@@ -1,3 +1,3 @@
 <section class="container mb-5">
-	@include('components.sections.youtube')
+	@include('components.media.youtube')
 </section>

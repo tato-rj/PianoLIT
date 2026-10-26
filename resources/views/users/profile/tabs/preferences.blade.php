@@ -29,7 +29,7 @@
 				<p>Would you like to subscribe now?</p>
 				<form method="POST" action="{{route('subscriptions.store')}}">
 					@csrf
-					@include('components.form.subscription.hidden')
+					@include('components.subscriptions.hidden-fields')
 					<input type="hidden" name="email" value="{{auth()->user()->email}}">
 					<button class="btn btn-primary shadow">Yes, subscribe me now</button>
 				</form>

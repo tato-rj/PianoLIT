@@ -11,7 +11,7 @@
 			</button>
 		</div>
 
-		@component('components.modal', ['id' => 'tags-' . $name])
+		@component('components.dialogs.modal', ['id' => 'tags-' . $name])
 		@slot('header')
 		{{ucfirst($name)}}
 		@endslot

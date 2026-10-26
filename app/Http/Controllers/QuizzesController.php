@@ -47,7 +47,7 @@ class QuizzesController extends Controller
     public function feedback(Request $request, Quiz $quiz)
     {
         if (! is_array($request->answers))
-            return view('components.feedbacks.error')->render();
+            return view('components.feedback.error')->render();
 
         $feedback = $quiz->evaluate($request->answers);        
 

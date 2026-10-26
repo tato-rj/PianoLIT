@@ -1,4 +1,4 @@
-@component('components.resource-card', [
+@component('components.cards.resource', [
     'id' => 'crashcourse-'.$crashcourse->id,
     'url' => route('crashcourses.show', $crashcourse),
     'title' => rtrim($crashcourse->title, '. '),

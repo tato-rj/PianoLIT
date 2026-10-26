@@ -1,5 +1,5 @@
 <div class="offcanvas offcanvas-end" id="options-panel" tabindex="-1" aria-labelledby="options-panel-title">
-    @include('components.side-menu-header', ['titleId' => 'options-panel-title', 'title' => 'Options'])
+    @include('components.layout.side-menu-header', ['titleId' => 'options-panel-title', 'title' => 'Options'])
     <div class="offcanvas-body px-2 py-3">
         <div class="list-group">
             <a href="{{route('webapp.composers.show', $piece->composer)}}" class="link-none mb-2 px-3 d-flex d-apart">Meet the composer @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>

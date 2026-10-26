@@ -17,18 +17,18 @@ The original source was copied from `/Users/arthur/Desktop/Websites/ArthurVillar
 
 Default/reset color is `#0055fe`; the canvas CSS references `--color-primary`. The tempo numeral defaults to Nunito at weight 300. The settings use PianoLIT typography, segmented controls, `@select`, `@toggle`, the shared native color field and standard buttons/shadows. The full-screen layout intentionally has no public header/footer. Settings use the same Bootstrap bottom offcanvas as the web-app Save to panel: shared close handle, heading, backdrop, focus trap and viewport height cap. Metronome content is centered at a maximum of 560px, shrinking to the available phone width. Bootstrap handles transitions, Escape/backdrop/Done dismissal and reduced motion. Closing immediately cancels capture and previews; keyboard/tempo controls stay isolated until the panel is hidden, then focus returns to Settings. There is no separate dialog animation.
 
-The shared `components.project-watermark` places a transparent white PianoLIT icon with a white rounded-square border at the top left, linking to the main homepage. Its opacity increases from 30% to 65% on hover or keyboard focus. Its 52px target stays above the tempo edge controls and respects phone safe areas; settings and their backdrop remain above it. Enter on the focused link keeps normal navigation instead of toggling playback.
+The shared `components.branding.watermark` places a transparent white PianoLIT icon with a white rounded-square border at the top left, linking to the main homepage. Its opacity increases from 30% to 65% on hover or keyboard focus. Its 52px target stays above the tempo edge controls and respects phone safe areas; settings and their backdrop remain above it. Enter on the focused link keeps normal navigation instead of toggling playback.
 
 ## Editing map
 
 - Route: `routes/metronome.php`, registered before host-independent routes.
 - Markup: `resources/views/metronome/{index,settings,conductor-hand}.blade.php`.
 - Behavior: `resources/js/metronome.js` and `resources/js/metronome/`.
-- Font picker: `components.form.font-select`, `components.form.number-fonts`, `resources/js/controls/font-select.js` and `resources/sass/components/_font-select.scss`, also used by the Design System. Bootstrap handles arrow navigation, Tab and outside dismissal; Home/End jump to the first/last font, and Escape closes the menu before the settings panel. Font sources: [Nunito](https://fonts.google.com/specimen/Nunito), [Outfit](https://fonts.google.com/specimen/Outfit), [Playfair Display](https://fonts.google.com/specimen/Playfair+Display), [Pattaya](https://fonts.google.com/specimen/Pattaya), [Sail](https://fonts.google.com/specimen/Sail).
-- Voice UI/audio: `components.voice-recorder`, `components.metronome-sound`, `components.metronome-sound-voice`, `sound-menu.js`, `voice-recorder.js` and `voice-audio.js`; the components share a Design System specimen. Sound uses Bootstrap's dropdown, shared field/menu/button finishes and a hidden native select for its existing value contract.
+- Font picker: `components.forms.font-select`, `components.forms.number-fonts`, `resources/js/controls/font-select.js` and `resources/sass/components/_font-select.scss`, also used by the Design System. Bootstrap handles arrow navigation, Tab and outside dismissal; Home/End jump to the first/last font, and Escape closes the menu before the settings panel. Font sources: [Nunito](https://fonts.google.com/specimen/Nunito), [Outfit](https://fonts.google.com/specimen/Outfit), [Playfair Display](https://fonts.google.com/specimen/Playfair+Display), [Pattaya](https://fonts.google.com/specimen/Pattaya), [Sail](https://fonts.google.com/specimen/Sail).
+- Voice UI/audio: `metronome.components.voice-recorder`, `metronome.components.sound-menu`, `metronome.components.sound-voice`, `sound-menu.js`, `voice-recorder.js` and `voice-audio.js`; the components share a Design System specimen. Sound uses Bootstrap's dropdown, shared field/menu/button finishes and a hidden native select for its existing value contract.
 - Private recording endpoints: `MetronomeVoiceController` and `App\Services\Metronome\VoiceRecording`.
-- Canvas layout and recording-state visibility: `resources/sass/metronome.scss`. Settings reuse `components.bottom-sheet` / `bottom-sheet-header` and `components/_bottom-sheet.scss`, shared with the web-app favorites panel.
-- Homepage card: `HomeController`, `components.project-card`, and `resources/images/home/editorial/metronome.webp`. The editorial artwork shows a close-up walnut-and-brass metronome on a real piano surface, with stronger natural contrast and no abstract scenery, matching the other project cards; the finite gallery lists all seven projects once.
+- Canvas layout and recording-state visibility: `resources/sass/metronome.scss`. Settings reuse `components.dialogs.bottom-sheet.panel` / `components.dialogs.bottom-sheet.header` and `components/_bottom-sheet.scss`, shared with the web-app favorites panel.
+- Homepage card: `HomeController`, `home.components.project-card`, and `resources/images/home/editorial/metronome.webp`. The editorial artwork shows a close-up walnut-and-brass metronome on a real piano surface, with stronger natural contrast and no abstract scenery, matching the other project cards; the finite gallery lists all seven projects once.
 - The public hub menu includes the same named route. Public navigation from this host returns to the main site; campaign arrivals retain anonymous, host-local rules and account exclusions.
 - `config/newsletter.php` registers the dated tool release for the existing monthly digest. No email or queue command is needed to use the metronome.
 
@@ -62,7 +62,7 @@ It turns green and pulses with Speak now only when capture starts. A successful
 number gets a green Recorded check; a missed number stays red with Try again
 until retried. Retry goes through the countdown again. Text and icons accompany
 the colors, and reduced-motion preferences disable the ring/pop/shake motion.
-The shared `components.voice-recorder-cue` also supplies the four Design System
+The shared `metronome.components.voice-recorder-cue` also supplies the four Design System
 state previews. Cancel/exit clears the cue as well as the microphone.
 
 The trigger looks like the standard PianoLIT select: `form-control` plus the

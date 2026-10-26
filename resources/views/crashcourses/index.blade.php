@@ -9,18 +9,18 @@
     }
 @endphp
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Crash courses'],
     ]])
-    @component('components.hub-header', ['heading' => 'Crash courses', 'preview' => false])
+    @component('components.layout.hub-header', ['heading' => 'Crash courses', 'preview' => false])
         Make room for a little discovery each day.<br class="d-none d-md-block"> Free music lessons, delivered one at a time to your inbox.
     @endcomponent
 
-    @include('components.topic-navigation', ['items' => $topicLinks, 'label' => 'Course topics'])
+    @include('components.navigation.topic-navigation', ['items' => $topicLinks, 'label' => 'Course topics'])
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         @if($crashcourses->isNotEmpty())
             <section aria-labelledby="crashcourses-directory-title">
                 <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-4">
@@ -44,7 +44,7 @@
             </section>
         @endif
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

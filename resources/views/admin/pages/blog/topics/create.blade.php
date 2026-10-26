@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'New topic'])
+@component('components.dialogs.modal', ['id' => 'add-modal', 'header' => 'New topic'])
 @slot('body')
   <form method="POST" action="{{route('admin.topics.store')}}">
     @csrf

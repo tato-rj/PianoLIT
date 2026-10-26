@@ -13,7 +13,7 @@
 
 @section('content')
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Crash courses', 'url' => route('crashcourses.index')],
@@ -24,7 +24,7 @@
         <p class="text-muted mb-0">{{ $crashcourse->description }}</p>
     </header>
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         <div class="row g-4 align-items-start">
             <div class="col-md-6 order-2 order-md-1">
                 @if($crashcourse->cover_path)
@@ -46,7 +46,7 @@
             </div>
         </div>
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

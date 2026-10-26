@@ -1,15 +1,16 @@
 schema_version: 1
-revision: 2026-10-26.1
+revision: 2026-10-26.3
 updated_on: '2026-10-26'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
 api_major_version: 2
 runtime:
-  implemented: false
+  implemented: true
   staging_base_url: null
   production_base_url: null
   existing_api: unchanged
+  deployment_status: not_deployed
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -17,19 +18,20 @@ entrypoints:
   contract: openapi.yaml
   design: design.yaml
   references: references.yaml
+  connection: CONNECT_DISCOVER.md
 files:
 - path: README.md
-  bytes: 9850
-  sha256: 997fe89a9d33eb6b1594d4ae5423c7553791aaadc670a96be56b25996520d78d
+  bytes: 11016
+  sha256: cb5831511a2f910b76c2edb6aa0a3e71b90d6f4c84739c0243ebb47b28678b88
 - path: foundations.yaml
-  bytes: 14067
-  sha256: ab112acfb1d0b784cc6b0907a12d7912a90e47f892a32a1ab3934fecd186cd21
+  bytes: 16465
+  sha256: 9e6d8fc1ef446c05210fbd6d1ce76ba698c3d51040acbfcef2499f20464d5785
 - path: ios-baseline.yaml
   bytes: 10384
   sha256: 3a26ddf1df6e7fdc7e992d2d629b57cd6ae7a16cd75763c7f20291165a28ebe0
 - path: openapi.yaml
-  bytes: 9355
-  sha256: a184cd939494f2620a4155432aca312125b203db210e7e4a5a669ac923c288b7
+  bytes: 19439
+  sha256: b711ba6b15ecaf7490f038d7e5e97d71fa9e09c7a2db735e2e076d5d15e8e98d
 - path: design.yaml
   bytes: 2740
   sha256: 094fef76502c95677b0f36acb9045d3930633257ee93192184b02ce896dbe330
@@ -37,36 +39,91 @@ files:
   bytes: 1824
   sha256: 27b5d92f4dbfee4a11a92f654b0bcea574595a81c0b7f37cb90f3365cfdc4729
 - path: screens/discover.yaml
-  bytes: 13863
-  sha256: e26b4e403f760edaaf9b41fa6fb6c92201ccbfbd626e1f86730e4e57d01576c8
+  bytes: 14936
+  sha256: 9188095d3140b78be29cddf4db31fb520fd8499a71b923030fc8ff59731d37f5
+- path: CONNECT_DISCOVER.md
+  bytes: 9626
+  sha256: 0444f04e5d6662a17dbc19b1dd6fa8bcc4bc834d8d39bcc9d3ef2f02d5378b29
+- path: fixtures/account.json
+  bytes: 279
+  sha256: 01c8e7e44f10aace303018b9d1aaf8a174c067cf3ba21439df50e0c6f4b2d8d6
+- path: fixtures/discover-empty.json
+  bytes: 1286
+  sha256: 0068361540b49ee7e58f78387aafe641300f8f783e43893edc6da109ffbe924b
+- path: fixtures/discover-with-history.json
+  bytes: 28800
+  sha256: bd02364a3128b82a356e573c35ae7d99e38e619a1a1d46dbab66b578415df0dc
+- path: fixtures/discover.json
+  bytes: 27128
+  sha256: be8c10721c09165e0eb62aaf278c8d10623fd62aba733d52cb10e98a93bb9b83
+- path: fixtures/invalid-credentials.json
+  bytes: 225
+  sha256: 5797b69b12989ee12a0bacfcaf5238ebf1b61faa5db27872eb7456abdb53f172
+- path: fixtures/invalid-request.json
+  bytes: 402
+  sha256: 7c59f7d5abad084aaafa56bbed44be38513c0d6cf92f3dc375e46a73d16da111
+- path: fixtures/login.json
+  bytes: 409
+  sha256: 34ff4c481ad90f5d121c3c8dc4d3f9ff9c8dc3cbf10c2034048adbebb94c887e
+- path: fixtures/logout.json
+  bytes: 133
+  sha256: 610ea480a20b1e7d82ec679a95d315338574e9fc6c4de148f79ac5c7007d0a1b
+- path: fixtures/unauthenticated.json
+  bytes: 206
+  sha256: 0e91b5e081cfdaeba756a8c15314e01da88bb96483eefde7aa3cddc65a337f06
 features:
 - id: foundations
   document: foundations.yaml
   status: draft
-  backend_status: not_started
-  ios_status: not_started
+  backend_status: implemented_local
+  ios_status: not_verified
   depends_on: []
 - id: discover
   document: screens/discover.yaml
   status: draft
-  backend_status: shared_feed_and_serializer_local
-  ios_status: not_started
+  backend_status: implemented_local
+  ios_status: not_verified
   depends_on:
   - foundations
 consumer_rules:
 - Read README.md and foundations.yaml before any screen specification.
 - Pin one revision per implementation task; do not mix files from different revisions.
-- Draft permits planning and local mockups only; it does not identify a callable API.
+- Draft permits local implementation and fixture-based decoding/UI work; it does not
+  identify a verified remote API.
 - Implement against staging only when the feature is ready_for_ios and staging_base_url
   is populated.
 - Production use requires feature status released and an explicit production_base_url.
 - Open each available reference image; a YAML path alone is not a visual reference.
-- Preserve the native app architecture and existing API until each replacement flow
-  is verified.
+- Develop only the updated Swift app. Preserve legacy backend API compatibility for
+  old installed builds; no old Swift branch or shipping mode maintenance is required.
 - Record revision, feature IDs, iOS commit, build and verification in the iOS repository.
 - Report ambiguities or missing dependencies instead of inventing endpoint or access
   behavior.
+- Fetch CONNECT_DISCOVER.md and fixtures from this same manifest revision; the sync
+  script downloads instructions/contracts and does not rewrite Swift networking.
 changelog:
+- revision: 2026-10-26.3
+  changes:
+  - Arthur clarified that all Swift work targets the updated app; the old Swift app/source
+    is no longer maintained.
+  - Legacy support remains a backend API/authentication/media compatibility obligation
+    for users who never update, without requiring v2 tokens or forced app updates.
+  - Clarified that any temporary legacy-endpoint adapter belongs to the updated app,
+    not a separate maintained old Swift branch or shipping mode.
+  - Documentation clarification only; runtime, schemas, fixtures and deployment readiness
+    are unchanged.
+- revision: 2026-10-26.2
+  changes:
+  - Implemented isolated password login, bearer guard, account-session read, per-session
+    logout, Discover and authenticated piece-open history routes.
+  - Tokens are hashed, expire after 30 days by default and become invalid after password/email
+    changes or account deletion; no refresh tokens or changes to legacy API identity.
+  - Added safe v2 JSON errors/meta, independent rate limits, session pruning, HTTP
+    regression checks and synthetic response fixtures.
+  - Included CONNECT_DISCOVER.md in this same YAML-manifest bundle for the existing
+    Swift sync script.
+  - Backend is implemented locally; deployment, verified staging URL and native integration
+    remain pending, so readiness stays draft.
 - revision: 2026-10-26.1
   changes:
   - Arthur requires identical Discover content on web and iOS v2, with platform-specific
@@ -91,4 +148,4 @@ changelog:
   - Established the handoff format, shared API proposals and compatibility boundaries.
   - Inventoried Discover against the current web implementation.
   - No runtime endpoints, migrations, Swift changes or deployment in this revision.
-base_path: revisions/2026-10-26.1/
+base_path: revisions/2026-10-26.3/

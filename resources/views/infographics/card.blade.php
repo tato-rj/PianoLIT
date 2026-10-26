@@ -1,4 +1,4 @@
-@component('components.resource-card', [
+@component('components.cards.resource', [
     'id' => 'infographic-'.$item->id,
     'url' => route('resources.infographs.show', $item),
     'title' => rtrim($item->name, '. '),

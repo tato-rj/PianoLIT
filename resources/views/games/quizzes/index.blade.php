@@ -13,18 +13,18 @@
     foreach ($levels as $level) $levelChoices[$level->slug] = ucfirst($level->name);
 @endphp
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Quizzes'],
     ]])
-    @component('components.hub-header', ['heading' => 'Quizzes', 'preview' => false])
+    @component('components.layout.hub-header', ['heading' => 'Quizzes', 'preview' => false])
         A few questions. A new discovery.<br class="d-none d-md-block"> Test your musical knowledge and learn something along the way.
     @endcomponent
 
-    @include('components.topic-navigation', ['items' => $topicLinks, 'label' => 'Quiz topics'])
+    @include('components.navigation.topic-navigation', ['items' => $topicLinks, 'label' => 'Quiz topics'])
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         <div class="row g-3 align-items-end mb-4">
             <div class="col-md">
                 <h2 class="h5 mb-2" id="quiz-directory-title">Find your next challenge</h2>
@@ -55,7 +55,7 @@
             @endif
         </section>
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

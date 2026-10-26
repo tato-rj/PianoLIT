@@ -47,7 +47,7 @@ native_changes_required:
 
 proposed_migration_boundary:
   status: proposed_pending_contract_and_client_adapter_review
-  approach: Reuse existing UIKit destinations through an explicit native model adapter while new v2 data/authentication is isolated from legacy helpers.
+  approach: Develop the updated app only, reusing its UIKit destinations where useful through explicit data adapters. Temporary legacy-endpoint calls are isolated migration work in that updated app; no old Swift branch, parser or shipping mode must be maintained.
   piece:
     current: DiscoverVC → LoadVC → GetFromDb/DataCell → PieceVC, using card.source and a full legacy piece array.
     proposed: Navigate by piece ID to a verified v2 detail/read adapter and map explicit fields into the existing native detail view model.

@@ -168,7 +168,7 @@ class PlaylistsController extends Controller
             return redirect()->route('admin.playlists.index')->with('status', 'The playlist order has been updated.');
         }
 
-        return view('components.alert', [
+        return view('components.feedback.alert', [
             'color' => 'green',
             'message' => '<i class="fas fa-check-circle mr-2"></i>The order has been updated',
             'temporary' => true,

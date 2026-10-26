@@ -12,7 +12,7 @@
 
 @section('content')
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Chord finder'],
@@ -22,7 +22,7 @@
         <p class="text-muted mb-0">A few notes, a world of possibilities. <br class="d-none d-md-block">Find your chord, hear how it sounds, and discover how it gets its name.</p>
     </header>
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         <div id="notes-container" data-url="{{ route('tools.chord-finder.analyse') }}">
             @include('tools.chord-finder.empty')
             <div id="chord-results" class="mt-5" aria-live="polite" aria-busy="false"></div>
@@ -35,7 +35,7 @@
         <div class="mt-5">@include('components.newsletter.invitation', ['headingId' => 'chord-newsletter-title', 'preview' => false])</div>
         @slot('sidebar')
             <div class="mb-4"><h2 class="h5 mb-2">Explore PianoLIT</h2><p class="text-muted small mb-0">Keep your curiosity playing.</p></div>
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

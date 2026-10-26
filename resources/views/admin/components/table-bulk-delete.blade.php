@@ -6,7 +6,7 @@
     <span class="text-muted" role="status" data-bulk-count>0 selected</span>
     @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'label' => 'Delete selected', 'iconOnly' => false, 'attributes' => ['data-bulk-open' => true, 'disabled' => true, 'data-bs-toggle' => 'modal', 'data-bs-target' => '#'.$id.'-modal']]])
 </div>
-@component('components.modal', ['id' => $id.'-modal', 'header' => 'Delete selected '.e($label), 'centered' => true])
+@component('components.dialogs.modal', ['id' => $id.'-modal', 'header' => 'Delete selected '.e($label), 'centered' => true])
     @slot('body')
         <p>Delete <strong data-bulk-confirm-count="{{ $id }}-form">0</strong> selected {{ $label }}? {{ $deleteDescription ?? 'This also removes them from email lists.' }} This action cannot be undone.</p>
         @if($preview ?? false)

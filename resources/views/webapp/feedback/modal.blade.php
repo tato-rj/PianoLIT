@@ -1,5 +1,5 @@
-@component('components.fullscreen-modal', ['id' => 'feedback-modal', 'headingId' => 'feedback-heading', 'classes' => 'feedback-modal'])
-    @component('components.fullscreen-modal-header', ['headingId' => 'feedback-heading', 'closeLabel' => 'Close feedback'])
+@component('components.dialogs.fullscreen.panel', ['id' => 'feedback-modal', 'headingId' => 'feedback-heading', 'classes' => 'feedback-modal'])
+    @component('components.dialogs.fullscreen.header', ['headingId' => 'feedback-heading', 'closeLabel' => 'Close feedback'])
         @slot('headerContent')<span></span>@endslot
     @endcomponent
     <form class="feedback-form" action="{{ route('webapp.feedback.store') }}" method="POST" data-feedback-form>

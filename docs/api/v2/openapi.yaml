@@ -149,7 +149,7 @@ paths:
 security:
   - MobileBearer: []
 x-handoff:
-  revision: "2026-10-26.2"
+  revision: "2026-10-26.3"
   status: draft
   implemented: true
   deployment_status: not_deployed

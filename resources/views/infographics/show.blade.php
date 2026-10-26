@@ -12,14 +12,14 @@
 
 @section('content')
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Infographics', 'url' => route('resources.infographs.index')],
         ['label' => rtrim($infograph->name, '. ')],
     ]])
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         <div class="row g-4 g-xl-5 align-items-start mb-5">
             <div class="col-md-5 order-2 order-md-1">
                 <img src="{{ storage($infograph->thumbnail_path) }}" alt="Preview of {{ rtrim($infograph->name, '. ') }}" class="d-block w-100 border rounded-sm bg-white" decoding="async">
@@ -72,7 +72,7 @@
             </section>
         @endif
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

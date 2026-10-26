@@ -1,9 +1,6 @@
 <section id="duel-results-overlay" data-duel-results hidden aria-labelledby="duel-result-title" data-result-tier="strong" data-result-variant="0">
     <div class="results-sheet">
-        <div class="results-topline">
-            <span class="results-game">{{$settings->gameName()}}</span>
-            <span class="text-muted">Duel results</span>
-        </div>
+        @include('games.challenges.components.results.header', ['duelHeader' => true])
 
         <div class="results-greeting duel-result-greeting">
             <p class="duel-result-outcome fw-bold" data-duel-outcome aria-live="polite"></p>

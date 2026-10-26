@@ -1,5 +1,5 @@
 <tr>
-  @include('components.datatable.date', ['date' => $item->created_at])
+  @include('admin.components.datatables.date', ['date' => $item->created_at])
 
   <td>{{$item->id}}</td>
 

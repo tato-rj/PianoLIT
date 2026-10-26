@@ -18,7 +18,7 @@
         <fieldset class="row g-4 mb-4" @cannot('update', $composer) disabled @endcannot>
             <div class="col-xl-6">
             @component('admin.components.editor.section', ['id' => 'composer-profile', 'sectionId' => 'composer-profile', 'title' => 'Profile', 'description' => 'The details that identify this composer.'])
-                <div class="mb-4">@include('components.composer-label')</div>
+                <div class="mb-4">@include('components.music.composer-label')</div>
                 @include('admin.pages.composers.fields.profile', ['bag' => 'default', 'prefix' => 'composer-edit'])
                 @include('admin.pages.composers.fields.options')
             @endcomponent

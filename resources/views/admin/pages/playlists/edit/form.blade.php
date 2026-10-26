@@ -8,7 +8,7 @@
     <div class="admin-editor-stack">
         @component('admin.components.editor.section', ['id' => 'playlist-cover', 'title' => 'Cover image'])
             <div class="ratio ratio-16x9 mb-4"><img src="{{ $playlist->cover_path ? $playlist->cover_image : asset('images/misc/placeholder-image-wide.png') }}" alt="Playlist cover" class="rounded object-fit-cover" data-playlist-cover></div>
-            @include('components.form.upload.file', ['bag' => 'default', 'id' => 'playlist-cover-file', 'name' => 'cover', 'label' => 'Choose a cover image', 'accept' => 'image/jpeg,image/png,image/gif,image/webp'])
+            @include('components.forms.upload.file', ['bag' => 'default', 'id' => 'playlist-cover-file', 'name' => 'cover', 'label' => 'Choose a cover image', 'accept' => 'image/jpeg,image/png,image/gif,image/webp'])
             <p class="small text-muted mb-0">JPG, PNG, GIF or WebP. Up to 8 MB.</p>
         @endcomponent
         @component('admin.components.editor.section', ['id' => 'playlist-publication', 'title' => 'Publication'])

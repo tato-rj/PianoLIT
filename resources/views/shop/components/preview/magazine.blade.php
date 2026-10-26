@@ -1,4 +1,4 @@
-@component('components.modal', [
+@component('components.dialogs.modal', [
   'id' => 'preview-product', 
   'options' => ['size' => 'lg']
 ])

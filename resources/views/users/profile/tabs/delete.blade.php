@@ -12,7 +12,7 @@
 	</div>
 </div>
 
-@component('components.modal', ['id' => 'delete-modal'])
+@component('components.dialogs.modal', ['id' => 'delete-modal'])
 @slot('header')
 Are you sure?
 @endslot

@@ -19,6 +19,6 @@
 </div>
 
 <div class="container mb-6">
-    @include('components.sections.youtube')
+    @include('components.media.youtube')
 </div>
 @endsection

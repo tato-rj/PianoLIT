@@ -24,7 +24,8 @@ fixed_constraints:
   - Register v2 separately; do not add mandatory authentication to the legacy middleware group.
   - Use explicit v2 response resources; never change shared model appends/hidden fields to shape v2 JSON.
   - Never authenticate an account from a submitted user_id, analytics identifier or device identifier.
-  - Existing installed clients continue using the existing API throughout this project.
+  - Keep the legacy backend API working for already-installed old clients; those clients do not need v2 tokens or an app update.
+  - All Swift development targets the updated app only. Maintaining an old Swift branch, parser or shipping mode is not required.
   - Share all Discover content decisions with web through DiscoverFeed; Arthur confirmed content parity on 2026-10-26.
   - Only the Discover personalization content switch is shared; do not automatically import web media or other Access Limits into native iOS.
   - Preserve App Store billing, existing memberships and the unconditional super-user override.
@@ -149,6 +150,11 @@ milestones:
     deliverables: [piece details and playback, favorites and folders, collections, search and remaining screens]
 
 resolved_decisions:
+  - id: legacy_support_boundary
+    status: confirmed_by_arthur
+    date: "2026-10-26"
+    outcome: The old Swift app/source is no longer maintained. The backend retains compatible legacy API, authentication and media behavior for users who never update; all Swift work targets the updated app matching the web.
+    transition: Any temporary legacy-endpoint adapter is part of the updated app, not a requirement to maintain or ship the old Swift app.
   - id: native_authentication
     status: implemented_local
     date: "2026-10-26"
@@ -190,7 +196,8 @@ open_decisions:
 
 native_implementation_guidance:
   - Keep UIKit/storyboards and existing navigation; no SwiftUI rewrite or broad CocoaPods upgrade.
-  - Introduce typed v2 models and a dedicated network boundary alongside the legacy parser; an enveloped response cannot replace its aligned arrays directly.
+  - Replace Discover's legacy parser in the updated app with typed v2 models and a dedicated network boundary; no parallel old-app shipping mode or old Swift maintenance branch is required.
+  - Isolate any temporary adapters for remaining legacy endpoints in the updated app until their replacement flows exist; they do not constitute maintenance of the old app.
   - Reuse Poppins headings and existing Open Sans resources; map approved tokens in shared UIKit components.
   - Classify endpoint, HTTP status, error envelope and response shape before accepting login/feed success.
   - Install an explicit account session state and secure credential store; local login Boolean is not authorization.

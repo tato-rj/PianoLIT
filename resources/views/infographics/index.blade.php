@@ -19,18 +19,18 @@
     }
 @endphp
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Infographics'],
     ]])
-    @component('components.hub-header', ['heading' => 'Infographics', 'preview' => false])
+    @component('components.layout.hub-header', ['heading' => 'Infographics', 'preview' => false])
         A fresh way to see music theory.<br class="d-none d-md-block"> Free visual guides to explore, download, and keep close to your piano.
     @endcomponent
 
-    @include('components.topic-navigation', ['items' => $topicLinks, 'label' => 'Infographic topics'])
+    @include('components.navigation.topic-navigation', ['items' => $topicLinks, 'label' => 'Infographic topics'])
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         @if($infographs->isNotEmpty())
             <section aria-labelledby="infographics-directory-title">
                 <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-4">
@@ -54,7 +54,7 @@
             </section>
         @endif
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

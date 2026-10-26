@@ -21,7 +21,7 @@
 	'subtitle' => 'Select below the key you need and we\'ll show the notes and fingering for each hand'])
 
 <div class="container mb-5">
-	@component('components.display.layout', [
+	@component('components.layout.catalog', [
 		'ads' => ['ebook']
 	])
 

@@ -71,8 +71,8 @@ class CircleOfFifthsPageTest extends ReviewTestCase
     public function test_responsive_piano_keeps_the_same_note_identity_and_leaves_existing_instances_fixed()
     {
         $octaves = [3 => [], 4 => []];
-        $default = $this->xpath(view('components.piano.keyboard', ['centered' => true, 'octaves' => $octaves])->render());
-        $responsive = $this->xpath(view('components.piano.keyboard', ['centered' => true, 'octaves' => $octaves, 'responsive' => true])->render());
+        $default = $this->xpath(view('components.music.piano.keyboard', ['centered' => true, 'octaves' => $octaves])->render());
+        $responsive = $this->xpath(view('components.music.piano.keyboard', ['centered' => true, 'octaves' => $octaves, 'responsive' => true])->render());
         $this->assertSame(0, $default->query('//*[contains(@class, "keyboard-responsive")]')->length);
         $this->assertSame(1, $responsive->query('//*[contains(@class, "keyboard-responsive") and contains(@style, "--piano-key-count: 14")]')->length);
         $oldKeys = $default->query('//*[@data-name and @data-octave and @data-names]');

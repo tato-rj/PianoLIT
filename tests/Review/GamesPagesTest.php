@@ -24,7 +24,8 @@ class GamesPagesTest extends GamesTestCase
             $this->get(route('games.'.$slug.'.play'))->assertOk()
                 ->assertDontSee('class="site-header', false)->assertDontSee('class="site-footer', false)
                 ->assertSee('id="page-wrapper"', false)->assertSee('window.__challengeOptions', false)
-                ->assertSee('data-leaderboard-profile', false)->assertSee('window.__duelConfig', false);
+                ->assertDontSee('data-leaderboard-profile', false)->assertSee('Sign in to post results')
+                ->assertSee('window.__duelConfig', false);
         }
     }
 
@@ -40,6 +41,7 @@ class GamesPagesTest extends GamesTestCase
 
     public function test_scores_and_points_are_validated_and_leaderboards_filter_by_game_and_period()
     {
+        $this->signInPlayer();
         $data = ['game' => 'Note Nest', 'username' => 'PracticePlayer', 'avatar_url' => 'http://games.localhost/images/games/avatars/avatar-1.svg',
             'score' => 30, 'accuracy' => 95, 'rounds' => 4, 'duration' => '01:05'];
         $url = route('games.leaderboard.store');
@@ -70,6 +72,7 @@ class GamesPagesTest extends GamesTestCase
 
     public function test_score_submission_restores_that_runs_settings_without_trusting_a_return_url()
     {
+        $this->signInPlayer();
         $options = ['numOfChallenges' => 7, 'sound' => false, 'clefs' => ['alto']];
         $data = ['game' => 'Note Nest', 'username' => 'Player', 'avatar_url' => 'http://games.localhost/images/games/avatars/avatar-2.svg',
             'score' => 20, 'accuracy' => 80, 'rounds' => 7, 'duration' => '00:59', 'return_options' => json_encode($options)];
@@ -94,7 +97,7 @@ class GamesPagesTest extends GamesTestCase
         $this->get(route('games.home', ['numOfChallenges' => ['ignored']]))->assertOk();
     }
 
-    public function test_game_profile_lives_in_the_header_account_menu_for_guests_and_accounts()
+    public function test_guests_sign_in_directly_and_accounts_have_a_separate_game_player_menu()
     {
         $user = \Illuminate\Database\Eloquent\Model::withoutEvents(function () {
             return create(\App\User::class, ['first_name' => 'Header', 'email' => 'games-header@example.test']);
@@ -103,12 +106,15 @@ class GamesPagesTest extends GamesTestCase
             if ($signedIn) $this->actingAs($user, 'web');
             $html = $this->get(route('games.home'))->assertOk()->getContent();
             $doc = new \DOMDocument; @$doc->loadHTML($html); $xpath = new \DOMXPath($doc);
-            $this->assertSame(1, $xpath->query('//header//button[contains(@class, "account-circle") and @data-bs-toggle="dropdown"]')->length);
-            $this->assertSame(1, $xpath->query('//header//div[contains(@class, "dropdown-menu")]//*[@data-games-profile]')->length);
-            $this->assertSame(1, $xpath->query('//header//div[contains(@class, "games-account-menu") and contains(@class, "dropdown-menu-end") and not(contains(@class, "animated"))]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//button[@id="navbarDropdown" and contains(@class, "account-circle") and @data-bs-toggle="dropdown"]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//div[contains(@class, "dropdown-menu")]//*[@data-games-profile]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//div[contains(@class, "games-player-menu") and contains(@class, "dropdown-menu-end") and @aria-labelledby="games-player-menu-button"]')->length);
+            $this->assertSame(0, $xpath->query('//header//div[@aria-labelledby="navbarDropdown"]//*[@data-games-profile]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//button[@id="games-player-menu-button" and @data-bs-toggle="dropdown"]//*[@data-lucide-name="trophy"]')->length);
             $this->assertSame(0, $xpath->query('//main//*[@data-games-profile] | //*[@id="user-avatar"] | //*[@id="user-avatar-menu"]')->length);
-            $this->assertSame(1, $xpath->query('//header//*[@data-games-profile]//button[@data-profile-delete]')->length);
-            $this->assertSame(11, $xpath->query('//header//*[@data-games-profile]//*[@data-profile-game]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//*[@data-games-profile]//button[@data-profile-delete]')->length);
+            $this->assertSame($signedIn ? 11 : 0, $xpath->query('//header//*[@data-games-profile]//*[@data-profile-game]')->length);
+            $this->assertSame($signedIn ? 0 : 1, $xpath->query('//header//a[contains(@class, "account-circle") and @aria-label="Sign in" and not(@data-bs-toggle)]')->length);
             $this->assertSame($signedIn ? 0 : 1, $xpath->query('//header//a[@href="http://games.localhost/login"]')->length);
             $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//a[@href="http://localhost/profile"]')->length);
             $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//form[@action="http://games.localhost/logout"]//input[@name="_token"]')->length);

@@ -19,13 +19,13 @@
 @progressbar
 
 <div id="blog-post" class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Blog', 'url' => route('posts.index')],
         ['label' => $post->title],
     ]])
 
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         @if(! empty($preview))
             <div class="alert alert-warning mb-4" role="alert">
                 @icon('triangle-alert', ['mr' => 2])This post is <u>not published</u>. Only admins can see this page.
@@ -94,7 +94,7 @@
         @endif
 
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

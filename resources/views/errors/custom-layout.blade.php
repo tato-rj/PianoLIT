@@ -17,7 +17,7 @@
                 font-family: Nunito, sans-serif;
             }
         </style>
-        @include('components.brand-theme', ['admin' => request()->getHost() === 'admin.'.config('app.short_url')])
+        @include('components.branding.theme', ['admin' => request()->getHost() === 'admin.'.config('app.short_url')])
     </head>
     <body class="container py-6">
         <section class="row">

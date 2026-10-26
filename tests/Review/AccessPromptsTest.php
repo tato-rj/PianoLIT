@@ -85,7 +85,7 @@ class AccessPromptsTest extends ReviewTestCase
     public function test_premium_dialog_uses_the_same_component_with_action_copy_and_crown()
     {
         $copy = app(AccessPrompts::class);
-        $html = view('components.access-modal', $copy->prompt('default', 'premium') + ['id' => 'piece-upgrade-modal', 'actionCopies' => $copy->premiumCopy()])->render();
+        $html = view('components.account.access-modal', $copy->prompt('default', 'premium') + ['id' => 'piece-upgrade-modal', 'actionCopies' => $copy->premiumCopy()])->render();
         $dom = new \DOMDocument; @$dom->loadHTML($html); $xpath = new \DOMXPath($dom);
         $this->assertSame(1, $xpath->query('//*[@data-lucide-name="crown"]')->length);
         $this->assertSame(5, $xpath->query('//ul[@aria-label="Premium benefits"]/li')->length);
@@ -93,7 +93,7 @@ class AccessPromptsTest extends ReviewTestCase
         foreach ($copy->premiumCopy() as $action) $this->assertLessThanOrEqual(30, mb_strlen($action['title']));
         if ($directory = getenv('ACCESS_PROMPTS_PREVIEW_DIR')) {
             file_put_contents($directory.'/premium.html', $html);
-            file_put_contents($directory.'/inline-score.html', view('components.signup-card', $copy->prompt('score', 'signup', new Piece(['is_free' => true])) + ['headingId' => 'score-signup-title'])->render());
+            file_put_contents($directory.'/inline-score.html', view('components.account.signup-card', $copy->prompt('score', 'signup', new Piece(['is_free' => true])) + ['headingId' => 'score-signup-title'])->render());
         }
     }
 }

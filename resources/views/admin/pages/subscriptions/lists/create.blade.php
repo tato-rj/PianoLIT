@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'Create a new list', 'centered' => true, 'show' => $errors->has('name') || $errors->has('description') || old('name') !== null ? true : null])
+@component('components.dialogs.modal', ['id' => 'add-modal', 'header' => 'Create a new list', 'centered' => true, 'show' => $errors->has('name') || $errors->has('description') || old('name') !== null ? true : null])
     @slot('body')
         <form method="POST" action="{{ route('admin.subscriptions.lists.store') }}" disable-on-submit>
             @csrf

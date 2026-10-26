@@ -121,7 +121,7 @@ escaped names/values. Drop only the relevant list's page key before passing
 `hidden`. Visit sorting preserves multi-platform selections, dates, tab and
 other list pages; only the clicked submitter sends `visit_order`, so Apply and
 Reverse cannot conflict with a hidden order value. Standard checkbox/radio
-filter choices use `components.form.checkbox`, also shown in the Design System.
+filter choices use `components.forms.checkbox`, also shown in the Design System.
 
 The shared form owns wrapping, spacing, labels, search width and responsive
 layout in `admin/_filter-controls.scss`. `@input`, `@select` and `.form-control`
@@ -177,7 +177,7 @@ an optional artist ID and portrait upload. Failed creation reopens its own dialo
 with the draft and field errors. Existing creator/manager permissions remain in
 force; legacy model serialization and public/mobile routes are unchanged.
 
-The pianist editor uses the shared segmented `components.tab-navigation` for
+The pianist editor uses the shared segmented `components.navigation.tab-navigation` for
 Profile, Biography and Apple Music inside one form. The selected tab survives
 refresh and successful saves; `editor_section` is an optional, validated admin
 form value. Native and server validation open the first tab with a problem.
@@ -218,7 +218,7 @@ modal target, data attributes, disabled state, route and permissions. Keep
 POST/PATCH/DELETE actions in their existing forms or confirmation dialogs;
 button standardization does not authorize adding mutations or changing flows.
 New-tab links retain `rel="noopener noreferrer"`. The legacy
-`components.datatable.actions.*` renderers delegate to this same component;
+`admin.components.datatables.actions.*` renderers delegate to this same component;
 legacy tables keep their existing loaders and scripts.
 
 The Design System's Table actions specimen uses the component in inert button
@@ -318,7 +318,7 @@ creator/media URL filters remain supported and survive form submissions. Literal
 LIKE wildcards are escaped. The former Rankings column displays highlight dates
 and is now labeled Highlighted. Favorite counts retain analytics exclusions.
 Piece titles open the web app in a new tab, while Edit keeps the admin editor.
-Composer cells use `components.composer-label` for a 28px round portrait and name,
+Composer cells use `components.music.composer-label` for a 28px round portrait and name,
 with a neutral fallback for missing images. The directory loads `cover_path` in
 its existing composer batch. Level labels retain the full early/late wording and
 use the existing filled-circle icon with the base level color; missing levels
@@ -387,7 +387,7 @@ request.
 
 Composers uses `Services/Admin/ComposersTable` for SQL name/country/nationality
 search, period/famous/pedagogical filters, fixed sorts and 12-result pagination.
-Rows reuse `components.composer-label`, the shared switch, and Edit/Delete actions.
+Rows reuse `components.music.composer-label`, the shared switch, and Edit/Delete actions.
 Names open the profile; piece counts link directly to its Repertoire section.
 The editor breadcrumb retains directory filters and page, while repertoire has
 its own `pieces_page` paginator and fragment. Profile and Biography use the shared

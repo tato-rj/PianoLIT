@@ -2,7 +2,7 @@
 
 <button class="btn-sm btn-red-outline btn w-100" data-bs-toggle="modal" data-bs-target="#delete-performance-{{$performance->id}}-modal">@icon('trash-2')Delete submission</button>
 
-@component('components.modal', [
+@component('components.dialogs.modal', [
   'id' => 'delete-performance-'.$performance->id.'-modal',
   'header' => 'Delete my performance'])
 @slot('body')
@@ -16,7 +16,7 @@
 @endslot
 @endcomponent
 
-@component('components.modal', [
+@component('components.dialogs.modal', [
   'id' => 'insights-performance-'.$performance->id.'-modal',
   'size' => 'sm',
   'header' => 'Insights'])

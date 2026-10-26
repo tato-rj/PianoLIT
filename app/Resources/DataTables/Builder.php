@@ -78,7 +78,7 @@ class Builder
     public function checkable()
     {
         $this->datatable = $this->datatable->addColumn('checkbox', function($item) {
-            return view('components.datatable.checkbox')->with(compact('item'))->render();
+            return view('admin.components.datatables.checkbox')->with(compact('item'))->render();
         });
 
         $this->escape(['checkbox']);

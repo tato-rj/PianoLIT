@@ -25,7 +25,7 @@
 </section>
 
 @slot('scripts')
-@include('components.addthis')
+@include('components.media.addthis')
 @endslot
 
 @endcomponent

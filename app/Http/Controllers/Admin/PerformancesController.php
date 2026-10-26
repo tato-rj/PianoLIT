@@ -40,7 +40,7 @@ class PerformancesController extends Controller
             event(new PerformanceApproved($performance));
         }
 
-        return view('components.alert', [
+        return view('components.feedback.alert', [
             'color' => 'green',
             'message' => '<i class="fas fa-check-circle mr-2"></i>The performance status has been updated',
             'temporary' => true,

@@ -48,7 +48,7 @@
             }
             {!! file_get_contents(resource_path('sass/shared/_focus.scss')) !!}
         </style>
-        @include('components.brand-theme', ['admin' => request()->getHost() === 'admin.'.config('app.short_url')])
+        @include('components.branding.theme', ['admin' => request()->getHost() === 'admin.'.config('app.short_url')])
     </head>
     <body>
         <div class="flex-center position-ref full-height">

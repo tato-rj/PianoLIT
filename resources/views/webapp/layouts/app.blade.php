@@ -100,7 +100,7 @@
     @include('webapp.playlists.upgrade')
     @auth('web')
         @include('webapp.piece.components.saveto.offcanvas')
-        @component('components.modal', ['id' => 'access-unavailable-modal', 'header' => 'Feature unavailable', 'centered' => true])
+        @component('components.dialogs.modal', ['id' => 'access-unavailable-modal', 'header' => 'Feature unavailable', 'centered' => true])
             @slot('body')<p class="mb-0">This feature is currently unavailable for your account. Your saved items are still here.</p>@endslot
         @endcomponent
     @endauth
@@ -109,10 +109,10 @@
         @include('webapp.components.signup-prompts')
     @endguest
 
-    @include('components.popups.whatsnew', ['tabscount' => 1])
+    @include('components.promotions.popups.whatsnew', ['tabscount' => 1])
 
     @if(auth('web')->check() && !request()->routeIs('webapp.membership.checkout'))
-        @include('components.checkout-host', ['checkoutUrl' => $checkoutUrl ?? null])
+        @include('components.billing.checkout.host', ['checkoutUrl' => $checkoutUrl ?? null])
     @endif
 
     @include('webapp.components.campaign-attribution')
@@ -122,7 +122,7 @@
     @endif
 
     <script src="{{ mix('js/app.js') }}"></script>
-    @include('components.activity')
+    @include('components.tracking.activity')
 
     <script type="text/javascript">
 

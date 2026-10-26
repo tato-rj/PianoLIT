@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'membership-remove-card-confirmation', 'header' => 'Remove saved card?', 'centered' => true, 'descriptionId' => 'membership-remove-card-description', 'options' => ['body' => ['padding' => 3]]])
+@component('components.dialogs.modal', ['id' => 'membership-remove-card-confirmation', 'header' => 'Remove saved card?', 'centered' => true, 'descriptionId' => 'membership-remove-card-description', 'options' => ['body' => ['padding' => 3]]])
     @slot('body')
         <div class="bg-light rounded-sm p-3 d-flex align-items-center gap-3 mb-3">
             @icon('credit-card', ['mr' => 0, 'classes' => 'text-muted icon-size-lg'])

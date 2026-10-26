@@ -27,7 +27,7 @@ class FavoriteFoldersController extends Controller
         if (app(\App\Services\WebApp\AccessPolicy::class)->cap('folders', auth('web')->user()) === 0 || app(\App\Services\WebApp\AccessPolicy::class)->cap('folder_pieces', auth('web')->user()) === 0) app(\App\Services\WebApp\FavoriteAccess::class)->deny('Favorites are currently locked.');
         $folder->sort($request->ids);
 
-        return view('components.alert', [
+        return view('components.feedback.alert', [
             'color' => 'green',
             'message' => '<i class="fas fa-check-circle mr-2"></i>The order has been updated',
             'temporary' => true,

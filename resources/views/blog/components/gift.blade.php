@@ -2,7 +2,7 @@
     @icon('gift', ['mr' => 0])Free download
 </button>
 
-@include('components.download-offer', [
+@include('components.promotions.download-offer', [
     'id' => 'blog-gift-modal', 'image' => $post->gift_path, 'imageAlt' => 'Article gift preview',
     'heading' => 'A little extra for your piano time',
     'description' => 'Keep the inspiration going. Enter your email and we’ll send you the free download that goes with this story.',

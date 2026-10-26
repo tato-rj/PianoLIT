@@ -1,0 +1,206 @@
+id: discover
+status: draft
+depends_on: [foundations]
+backend_status: implemented_local
+ios_status: not_verified
+objective: Render the exact shared web Discover content using native iOS components; change selection once in DiscoverFeed for both renderers.
+proposed_operation:
+  method: GET
+  path: /api/v2/discover
+  operation_id: getDiscover
+  implemented: true
+  schema_status: implemented_local_HTTP_and_fixture_validated_pending_staging_and_native_adapter
+  authentication: Required verified bearer credential. Missing, expired, revoked or invalid credentials return 401; no guest feed in the initial release.
+  response: DiscoverEnvelope containing data.sections and meta.request_id, as specified in openapi.yaml. Stable section IDs/kinds; no title-based dispatch.
+  persistence: Fetching Discover does not record a piece view or mutate favorites.
+
+shared_content:
+  source: app/Services/DiscoverFeed.php
+  web_renderer: app/Http/Controllers/WebApp/TabsController.php and resources/views/webapp/discover/
+  json_renderer: app/Http/Resources/Api/V2/DiscoverResource.php
+  parity_test: tests/Review/DiscoverFeedParityTest.php
+  rule: Both renderers consume the same account-specific feed; neither controllers nor Swift may independently select, shuffle or trim content.
+  caching: Share public content generation and account-scoped recommendation IDs; keep recent history outside public caches. Do not make an independent v2 random choice.
+  identity: Pass the verified bearer principal explicitly; no request user_id or browser-account fallback.
+  compatibility: Legacy /api/discover remains unchanged. V2 runtime routes are implemented locally; no remote deployment or verified base URL is claimed.
+
+runtime_operations:
+  login: POST /api/v2/auth/login
+  session: GET /api/v2/auth/me
+  feed: GET /api/v2/discover
+  piece_open: POST /api/v2/pieces/{piece_id}/view
+  logout: POST /api/v2/auth/logout
+  contract: openapi.yaml
+  developer_instructions: CONNECT_DISCOVER.md
+  fixtures: [fixtures/login.json, fixtures/account.json, fixtures/discover.json, fixtures/discover-with-history.json, fixtures/discover-empty.json, fixtures/unauthenticated.json, fixtures/invalid-credentials.json, fixtures/invalid-request.json, fixtures/logout.json]
+  activation: Use fixtures while draft; enable requests only against a verified base URL in a ready handoff revision.
+  client_changes: Replace legacy Discover fetching with the isolated v2 client and typed sections. Fetching the YAML alone does not rewrite Swift code.
+
+native_baseline: ios-baseline.yaml
+native_changes_required:
+  - Keep DiscoverVC's UIKit navigation shell while replacing its parallel-array feed model with typed v2 sections/cards.
+  - Replace row-0 Free Pick and row-1 composer assumptions with stable section IDs and presentation kinds.
+  - Never bypass access because a piece appears in the first row; use current Free Pick identity and the explicitly defined native entitlement.
+  - Add HTTP-status/error-envelope validation instead of interpreting an empty or malformed response as success.
+  - Add deliberate empty/retry/refresh states and cancel account-specific work on logout/account switch.
+  - Replace the native membership-status race with explicit loading/resolved/error state before deciding access.
+
+proposed_migration_boundary:
+  status: proposed_pending_contract_and_client_adapter_review
+  approach: Reuse existing UIKit destinations through an explicit native model adapter while new v2 data/authentication is isolated from legacy helpers.
+  piece:
+    current: DiscoverVC → LoadVC → GetFromDb/DataCell → PieceVC, using card.source and a full legacy piece array.
+    proposed: Navigate by piece ID to a verified v2 detail/read adapter and map explicit fields into the existing native detail view model.
+    requirement: Specify every field consumed by PieceVC; a Discover card summary alone cannot initialize it.
+  composer:
+    current: Composer cards open repertoire results in MatchVC; ComposerVC is reached through piece information.
+    proposed: Preserve repertoire-results navigation initially; specify composer ID/filter mapping without assuming direct ComposerVC navigation.
+  browse_actions:
+    current: View all composers uses AllComposersVC; level/mood cards and the match tour use MatchVC and legacy search.
+    requirement: Define the exact native target/filter for each action, including new Latest/Past highlights actions, before enabling it.
+  downstream_audit:
+    - Inventory membership refresh, favorites, review prompts, similar/collection results and media loading reached from the reused screens.
+    - Mark intentionally retained calls as legacy; reusing a view does not migrate all of its requests to v2.
+    - Never send bearer credentials to arbitrary response-supplied source/media URLs or relabel submitted user_id calls as authenticated v2.
+    - Keep legacy numeric account/piece identity compatible at the adapter boundary; do not introduce a UUID migration.
+    - Add account-owned recent-history writes for confirmed piece opens; do not use legacy analytics or pieces/views as a substitute.
+
+web_evidence:
+  - app/Api/Api.php
+  - app/Api/Factory.php
+  - routes/api-v2.php
+  - tests/Review/ApiV2Test.php
+  - app/Services/DiscoverFeed.php
+  - app/Http/Resources/Api/V2/DiscoverResource.php
+  - tests/Review/DiscoverFeedParityTest.php
+  - app/Http/Controllers/WebApp/TabsController.php
+  - app/Services/RecentlyViewedPieces.php
+  - resources/views/webapp/discover/index.blade.php
+  - resources/views/webapp/discover/rows/gallery.blade.php
+  - resources/views/webapp/discover/rows/levels.blade.php
+  - resources/views/webapp/discover/rows/past-highlights.blade.php
+  - resources/views/webapp/discover/rows/for-you.blade.php
+  - tests/Review/DiscoverLevelsTest.php
+  - tests/Review/DiscoverPieceRowsTest.php
+  - tests/Review/RecentlyViewedPiecesTest.php
+
+proposed_sections_in_display_order:
+  - id: free_pick
+    title: Free weekly pick
+    presentation: featured_piece
+    data: Current scheduled Free Pick, artwork, piece identity, composer and display metadata.
+    empty: The local shared feed retains this row with empty items when there is no current pick; change empty-state rules once in the shared service for both renderers.
+    behavior: Open native piece detail; the badge does not by itself authorize full media.
+  - id: composers
+    title: Composers
+    presentation: portrait_rail
+    data: Composer IDs, names, portrait URLs and piece counts.
+    action: View all opens the native composers directory; a portrait initially opens that composer's repertoire results in MatchVC through the documented adapter.
+  - id: recently_viewed
+    title: Recently viewed
+    presentation: compact_piece_rail
+    maximum_items: 12
+    audience: Verified signed-in account with permitted personalization and nonempty history.
+    ordering: Distinct pieces ordered by most recent account-owned view, with piece ID tie-breaker.
+    empty: Omit for excluded accounts, unavailable personalization and empty history.
+    dependency: The authenticated POST /pieces/{piece_id}/view exists; D2 must wire and verify it only after actual native detail opens.
+  - id: latest_pieces
+    title: Latest pieces
+    presentation: artwork_piece_rail
+    data: Piece IDs, title, composer/attribution, artwork, difficulty, media flags and is_new.
+    action: View all opens the complete native catalogue with the documented filter/sort.
+    new_badge: Server-derived from the existing five-day window; do not infer on the device.
+  - id: for_you
+    title: For you
+    subtitle: Picked for your level and taste.
+    presentation: compact_piece_rail_in_lavender_panel
+    maximum_items: 6
+    audience: Verified account with permitted personalization and nonempty recommendations.
+    empty: Omit; do not label an unpersonalized fallback as personalized.
+  - id: composer_feature
+    title: From women composers or From Black composers, supplied by the shared feed
+    presentation: composer_feature_with_piece_list
+    data: Selected women or Black group, featured composer portrait, shared plain-text biography excerpt, native destinations and the same bounded piece list as web.
+    selection: One nonempty group chosen when the shared public pool rebuilds; stable across web/native reloads until refresh or expiry.
+    style: Cream for women or mint for Black composers, with white piece cards; native styles remain in the app.
+  - id: levels
+    title: Find pieces at your level
+    subtitle: Similar difficulty to RCM, ABRSM or Suzuki books.
+    presentation: segmented_level_rail
+    systems: [rcm, abrsm, suzuki]
+    labels: [RCM, ABRSM, Suzuki]
+    default: First nonempty system in the above order.
+    ordering: Numeric within each system; never lexicographic 1, 10, 2.
+    data: Explicit system, level/book number, display label, count and typed search target.
+    empty: Disable empty systems; omit the section when all systems are empty.
+    behavior: Switching systems changes this section in place and preserves the page position.
+    note: The current web page merges three legacy ranking rows into one selector.
+  - id: past_highlights
+    title: Past highlights
+    presentation: featured_piece_with_compact_list
+    maximum_items: 7
+    observed_web_selection: Previous highlighted pieces, excluding current Free Pick and future highlight dates, ID descending.
+    behavior: First item is featured; remaining cards stay white. View all opens native highlights.
+    note: Present in both modern Discover renderers, after the single women/Black composer feature and Levels; preserve both legacy mobile composer rows.
+  - id: mood
+    title: Server-provided plain-text mood heading
+    presentation: compact_piece_rail
+    data: Selected mood identifier/label and bounded piece list.
+  - id: similar_to_free_pick
+    title: Like this week's free pick
+    presentation: compact_piece_rail
+    data: Current Free Pick identity and bounded related pieces.
+    empty: Empty items when there is no current pick or no results; do not invent a native fallback. Any omission rule must change the shared feed for both renderers.
+    ranking: Use the shared feed's existing SimilarPieces ranking exactly; legacy mobile retains its old ranking.
+
+data_contract_to_finalize_in_D1:
+  - Validate the new local DiscoverData/summary/section schemas against staging responses and the native adapter before treating them as ready.
+  - Document the shared feed's limits, ordering and eligibility; do not implement separate native selections or limits.
+  - Use stable semantic section IDs; the same piece may appear in multiple sections.
+  - Specify required fields versus nullable fields and approved artwork fallbacks.
+  - Represent destinations by kind and entity/filter IDs, not PHP class names or legacy source URLs.
+  - Specify the native destinations before enabling View all and composer/level taps.
+  - Use the packaged synthetic login/account/Discover/history/empty/error fixtures for decoding/UI tests; verify expired sessions, missing artwork and no-Free-Pick behavior against staging before readiness.
+  - Document unsupported section-kind handling and unavailable navigation targets.
+  - Keep account data out of shared cached objects and clear local personal data after logout.
+  - Discover personalization content follows the shared feed by Arthur's explicit decision; resolve native media entitlements separately.
+
+interaction_and_state_requirements:
+  authentication: Preserve sign-in-first onboarding; stored legacy account JSON does not satisfy the new authenticated session requirement.
+  loading: Show a native loading state without membership prompts or playback.
+  refresh: Pull to refresh preserves visible data until a replacement response succeeds; prevent duplicate requests.
+  failure_without_data: Show a clear error and Retry action.
+  failure_with_data: Keep the last successful same-account response and show a retry indication.
+  empty_feed: Show a deliberate empty state; no empty headings or placeholder collections pretending to contain data.
+  stale_requests: Cancel or discard old responses after logout, account switch, navigation or a newer refresh.
+  navigation: Tapping a piece opens its native detail; horizontal swipes must not trigger taps.
+  unsupported_section: Skip unknown presentation kinds without crashing; do not infer new navigation or access rights.
+  offline: Never show a previous account's cached personal rows; define cache persistence with the iOS developer.
+  media: No autoplay; media icons report availability and do not grant access.
+  favorites: Do not introduce quick-save behavior; any added heart needs the separately specified folder-picker flow.
+  accessibility: Support VoiceOver, Dynamic Type, Reduce Motion and large text without clipped controls.
+
+acceptance_checks:
+  - Missing or invalid credentials return 401 with no feed or account data; there is no guest Discover entry initially.
+  - Reordering sections cannot change their presentation, native destination or Free Pick access.
+  - Membership data loading/failure does not grant access from cached default strings or the first-row bypass.
+  - Account A cannot receive account B's history or recommendations, including cached and delayed responses.
+  - Web and v2 return identical section/item identities and order for the same account and content generation.
+  - For you contains at most six pieces with the same account-scoped selection on web and native.
+  - A single composer_feature slot uses the same cached women/Black group, portrait and piece list on both clients.
+  - Recently viewed precedes Latest pieces and includes at most 12 distinct pieces.
+  - Opening a piece with verified native identity updates history; feed fetch and image prefetch do not.
+  - Levels appear once, with RCM/ABRSM/Suzuki tabs and numeric order.
+  - Past highlights excludes the current Free Pick and never changes its current access status.
+  - All compact/artwork piece cards remain white on the shared grey surface.
+  - Every visible tap/action has a tested native destination or a documented compatibility bridge.
+  - Account switch, empty results, missing artwork, offline and retry states work.
+  - Approved phone/iPad references are compared with actual simulator screenshots and accessible large-text renders.
+  - Legacy /api/discover response shape, media URLs, logging and cache contents remain unchanged.
+
+out_of_scope:
+  - Guest browsing, SwiftUI migration, raising the iOS deployment target or adding social sign-in.
+  - Native playback, score editing, billing or entitlement redesign.
+  - Changing the existing API to look like this screen specification.
+  - Rewriting the current web Discover or changing its data selection.
+  - Treating this draft as an endpoint implementation or visual approval.

@@ -17,13 +17,13 @@
     $hasRecordings = preg_match('/\A[1-9]\d*\z/', trim((string) $pianist->itunes_id));
 @endphp
 <div class="container py-4 pb-5">
-    @include('components.breadcrumb', ['items' => [
+    @include('components.navigation.breadcrumb', ['items' => [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Great Pianists', 'url' => route('resources.pianists.index')],
         ['label' => rtrim($pianist->name, '. ')],
     ]])
-    @component('components.editorial-layout')
+    @component('components.layout.editorial')
         <article>
             <header class="row g-4 align-items-center mb-5">
                 @if($pianist->cover_path)
@@ -77,7 +77,7 @@
         @endif
         <div class="mt-5">@include('components.newsletter.invitation', ['headingId' => 'pianist-newsletter-title', 'preview' => false])</div>
         @slot('sidebar')
-            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>

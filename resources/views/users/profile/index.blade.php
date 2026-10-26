@@ -8,7 +8,7 @@
     </header>
     <div class="row g-4 g-lg-5">
         <aside class="col-lg-3">
-            @include('components.section-navigation', ['id' => 'profile-navigation', 'label' => 'Profile sections', 'items' => [
+            @include('components.navigation.section-navigation', ['id' => 'profile-navigation', 'label' => 'Profile sections', 'items' => [
                 ['target' => 'profile', 'label' => 'Profile', 'icon' => 'user-round'],
                 ['target' => 'security', 'label' => 'Security & linked accounts', 'icon' => 'shield-check'],
                 ['target' => 'email-preferences', 'label' => 'Email preferences', 'icon' => 'mails'],
@@ -123,7 +123,7 @@
                             <summary class="text-danger">Delete my account</summary>
                             <form class="mt-4" method="POST" action="{{ route('users.profile.destroy') }}" disable-on-submit>
                                 @csrf @method('DELETE')
-                                @include('components.form.error', ['bag' => 'deleteAccount', 'field' => 'account_removal'])
+                                @include('components.forms.error', ['bag' => 'deleteAccount', 'field' => 'account_removal'])
                                 @input(['id' => 'delete-confirmation-email', 'label' => 'Type your email address to confirm', 'name' => 'confirmation_email', 'bag' => 'deleteAccount', 'type' => 'email', 'autocomplete' => 'off', 'limit' => 255, 'placeholder' => $user->email])
                                 @include('users.profile.proof', ['bag' => 'deleteAccount', 'proofId' => 'delete-current-password'])
                                 <button type="submit" class="btn btn-danger">Permanently delete account</button>

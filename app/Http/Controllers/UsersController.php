@@ -90,7 +90,7 @@ class UsersController extends Controller
         $enabled = $request->has('enabled') ? $request->boolean('enabled') : !($subscriber && $subscriber->in($list));
         app(\App\Services\Profile\EmailPreferences::class)->save($request->user('web')->id, $list, $enabled);
 
-        return view('components.alert', [
+        return view('components.feedback.alert', [
             'color' => 'green',
             'message' => 'Your subscription has been updated',
             'temporary' => true,

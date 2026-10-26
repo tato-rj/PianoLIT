@@ -1,7 +1,7 @@
 @php($top_user = $item->isTopUser($logs_total_count, $item->logs_count))
 <tr style="background-color: {{$top_user ? '#d7f3e33d' : null}};">
 
-  @include('components.datatable.date', ['date' => $item->created_at])
+  @include('admin.components.datatables.date', ['date' => $item->created_at])
 
   <td>{{$item->id}}</td>
 
@@ -29,7 +29,7 @@
   </td>
 
   <td>
-    @include('components.datatable.actions', ['actions' => [
+    @include('admin.components.datatables.actions', ['actions' => [
         'other' => [
           ['route' => route('admin.users.show', $item), 'title' => "More details", 'icon' => 'eye', 'target' => null]
         ]

@@ -2,7 +2,7 @@
 @if($item->hasContent())
 @include('admin.components.table-action', ['tableAction' => ['label' => 'Details', 'attributes' => ['data-bs-toggle' => 'modal', 'data-bs-target' => '#details-modal-'.$item->id]]])
 
-@component('components.modal', ['id' => 'details-modal-'.$item->id, 'header' => 'Review'])
+@component('components.dialogs.modal', ['id' => 'details-modal-'.$item->id, 'header' => 'Review'])
 @slot('body')
 <div class="text-start">
 	@include('shop.components.reviews.stars', ['rating' => $item->rating])
@@ -15,7 +15,7 @@
 
 @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'iconOnly' => false, 'attributes' => ['data-bs-toggle' => 'modal', 'data-bs-target' => '#delete-modal-'.$item->id]]])
 
-@component('components.modal', ['id' => 'delete-modal-'.$item->id, 'header' => 'Delete this review'])
+@component('components.dialogs.modal', ['id' => 'delete-modal-'.$item->id, 'header' => 'Delete this review'])
 @slot('body')
 <form method="POST" action="{{route('admin.reviews.destroy', $item)}}" class="text-start">
 	@method('DELETE')
