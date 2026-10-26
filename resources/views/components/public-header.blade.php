@@ -13,13 +13,13 @@
                         <a href="https://www.youtube.com/pianolit" class="btn btn-secondary btn-sm d-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">@fa(['icon' => 'youtube', 'fa_type' => 'b', 'color' => 'red'])YouTube</a>
                     </li>
                 @endif
-                @auth('web')
-                    @include('layouts.menu.user', ['accountCircle' => true])
+                @if(auth('web')->check() || request()->routeIs('games.home'))
+                    @include('layouts.menu.user', ['accountCircle' => true, 'showGamesProfile' => request()->routeIs('games.home')])
                 @else
                     <li class="nav-item d-flex align-items-center">
                         @include('components.account-circle')
                     </li>
-                @endauth
+                @endif
                 @if($showHubMenu)
                     <li class="nav-item d-flex align-items-center">
                         @include('components.public-hub-menu-button')

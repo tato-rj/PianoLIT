@@ -1,0 +1,159 @@
+// Common Theory controls originally loaded by its main app stylesheet.
+/* Base reset */
+input[type="range"].big-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent; /* important on iOS to avoid odd rendering */
+  outline: none;
+}
+
+.modal .btn-close {
+  font-size: 1.5rem;
+}
+
+.btn-floating-group .btn-floating:not(:first-of-type, :last-of-type), .btn-floating-group .btn-floating:not(:first-of-type, :last-of-type) .btn {
+  border-radius: 0 !important;
+}
+
+.btn-floating-group .btn-floating:first-of-type, .btn-floating-group .btn-floating:first-of-type .btn {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.btn-floating-group .btn-floating:last-of-type, .btn-floating-group .btn-floating:last-of-type .btn {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.btn-group {
+  > .btn,
+  > div > .btn {
+    border-radius: 0 !important;
+  }
+
+  > .btn:first-of-type,
+  > div:first-of-type > .btn {
+    border-top-left-radius: $corner-radius !important;
+    border-bottom-left-radius: $corner-radius !important;
+  }
+
+  > .btn:last-of-type,
+  > div:last-of-type > .btn {
+    border-top-right-radius: $corner-radius !important;
+    border-bottom-right-radius: $corner-radius !important;
+  }
+}
+
+/* WebKit thumb */
+input[type="range"].big-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 38px;
+  height: 25px;
+  margin-top: -9px; /* (6 - 24) / 2 */
+  background: #000;
+  border: 0;
+  border-radius: 9999px; /* if you want a circle */
+  box-shadow: none; /* kill any UA/default shadow */
+}
+
+/* Firefox thumb */
+input[type="range"].big-thumb::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: #000;
+  border: 0;
+  border-radius: 9999px;
+  box-shadow: none;
+}
+
+/* Remove focus ring/halo */
+input[type="range"].big-thumb:focus,
+input[type="range"].big-thumb:active {
+  outline: none;
+}
+
+input[type="range"].big-thumb:focus::-webkit-slider-thumb,
+input[type="range"].big-thumb:active::-webkit-slider-thumb {
+  box-shadow: none;
+}
+
+input[type="range"].big-thumb:focus::-moz-range-thumb,
+input[type="range"].big-thumb:active::-moz-range-thumb {
+  box-shadow: none;
+}
+
+/* Optional: remove iOS tap highlight */
+input[type="range"].big-thumb {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Reusable range control with its selected value centered in the handle. */
+.value-thumb-range {
+  --value-thumb-width: 52px;
+  position: relative;
+  height: 32px;
+  margin-top: 8px;
+}
+
+/* Keep these overrides stronger than Bootstrap in page-specific bundles. */
+.value-thumb-range .value-thumb-range__input {
+  display: block;
+  height: 32px;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.value-thumb-range .value-thumb-range__input::-webkit-slider-thumb {
+  width: var(--value-thumb-width);
+  height: 32px;
+  margin-top: calc((.5rem - 32px) / 2);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0; /* The output paints the handle, including its focus ring. */
+}
+
+.value-thumb-range .value-thumb-range__input::-moz-range-thumb {
+  width: var(--value-thumb-width);
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
+}
+
+.value-thumb-range__value {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: calc(var(--value-thumb-width) / 2);
+  display: grid;
+  place-items: center;
+  width: var(--value-thumb-width);
+  height: 26px;
+  padding: 0;
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: box-shadow .15s ease;
+}
+
+.value-thumb-range__input:focus-visible + .value-thumb-range__value {
+  box-shadow: 0 0 0 4px rgba(28, 176, 246, .24);
+}
+
+.value-thumb-range__limits {
+  display: flex;
+  justify-content: space-between;
+  color: #b7bdc7;
+  font-size: .875em;
+}
+

@@ -468,17 +468,20 @@ shown only on the main homepage (`home` route).
 Other public pages add `components.public-hub-menu-button` after the account
 control. Its Bootstrap offcanvas, `components.public-hub-menu`, links to the
 main website, Web app, iOS app, Shop, Games, Learn, Blog and Metronome using named routes
-or the configured App Store URL. It uses the same content-sized width as the
-piece Options menu, without a hub-specific width override. The hamburger/panel is absent on `home`
+or the configured App Store URL. It uses a compact 18rem width, capped at the
+viewport width. The hamburger/panel is absent on `home`
 and `my.*`; standalone account pages keep their existing layout. The button
 uses the shared raw-button and Bootstrap spacing/alignment classes, with its
 specimen in the Design System. The hamburger icon is exactly `1.5rem`.
-Web app and iOS app appear first in a shared light-background, rounded box;
-both open a new tab with `rel="noopener noreferrer"`. Their icons are black:
-the shared `@icon('pianolit')` mark and Font Awesome's Apple brand icon. Both rows end
-with the same muted `chevron-right` icon as the piece Options menu.
-The remaining hub destinations use colored Lucide icons below the app box.
-Both groups retain an 8px gap between links.
+Web app and iOS app appear first, separated from the website destinations by a
+fine neutral divider; both open a new tab with `rel="noopener noreferrer"`.
+All destinations share aligned 20px muted-grey icons, 16px labels and full-row
+targets at least 44px tall, with 4px between rows. Retain the shared
+`@icon('pianolit')` mark, Apple's brand icon and the apps' muted `chevron-right`
+indicators. Avoid colored icons, pill outlines and shadows. Hover/current rows
+use the subtle surface token; the current hub also has a semibold label, and
+keyboard focus uses a stronger neutral background. `components/_hub-menu.scss` owns this
+shared finish; the Design System renders the same complete menu in preview mode.
 Both this menu and the piece Options panel reuse `components.side-menu-header`:
 a 16px heading, Bootstrap `px-4 py-3` spacing with a `gap-3` between the title
 and close button, no divider and the standard

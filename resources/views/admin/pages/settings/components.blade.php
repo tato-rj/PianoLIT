@@ -10,6 +10,9 @@
     @component('admin.pages.settings.sample', ['label' => 'Side menu header', 'usage' => 'components.side-menu-header · hub and piece menus', 'properties' => 'font-size,padding,color'])
       @include('components.side-menu-header', ['titleId' => 'ds-side-menu-title', 'title' => 'Explore PianoLIT', 'closeLabel' => 'Close menu preview', 'designSystemPreview' => true])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Public hub menu', 'usage' => 'components.public-hub-menu · shared public navigation', 'properties' => 'width,color,background-color'])
+      @include('components.public-hub-menu', ['designSystemPreview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Bottom panel', 'usage' => 'components.bottom-sheet · components.bottom-sheet-header', 'properties' => 'padding,color'])
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="offcanvas" data-bs-target="#ds-bottom-sheet" aria-controls="ds-bottom-sheet">Open bottom panel</button>
       @component('components.bottom-sheet', ['id' => 'ds-bottom-sheet', 'titleId' => 'ds-bottom-sheet-title'])

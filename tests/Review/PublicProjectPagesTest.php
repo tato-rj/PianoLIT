@@ -143,7 +143,12 @@ class PublicProjectPagesTest extends ReviewTestCase
         $this->assertSame($website, $xpath->query('//header//a[@aria-label="PianoLIT home"]')->item(0)->getAttribute('href'));
         $this->assertSame(0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
         $this->assertSame(1, $xpath->query('//header//a[@href="'.$origin.'/login"]')->length);
-        $this->assertSame(1, $xpath->query('//header//a[@aria-label="Sign in" and contains(@class, "btn-raw")]')->length);
+        if ($hub === 'games') {
+            $this->assertSame(1, $xpath->query('//header//button[contains(@class, "account-circle") and @data-bs-toggle="dropdown"]')->length);
+            $this->assertSame(1, $xpath->query('//header//*[@data-games-profile]')->length);
+        } else {
+            $this->assertSame(1, $xpath->query('//header//a[@aria-label="Sign in" and contains(@class, "btn-raw")]')->length);
+        }
         $response->assertSee('data-lucide-name="user-round"', false);
         $this->assertSame(1, $xpath->query('//main//a[@href="'.$website.'"]')->length);
         $this->assertSame(1, $xpath->query('//footer[contains(@class, "site-footer")]')->length);

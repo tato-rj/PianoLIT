@@ -53,27 +53,21 @@ export function renderLeaderboardScores(menu, saved) {
     menu.querySelector('[data-profile-empty]').hidden = count > 0;
 }
 
-export function renderLeaderboardAvatar(button, getStorage = () => window.localStorage) {
+export function renderLeaderboardProfile(menu, getStorage = () => window.localStorage) {
     let saved;
     let hasSettings = false;
     try {
         const storage = getStorage();
         hasSettings = !!storage.getItem(GAME_SETTINGS_KEY);
         saved = JSON.parse(storage.getItem(STORAGE_KEY));
-    } catch (_) { /* Use the default icon. */ }
-    const image = button.querySelector('[data-saved-avatar]');
-    const placeholder = button.querySelector('[data-avatar-placeholder]');
+    } catch (_) { /* Keep the menu usable without browser storage. */ }
+    const image = menu.querySelector('[data-saved-avatar]');
     const valid = typeof saved?.avatar === 'string' && /^avatar-([1-9]|[1-6][0-9]|7[0-8])$/.test(saved.avatar);
-    if (valid) image.src = `${button.dataset.avatarBase}${saved.avatar}.svg`;
+    if (valid) image.src = `${menu.dataset.avatarBase}${saved.avatar}.svg`;
     image.hidden = !valid;
-    placeholder.hidden = valid;
-    button.setAttribute('aria-label', valid && typeof saved.name === 'string' && saved.name.trim() ? `${saved.name}'s avatar` : 'Your avatar');
-    const menu = button.parentElement?.querySelector('[data-profile-menu]');
-    if (menu) {
-        renderLeaderboardScores(menu, valid ? saved : null);
-        const reset = menu.querySelector('[data-profile-reset]');
-        if (reset) reset.hidden = !saved && !hasSettings;
-    }
+    renderLeaderboardScores(menu, valid ? saved : null);
+    const reset = menu.querySelector('[data-profile-reset]');
+    if (reset) reset.hidden = !saved && !hasSettings;
 }
 
 export function rememberLeaderboardProfile(form, getStorage = () => window.localStorage) {

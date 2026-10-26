@@ -7,14 +7,9 @@
 @section('content')
 <div class="container py-4 pb-5">
     @include('components.breadcrumb', ['items' => [['label' => 'Home', 'url' => route('home')], ['label' => 'Games']]])
-    <div class="games-hub-header position-relative">
-        @component('components.hub-header', ['heading' => 'PianoLIT Games', 'preview' => false])
-            Interactive games for practicing core music theory skills
-        @endcomponent
-        <div class="music-games" data-preserve-icons>
-            @include('games.challenges.profile.avatar')
-        </div>
-    </div>
+    @component('components.hub-header', ['heading' => 'PianoLIT Games', 'preview' => false])
+        Interactive games for practicing core music theory skills
+    @endcomponent
     <section class="music-games" data-preserve-icons>
         <div class="row"><div class="col-12">
             @include('games.challenges.components.duel-banner')

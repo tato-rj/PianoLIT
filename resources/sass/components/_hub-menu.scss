@@ -1,0 +1,46 @@
+.hub-menu {
+    --bs-offcanvas-width: 18rem;
+    width: var(--bs-offcanvas-width);
+    max-width: 100%;
+    background: var(--color-surface);
+
+    &__apps { border-bottom: 1px solid var(--color-border); }
+
+    &__link {
+        min-height: 44px;
+        padding: 0.5rem;
+        border-radius: 6px;
+        color: var(--color-text-dark);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-body);
+        text-decoration: none;
+
+        &:hover,
+        &:focus-visible,
+        &[aria-current="true"] {
+            color: var(--color-text);
+            background: var(--color-surface-subtle);
+            text-decoration: none;
+        }
+
+        &:focus-visible {
+            background: var(--color-border);
+        }
+
+        &[aria-current="true"] { font-weight: 600; }
+    }
+
+    &__icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex-shrink: 0;
+        font-size: 1.25rem;
+        line-height: 1;
+        color: var(--color-text-muted);
+    }
+
+    &__arrow {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+    }
+}

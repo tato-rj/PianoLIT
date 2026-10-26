@@ -93,4 +93,27 @@ class GamesPagesTest extends GamesTestCase
         $this->getJson(route('games.home', ['category' => ['reading']]))->assertStatus(422);
         $this->get(route('games.home', ['numOfChallenges' => ['ignored']]))->assertOk();
     }
+
+    public function test_game_profile_lives_in_the_header_account_menu_for_guests_and_accounts()
+    {
+        $user = \Illuminate\Database\Eloquent\Model::withoutEvents(function () {
+            return create(\App\User::class, ['first_name' => 'Header', 'email' => 'games-header@example.test']);
+        });
+        foreach ([false, true] as $signedIn) {
+            if ($signedIn) $this->actingAs($user, 'web');
+            $html = $this->get(route('games.home'))->assertOk()->getContent();
+            $doc = new \DOMDocument; @$doc->loadHTML($html); $xpath = new \DOMXPath($doc);
+            $this->assertSame(1, $xpath->query('//header//button[contains(@class, "account-circle") and @data-bs-toggle="dropdown"]')->length);
+            $this->assertSame(1, $xpath->query('//header//div[contains(@class, "dropdown-menu")]//*[@data-games-profile]')->length);
+            $this->assertSame(1, $xpath->query('//header//div[contains(@class, "games-account-menu") and contains(@class, "dropdown-menu-end") and not(contains(@class, "animated"))]')->length);
+            $this->assertSame(0, $xpath->query('//main//*[@data-games-profile] | //*[@id="user-avatar"] | //*[@id="user-avatar-menu"]')->length);
+            $this->assertSame(1, $xpath->query('//header//*[@data-games-profile]//button[@data-profile-delete]')->length);
+            $this->assertSame(11, $xpath->query('//header//*[@data-games-profile]//*[@data-profile-game]')->length);
+            $this->assertSame($signedIn ? 0 : 1, $xpath->query('//header//a[@href="http://games.localhost/login"]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//a[@href="http://localhost/profile"]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//form[@action="http://games.localhost/logout"]//input[@name="_token"]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//span[contains(@class, "account-circle__initial") and text()="H"]')->length);
+        }
+        $this->get(route('games.note-match.play'))->assertOk()->assertDontSee('data-games-profile', false);
+    }
 }

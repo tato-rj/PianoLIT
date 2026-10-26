@@ -32,10 +32,9 @@ test('reset removes the profile and all saved game settings while preserving unr
     assert.equal(saved.getItem('pianolit.games.game.settings.v1'), null);
     assert.equal(saved.getItem('pianolit.games.note-python.wardrobe.v1'), null);
     assert.equal(saved.getItem('other-setting'), 'keep');
-    const button = avatarButton(), menu = scoreMenu();
-    button.parentElement = {querySelector: () => menu};
-    context.renderLeaderboardAvatar(button, () => saved);
-    assert.equal(button.placeholder.hidden, false);
+    const menu = profileMenu();
+    context.renderLeaderboardProfile(menu, () => saved);
+    assert.equal(menu.image.hidden, true);
     assert.equal(menu.intro.hidden, false);
     assert.equal(menu.details.hidden, true);
     assert.equal(context.deleteLeaderboardProfile(() => { throw Error('blocked'); }), false);
@@ -80,12 +79,13 @@ test('remembering does not replace an already entered name or selected avatar', 
     assert.equal(current.avatars[1].checked, false);
 });
 
-function avatarButton() {
-    const image = {}, placeholder = {};
-    return {image, placeholder, dataset: {avatarBase: 'https://theory.test/images/avatars/'},
-        querySelector: selector => selector === '[data-saved-avatar]' ? image : placeholder,
-        setAttribute(_, value) { this.label = value; },
-    };
+function profileMenu() {
+    const menu = scoreMenu(), image = {};
+    const query = menu.querySelector;
+    menu.dataset = {avatarBase: 'https://theory.test/images/avatars/'};
+    menu.image = image;
+    menu.querySelector = selector => selector === '[data-saved-avatar]' ? image : query(selector);
+    return menu;
 }
 
 function scoreForm() {
@@ -138,33 +138,31 @@ test('saved profiles cannot post missing results or an invalid form', () => {
     assert.equal(invalid.submissions, 0);
 });
 
-test('the profile icon shows the last successfully posted avatar and changes with a new score', () => {
-    const saved = storage(), button = avatarButton();
-    context.renderLeaderboardAvatar(button, () => saved);
-    assert.equal(button.image.hidden, true);
-    assert.equal(button.placeholder.hidden, false);
+test('the menu shows the saved game avatar and updates without an account-button dependency', () => {
+    const saved = storage(), menu = profileMenu();
+    context.renderLeaderboardProfile(menu, () => saved);
+    assert.equal(menu.image.hidden, true);
     for (const id of [2, 1]) {
         context.remember(form({postedName: 'Chosen name', postedAvatar: `https://theory.test/images/avatars/avatar-${id}.svg`}), () => saved);
-        context.renderLeaderboardAvatar(button, () => saved);
-        assert.equal(button.image.src, `https://theory.test/images/avatars/avatar-${id}.svg`);
-        assert.equal(button.image.hidden, false);
-        assert.equal(button.placeholder.hidden, true);
-        assert.equal(button.label, "Chosen name's avatar");
+        context.renderLeaderboardProfile(menu, () => saved);
+        assert.equal(menu.image.src, `https://theory.test/images/avatars/avatar-${id}.svg`);
+        assert.equal(menu.image.hidden, false);
+        assert.equal(menu.name.textContent, 'Chosen name');
     }
     saved.setItem('', null);
-    context.renderLeaderboardAvatar(button, () => saved);
-    assert.equal(button.placeholder.hidden, false);
-    assert.equal(button.image.hidden, true);
+    context.renderLeaderboardProfile(menu, () => saved);
+    assert.equal(menu.image.hidden, true);
+    assert.equal(menu.details.hidden, true);
 });
 
-test('the profile icon rejects invalid image choices and tolerates unavailable storage', () => {
+test('the menu rejects invalid image choices and tolerates unavailable storage', () => {
     for (const value of ['{broken', '{"avatar":"https://other.test/image"}', '{"avatar":"avatar-79"}', '{"avatar":"avatar-0"}']) {
-        const button = avatarButton();
-        context.renderLeaderboardAvatar(button, () => ({getItem: () => value}));
-        assert.equal(button.image.hidden, true);
-        assert.equal(button.image.src, undefined);
+        const menu = profileMenu();
+        context.renderLeaderboardProfile(menu, () => ({getItem: () => value}));
+        assert.equal(menu.image.hidden, true);
+        assert.equal(menu.image.src, undefined);
     }
-    assert.doesNotThrow(() => context.renderLeaderboardAvatar(avatarButton(), () => { throw Error('blocked'); }));
+    assert.doesNotThrow(() => context.renderLeaderboardProfile(profileMenu(), () => { throw Error('blocked'); }));
 });
 
 test('posted scores keep one best per game through name and avatar changes', () => {
@@ -187,21 +185,18 @@ function scoreMenu() {
     return {name, empty, details, intro, rows, querySelector: selector => elements[selector], querySelectorAll: () => rows};
 }
 
-test('the default avatar opens an introduction until a profile is saved, and after it is cleared', () => {
-    const menu = scoreMenu(), button = avatarButton(), saved = storage();
-    button.parentElement = {querySelector: () => menu};
-    context.renderLeaderboardAvatar(button, () => saved);
-    assert.notEqual(button.disabled, true);
+test('the header menu shows an introduction until a profile is saved, and after it is cleared', () => {
+    const menu = profileMenu(), saved = storage();
+    context.renderLeaderboardProfile(menu, () => saved);
     assert.equal(menu.intro.hidden, false);
     assert.equal(menu.details.hidden, true);
     context.remember(form({postedName: 'Chosen', postedAvatar: 'https://theory.test/images/avatars/avatar-2.svg'}), () => saved);
-    context.renderLeaderboardAvatar(button, () => saved);
+    context.renderLeaderboardProfile(menu, () => saved);
     assert.equal(menu.intro.hidden, true);
     assert.equal(menu.details.hidden, false);
     assert.equal(menu.name.textContent, 'Chosen');
     saved.setItem('', null);
-    context.renderLeaderboardAvatar(button, () => saved);
-    assert.notEqual(button.disabled, true);
+    context.renderLeaderboardProfile(menu, () => saved);
     assert.equal(menu.intro.hidden, false);
     assert.equal(menu.details.hidden, true);
 });
@@ -223,16 +218,15 @@ test('the dropdown shows only played games and handles existing profiles without
 });
 
 test('reset remains available with saved settings even before a profile is created', () => {
-    const menu = scoreMenu(), button = avatarButton(), reset = {};
+    const menu = profileMenu(), reset = {};
     const query = menu.querySelector;
     menu.querySelector = selector => selector === '[data-profile-reset]' ? reset : query(selector);
-    button.parentElement = {querySelector: () => menu};
     const values = new Map([['pianolit.games.game.settings.v1', '{"note-nest":{"numOfChallenges":8}}']]);
     const saved = {getItem: key => values.get(key) ?? null, removeItem: key => values.delete(key)};
-    context.renderLeaderboardAvatar(button, () => saved);
+    context.renderLeaderboardProfile(menu, () => saved);
     assert.equal(menu.intro.hidden, false);
     assert.equal(reset.hidden, false);
     context.deleteLeaderboardProfile(() => saved);
-    context.renderLeaderboardAvatar(button, () => saved);
+    context.renderLeaderboardProfile(menu, () => saved);
     assert.equal(reset.hidden, true);
 });

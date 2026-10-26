@@ -6,19 +6,46 @@
   --bs-body-font-family: 'Nunito', sans-serif;
   --bs-body-line-height: 1.3;
   --bs-body-color: #212529;
+  // Bootstrap's nested :root cannot set these on the game boundary itself.
+  --bs-border-radius: #{$border-radius};
+  --bs-border-radius-sm: #{$border-radius-sm};
+  --bs-border-radius-lg: #{$border-radius-lg};
+  --bs-border-radius-xl: #{$border-radius-xl};
+  --bs-border-width: #{$border-width};
   color: #212529;
+  letter-spacing: normal;
+  label { margin-bottom: 0; }
   h1, h2, h3, h4, h5, h6 { font-family: inherit; }
   .fas, .fa-solid { font-family: 'Font Awesome 6 Free'; font-weight: 900; }
   .far, .fa-regular { font-family: 'Font Awesome 6 Free'; font-weight: 400; }
   .btn-white { color: black !important; }
-  #user-avatar { width: 52px; height: 52px; border-radius: 50%; border: 0; background: none; font-size: 2.4rem; color: lightgrey; }
+  .btn-white:hover, .btn-white:focus-visible { color: var(--bs-btn-hover-color) !important; }
+  .btn-white:active { color: var(--bs-btn-active-color) !important; }
   @media (max-width: 767.98px) { .game-card { margin-right: auto !important; margin-left: auto !important; } }
   button, input, select { font-family: inherit; }
   .btn { box-shadow: none; font-weight: 400; letter-spacing: normal; text-transform: none; min-height: 0; }
+  // Keep PianoLIT's more specific default button sizing out of the reference UI.
+  .btn.btn-primary, .btn.btn-secondary {
+    &:not(.btn-xs):not(.btn-sm):not(.btn-lg):not(.btn-xl) {
+      padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
+      font-size: var(--bs-btn-font-size);
+      line-height: var(--bs-btn-line-height);
+    }
+  }
+  @each $name, $background in (primary: $primary-color, secondary: $secondary-color) {
+    .btn.btn-#{$name} {
+      &:focus { background-color: $background !important; }
+      &:not(:disabled):not(.disabled):active { background-color: darken($background, 8%) !important; }
+    }
+  }
+  .form-range { border-radius: 0; accent-color: auto; }
   .btn:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #0055fe !important; outline-offset: 3px; }
   [hidden] { display: none !important; }
 }
 
-@media (max-width: 767.98px) {
-  .games-hub-header .hub-header__title { padding-right: 64px; }
+.games-account-menu {
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  [hidden] { display: none !important; }
+  .games-profile-records { max-height: 18rem; overflow-y: auto; }
 }

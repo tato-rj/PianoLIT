@@ -1,10 +1,11 @@
 require('./animate');
+require('./valueThumbRange');
 window.CountUp = require('countup.js');
 window.mojs = require('@mojs/core');
 window.Typed = require('typed.js').default || require('typed.js');
 window.Confetti = require('canvas-confetti').default;
 // PianoLIT already supplies jQuery, Bootstrap, axios, draggable and common helpers.
-const { rememberLeaderboardProfile, renderLeaderboardAvatar, deleteLeaderboardProfile, postSavedLeaderboardScore, STORAGE_KEY: leaderboardProfileKey } = require('./leaderboardProfile');
+const { rememberLeaderboardProfile, renderLeaderboardProfile, deleteLeaderboardProfile, postSavedLeaderboardScore, STORAGE_KEY: leaderboardProfileKey } = require('./leaderboardProfile');
 const { rememberGameSettings, refreshGameCards, GAME_SETTINGS_KEY } = require('./gameSettingsMemory');
 
 document.addEventListener("touchstart", () => {}, { passive: true });
@@ -38,24 +39,20 @@ $(function () {
             joinLeaderboard.disabled = false;
         });
     }
-    const userAvatar = document.getElementById('user-avatar');
-    if (userAvatar) {
-        const refreshAvatar = () => {
-            if (userAvatar.getAttribute('aria-expanded') === 'true') $(userAvatar).dropdown('hide');
-            renderLeaderboardAvatar(userAvatar);
-        };
-        refreshAvatar();
-        userAvatar.parentElement.querySelector('[data-profile-delete]').addEventListener('click', () => {
+    const profile = document.querySelector('[data-games-profile]');
+    if (profile) {
+        const refreshProfile = () => renderLeaderboardProfile(profile);
+        refreshProfile();
+        profile.querySelector('[data-profile-delete]').addEventListener('click', () => {
             if (!window.confirm('Reset your name, avatar, scores and all game settings on this browser?')) return;
             if (deleteLeaderboardProfile()) {
                 refreshGameCards();
-                refreshAvatar();
-            }
-            else window.alert('Could not delete your records. Please try again.');
+                refreshProfile();
+            } else window.alert('Could not delete your records. Please try again.');
         });
-        window.addEventListener('pageshow', refreshAvatar);
+        window.addEventListener('pageshow', refreshProfile);
         window.addEventListener('storage', event => {
-            if (event.key === leaderboardProfileKey || event.key === GAME_SETTINGS_KEY || event.key === null) refreshAvatar();
+            if (event.key === leaderboardProfileKey || event.key === GAME_SETTINGS_KEY || event.key === null) refreshProfile();
         });
     }
 
