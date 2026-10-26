@@ -102,9 +102,24 @@ migration, asset build or real campaign send is needed for verification.
 
 ### Preview delivery troubleshooting
 
-The admin preview confirmation means the mailable was queued, not delivered.
-A Redis/default worker must process it. A failed job with
-`View [freepick.header] not found` means email rendering failed before delivery.
+The Email Lists **Send preview email** action renders and submits its one
+recipient during the POST request, without a queue worker. Success reports that
+the preview was submitted to the configured mail server; inbox delivery is still
+handled by the provider. Rendering exceptions, transport errors and rejected
+recipients return an error on that request, retain the recipient and reopen the
+modal. Exception details are reported through the application log rather than
+displaying raw provider credentials or diagnostics. Free Pick previews remain
+untagged and create no campaign/email analytics rows or subscriber-send cooldown.
+Custom-list and monthly newsletter previews use the same immediate action.
+
+The controller calls the mailable's `send($mailer)` directly: ordinary
+`Mail::send` still queues mailables implementing `ShouldQueue` in this Laravel
+version. Subscriber campaigns and their release/deduplication jobs remain queued.
+Existing queued previews/failed-job records from earlier versions are not
+automatically retried or removed by this change.
+
+A rendering error such as `View [freepick.header] not found` means email
+rendering failed before delivery.
 The current release includes both
 `resources/views/emails/components/html/freepick/header.blade.php` and
 `resources/views/emails/components/text/freepick/header.blade.php`.
@@ -116,17 +131,18 @@ the configuration cache (`php artisan config:cache`), clear compiled views
 (`php artisan view:clear`) and reload workers (`php artisan queue:restart`).
 Workers retain their booted component paths until they restart; the restart
 command requests a graceful exit, so the process manager must start them again.
-Send a new single-recipient preview afterward. Inspect any new failed job's
-exception if rendering still fails; the older failed-job record does not change
-when code is fixed. These steps do not require retrying historical campaigns.
+Send a new single-recipient preview afterward. For immediate preview errors,
+inspect the application log. Subscriber-campaign failures still use failed-job
+inspection; an older failed-job record does not change when code is fixed.
+These steps do not require retrying historical campaigns.
 
 `Undefined variable $campaignLinks` identifies a mismatch between the newer
 button-tagging template and the mail data supplied by the active class/worker.
 The current template handles that missing field using the legacy campaign ID
 and subscriber fields, without tagging previews or excluded recipients. Deploy
 the matching helper/mail/view release, clear compiled views and restart workers,
-then send one new preview. The queue confirmation alone does not verify rendering
-or mail-server acceptance.
+then send one new preview. New preview requests report such rendering failures
+immediately instead of returning a queue confirmation.
 
 The Pieces directory's **Schedule** action opens the shared modal. Administrators can select the piece immediately or choose a future local date and whole hour. The hour selector defaults to **8am**. The form displays `America/New_York`; schedule instants are stored in UTC so the autumn clock change cannot restore an older selection. A saved cover image is required, as it was for the previous editor action.
 

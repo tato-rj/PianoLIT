@@ -4,11 +4,10 @@ namespace Tests\Review;
 
 use App\{Admin, Composer, EmailList, Piece, Subscription, Tag};
 use App\Jobs\SendMassEmails;
-use App\Mail\FreePickEmail;
 use App\Services\Admin\{EmailListSubscribersTable, SubscriptionsTable};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{DB, Mail, Notification, Queue};
+use Illuminate\Support\Facades\{DB, Mail, Notification, Queue, View};
 
 class AdminEmailListsTest extends ReviewTestCase
 {
@@ -37,6 +36,15 @@ class AdminEmailListsTest extends ReviewTestCase
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
         return new \DOMXPath($dom);
+    }
+
+    private function transport($transport = null)
+    {
+        $transport = $transport ?: new \Illuminate\Mail\Transport\ArrayTransport;
+        $mailer = new \Illuminate\Mail\Mailer('list-preview-test', $this->app['view'], new \Swift_Mailer($transport), $this->app['events']);
+        $mailer->alwaysFrom('preview@example.test', 'PianoLIT');
+        $this->app->instance('mailer', $mailer);
+        return $transport;
     }
 
     public function test_directory_uses_shared_table_and_separates_preview_from_campaign_send()
@@ -167,12 +175,18 @@ class AdminEmailListsTest extends ReviewTestCase
         $this->assertCount(2, $this->xpath($page)->query('//table[@id="email-lists"]//button[@disabled and @title="The email template for this list is missing"]'));
     }
 
-    public function test_freepick_preview_and_campaign_queue_the_existing_mail_and_preserve_send_cooldown()
+    public function test_freepick_preview_sends_immediately_while_campaign_stays_queued_and_preserves_cooldown()
     {
         $this->admin(); $list = $this->list(); $this->piece(); Queue::fake();
         $subscriber = Subscription::create(['email' => 'reader@example.test']); $list->add($subscriber);
-        $this->post(route('admin.subscriptions.lists.send-to', $list), ['email' => 'chosen@example.test'])->assertRedirect();
-        Mail::assertQueued(FreePickEmail::class, function ($mail) { return $mail->hasTo('chosen@example.test') && $mail->list_id === 'preview' && $mail->subscription === null; });
+        $transport = $this->transport();
+        $this->post(route('admin.subscriptions.lists.send-to', $list), ['email' => 'chosen@example.test'])->assertRedirect()
+            ->assertSessionHas('status', 'The preview was submitted to the mail server for chosen@example.test.')->assertSessionMissing('error');
+        $message = $transport->messages()->sole();
+        $this->assertSame(['chosen@example.test' => null], $message->getTo());
+        $this->assertEmpty($message->getCc()); $this->assertEmpty($message->getBcc());
+        $this->assertSame('Your free pick this week', $message->getSubject());
+        Queue::assertNothingPushed(); Mail::assertNothingQueued();
         $this->assertNull($list->fresh()->last_sent_at);
         Mail::swap(new \Illuminate\Mail\MailManager($this->app));
         $this->get(route('admin.subscriptions.lists.preview', $list))->assertOk()->assertSee('Free');
@@ -188,29 +202,58 @@ class AdminEmailListsTest extends ReviewTestCase
     {
         $this->admin(); $list = $this->list(); $this->piece();
         $subscriber = Subscription::create(['email' => 'reader@example.test']); $list->add($subscriber);
+        Queue::fake(); $transport = $this->transport();
         $this->post(route('admin.subscriptions.lists.send-to', $list), ['email' => $subscriber->email])->assertRedirect();
-        Mail::assertQueued(FreePickEmail::class, function ($mail) {
-            $transport = new \Illuminate\Mail\Transport\ArrayTransport;
-            $mailer = new \Illuminate\Mail\Mailer('list-preview-test', $this->app['view'], new \Swift_Mailer($transport), $this->app['events']);
-            $mailer->alwaysFrom('preview@example.test', 'PianoLIT');
-            $mail->send($mailer);
-            $this->assertStringNotContainsString('/unsubscribe/', $transport->messages()->last()->getBody());
-            return $mail->subscription === null;
-        });
+        $message = $transport->messages()->sole();
+        $this->assertStringNotContainsString('/unsubscribe/', $message->getBody());
+        $this->assertStringNotContainsString('utm_campaign=', $message->getBody());
+        $this->assertSame([$subscriber->email => null], $message->getTo());
+        Queue::assertNothingPushed(); Mail::assertNothingQueued();
         $this->assertDatabaseCount('email_logs', 0); $this->assertDatabaseCount('email_campaign_reports', 0);
     }
 
-    public function test_failed_preview_keeps_the_recipient_and_reports_failure()
+    public function failedPreviewModes(): array
+    {
+        return [['connection'], ['rejected']];
+    }
+
+    /** @dataProvider failedPreviewModes */
+    public function test_failed_preview_keeps_the_recipient_and_reports_failure($mode)
     {
         $this->admin(); $list = $this->list(); $this->piece();
-        $pending = \Mockery::mock();
-        $pending->shouldReceive('queue')->once()->andThrow(new \RuntimeException('mail unavailable'));
-        Mail::shouldReceive('to')->with('chosen@example.test')->once()->andReturn($pending);
+        Queue::fake();
+        $transport = new class($mode) extends \Illuminate\Mail\Transport\ArrayTransport {
+            private $mode;
+            public function __construct($mode) { parent::__construct(); $this->mode = $mode; }
+            public function send(\Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
+            {
+                if ($this->mode === 'connection') throw new \Swift_TransportException('Forced mail connection failure');
+                $failedRecipients = array_keys($message->getTo());
+                return 0;
+            }
+        };
+        $this->transport($transport);
         $this->post(route('admin.subscriptions.lists.send-to', $list), ['email' => 'chosen@example.test'])
-            ->assertSessionHas('error')->assertSessionMissing('status')->assertSessionHas('_old_input.email', 'chosen@example.test');
+            ->assertSessionHas('error', 'The preview could not be sent. Check the application log for details.')
+            ->assertSessionMissing('status')->assertSessionHas('_old_input.email', 'chosen@example.test');
+        $this->assertCount(0, $transport->messages());
+        Queue::assertNothingPushed(); Mail::assertNothingQueued();
         $this->assertNull($list->fresh()->last_sent_at);
         $page = $this->get(route('admin.subscriptions.lists.index'))->assertOk();
         $this->assertCount(1, $this->xpath($page)->query('//*[@id="list-send-'.$list->id.'" and contains(@class,"autoshow")]//input[@name="email" and @value="chosen@example.test"]'));
+    }
+
+    public function test_template_rendering_failure_is_reported_in_the_preview_request()
+    {
+        $this->admin(); $list = $this->list(); $this->piece(); Queue::fake();
+        $transport = $this->transport();
+        View::composer('emails.lists.freepick', function () { throw new \RuntimeException('Forced template failure'); });
+        $this->post(route('admin.subscriptions.lists.send-to', $list), ['email' => 'chosen@example.test'])
+            ->assertSessionHas('error')->assertSessionMissing('status')->assertSessionHas('_old_input.email', 'chosen@example.test');
+        $this->assertCount(0, $transport->messages());
+        Queue::assertNothingPushed(); Mail::assertNothingQueued();
+        $this->assertNull($list->fresh()->last_sent_at);
+        $this->assertDatabaseCount('email_logs', 0);
     }
 
     public function test_list_deletion_rolls_back_membership_on_failure_and_keeps_subscribers_on_success()

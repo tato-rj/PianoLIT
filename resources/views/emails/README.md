@@ -143,6 +143,12 @@ Save the Blade file, then open the matching **Browser** preview in
 Mailtrap; previously received emails retain their original content. Previews use
 fictional account data and do not enable automatic sending.
 
+**Email Lists → Send preview email** also sends its single recipient immediately,
+including Free Pick, custom-list and monthly newsletter previews. The page waits
+for rendering and mail-server submission, reports failures on that request and
+keeps the entered recipient for retry. Success means submitted to the configured
+mail server. New previews need no queue worker; subscriber campaigns still do.
+
 For standalone local HTML/text samples without normal-environment data or email:
 
 ```sh

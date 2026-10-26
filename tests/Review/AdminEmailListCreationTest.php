@@ -84,18 +84,16 @@ class AdminEmailListCreationTest extends ReviewTestCase
         $subscriber = Subscription::create(['email' => 'reader@example.test']);
         $list->add($subscriber);
         $this->patch(route('admin.subscriptions.lists.status', $list), ['subscriberId' => $subscriber->id, 'enabled' => 1])->assertRedirect();
+        $transport = new \Illuminate\Mail\Transport\ArrayTransport;
+        $mailer = new \Illuminate\Mail\Mailer('list-preview', $this->app['view'], new \Swift_Mailer($transport), $this->app['events']);
+        $mailer->alwaysFrom('preview@example.test', 'PianoLIT');
+        $this->app->instance('mailer', $mailer);
         $this->post(route('admin.subscriptions.lists.send-to', $list), ['email' => 'preview@example.test'])->assertRedirect();
-        Mail::assertQueued(EmailListEmail::class, function ($mail) {
-            $this->assertNull($mail->subscription);
-            $this->assertSame('preview', $mail->list_id);
-            $transport = new \Illuminate\Mail\Transport\ArrayTransport;
-            $mailer = new \Illuminate\Mail\Mailer('list-preview', $this->app['view'], new \Swift_Mailer($transport), $this->app['events']);
-            $mailer->alwaysFrom('preview@example.test', 'PianoLIT');
-            $mail->send($mailer);
-            $this->assertStringContainsString('Ideas for your next practice session.', $transport->messages()->last()->getBody());
-            $this->assertStringNotContainsString('/unsubscribe/', $transport->messages()->last()->getBody());
-            return $mail->hasTo('preview@example.test');
-        });
+        $message = $transport->messages()->sole();
+        $this->assertStringContainsString('Ideas for your next practice session.', $message->getBody());
+        $this->assertStringNotContainsString('/unsubscribe/', $message->getBody());
+        $this->assertSame(['preview@example.test' => null], $message->getTo());
+        Queue::assertNothingPushed(); Mail::assertNothingQueued();
         $this->assertNull($list->fresh()->last_sent_at);
         $this->assertDatabaseCount('email_logs', 0);
         Mail::swap(new \Illuminate\Mail\MailManager($this->app));

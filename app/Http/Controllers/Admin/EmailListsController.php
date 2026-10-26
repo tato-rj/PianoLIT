@@ -67,13 +67,19 @@ class EmailListsController extends Controller
             return back()->withInput()->with('error', 'Choose a current free pick before sending a preview.');
 
         try {
-            \Mail::to($data['email'])->queue($list->mailable('preview'));
+            $mailer = app('mailer');
+            // Calling the mailable directly bypasses ShouldQueue for this one
+            // recipient, while subscriber campaigns keep their existing jobs.
+            $list->mailable('preview')->to($data['email'])->send($mailer);
+            if ($mailer->failures()) {
+                throw new \RuntimeException('The mail server rejected the preview recipient.');
+            }
         } catch (\Throwable $exception) {
             report($exception);
-            return back()->withInput(['email' => $data['email'], 'preview_list_id' => $list->id])->with('error', 'The preview could not be queued. Please try again.');
+            return back()->withInput(['email' => $data['email'], 'preview_list_id' => $list->id])->with('error', 'The preview could not be sent. Check the application log for details.');
         }
 
-        return back()->with('status', 'A preview was queued for ' . $data['email']);
+        return back()->with('status', 'The preview was submitted to the mail server for '.e($data['email']).'.');
     }
 
     public function preview(EmailList $list)

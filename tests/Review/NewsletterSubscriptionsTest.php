@@ -57,6 +57,22 @@ class NewsletterSubscriptionsTest extends ReviewTestCase
         return $transport;
     }
 
+    public function test_admin_newsletter_preview_sends_immediately_without_creating_a_campaign()
+    {
+        $this->actingAs(create(\App\Admin::class), 'admin');
+        $list = $this->list(); $this->story(); $transport = $this->transport();
+        $this->post(route('admin.subscriptions.lists.send-to', $list), ['email' => 'preview@example.test'])
+            ->assertSessionHas('status', 'The preview was submitted to the mail server for preview@example.test.');
+        $message = $transport->messages()->sole();
+        $this->assertSame(['preview@example.test' => null], $message->getTo());
+        $this->assertStringContainsString('A new piano story', $message->getBody());
+        $this->assertNull($list->fresh()->last_sent_at);
+        $this->assertDatabaseCount('newsletter_digests', 0);
+        $this->assertDatabaseCount('newsletter_deliveries', 0);
+        $this->assertDatabaseCount('email_logs', 0);
+        Queue::assertNothingPushed(); Mail::assertNothingQueued();
+    }
+
     public function test_blog_modal_uses_the_standard_field_and_monthly_pianolit_copy_on_legacy_and_new_openers()
     {
         foreach (['subscription', 'blog-subscription', 'newsletter-subscription'] as $view) {
