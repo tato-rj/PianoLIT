@@ -5,8 +5,9 @@ namespace Tests\Review;
 use App\{Composer, EmailList, Piece, Subscription, Tag, Tutorial};
 use App\Mail\{FreePickEmail, Memberships\MembershipConfirmed};
 use App\Services\Admin\AutomaticEmails;
+use App\Services\FreePickCampaignLinks;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Mail\{Mailer, Markdown};
+use Illuminate\Mail\{Mailer, Markdown, SendQueuedMailable};
 use Illuminate\Mail\Transport\ArrayTransport;
 use Illuminate\Support\Facades\DB;
 
@@ -31,10 +32,10 @@ class FreePickEmailDesignTest extends ReviewTestCase
         });
     }
 
-    private function render($piece, $subscriber = null)
+    private function render($piece, $subscriber = null, $campaign = 'preview')
     {
         EmailList::firstOrCreate(['name' => EmailList::FREE_PICK], ['description' => 'Free weekly picks']);
-        $mail = new FreePickEmail('preview', $subscriber, $piece);
+        $mail = new FreePickEmail($campaign, $subscriber, $piece);
         $mail->build();
         $renderer = clone app(Markdown::class);
         $renderer->theme($mail->theme);
@@ -175,5 +176,89 @@ class FreePickEmailDesignTest extends ReviewTestCase
         }
         $this->assertStringContainsString('href="'.route('webapp.explore').'"', $html);
         $this->assertStringContainsString('Browse the PianoLIT library', $text);
+    }
+
+    public function test_only_the_three_body_buttons_get_freepick_campaign_tags_in_both_formats()
+    {
+        $piece = $this->piece();
+        $this->piece(['name' => 'Another discovery']);
+        $subscriber = Subscription::create(['email' => 'reader@example.test']);
+        [$html, $text, $xpath] = $this->render($piece, $subscriber, 'free-pick.123');
+        $expected = [
+            'Explore this piece' => ['explore_piece', route('webapp.pieces.show', $piece->id)],
+            'Browse the PianoLIT library' => ['browse_library', route('webapp.explore')],
+            'Go Premium' => ['go_premium', route('webapp.membership.pricing')],
+        ];
+        $tagged = [];
+        foreach ($xpath->query('//a[@href]') as $anchor) {
+            $url = $anchor->getAttribute('href');
+            $label = trim($anchor->textContent);
+            if (isset($expected[$label])) {
+                [$placement, $destination] = $expected[$label];
+                parse_str(parse_url($url, PHP_URL_QUERY) ?? '', $parameters);
+                $this->assertSame(['utm_source' => 'pianolit', 'utm_medium' => 'email', 'utm_campaign' => 'freepick', 'utm_content' => $placement], $parameters);
+                $this->assertSame($destination, strtok($url, '?'));
+                $this->assertStringContainsString($url, $text);
+                $tagged[] = $label;
+            } else {
+                $this->assertStringNotContainsString('utm_', $url, $label ?: 'Image link');
+            }
+        }
+        $this->assertEqualsCanonicalizing(array_keys($expected), $tagged);
+        $unsubscribe = route('subscriptions.unsubscribe', [$subscriber, EmailList::freepick()]);
+        $this->assertSame($unsubscribe, $xpath->query('//a[normalize-space(.)="Unsubscribe"]')->item(0)->getAttribute('href'));
+        $this->assertStringContainsString($unsubscribe, $text);
+        $this->assertSame(3, substr_count($text, 'utm_campaign=freepick'));
+        $this->assertStringNotContainsString('campaigns/freepick/', $html);
+        $this->assertDatabaseCount('campaign_visits', 0);
+        $this->assertDatabaseCount('email_logs', 0);
+    }
+
+    public function test_previews_and_excluded_recipients_have_no_campaign_tags()
+    {
+        $piece = $this->piece();
+        $this->piece(['name' => 'Another discovery']);
+        foreach ([' ARTHURVILLAR@gmail.com ', 'elena.dare@gmail.com', 'arthurvilar@gmail.com'] as $email) {
+            $subscriber = Subscription::create(compact('email'));
+            [$html, $text] = $this->render($piece, $subscriber, 'free-pick.123');
+            $this->assertStringNotContainsString('utm_', $html);
+            $this->assertStringNotContainsString('utm_', $text);
+        }
+        $subscriber = Subscription::create(['email' => 'reader@example.test']);
+        [$html, $text] = $this->render($piece, $subscriber);
+        $this->assertStringNotContainsString('utm_', $html);
+        $this->assertStringNotContainsString('utm_', $text);
+        $this->assertDatabaseCount('campaign_visits', 0);
+        $this->assertDatabaseCount('email_logs', 0);
+    }
+
+    public function test_serialized_subscriber_delivery_keeps_campaign_buttons_and_existing_mailgun_identity()
+    {
+        $piece = $this->piece();
+        $this->piece(['name' => 'Another discovery']);
+        EmailList::create(['name' => EmailList::FREE_PICK, 'description' => 'Free weekly picks']);
+        $subscriber = Subscription::create(['email' => 'reader@example.test']);
+        $job = unserialize(serialize(new SendQueuedMailable(new FreePickEmail('free-pick.123', $subscriber, $piece))));
+        $transport = new ArrayTransport;
+        $mailer = new Mailer('campaign-test', $this->app['view'], new \Swift_Mailer($transport), $this->app['events']);
+        $mailer->alwaysFrom('sender@example.test', 'PianoLIT');
+        $job->mailable->to($subscriber->email)->send($mailer);
+        $message = $transport->messages()->sole();
+        $this->assertSame(3, substr_count($message->getBody(), 'utm_campaign=freepick'));
+        $this->assertSame(\App\Services\MailgunEvents::campaignTag('free-pick.123'), $message->getHeaders()->get('X-Mailgun-Tag')->getFieldBody());
+        $this->assertDatabaseHas('email_logs', ['list_id' => 'free-pick.123', 'recipient' => $subscriber->email]);
+        $this->assertDatabaseCount('campaign_visits', 0);
+    }
+
+    public function test_campaign_url_preserves_other_parameters_and_fragment_without_duplicate_tags()
+    {
+        $links = new FreePickCampaignLinks(true);
+        $url = $links->url('https://my.pianolit.test/explore?search=A%20%26%20B&utm_campaign=older#results', 'browse_library');
+        parse_str(parse_url($url, PHP_URL_QUERY), $parameters);
+        $this->assertSame('A & B', $parameters['search']);
+        $this->assertSame('freepick', $parameters['utm_campaign']);
+        $this->assertSame('results', parse_url($url, PHP_URL_FRAGMENT));
+        $this->assertSame(1, substr_count($links->url($url, 'browse_library'), 'utm_campaign='));
+        $this->assertSame('#email-preview', $links->url('#email-preview', 'explore_piece'));
     }
 }

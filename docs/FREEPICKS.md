@@ -68,6 +68,34 @@ is required. See `resources/views/emails/README.md` for the editing map and safe
 
 ## Scheduling and delivery
 
+### Body-button campaign tags
+
+Subscriber Free Pick emails tag only the three website buttons with
+`utm_source=pianolit`, `utm_medium=email` and `utm_campaign=freepick`:
+
+| Button | `utm_content` |
+| --- | --- |
+| Explore this piece | `explore_piece` |
+| Browse the PianoLIT library | `browse_library` |
+| Go Premium | `go_premium` |
+
+`FreePickCampaignLinks` supplies the tags at the three calls in
+`resources/views/emails/lists/freepick.blade.php`, for both HTML and plain text.
+Cover/title/latest-piece links, header/footer logos, YouTube, contact/help,
+privacy/password and unsubscribe links retain their original URLs. Browser/test
+previews and recipients excluded by `ExcludedAccounts` receive no campaign tags.
+Tags contain no recipient or account identity, and rendering/sending records no
+campaign arrival. Existing query parameters and fragments survive tagging.
+
+Eligible arrivals appear in **Analytics → Campaigns** under `freepick`, with the
+button placement and canonical landing page. The current first-touch/session
+deduplication still applies; this is arrival attribution, not a counter of every
+repeat click. Existing refusals, anonymous collection, opt-in requirements,
+bot/prefetch filters and exclusions remain authoritative. The provider's existing
+per-send campaign identity/reporting is separate and unchanged. Deploy the mail
+class, helper and matching view together, then restart queue workers; no new
+migration, asset build or real campaign send is needed for verification.
+
 ### Preview delivery troubleshooting
 
 The admin preview confirmation means the mailable was queued, not delivered.

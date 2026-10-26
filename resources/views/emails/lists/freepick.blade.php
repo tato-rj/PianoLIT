@@ -6,7 +6,7 @@
 @component('mail::freepick.piece', ['piece' => $piece, 'url' => $pieceUrl, 'websiteUrl' => $websiteUrl])
 @endcomponent
 
-@component('mail::freepick.introduction', ['url' => $pieceUrl, 'button' => 'Explore this piece'])
+@component('mail::freepick.introduction', ['url' => $campaignLinks->url($pieceUrl, 'explore_piece'), 'button' => 'Explore this piece'])
 {{ $piece->description }}
 @endcomponent
 
@@ -52,12 +52,12 @@ Get to know the piece with the full recording.
 @endcomponent
 
 @if(count($latestPieces))
-@component('mail::welcome.pieces', ['title' => 'More music to discover', 'pieces' => $latestPieces, 'url' => $libraryUrl, 'button' => 'Browse the PianoLIT library', 'variant' => 'freepick-latest'])
+@component('mail::welcome.pieces', ['title' => 'More music to discover', 'pieces' => $latestPieces, 'url' => $campaignLinks->url($libraryUrl, 'browse_library'), 'button' => 'Browse the PianoLIT library', 'variant' => 'freepick-latest'])
 Some of our latest additions. Explore the full library with Premium.
 @endcomponent
 @endif
 
-@component('mail::freepick.premium', ['title' => 'Keep the inspiration going', 'image' => $websiteUrl.mix('images/emails/welcome/app-devices.jpg'), 'url' => $premiumUrl, 'button' => 'Go Premium'])
+@component('mail::freepick.premium', ['title' => 'Keep the inspiration going', 'image' => $websiteUrl.mix('images/emails/welcome/app-devices.jpg'), 'url' => $campaignLinks->url($premiumUrl, 'go_premium'), 'button' => 'Go Premium'])
 This week is just the beginning. With PianoLIT Premium, keep exploring the full library of pieces, available videos and recordings, and public-domain scores.
 
 Save your markings, build a repertoire you love, and download or print public-domain scores for your piano. The same account works on the web and in the iOS app.

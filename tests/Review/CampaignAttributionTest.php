@@ -103,6 +103,22 @@ class CampaignAttributionTest extends ReviewTestCase
         ];
     }
 
+    public function test_freepick_email_button_records_an_anonymous_arrival_in_existing_reports()
+    {
+        $url = (new \App\Services\FreePickCampaignLinks(true))->url(route('webapp.pieces.show', $this->piece->id), 'explore_piece');
+        $this->get($url)->assertOk()->assertDontSee('Campaign link measurement');
+        $this->get($url)->assertOk();
+        $this->assertDatabaseCount('campaign_visits', 1);
+        $this->assertDatabaseHas('campaign_visits', [
+            'utm_source' => 'pianolit', 'utm_medium' => 'email', 'utm_campaign' => 'freepick', 'utm_content' => 'explore_piece',
+            'landing_url' => route('webapp.pieces.show', $this->piece->id), 'user_id' => null, 'consented_at' => null,
+        ]);
+        $row = (new CampaignAttributionReport)->rows(now()->subDay()->toDateString())[0];
+        $this->assertSame('freepick', $row['campaign']);
+        $this->assertSame('email', $row['medium']);
+        $this->assertSame(1, $row['arrivals']);
+    }
+
     public function test_report_counts_the_supplied_youtube_link_before_any_javascript_or_opt_in()
     {
         $page = $this->get(route('webapp.pieces.show', ['piece' => 174, 'utm_source' => 'youtube.com', 'utm_medium' => 'video']))->assertOk();

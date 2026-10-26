@@ -19,6 +19,15 @@ Use `?` for the first parameter and `&` for later parameters. Use literal `&` in
 
 The report trims and lowercases labels and removes leading `www.` from sources. For compatibility, `youtube`/`youtube.com`, `chatgpt`/`chatgpt.com` and `reddit`/`reddit.com` each share the domain-style source. These aliases do not restrict other sources: `newsletter` or `new-site.example` work immediately. Other names and domains remain distinct. `.com` is a consistent naming choice, not a requirement of UTM tracking. These values describe the supplied link labels; they do not authenticate the referring site.
 
+As of October 25, Free Pick subscriber emails generate `utm_source=pianolit`,
+`utm_medium=email`, `utm_campaign=freepick` on their three body buttons only.
+`utm_content` is `explore_piece`, `browse_library` or `go_premium`. All three
+land directly on `my.*`, preserving the current host-local arrival/membership
+flow. Other email links, including unsubscribe and footer links, are unchanged;
+previews and excluded recipients receive no tags. This uses the existing
+first-touch arrival report without new redirects, click counters or consent
+behavior. See `docs/FREEPICKS.md` for the editing map and release requirements.
+
 Campaign storage contains the four normalized labels, a canonical landing-page URL, a random visit UUID, timestamps, account binding and the existing subscription/payment identities. The landing URL contains only the site host and matched route path: query strings and fragments are omitted. Public content route parameters (such as piece IDs and post slugs) are retained; other dynamic parameters, including reset, verification, account and unsubscribe identities, become `[redacted]` and are shown without a link. No raw query URLs, arbitrary referrers, visitor names, emails, IP addresses, browser profiles or payment-card fields are added. The stored SHA-256 campaign key remains based on the four UTM labels. The expansion migration backfills original Notturno visits as `youtube.com` / `organic_video` / `respighi_notturno` / `description`, preserving their visit and subscription identities.
 
 ## Visitor choice and ownership

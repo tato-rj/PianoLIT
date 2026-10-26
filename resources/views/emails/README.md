@@ -232,6 +232,16 @@ Subscriber messages retain their actual Free Pick list unsubscribe URL, labeled
 destination, without a real subscriber's opt-out link. Campaign tracking, pinned
 selection and duplicate/opt-out delivery guards stay in their existing classes.
 
+Only **Explore this piece**, **Browse the PianoLIT library** and **Go Premium**
+receive first-party campaign tags in subscriber deliveries. Their calls in
+`lists/freepick.blade.php` use `FreePickCampaignLinks` with the shared labels
+`utm_source=pianolit`, `utm_medium=email`, `utm_campaign=freepick` and the
+placements `explore_piece`, `browse_library`, `go_premium`. Keep the helper on
+these three buttons only; all other links, including unsubscribe, remain direct
+and untagged. Preview messages and excluded recipients stay untagged. HTML/plain
+text use the same destinations, and the existing Campaigns report counts
+eligible first arrivals with its normal deduplication and visitor choices.
+
 Export standalone previews of all four redesigned emails without normal-environment
 data or delivery:
 

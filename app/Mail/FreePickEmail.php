@@ -60,8 +60,13 @@ class FreePickEmail extends Mailable implements ShouldQueue
                 ->where('comment', '<>', '')->exists();
         }
         $preferences = $website.route('users.profile', [], false).'?tab=email-preferences';
+        $campaignLinks = new \App\Services\FreePickCampaignLinks(
+            $this->list_id !== 'preview' && $this->subscription
+                && !\App\Activity\ExcludedAccounts::email($this->subscription->email)
+        );
 
         return $this->subject('Your free pick this week')->markdown('emails.lists.freepick', [
+            'campaignLinks' => $campaignLinks,
             'websiteUrl' => $website,
             'pieceUrl' => route('webapp.pieces.show', $this->piece->id),
             'premiumUrl' => route('webapp.membership.pricing'),
