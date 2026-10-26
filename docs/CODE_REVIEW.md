@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-10-25 — Render Free Pick campaign buttons with older worker data (P2, complete locally)
+
+- **Evidence / change:** Arthur reported production failed job 2319 at 23:27:50 with `Undefined variable $campaignLinks` in the compiled Free Pick view. The campaign-button change introduced a new view-data dependency that an older active mail class/worker does not supply. Added a template fallback using the existing `list_id` and `subscription` fields and the already deployed helper API. It preserves preview and normalized recipient exclusions and tags only the three approved body buttons.
+- **Verification:** A regression that omits `campaignLinks` reproduced the exact failure before the fix. It now renders HTML/plain text for previews, live subscriber messages and all required excluded email spellings. The complete focused email/release/provider/attribution/report checks pass **112 tests / 1,749 assertions**. Standalone previews export successfully; whitespace checks pass. No presentation, route, queue or delivery behavior changed.
+- **Release / remaining:** Deploy the matching view/helper/mail code, clear compiled views (`php artisan view:clear`), request a graceful worker reload (`php artisan queue:restart`) and ensure the process manager brings workers back. Send one new preview after the reload. No production command, real email send or historical job retry was performed by the agent; deployed inbox confirmation remains Arthur's check.
+
 ### 2026-10-25 — Free Pick campaign tags on the three body buttons (P3, complete locally)
 
 - **Scope / implementation:** Tag only Explore this piece, Browse the PianoLIT library and Go Premium in subscriber deliveries with `utm_source=pianolit`, `utm_medium=email`, `utm_campaign=freepick` and placements `explore_piece`, `browse_library`, `go_premium`. The Free Pick mail class supplies a small `FreePickCampaignLinks` helper used at those three Blade calls in both HTML/plain text. Other links, including unsubscribe, footer, cover, titles and latest-piece cards, retain their original URLs. Preview messages and normalized excluded-recipient emails remain untagged. Existing query parameters/fragments survive, without duplicate campaign tags or recipient identity.

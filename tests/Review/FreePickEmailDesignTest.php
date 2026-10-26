@@ -32,7 +32,7 @@ class FreePickEmailDesignTest extends ReviewTestCase
         });
     }
 
-    private function render($piece, $subscriber = null, $campaign = 'preview')
+    private function render($piece, $subscriber = null, $campaign = 'preview', $legacyData = false)
     {
         EmailList::firstOrCreate(['name' => EmailList::FREE_PICK], ['description' => 'Free weekly picks']);
         $mail = new FreePickEmail($campaign, $subscriber, $piece);
@@ -40,6 +40,7 @@ class FreePickEmailDesignTest extends ReviewTestCase
         $renderer = clone app(Markdown::class);
         $renderer->theme($mail->theme);
         $data = $mail->buildViewData();
+        if ($legacyData) unset($data['campaignLinks']);
         $html = (string) $renderer->render($mail->markdown, $data);
         $text = (string) $renderer->renderText($mail->markdown, $data);
         $dom = new \DOMDocument; @$dom->loadHTML($html);
@@ -230,6 +231,25 @@ class FreePickEmailDesignTest extends ReviewTestCase
         $this->assertStringNotContainsString('utm_', $text);
         $this->assertDatabaseCount('campaign_visits', 0);
         $this->assertDatabaseCount('email_logs', 0);
+    }
+
+    public function test_new_template_handles_mail_data_from_workers_started_before_campaign_links_were_added()
+    {
+        $piece = $this->piece();
+        $this->piece(['name' => 'Another discovery']);
+        $reader = Subscription::create(['email' => 'reader@example.test']);
+        $cases = [[null, 'preview', false], [$reader, 'preview', false], [$reader, 'free-pick.legacy', true]];
+        foreach ([' ARTHURVILLAR@gmail.com ', 'elena.dare@gmail.com', 'arthurvilar@gmail.com'] as $email) {
+            $cases[] = [Subscription::create(compact('email')), 'free-pick.legacy', false];
+        }
+        foreach ($cases as [$subscriber, $campaign, $tagged]) {
+            [$html, $text] = $this->render($piece, $subscriber, $campaign, true);
+            $this->assertStringContainsString('Explore this piece', $html);
+            $this->assertSame($tagged ? 3 : 0, substr_count($html, 'utm_campaign=freepick'));
+            $this->assertSame($tagged ? 3 : 0, substr_count($text, 'utm_campaign=freepick'));
+        }
+        $this->assertDatabaseCount('email_logs', 0);
+        $this->assertDatabaseCount('campaign_visits', 0);
     }
 
     public function test_serialized_subscriber_delivery_keeps_campaign_buttons_and_existing_mailgun_identity()

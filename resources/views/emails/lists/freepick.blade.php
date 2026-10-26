@@ -1,3 +1,10 @@
+@php
+    // Older queue workers can render new views before their mail class reloads.
+    $campaignLinks = $campaignLinks ?? new \App\Services\FreePickCampaignLinks(
+        ($list_id ?? 'preview') !== 'preview' && isset($subscription)
+            && !\App\Activity\ExcludedAccounts::email($subscription->email)
+    );
+@endphp
 @component('mail::editorial.message', ['title' => 'Free pick of the week', 'preheader' => $piece->medium_name.' by '.$piece->composer->name.'. Your next piano discovery is here.', 'websiteUrl' => $websiteUrl, 'footerReason' => 'You’re receiving this email because you are subscribed to PianoLIT Free Picks.', 'unsubscribeUrl' => $unsubscribeUrl, 'unsubscribeLabel' => $subscription ? 'Unsubscribe' : 'Unsubscribe / email preferences', 'emailClass' => 'freepick-email'])
 @component('mail::freepick.header', ['title' => 'Free pick of the week', 'websiteUrl' => $websiteUrl])
 @endcomponent

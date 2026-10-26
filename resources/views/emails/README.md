@@ -241,6 +241,9 @@ these three buttons only; all other links, including unsubscribe, remain direct
 and untagged. Preview messages and excluded recipients stay untagged. HTML/plain
 text use the same destinations, and the existing Campaigns report counts
 eligible first arrivals with its normal deduplication and visitor choices.
+Keep the template's helper fallback: workers started before the mail-class update
+can supply the existing `list_id`/`subscription` fields without `campaignLinks`.
+The fallback preserves the same preview and recipient exclusions during reloads.
 
 Export standalone previews of all four redesigned emails without normal-environment
 data or delivery:

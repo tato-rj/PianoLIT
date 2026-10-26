@@ -81,6 +81,10 @@ Subscriber Free Pick emails tag only the three website buttons with
 
 `FreePickCampaignLinks` supplies the tags at the three calls in
 `resources/views/emails/lists/freepick.blade.php`, for both HTML and plain text.
+The template retains a fallback that builds the helper from the existing
+`list_id`/`subscription` data when an older worker has not loaded the updated
+mail class. Keep it so a new view can render safely during worker reloads;
+preview and recipient exclusions apply to this fallback too.
 Cover/title/latest-piece links, header/footer logos, YouTube, contact/help,
 privacy/password and unsubscribe links retain their original URLs. Browser/test
 previews and recipients excluded by `ExcludedAccounts` receive no campaign tags.
@@ -115,6 +119,14 @@ command requests a graceful exit, so the process manager must start them again.
 Send a new single-recipient preview afterward. Inspect any new failed job's
 exception if rendering still fails; the older failed-job record does not change
 when code is fixed. These steps do not require retrying historical campaigns.
+
+`Undefined variable $campaignLinks` identifies a mismatch between the newer
+button-tagging template and the mail data supplied by the active class/worker.
+The current template handles that missing field using the legacy campaign ID
+and subscriber fields, without tagging previews or excluded recipients. Deploy
+the matching helper/mail/view release, clear compiled views and restart workers,
+then send one new preview. The queue confirmation alone does not verify rendering
+or mail-server acceptance.
 
 The Pieces directory's **Schedule** action opens the shared modal. Administrators can select the piece immediately or choose a future local date and whole hour. The hour selector defaults to **8am**. The form displays `America/New_York`; schedule instants are stored in UTC so the autumn clock change cannot restore an older selection. A saved cover image is required, as it was for the previous editor action.
 
