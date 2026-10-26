@@ -57,6 +57,16 @@ mark {
     padding: 0 !important;
 }
 
+// Only the visible floating alert should intercept clicks over the page.
+.alert-container.alert-top,
+.alert-container.alert-bottom-right {
+    pointer-events: none;
+
+    > .alert {
+        pointer-events: auto;
+    }
+}
+
 .alert-top {
     position: fixed;
     top: 24px;

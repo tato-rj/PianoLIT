@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-10-25 — Keep floating alerts within their clickable boundaries (P3, complete locally)
+
+- **Evidence/change:** Reproduced the full-width `components.alert` wrapper intercepting links on both sides of a page-load alert. In `resources/sass/shared/_base.scss`, floating top/bottom-right wrappers now pass pointer events through, while their visible `.alert` children retain normal interaction. Placement, size, appearance, inline alerts and dismissal behavior remain intact.
+- **Verification:** Rendered the actual shared Blade alert into an isolated browser fixture. Confirmed Pieces and the right-side link work beside the top alert, links inside the alert work, and Bootstrap dismissal still works for both floating positions in app/admin bundles. Node 24 isolated production/CSS/build checks pass; parsed CSS comparison confirms only the two pointer-event rules changed. Included `public/css/{app,admin}.css` and their manifest hashes. Whitespace checks pass. Proof: `alerts/click-through.png` in `/Users/arthur/.codex/visualizations/2026/10/26/01a175e2-bb24-74b3-9afe-a3662dfa46d7/`.
+- **Compatibility/remaining:** CSS-only behavior fix; no routes, account data, APIs or media delivery changed. Complete locally; no deployment performed.
+
 ### 2026-10-25 — Remove the blog sidebar introduction (P3, complete locally)
 
 - **Request/change:** Removed the pictured Explore PianoLIT heading and Keep your curiosity playing subtitle from `resources/views/blog/index.blade.php` and `resources/views/blog/show.blade.php`, including their spacing wrapper. Existing sidebar promotions remain.
