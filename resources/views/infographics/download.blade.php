@@ -1,14 +1,17 @@
 @auth
-@if(auth()->user()->purchasesOf($infograph)->exists())
-<div class="text-center">
-	<a href="{{route('users.purchases')}}" class="btn d-block w-100 btn-green">@icon('cloud-download')Download it again</a>
-	<p class="text-muted"><small>Downloaded on {{auth()->user()->purchasesOf($infograph)->first()->created_at->toFormattedDateString()}}</small></p>
-</div>
+    @if($downloadPurchase)
+        <a href="{{ $infograph->autoDownload() }}" class="btn btn-primary w-100" data-infographic-download>
+            @icon('file-down')Download again
+        </a>
+        <p class="small text-muted mt-2 mb-0">First downloaded {{ $downloadPurchase->created_at->toFormattedDateString() }}</p>
+    @else
+        <form method="GET" action="{{ route('infographs.download', $infograph) }}" disable-on-submit>
+            <button type="submit" class="btn btn-primary w-100" data-infographic-download>@icon('file-down')Download for free</button>
+        </form>
+    @endif
 @else
-<form method="GET" action="{{route('infographs.download', $infograph)}}" disable-on-submit>
-	<button type="submit" class="btn d-block w-100 btn-green py-2 fw-bold">@icon('file-down')Download</button>
-</form>
-@endif
-@else
-<a id="auth-only" href="" class="btn d-block w-100 btn-green py-2 fw-bold">@icon('file-down', ['mr' => 2])Download</a>
+    <a id="auth-only" href="{{ route('infographs.download', $infograph) }}" class="btn btn-primary w-100" data-infographic-download>
+        @icon('file-down')Download for free
+    </a>
+    <p class="small text-muted mt-2 mb-0">Sign in or create an account to download this guide.</p>
 @endauth

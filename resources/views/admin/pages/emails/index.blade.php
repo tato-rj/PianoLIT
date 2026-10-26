@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="content-wrapper"><div class="container-fluid admin-emails">
-    @include('admin.components.page.title', ['title' => 'Emails', 'subtitle' => 'Automatic messages for accounts, purchases and requests.'])
+    @include('admin.components.page.title', ['title' => 'Emails', 'subtitle' => 'Automatic messages for accounts, purchases, requests and admin reports.'])
 
     @component('admin.components.table', [
         'id' => 'automatic-emails', 'label' => 'Automatic emails', 'items' => $emails,
@@ -35,6 +35,6 @@
         @endforeach
     @endcomponent
 
-    <p class="admin-emails__note">Free-pick, birthday and course emails belong to subscriptions and are outside this automatic-email catalog. This page covers user-facing messages; internal admin reports are separate. Stripe and Apple receipts follow their provider settings.</p>
+    <p class="admin-emails__note">Free Pick and course emails follow subscription settings. Stripe and Apple receipts follow their provider settings.</p>
 </div></div>
 @endsection

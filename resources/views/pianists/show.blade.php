@@ -1,51 +1,88 @@
 @extends('layouts.app', [
-  'title' => $pianist->name . ' | ' . config('app.name'),
-  'popup' => ['view' => 'gift'],
-  'shareable' => [
-    'keywords' => $pianist->name . ',pianists,classical music,classical recordings,best classical pianists,chopin album,liszt recording,beethoven album,mozart music',
-    'title' => 'Great Pianists | ' . $pianist->name,
-    'description' => 'Discover the greatest pianists of our time and their recordings, an online database powered by Apple Music',
-    'thumbnail' => asset('images/misc/thumbnails/pianists.jpg'),
-    'created_at' => carbon('16-09-2019'),
-    'updated_at' => carbon('16-09-2019')
-    ]])
+    'title' => rtrim($pianist->name, '. ').' | PianoLIT Learn', 'bodyClass' => 'learn-home pianist-page',
+    'shareable' => [
+        'keywords' => $pianist->name.',piano,classical music,piano recordings',
+        'title' => rtrim($pianist->name, '. ').' | Great Pianists',
+        'description' => Str::limit(trim(preg_replace('/\s+/u', ' ', strip_tags((string) $pianist->biography))), 160),
+        'thumbnail' => $pianist->cover_path ? storage($pianist->cover_path) : asset('images/misc/thumbnails/pianists.jpg'),
+        'created_at' => $pianist->created_at ? $pianist->created_at->format(DateTime::ISO8601) : '',
+        'updated_at' => $pianist->updated_at ? $pianist->updated_at->format(DateTime::ISO8601) : '',
+    ],
+])
 
 @section('content')
-
-<div class="text-center mb-2">
-  <label class="mb-0 text-grey d-block"><small>Powered by</small></label>
-  <img src="{{asset('images/icons/apple-music.svg')}}" style="opacity: 0.7;width: 59px;margin-top: -12px;">
+@php
+    $nationality = optional($pianist->country)->nationality ?: optional($pianist->country)->name;
+    $biography = trim((string) $pianist->biography);
+    $hasRecordings = preg_match('/\A[1-9]\d*\z/', trim((string) $pianist->itunes_id));
+@endphp
+<div class="container py-4 pb-5">
+    @include('components.breadcrumb', ['items' => [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Learn', 'url' => route('learn.home')],
+        ['label' => 'Great Pianists', 'url' => route('resources.pianists.index')],
+        ['label' => rtrim($pianist->name, '. ')],
+    ]])
+    @component('components.editorial-layout')
+        <article>
+            <header class="row g-4 align-items-center mb-5">
+                @if($pianist->cover_path)
+                    <div class="col-sm-4 col-md-3">
+                        <img src="{{ storage($pianist->cover_path) }}" class="pianist-portrait d-block" alt="Portrait of {{ rtrim($pianist->name, '. ') }}" decoding="async">
+                    </div>
+                @endif
+                <div class="{{ $pianist->cover_path ? 'col-sm-8 col-md-9' : 'col-12' }}">
+                    @if($nationality)<p class="small text-muted mb-2">{{ $nationality }}</p>@endif
+                    <h1 class="h2 mb-3">{{ rtrim($pianist->name, '. ') }}</h1>
+                    @if($pianist->born_at || $pianist->died_at)
+                        <dl class="pianist-dates small text-muted mb-4">
+                            @if($pianist->born_at)<div><dt>Born</dt><dd>{{ $pianist->born_at }}</dd></div>@endif
+                            @if($pianist->died_at)<div><dt>Died</dt><dd>{{ $pianist->died_at }}</dd></div>@endif
+                        </dl>
+                    @endif
+                    @if($hasRecordings)<a class="btn btn-primary" href="#recordings">@icon('headphones')Explore recordings</a>@endif
+                </div>
+            </header>
+            @if($biography)
+                <section class="pianist-biography mb-5" aria-labelledby="pianist-biography-title">
+                    <h2 class="h5 mb-3" id="pianist-biography-title">Biography</h2>
+                    @foreach(preg_split('/\R\s*\R/', $biography) as $paragraph)<p>{{ $paragraph }}</p>@endforeach
+                </section>
+            @endif
+            <section id="recordings" class="border-top pt-4 mb-5" aria-labelledby="pianist-recordings-title">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                    <h2 class="h4 mb-0" id="pianist-recordings-title">Recordings</h2>
+                    <img src="{{ asset('images/icons/apple-music.svg') }}" alt="Apple Music" class="pianist-apple-music" width="88" loading="lazy">
+                </div>
+                @if($hasRecordings)
+                    <div id="api-results" data-pianist-recordings data-itunes="{{ trim($pianist->itunes_id) }}" aria-busy="true">
+                        <p class="small text-muted mb-4" data-recordings-status role="status" aria-live="polite">Loading albums from Apple Music…</p>
+                        <div class="row g-3" data-recordings-results></div>
+                        <button type="button" class="btn btn-secondary" data-recordings-retry hidden>@icon('rotate-ccw')Try again</button>
+                        <noscript><p class="text-muted mb-0">Enable JavaScript to browse this pianist’s recordings.</p></noscript>
+                    </div>
+                    <template id="pianist-album-template">@include('pianists.album')</template>
+                @else
+                    <p class="text-muted mb-0">Recordings aren’t available for this profile yet. Explore another pianist to keep discovering.</p>
+                @endif
+            </section>
+        </article>
+        @if($morePianists->isNotEmpty())
+            <section class="border-top pt-4 mt-5" aria-labelledby="more-pianists-title">
+                <h2 class="h4 mb-4" id="more-pianists-title">Meet more pianists</h2>
+                <div class="row g-4">
+                    @foreach($morePianists as $artist)<div class="col-sm-6 col-xl-4">@include('pianists.card', ['pianist' => $artist, 'cardId' => 'more-pianist-'.$artist->id])</div>@endforeach
+                </div>
+            </section>
+        @endif
+        <div class="mt-5">@include('components.newsletter.invitation', ['headingId' => 'pianist-newsletter-title', 'preview' => false])</div>
+        @slot('sidebar')
+            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+        @endslot
+    @endcomponent
 </div>
-
-<img src="{{storage($pianist->cover_path)}}" class="rounded-circle shadow mb-4 mx-auto d-block" style="width: 160px">
-
-<div class="mb-4 text-center px-3">
-  <h3 class="m-0">{{$pianist->name}}</h3>
-  <div id="subtitle" class="text-muted">
-    <div class="mb-3">
-      <p class="m-0"><small>Born on {{$pianist->date_of_birth->toFormattedDateString()}}</small></p>
-      @if($pianist->date_of_death)
-      <p class="mb-0" style="margin-top: -6px;"><small>Died on {{$pianist->date_of_death->toFormattedDateString()}}</small></p>
-      @endif
-    </div>
-  
-    <div class="mx-auto" style="max-width: 860px">{{$pianist->biography}}</div>
-  </div>
-</div>
-
-<div class="container mt-4 mb-5">
-	<div id="api-results" data-itunes="{{$pianist->itunes_id}}" class="row">
-		<div class="col-12"><h5 class="text-grey my-6 text-center">Loading...</h5></div>
-	</div>
-</div>
-
-{{-- @popup(['view' => 'subscription']) --}}
 @endsection
 
 @push('scripts')
-@addthis
-<script type="text/javascript" src="{{asset('js/views/pianists.js')}}"></script>
-<script type="text/javascript">
-  $("#gift-overlay").showAfter(5);
-</script>
+<script src="{{ mix('js/views/pianists.js') }}" defer></script>
 @endpush

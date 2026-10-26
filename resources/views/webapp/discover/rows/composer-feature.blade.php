@@ -9,7 +9,7 @@
 			</a>
 			<div class="discover-composer-feature__biography">
 				<h6 class="mb-2">{{ $featuredComposer->name }}</h6>
-				<p class="text-muted small mb-0">{{ \Illuminate\Support\Str::limit(trim(strip_tags($featuredComposer->biography ?: $featuredComposer->curiosity ?: 'Explore this composer’s piano repertoire.')), 180) }}</p>
+				<p class="text-muted small mb-0">{{ \App\Services\DiscoverFeed::composerExcerpt($featuredComposer) }}</p>
 			</div>
 			<a href="{{ route('webapp.search.results', ['search' => $featuredComposer->name, 'model' => \App\Composer::class]) }}" class="discover-composer-feature__action btn pastel-card__action d-inline-flex align-items-center justify-content-center gap-3">Discover pieces @icon('arrow-right', ['mr' => 0])</a>
 		</div>

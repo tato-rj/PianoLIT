@@ -1,4 +1,5 @@
-@extends('layouts.app', ['title' => 'Thank you for your purchase!'])
+@php($infographicDownload = isset($purchase) && $purchase->item instanceof \App\Infograph\Infograph)
+@extends('layouts.app', ['title' => $infographicDownload ? 'Your infographic download | PianoLIT Learn' : 'Thank you for your purchase!', 'bodyClass' => $infographicDownload ? 'learn-home' : null])
 
 @push('header')
 <style type="text/css">
@@ -7,7 +8,16 @@
 
 @section('content')
 
-<section class="container mb-5">
+<section class="container mb-5 {{ $infographicDownload ? 'py-4' : '' }}">
+	@if($infographicDownload)
+		@include('components.breadcrumb', ['items' => [
+			['label' => 'Home', 'url' => route('home')],
+			['label' => 'Learn', 'url' => route('learn.home')],
+			['label' => 'Infographics', 'url' => route('resources.infographs.index')],
+			['label' => rtrim($purchase->item->name, '. '), 'url' => $purchase->item->showRoute()],
+			['label' => 'Download'],
+		]])
+	@endif
 	<div class="row mb-5">
 	  @include('shop.success.summary')
 	  @include('shop.success.product')

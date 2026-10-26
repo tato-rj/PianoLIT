@@ -64,7 +64,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $dom = new \DOMDocument; @$dom->loadHTML($page->getContent());
         $xpath = new \DOMXPath($dom);
         $this->assertCount(1, $xpath->query('//input[@role="switch" and @aria-label="Automatic sending: Reset password" and not(@checked)]'));
-        $this->assertCount(17, $xpath->query('//input[@role="switch"]/ancestor::form/input[@name="_token"]'));
+        $this->assertCount(18, $xpath->query('//input[@role="switch"]/ancestor::form/input[@name="_token"]'));
         Mail::assertNothingSent(); Mail::assertNothingQueued();
     }
 
@@ -90,6 +90,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         [$user, $piece, $request] = $this->fixtures();
         $purchase = new ConfirmPurchase((object) ['title' => 'Practice Companion']); $purchase->user = $user;
         $mails = [
+            'admin-weekly-snapshot' => new \App\Mail\Admin\AdminReport((new \App\Services\Admin\WeeklySnapshotPreview)->data(), new Admin(['name' => 'Preview Admin'])),
             'account-welcome-website' => new WebsiteAccountWelcome('Jamie'), 'account-welcome' => new AccountWelcome('Jamie'), 'account-welcome-ios' => new IosAccountWelcome('Jamie'), 'purchase-confirmation' => $purchase,
             'membership-confirmation' => new MembershipConfirmed('Jamie', 'monthly', true, null),
             'tutorial-request' => new NewRequestEmail($request), 'tutorial-published' => new RequestPublishedEmail($request),

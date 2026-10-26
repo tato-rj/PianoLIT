@@ -1,0 +1,31 @@
+.pianist-page {
+    .pianist-portrait {
+        width: 100%;
+        max-width: 180px;
+        aspect-ratio: 4 / 5;
+        object-fit: cover;
+        object-position: center 25%;
+        border-radius: var(--radius-sm);
+    }
+    .pianist-dates {
+        div { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+        dt { font-weight: 400; }
+        dd { margin: 0; }
+    }
+    .pianist-biography {
+        max-width: 72ch;
+        p { line-height: 1.85; white-space: pre-line; }
+    }
+    #recordings { scroll-margin-top: 24px; }
+    .pianist-apple-music { display: block; height: 28px; object-fit: contain; }
+    .pianist-album {
+        color: var(--color-text);
+        border-color: var(--color-border);
+        border-radius: var(--radius-sm);
+
+        &:hover, &:focus-visible { color: var(--color-text); }
+        &__image { display: block; width: 80px; height: 80px; object-fit: cover; border-radius: 6px; }
+        &__copy { min-width: 0; overflow-wrap: anywhere; }
+        h3 { line-height: 1.5; }
+    }
+}

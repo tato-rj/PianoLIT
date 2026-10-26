@@ -53,13 +53,9 @@ abstract class Factory
 
     public function suggestions($title)
     {
-        $user = ($this->for ?? null) === 'webapp'
-            ? auth('web')->user()
-            : User::find(request('user_id'));
-
-        if ($user && ($this->for ?? null) === 'webapp') $user->loadMissing('favorites.tags');
-
-        $collection = $user ? $user->suggestions(20)->shuffle()->take(($this->for ?? null) === 'webapp' ? 6 : 10) : Piece::inRandomOrder()->take($this->limit)->get();
+        // Shipped mobile contract only; modern Discover uses DiscoverFeed.
+        $user = User::find(request('user_id'));
+        $collection = $user ? $user->suggestions(20)->shuffle()->take(10) : Piece::inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 

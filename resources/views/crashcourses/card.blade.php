@@ -1,32 +1,29 @@
-    <div class="mx-auto position-relative cc-card" style="{{$hidePhoneOnOverflow ? 'overflow-y: hidden;' : null}}">
-      <div class="position-absolute cc-phone {{empty($hidePhoneOnMobile) ? null : 'hide-on-sm'}}" style="top: {{$phoneXpos ?? '32px'}}">
-        <img src="{{asset('images/mockup/crashcourse.png')}}" class="w-100">
-      </div>
-      <div class="bg-white pt-6 pe-6 pb-4 rounded cc-body">
-        <div class="mb-4">
-          <p class="text-warning text-uppercase"><strong>...by signing up to this {{$crashcourse->lessons_count}}-day course you'll learn about:</strong></p>
-          <h4>{{$crashcourse->title}}</h4>
-          <p class="m-0 text-muted">@icon('mail-open', ['mr' => 2])This course has {{$crashcourse->lessons_count}} {{ str_plural('lesson', $crashcourse->lessons_count) }}</p>
-        </div>
-
-        <form method="POST" id="crashcourse-form" disable-on-submit action="{{route('crashcourses.signup', $crashcourse)}}" class="cc-form">
-          @csrf
-          @include('components.form.subscription.hidden', ['id' => 'crashcourse-form'])
-          <input type="hidden" name="origin_url" value="{{url()->current()}}">
-            <div class="row g-2">
-              <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                @input(['bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
-              </div>
-              <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                @input(['bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
-              </div>
-            </div>
-            <div class="my-2">
-              @include('auth.fields.recaptcha')
-              <button type="submit" class="btn btn-primary btn-sm-block shadow btn-wide mb-2">START FREE COURSE!</button>
-              <div class="text-muted"><small>Ps: we'll never share your email with anyone</small></div>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+@php
+    $courseFormId = $formId ?? 'crashcourse-form';
+    $coursePreview = $preview ?? false;
+@endphp
+<section class="{{ ($framed ?? true) ? 'bg-white border rounded-sm p-4' : '' }}" aria-labelledby="{{ $courseFormId }}-title" @if($coursePreview) data-ds-preview @endif>
+    <h2 id="{{ $courseFormId }}-title" class="h5 mb-2">Start this free course</h2>
+    <p class="text-muted small mb-4">Enter your name and email. Your first lesson arrives after you sign up, followed by one lesson each day.</p>
+    <{{ $coursePreview ? 'div' : 'form' }} id="{{ $courseFormId }}" class="cc-form" @unless($coursePreview) method="POST" action="{{ route('crashcourses.signup', $crashcourse) }}" disable-on-submit @endunless>
+        @unless($coursePreview)
+            @csrf
+            @include('components.form.subscription.hidden', ['formId' => $courseFormId])
+        @endunless
+        @input([
+            'bag' => 'crashcourse', 'id' => $courseFormId.'-first-name', 'name' => 'first_name',
+            'label' => 'First name', 'placeholder' => 'Your first name', 'autocomplete' => 'given-name', 'limit' => 120,
+            'value' => $coursePreview ? '' : (auth()->user()->first_name ?? ''),
+        ])
+        @input([
+            'bag' => 'crashcourse', 'id' => $courseFormId.'-email', 'name' => 'email', 'type' => 'email',
+            'label' => 'Email address', 'placeholder' => 'you@example.com', 'autocomplete' => 'email', 'limit' => 120,
+            'value' => $coursePreview ? '' : (auth()->user()->email ?? ''), 'describedBy' => $courseFormId.'-note',
+        ])
+        @unless($coursePreview)
+            @include('auth.fields.recaptcha')
+        @endunless
+        <button type="{{ $coursePreview ? 'button' : 'submit' }}" class="btn btn-primary w-100 mt-2">Start the course @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>
+        <p class="small text-muted mt-3 mb-0" id="{{ $courseFormId }}-note">Lessons arrive by email. <a href="mailto:{{ config('app.emails.general') }}">Contact us</a> if you’d like to stop receiving them.</p>
+    </{{ $coursePreview ? 'div' : 'form' }}>
+</section>

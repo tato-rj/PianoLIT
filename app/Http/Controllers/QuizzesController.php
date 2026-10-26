@@ -15,9 +15,10 @@ class QuizzesController extends Controller
      */
     public function index(QuizFilters $filters)
     {
-        $quizzes = Quiz::published()->latest()->filter($filters)->paginate(12);
-        $levels = Level::all();
-        $topics = Topic::all();
+        $quizzes = Quiz::published()->with(['level', 'topics'])->latest()->orderByDesc('id')
+            ->filter($filters)->paginate(12)->withQueryString();
+        $levels = Level::whereHas('quizzes', function ($query) { $query->published(); })->orderBy('id')->get();
+        $topics = Topic::whereHas('quizzes', function ($query) { $query->published(); })->orderBy('name')->get();
 
         return view('games.quizzes.index', compact(['quizzes', 'levels', 'topics']));
     }
@@ -30,7 +31,8 @@ class QuizzesController extends Controller
      */
     public function show(Quiz $quiz)
     {
-        $suggestions = $quiz->suggestions(8)->get();
+        $quiz->loadMissing(['topics', 'level']);
+        $suggestions = $quiz->suggestions(4)->with('level')->get();
 
         if (! $quiz->published_at) {
             if (auth()->guard('admin')->check())
@@ -56,6 +58,6 @@ class QuizzesController extends Controller
             ]);
         }
 
-        return view('games.components.feedback', compact('feedback'))->render();
+        return view('games.quizzes.feedback', compact('feedback'))->render();
     }
 }

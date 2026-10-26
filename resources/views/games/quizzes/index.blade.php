@@ -1,49 +1,62 @@
-@extends('layouts.app', ['title' => 'PianoLIT Quizzes', 'popup' => ['view' => 'gift']])
-
-@push('header')
-@endpush
+@extends('layouts.app', ['title' => 'Quizzes | PianoLIT Learn', 'bodyClass' => 'learn-home quiz-page'])
 
 @section('content')
-<section class="container mb-5">
-   
-  @pagetitle(['title' => 'Quizzes', 'subtitle' => 'Test your knowledge and learn cool new facts about music'])
+@php
+    $selectedTopics = array_values(array_filter((array) (is_array(request('topics')) ? request('topics') : explode(' ', (string) request('topics', ''))), function ($value) { return is_string($value) && trim($value) !== ''; }));
+    $selectedLevel = collect((array) request('level'))->first(function ($value) { return is_string($value) && trim($value) !== ''; });
+    $levelQuery = $selectedLevel ? ['level' => $selectedLevel] : [];
+    $topicLinks = [['label' => 'All topics', 'url' => route('quizzes.index', $levelQuery), 'active' => !$selectedTopics]];
+    foreach ($topics as $topic) {
+        $topicLinks[] = ['label' => ucfirst($topic->name), 'url' => route('quizzes.index', array_merge($levelQuery, ['topics' => $topic->slug])), 'active' => in_array($topic->slug, $selectedTopics, true)];
+    }
+    $levelChoices = ['' => 'All levels'];
+    foreach ($levels as $level) $levelChoices[$level->slug] = ucfirst($level->name);
+@endphp
+<div class="container py-4 pb-5">
+    @include('components.breadcrumb', ['items' => [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Learn', 'url' => route('learn.home')],
+        ['label' => 'Quizzes'],
+    ]])
+    @component('components.hub-header', ['heading' => 'Quizzes', 'preview' => false])
+        A few questions. A new discovery.<br class="d-none d-md-block"> Test your musical knowledge and learn something along the way.
+    @endcomponent
 
-  @component('components.display.layout', [
-    'collection' => $quizzes,
-    'topics' => $topics,
-    'ads' => ['ebook', 'escore']
-  ])
+    @include('components.topic-navigation', ['items' => $topicLinks, 'label' => 'Quiz topics'])
 
-  @slot('items')
-    @each('games.quizzes.components.cards.large', $quizzes, 'quiz')
-  @endslot
-
-  @slot('extra')
-      <div class="mb-5">
-        <div class="d-flex d-apart mb-1 pb-1 border-bottom">
-          <p class="text-muted mb-0"><strong>LEVELS</strong></p>
-          <a href="{{route('quizzes.index')}}" class="text-muted"><small>reset</small></a>
+    @component('components.editorial-layout')
+        <div class="row g-3 align-items-end mb-4">
+            <div class="col-md">
+                <h2 class="h5 mb-2" id="quiz-directory-title">Find your next challenge</h2>
+                <p class="small text-muted mb-0">{{ $quizzes->isNotEmpty() ? 'Showing '.$quizzes->firstItem().'–'.$quizzes->lastItem().' of '.$quizzes->total() : number_format($quizzes->total()) }} {{ Str::plural('quiz', $quizzes->total()) }}</p>
+            </div>
+            <div class="col-sm-auto">
+                <form method="GET" action="{{ route('quizzes.index') }}" class="d-flex flex-wrap align-items-end gap-2">
+                    @foreach($selectedTopics as $slug)<input type="hidden" name="topics[]" value="{{ $slug }}">@endforeach
+                    @select(['bag' => 'default', 'name' => 'level', 'id' => 'quiz-level', 'label' => 'Difficulty', 'choices' => $levelChoices, 'value' => $selectedLevel, 'required' => false, 'grid' => 'mb-0'])
+                    <button class="btn btn-secondary" type="submit">Apply</button>
+                </form>
+            </div>
         </div>
-        <div>
-          @foreach($levels as $level)
-          <a href="{{route('quizzes.index', request('level') == $level->slug ? null : ['level' => $level->slug])}}" class="btn btn-{{request('level') == $level->slug ? 'primary' : 'light'}} m-1 btn-sm text-muted text-truncate">{{ucfirst($level->name)}}</a>
-          @endforeach
-        </div>
-      </div>
-  @endslot
-
-  @endcomponent
-
-</section>
-
-{{-- @popup(['view' => 'subscription']) --}}
+        <section aria-labelledby="quiz-directory-title">
+            @if($quizzes->isNotEmpty())
+                <div class="row g-4">
+                    @foreach($quizzes as $quiz)
+                        <div class="col-md-6">@include('games.quizzes.card', ['cardId' => 'quiz-'.$quiz->id])</div>
+                    @endforeach
+                </div>
+                @if($quizzes->hasPages())<div class="mt-5">{{ $quizzes->onEachSide(1)->links() }}</div>@endif
+            @else
+                <div class="py-4">
+                    <h3 class="h5">{{ $selectedTopics || $selectedLevel ? 'No quizzes match these filters' : 'New quizzes are on their way' }}</h3>
+                    <p class="text-muted">{{ $selectedTopics || $selectedLevel ? 'Try another topic or level, or browse all quizzes.' : 'Explore our other learning resources while you wait.' }}</p>
+                    <a class="btn btn-secondary" href="{{ $selectedTopics || $selectedLevel ? route('quizzes.index') : route('learn.home') }}">{{ $selectedTopics || $selectedLevel ? 'View all quizzes' : 'Explore Learn' }} @icon('arrow-right', ['mr' => 0, 'ml' => 2])</a>
+                </div>
+            @endif
+        </section>
+        @slot('sidebar')
+            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+        @endslot
+    @endcomponent
+</div>
 @endsection
-
-@push('scripts')
-<script type="text/javascript">
-$('.card-title').clamp(2);
-$('.card-text').each(function() {
-  $(this).clamp(randomBetween(3, 5));
-});
-</script>
-@endpush

@@ -17,8 +17,11 @@ class CrashCoursesController extends Controller
      */
     public function index(CrashCourseFilters $filters)
     {
-        $topics = CrashCourseTopic::all();
-        $crashcourses = CrashCourse::published()->latest()->filter($filters)->paginate(12);
+        $topics = CrashCourseTopic::whereIn('id', function ($query) {
+            $query->select('topic_id')->from('crash_course_crash_course_topic')
+                ->whereIn('crash_course_id', CrashCourse::published()->select('id')->toBase());
+        })->orderBy('name')->get();
+        $crashcourses = CrashCourse::published()->latest()->filter($filters)->paginate(12)->withQueryString();
 
         return view('crashcourses.index', compact(['crashcourses', 'topics']));
     }
@@ -31,6 +34,7 @@ class CrashCoursesController extends Controller
      */
     public function show(CrashCourse $crashcourse)
     {
+        $crashcourse->load('topics');
         return view('crashcourses.show', compact('crashcourse'));
     }
 

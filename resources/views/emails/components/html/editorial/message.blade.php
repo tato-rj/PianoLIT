@@ -23,6 +23,14 @@
     .freepick-cover-link { line-height: 146px !important; }
     .freepick-latest .welcome-piece { display: block !important; width: 100% !important; padding: 0 0 18px !important; overflow: hidden; }
     .freepick-latest .welcome-piece img { float: left !important; width: 88px !important; margin: 0 14px 0 0 !important; }
+    .snapshot-email .welcome-padding { padding-left: 16px !important; padding-right: 16px !important; }
+    .snapshot-header h1 { font-size: 27px !important; }
+    .snapshot-metric { padding: 16px 12px !important; }
+    .snapshot-number { font-size: 34px !important; }
+    .snapshot-platform-cell { display: block !important; width: 100% !important; box-sizing: border-box; padding: 0 0 12px !important; }
+    .snapshot-piece-art { width: 64px !important; }
+    .snapshot-piece-art img { width: 64px !important; }
+    .snapshot-member-content { padding: 20px 16px !important; }
 }
 </style>
 </head>
@@ -33,7 +41,7 @@
 <!--[if mso]><table role="presentation" width="600"><tr><td><![endif]-->
 <table class="welcome-container{{ isset($emailClass) ? ' '.$emailClass : '' }}" role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" align="center">
 {{ $slot }}
-@component('mail::editorial.footer', ['websiteUrl' => $websiteUrl, 'footerReason' => $footerReason, 'unsubscribeUrl' => $unsubscribeUrl, 'unsubscribeLabel' => $unsubscribeLabel ?? 'Unsubscribe / email preferences'])
+@component('mail::editorial.footer', ['websiteUrl' => $websiteUrl, 'footerReason' => $footerReason, 'unsubscribeUrl' => $unsubscribeUrl ?? null, 'unsubscribeLabel' => $unsubscribeLabel ?? 'Unsubscribe / email preferences', 'internal' => $internal ?? false])
 @endcomponent
 </table>
 <!--[if mso]></td></tr></table><![endif]-->

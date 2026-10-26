@@ -695,13 +695,16 @@ redesigned hub root uses this same simple title treatment, matching Blog's
 responsive 32–48px size, line height and letter spacing; the description uses
 the shared 16px body token and muted text. The shared styles live in
 `components/_hub-header.scss`, including the Design System specimen.
+The shared header uses Bootstrap `mb-5` (48px) to separate it from page content.
 The button appears to the right,
 bottom-aligned on desktop, and below the introduction on phones, without
 extra text above it. Reuse this component as other public hub roots are
-redesigned. Its Design System specimen uses `preview: true`.
+redesigned. Do not add a newsletter invitation card at the bottom of any hub root;
+use the shared header action. Its Design System specimen uses `preview: true`.
 
 `components.newsletter.invitation` provides the reusable pastel newsletter panel
-with the standard primary button and existing same-host subscription modal.
+for article and tool detail pages, with the standard primary button and existing
+same-host subscription modal.
 Pass a unique `headingId`; `preview: true` renders an inert Design System sample.
 The article explicitly passes `preview: false` so editorial previews also retain
 the subscription action. Related stories reuse `blog.components.story-card` in
@@ -738,10 +741,8 @@ Its sidebar ads always use `components.display.ads` with `variant: cards`, which
 renders the same `components.promo-card` as Blog, including the existing pastel
 surfaces, category tags, spacing and buttons. Do not add a hub-specific ads design,
 appearance variant or introductory heading. This reusable ads area stays consistent
-across public hubs. The newsletter invitation alone opts into `appearance: plain`,
-with a white surface and the shared primary button; both newsletter variants have
-Design System specimens.
-The introduction and footer invitation use the shared newsletter action on the Learn host.
+across public hubs. Learn has no bottom newsletter invitation card. Its introduction
+uses the shared newsletter action on the Learn host.
 The Circle of Fifths and Chord Finder also use this shell; other deep resource and tool layouts
 remain for later work. Keep their routes, calculations, signup/download/quiz
 requests and mobile contracts intact.
@@ -796,3 +797,72 @@ when notes change. The standalone Chord Finder script also uses versioned `mix()
 `components.section-navigation` renders the shared Support center and My profile menus. Pass a unique `id`, an accessible `label`, and ordered `items` with `target` (section ID), `label`, and optional `icon`; optional `heading` adds the muted introduction. The single `_section-navigation.scss` in `shared.scss` owns wrapping mobile links, sticky desktop placement, and the primary-color/semibold current link. Neither page defines its own menu markup or finish.
 
 The component includes the versioned `components/section-navigation.js` once. It highlights the visible section on initial load, manual scrolling, resizing, page restoration and FAQ expansion/collapse, with a bottom-of-page fallback for short final sections. Exactly one valid link per menu receives `aria-current="location"`; ordinary fragment links and keyboard navigation remain native. Keep scroll behavior here rather than in page scripts. The Design System renders this same component with `preview: true`, which shows a static current item without attaching scroll listeners.
+
+
+## Infographics
+
+`infographics.index` uses the shared breadcrumb (`Home → Learn → Infographics`),
+`components.hub-header`, topic links, `components.editorial-layout` and the same
+sidebar promotions as Blog. `components.topic-navigation` supplies the common
+link buttons for Blog and Infographics, preserving each directory's query names
+and active state. Its items accept `label`, `url`, `active` and an optional
+Bootstrap button `variant`. Both shared components have Design System specimens.
+There is no bottom newsletter invitation.
+
+`infographics.card` reuses `components.resource-card`; its optional `artworkClass`
+adds `resource-card__art--poster`. That variant fits the entire poster inside a
+neutral 4:3 preview area, with a one-rem inset. Default SVG resource cards keep
+their existing 2:1 artwork area. The directory uses a responsive Bootstrap grid,
+12-item native pagination with preserved filters, and an explicit empty state.
+
+The detail page retains its preview and download information, with shared buttons,
+file dimensions, license, related resource cards and accessible feedback status.
+On phones, the download information precedes the poster. A guest uses the existing
+account prompt; a first download keeps the current confirmation flow. Download
+again uses the infographic's `autoDownload()` URL and streams the original file
+without navigating to My downloads or creating another purchase. The infographic
+confirmation page retains its familiar layout and adds the breadcrumb trail and
+shared primary download action; other product confirmation flows stay intact.
+
+
+## Crash Courses
+
+`crashcourses.index` follows the Infographics/Learn directory pattern: shared
+breadcrumb, `components.hub-header`, `components.topic-navigation`, resource
+cards, native pagination and `components.editorial-layout` with standard sidebar
+promotions. Topic filters survive pagination; draft-only topics are omitted.
+`crashcourses.course` renders `components.resource-card` with its existing cover
+image, actual lesson count and a normal same-tab course link. Bootstrap positioning
+and object-fit utilities keep covers inside the standard 2:1 artwork area. Missing
+covers reuse the native Learn course illustration. There is no footer newsletter
+invitation.
+
+The course detail page uses the public shell and breadcrumb, plain heading,
+course overview and a signup panel. On phones, signup precedes the cover and
+course facts. `crashcourses.card` owns the signup panel and is reused in the
+signup popup. It accepts `formId`, `framed` and an inert `preview` mode; its
+Design System specimen renders the same form. Name/email labels, autocomplete,
+errors and fields use shared `@input` controls; the action is the shared primary
+button. Keep CSRF, the existing anti-bot fields, reCAPTCHA and submission lock.
+
+Validation uses the `crashcourse` error bag, preserving submitted values without
+marking login fields invalid or opening the account modal. Canonical popup
+validation returns to the course page; legacy posts keep their return host. The
+course delivery, existing signup/cancellation URLs and video/media URLs are
+unchanged. Course enrollment does not opt someone into the PianoLIT newsletter.
+Course emails currently offer a contact link to stop lessons, so the signup panel
+uses that instruction rather than promising an automatic unsubscribe control.
+The other funnel and lesson-video views retain their existing styles and behavior.
+
+### Quiz pages and covered resource artwork
+
+Public quizzes use Learn's shared breadcrumb, hub header, topic navigation,
+editorial layout and unchanged promo-card sidebar. `games.quizzes.card` delegates
+to `components.resource-card` with `resource-card__art--cover`, a 2:1 crop of the
+existing cover. This image variant is shared by app/admin styles and represented
+in the Design System; the SVG and full-poster variants retain their behavior.
+Question panels use white surfaces, shared controls and the standard small radius.
+Correct/incorrect answer borders use the shared success/danger tokens, with
+visible answer labels and live feedback so color is not the only indicator.
+`pages/_quizzes.scss` scopes these states to `.quiz-page`; it does not restyle
+promotions or other tools. See `QUIZZES.md` for the view/script map.

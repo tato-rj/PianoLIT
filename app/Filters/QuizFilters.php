@@ -12,8 +12,10 @@ class QuizFilters extends Filters
 
 	public function level($level)
 	{
+		$level = array_values(array_filter((array) $level, function ($value) { return is_string($value) && trim($value) !== ''; }));
+		if (!$level) return $this->builder;
 		return $this->builder->whereHas('level', function ($query) use ($level) {
-			$query->where('slug', $level);
+			$query->whereIn('slug', $level);
         });		
 	}
 }

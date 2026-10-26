@@ -154,3 +154,73 @@ h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; fo
 .freepick-premium-copy p { color: #6c757d; text-align: center; font-size: 16px; line-height: 1.65; margin-bottom: 16px; }
 .freepick-premium .welcome-mockup { margin-top: 24px; }
 .freepick-footer-gap { height: 32px; font-size: 1px; line-height: 1px; }
+
+// Sunday admin snapshot uses the same editorial shell, logo and controls.
+.snapshot-email h1, .snapshot-email h2, .snapshot-email h3 { font-family: 'Poppins', $font-family-sans-serif; }
+.snapshot-header { padding-top: 28px; padding-bottom: 28px; text-align: center; }
+.snapshot-header .editorial-logo { margin-bottom: 18px; }
+.snapshot-header .snapshot-eyebrow { font-size: 12px; letter-spacing: 2px; font-weight: 600; color: $brand-primary; margin-bottom: 8px; }
+.snapshot-header h1 { margin: 0 0 10px; font-size: 32px; line-height: 1.25; letter-spacing: -.8px; }
+.snapshot-header p { line-height: 1.5; }
+.snapshot-email .snapshot-note { color: #6c757d; font-size: 12px; line-height: 1.5; }
+.snapshot-header .snapshot-note { margin-top: 3px; }
+.snapshot-section { padding-bottom: 26px; }
+.snapshot-email h2 { margin: 0 0 14px; text-align: left; font-size: 20px; line-height: 1.35; letter-spacing: -.3px; }
+.snapshot-grid { width: 100%; table-layout: fixed; }
+.snapshot-metric-cell { padding: 0 5px 10px; }
+.snapshot-metric-cell:first-child { padding-left: 0; }
+.snapshot-metric-cell:last-child { padding-right: 0; }
+.snapshot-metric { padding: 20px; background: white; border: 1px solid #e9ecef; border-radius: 16px; }
+.snapshot-metric-cell table { border-collapse: separate; border-spacing: 0; }
+.snapshot-label { font-size: 16px; line-height: 1.4; }
+.snapshot-email .snapshot-number { font-size: 44px; font-weight: 600; line-height: 1.2; letter-spacing: -1.5px; margin: 6px 0; color: $text-color; }
+.snapshot-change { font-size: 16px; line-height: 1.5; font-weight: 600; }
+.snapshot-change span { font-size: 12px; color: #6c757d; font-weight: 400; }
+.snapshot-up { color: #227451; }
+.snapshot-down { color: #b34545; }
+.snapshot-comparison { margin: 0 0 8px; }
+.snapshot-origins { font-size: 14px; color: #6c757d; line-height: 1.6; }
+.snapshot-origins strong { color: $text-color; }
+.snapshot-chart { width: 100%; table-layout: fixed; }
+.snapshot-chart td { padding: 0; }
+.snapshot-day-number { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+.snapshot-day-label { font-size: 12px; color: #6c757d; margin-top: 7px; }
+.snapshot-bar { border-radius: 5px 5px 0 0; }
+.snapshot-platform-cell { padding: 0 5px; }
+.snapshot-platform-cell:first-child { padding-left: 0; }
+.snapshot-platform-cell:last-child { padding-right: 0; }
+.snapshot-platform-cell table { border-collapse: separate; border-spacing: 0; }
+.snapshot-platform { padding: 20px 16px; border-radius: 16px; }
+.snapshot-platform-web { background: #edf3ff; }
+.snapshot-platform-ios { background: #f0edf8; }
+.snapshot-platform h3 { margin: 0 0 8px; font-size: 18px; font-weight: 600; }
+.snapshot-platform-number { font-size: 32px; line-height: 1.2; font-weight: 600; letter-spacing: -.7px; }
+.snapshot-platform .snapshot-label { margin: 3px 0 16px; }
+.snapshot-actions { width: 100%; margin-bottom: 14px; }
+.snapshot-actions td { padding: 7px 0; font-size: 16px; line-height: 1.4; border-top: 1px solid #dfe3ef; }
+.snapshot-action-count { font-weight: 600; padding-left: 8px !important; white-space: nowrap; }
+.snapshot-members { background: white; border: 1px solid #e9ecef; border-radius: 16px; border-collapse: separate; border-spacing: 0; }
+.snapshot-member-content { padding: 24px; }
+.snapshot-members h2 a { color: $text-color; }
+.snapshot-member-engagement { font-size: 18px; line-height: 1.5; margin-bottom: 3px; }
+.snapshot-member-engagement strong { font-size: 32px; line-height: 1.2; font-weight: 600; color: $brand-primary; }
+.snapshot-progress { margin-top: 16px; margin-bottom: 16px; }
+.snapshot-member-stats { margin-bottom: 16px; }
+.snapshot-member-stats p { line-height: 1.4; }
+.snapshot-member-stats .snapshot-member-number { font-size: 27px; line-height: 1.3; font-weight: 600; }
+.snapshot-review { margin: 0 0 10px; font-size: 16px; }
+.snapshot-piece-intro { margin-top: -8px; margin-bottom: 8px; }
+.snapshot-piece-list td { padding-top: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef; }
+.snapshot-rank { font-size: 14px; color: #6c757d; }
+.snapshot-piece-art img { display: block; width: 96px; height: auto; border-radius: 7px; }
+.snapshot-piece-copy { padding-left: 14px; padding-right: 8px; }
+.snapshot-piece-copy a { font-size: 16px; font-weight: 600; line-height: 1.4; color: $text-color; }
+.snapshot-piece-copy .snapshot-note { margin-top: 5px; }
+.snapshot-piece-count { font-size: 22px; font-weight: 600; }
+.snapshot-closing { padding-bottom: 26px; }
+.snapshot-closing .welcome-button { font-size: 16px; }
+.snapshot-method { margin-top: 22px; }
+.snapshot-method p { font-size: 12px; line-height: 1.6; color: #6c757d; text-align: left; }
+.snapshot-email .welcome-footer { padding-top: 0; padding-bottom: 28px; }
+.snapshot-email .welcome-footer p { margin-bottom: 0; }
+.snapshot-email .welcome-footer .welcome-copyright { margin-top: 6px; }

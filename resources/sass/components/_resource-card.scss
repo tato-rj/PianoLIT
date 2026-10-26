@@ -21,6 +21,48 @@
         border-bottom: 1px solid var(--color-border);
 
         svg { display: block; width: 100%; height: auto; }
+
+        &--cover {
+            position: relative;
+
+            img {
+                position: absolute;
+                inset: 0;
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        &--poster {
+            position: relative;
+            aspect-ratio: 4 / 3;
+
+            img {
+                position: absolute;
+                inset: 1rem;
+                display: block;
+                width: calc(100% - 2rem);
+                height: calc(100% - 2rem);
+                object-fit: contain;
+            }
+        }
+
+        &--portrait {
+            position: relative;
+            aspect-ratio: 4 / 3;
+
+            img {
+                position: absolute;
+                inset: 0;
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 25%;
+            }
+        }
     }
     &__format {
         color: var(--color-text-muted);

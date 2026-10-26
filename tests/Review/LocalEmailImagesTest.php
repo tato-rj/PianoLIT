@@ -150,7 +150,7 @@ class LocalEmailImagesTest extends ReviewTestCase
     public function test_other_email_previews_embed_the_shared_logo_and_social_icons()
     {
         $this->local();
-        foreach (app(AutomaticEmails::class)->all()->keys()->reject(function ($key) { return strpos($key, 'account-welcome') === 0; }) as $key) {
+        foreach (app(AutomaticEmails::class)->all()->keys()->reject(function ($key) { return strpos($key, 'account-welcome') === 0 || $key === 'admin-weekly-snapshot'; }) as $key) {
             $sample = app(AutomaticEmails::class)->render($key);
             $this->assertStringContainsString('src="http://pianolit.test/images/brand/app-icon.png', $sample['html']);
             $mail = (new EmailPreview($sample['subject'], $sample['html'], $sample['text']))->attachData('Example attachment', 'example.txt');
@@ -162,5 +162,22 @@ class LocalEmailImagesTest extends ReviewTestCase
             $this->assertCount(1, $attachments);
             $this->assertSame('Example attachment', $attachments[0]->getBody());
         }
+    }
+
+    public function test_weekly_snapshot_previews_embed_the_editorial_logo_and_all_three_piece_images()
+    {
+        $this->local();
+        $sample = app(AutomaticEmails::class)->render('admin-weekly-snapshot');
+        $message = $this->deliver(new EmailPreview($sample['subject'], $sample['html'], $sample['text']));
+        $images = $this->images($message);
+        $this->assertCount(4, $images);
+        $filenames = array_map(function ($image) { return $image->getFilename(); }, $images);
+        foreach (['logo.png', 'preview-prelude.jpg', 'preview-arabesque.jpg', 'preview-bagatelle.jpg'] as $filename) {
+            $this->assertContains($filename, $filenames);
+        }
+        $this->assertStringNotContainsString('src="http://pianolit.test/images/', $message->getBody());
+        $this->assertStringContainsString('href="#email-preview"', $message->getBody());
+        $this->assertStringContainsString('Sample data', $message->getBody());
+        Http::assertNothingSent();
     }
 }

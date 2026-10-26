@@ -299,3 +299,33 @@ Laravel HTML/plain-text mail components. The new address receives a one-hour
 signed confirmation link; no account email or subscription is changed until the
 signed-in owner confirms. This is an essential account email, independent of
 marketing-list preferences. Profile regressions fake mail delivery.
+
+## Sunday admin snapshot
+
+Edit `admin/report/index.blade.php` for the weekly report's composition, labels
+and analytics button. The matching HTML/plain-text section templates live in
+`components/{html,text}/snapshot/`. It uses the welcome/Free Pick editorial theme,
+outlined logo, primary button, piece artwork and shared footer's optional internal
+mode. The old `admin/report/{legacy,template,card,records}.blade.php` views only
+serve report jobs queued before this redesign.
+
+The Sunday email now shows new/active/returning accounts, new users exploring
+music, a daily chart, web/iOS behavior, current membership status and use, and
+three ranked pieces. PHP supplies aggregate numbers, not subscriber email lists.
+See `docs/WEEKLY_ADMIN_SNAPSHOT.md` for exact definitions, source limitations and
+release notes. Render a clearly labeled fictional preview with:
+
+```sh
+npm run emails:styles
+php -d error_reporting=8191 scripts/preview-weekly-snapshot.php /tmp/pianolit-weekly-snapshot-preview
+```
+
+The exporter uses the welcome preview's isolated boot; it never sends mail or
+reads production accounts. Open `weekly-snapshot.html` / `weekly-snapshot.txt`.
+
+Settings → Emails also lists **Weekly admin snapshot** under Administration.
+Browser renders the current template; Email uses the shared preview-recipient
+field and `[Preview]` subject prefix. Both use the same labeled fictional data
+from `App\Services\Admin\WeeklySnapshotPreview`, with existing preview images and
+inert report/piece links. The Sending switch controls scheduled and queued admin
+reports, defaults on, and does not prevent previews.

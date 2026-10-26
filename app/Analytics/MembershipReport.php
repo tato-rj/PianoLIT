@@ -17,6 +17,12 @@ class MembershipReport
         'pending' => 'Not checked', 'sandbox' => 'Sandbox purchase',
     ];
 
+    /** The same read-only current status used by the admin membership directory. */
+    public function current()
+    {
+        return $this->query(Schema::hasTable('apple_membership_checks') && Schema::hasTable('apple_membership_sync_runs'));
+    }
+
     public function activeTotals($start, $end)
     {
         $ready = Schema::hasTable('apple_membership_checks') && Schema::hasTable('apple_membership_sync_runs');

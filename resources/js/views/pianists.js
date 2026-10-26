@@ -1,46 +1,82 @@
-$(document).ready(function() {
-  axios.get('https://itunes.apple.com/lookup', {params: {id: $('#api-results').attr('data-itunes'), entity: 'album', limit: 200}})
-    .then(function(response) {
-      showAlbums(response.data.results);
-    })
-    .catch(function(error) {
-      $('#api-results h5').text('Sorry, we couldn\'t load the albums...');
-    });
-});
+(function () {
+    'use strict';
+    const container = document.querySelector('[data-pianist-recordings]');
+    if (!container) return;
+    const artistId = container.getAttribute('data-itunes');
+    const status = container.querySelector('[data-recordings-status]');
+    const results = container.querySelector('[data-recordings-results]');
+    const retry = container.querySelector('[data-recordings-retry]');
+    const template = document.getElementById('pianist-album-template');
+    let pending = false;
 
-function showAlbums(albums) {
-  albums.shift();
-  let sentence = albums.length == 200 ?
-    'We found more than <strong><span>'+albums.length+'</span> albums</strong>' : 
-    'We found <strong><span>'+albums.length+'</span> albums</strong>';
+    function appleUrl(value, artwork) {
+        if (typeof value !== 'string') return null;
+        try {
+            const url = new URL(value);
+            const allowed = artwork ? /(^|\.)mzstatic\.com$/i.test(url.hostname) : /^(music|itunes)\.apple\.com$/i.test(url.hostname);
+            return url.protocol === 'https:' && allowed && !url.username && !url.password && !url.port ? url.href : null;
+        } catch (error) { return null; }
+    }
 
- let html = '<div class="col-12"><p class="text-center mb-4 text-muted">'+sentence+' on Apple Music</p></div>';
+    function failure() {
+        status.textContent = 'We couldn’t load these recordings. Please try again.';
+        retry.hidden = false;
+    }
 
-  for (album in albums) {
-    html += `
-    <div class="col-lg-6 col-md-6 col-12 mb-4 animate fadeInUp">
-     <a href="`+albums[album].collectionViewUrl+`" target="_blank" class="link-none">
-       <div class="d-flex rounded alert-grey border" style="height: 100px;border-color: #f3f5f7!important;">
-         <div class="me-3"><img src="`+albums[album].artworkUrl100+`" style="width:100px; height: 100%;" class="rounded-start"></div>
-         <div class="d-flex flex-grow">
-            <div class="flex-grow py-2 pe-2">
-             <p class="m-0 album-title"><strong>`+albums[album].collectionName+`</strong></p>
-             <p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
-            </div>
-            <div class="d-flex flex-center p-2" style="background: rgba(0,0,0,0.025);">
-              <i class="ms-1 app-icon icon-chevron-right icon-size-lg"></i>
-            </div>
-         </div>
-       </div>
-     </a>
-    </div>
-    `;
-  }
+    function renderAlbum(album, href) {
+        const card = template.content.firstElementChild.cloneNode(true);
+        const link = card.querySelector('[data-album-link]');
+        link.href = href;
+        const title = typeof album.collectionName === 'string' ? album.collectionName.trim().replace(/[.\s]+$/, '') : '';
+        card.querySelector('[data-album-title]').textContent = title || 'Untitled album';
+        const artwork = appleUrl(album.artworkUrl100, true);
+        if (artwork) card.querySelector('[data-album-image]').src = artwork;
+        else card.querySelector('[data-album-art]').hidden = true;
+        const details = [];
+        if (typeof album.releaseDate === 'string' && /^\d{4}-\d{2}-\d{2}/.test(album.releaseDate)) details.push(album.releaseDate.slice(0, 4));
+        if (Number.isInteger(album.trackCount) && album.trackCount > 0) details.push(album.trackCount + (album.trackCount === 1 ? ' track' : ' tracks'));
+        card.querySelector('[data-album-details]').textContent = details.join(' · ');
+        results.appendChild(card);
+    }
 
-  if (albums.length == 200)
-    html += '<div class="col-12 mt-4 text-center"><div class="alert alert-warning d-inline-block"><i class="app-icon icon-circle-alert me-2"></i>We reached Apple Music\'s limit of 200 results</div></div>';
+    function load() {
+        if (pending || !/^[1-9]\d*$/.test(artistId || '')) return;
+        pending = true;
+        retry.hidden = true;
+        retry.disabled = true;
+        container.setAttribute('aria-busy', 'true');
+        status.textContent = 'Loading albums from Apple Music…';
+        results.textContent = '';
+        window.jQuery.ajax({
+            url: 'https://itunes.apple.com/lookup',
+            data: {id: artistId, entity: 'album', limit: 200},
+            dataType: 'jsonp',
+            timeout: 15000,
+            success: function (response) {
+                if (!response || !Array.isArray(response.results)) { failure(); return; }
+                const seen = new Set();
+                let count = 0;
+                response.results.forEach(function (album) {
+                    if (!album || album.collectionType !== 'Album') return;
+                    const href = appleUrl(album.collectionViewUrl, false);
+                    if (!href) return;
+                    const key = typeof album.collectionId === 'string' || typeof album.collectionId === 'number' ? String(album.collectionId) : href;
+                    if (seen.has(key)) return;
+                    seen.add(key);
+                    renderAlbum(album, href);
+                    count += 1;
+                });
+                status.textContent = count ? 'Showing ' + count + (count === 1 ? ' album on Apple Music' : ' albums on Apple Music') : 'No albums are listed for this pianist yet.';
+            },
+            error: failure,
+            complete: function () {
+                pending = false;
+                retry.disabled = false;
+                container.setAttribute('aria-busy', 'false');
+            }
+        });
+    }
 
-  $('#api-results').html(html);
-
-  $('.album-title').clamp(2);
-}
+    retry.addEventListener('click', load);
+    load();
+})();

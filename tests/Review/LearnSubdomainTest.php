@@ -133,7 +133,7 @@ class LearnSubdomainTest extends ReviewTestCase
         }
         $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//a[@href="http://localhost"]')->length);
         $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//*[@aria-current="page" and contains(., "Learn")]')->length);
-        $this->assertSame(2, $xpath->query('//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
+        $this->assertSame(1, $xpath->query('//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
         $this->assertSame(1, $xpath->query('//header[contains(@class, "hub-header")]//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
         foreach (['/timeline', '/birthdays', '/true-or-false', '/riddles', '/tools/staff'] as $retired) {
             $this->assertSame(0, $xpath->query('//main//a[contains(@href, "'.$retired.'")]')->length);

@@ -8,6 +8,7 @@ use App\Mail\Shop\ConfirmPurchase;
 use App\Mail\Memberships\MembershipConfirmed;
 use App\Mail\SharePieceEmail;
 use App\Mail\{AccountWelcome, IosAccountWelcome, WebsiteAccountWelcome};
+use App\Mail\Admin\AdminReport;
 use App\Mail\Tutorials\{NewRequestEmail, RequestPublishedEmail};
 use App\Notifications\User\ConfirmGoogleAccount;
 use Illuminate\Auth\Notifications\{ResetPassword, VerifyEmail};
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\URL;
 
 class AutomaticEmails
 {
-    /** Fixed, user-facing transactional messages; never resolve submitted class/view names. */
+    /** Fixed automatic messages; never resolve submitted class/view names. */
     public function all()
     {
         return collect([
@@ -39,6 +40,7 @@ class AutomaticEmails
             'performance-submitted' => ['name' => 'Performance submitted', 'category' => 'Performances', 'trigger' => 'After a performance is submitted for review.'],
             'performance-approved' => ['name' => 'Performance approved', 'category' => 'Performances', 'trigger' => 'When a submitted performance is approved.'],
             'piece-shared' => ['name' => 'A piece shared with you', 'category' => 'Sharing', 'trigger' => 'When someone sends a piece to an email address.'],
+            'admin-weekly-snapshot' => ['name' => 'Weekly admin snapshot', 'category' => 'Administration', 'trigger' => 'Sundays at 10:30 PM New York time, sent to admin managers.'],
         ]);
     }
 
@@ -70,6 +72,9 @@ class AutomaticEmails
         try {
             $mail = $this->sample($key);
             app()->call([$mail, 'build']);
+            if ($key === 'admin-weekly-snapshot') {
+                $mail->with(['analyticsUrl' => '#email-preview', 'membershipsUrl' => '#email-preview']);
+            }
             $markdown = clone app(Markdown::class);
             $markdown->theme($mail->theme ?: config('mail.markdown.theme', 'default'));
             $data = $mail->buildViewData();
@@ -95,6 +100,8 @@ class AutomaticEmails
             case 'account-welcome': return $this->welcomeSample(new AccountWelcome('Jamie'));
             case 'account-welcome-website': return $this->welcomeSample(new WebsiteAccountWelcome('Jamie'));
             case 'account-welcome-ios': return $this->welcomeSample(new IosAccountWelcome('Jamie'));
+            case 'admin-weekly-snapshot':
+                return new AdminReport((new WeeklySnapshotPreview)->data(), new \App\Admin(['name' => 'Preview Admin']));
             case 'verify-email':
                 $notification = new class extends VerifyEmail {
                     protected function verificationUrl($notifiable) { return '#email-preview'; }

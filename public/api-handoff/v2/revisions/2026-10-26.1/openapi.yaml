@@ -1,0 +1,254 @@
+openapi: 3.0.3
+info:
+  title: PianoLIT mobile API v2 — foundation and Discover draft
+  version: 0.2.0
+  description: >-
+    Planning scaffold only. No v2 operations are implemented or available.
+    Existing /api routes are outside this document and remain unchanged.
+    Add operations and fixtures when each feature contract is specified.
+servers:
+  - url: https://api-v2.invalid/api/v2
+    description: Non-routable documentation placeholder; use no live server until manifest readiness is updated.
+paths: {}
+security:
+  - MobileBearer: []
+x-handoff:
+  revision: "2026-10-26.1"
+  status: draft
+  implemented: false
+  next_operation: POST /api/v2/auth/login
+  next_screen_operation: GET /api/v2/discover
+  specification_reference: https://spec.openapis.org/oas/v3.0.3.html
+components:
+  securitySchemes:
+    MobileBearer:
+      type: http
+      scheme: bearer
+      description: >-
+        Proposed independent native credential. Credential lifecycle is pending.
+        Never interpret legacy user_id as this credential. Initial v2 Discover and
+        browsing require it. Account-entry operations will explicitly override the
+        default security requirement when added. Invalid supplied tokens return 401.
+  schemas:
+    Identifier:
+      type: string
+      pattern: '^[1-9][0-9]*$'
+      example: "123"
+      description: Opaque decimal string preserving the existing database identity.
+    DiscoverData:
+      type: object
+      required: [sections]
+      description: >-
+        Local DiscoverResource output under data. No operation serves this yet.
+        Content comes only from DiscoverFeed, shared with web. Array order is
+        display order; Swift must not independently select, shuffle or trim it.
+      properties:
+        sections:
+          type: array
+          items:
+            oneOf:
+              - {$ref: '#/components/schemas/DiscoverPieceSection'}
+              - {$ref: '#/components/schemas/DiscoverComposerSection'}
+              - {$ref: '#/components/schemas/DiscoverComposerFeature'}
+              - {$ref: '#/components/schemas/DiscoverLevelsSection'}
+    DiscoverComposerSummary:
+      type: object
+      required: [id, name, short_name, portrait_url, piece_count, destination]
+      properties:
+        id: {$ref: '#/components/schemas/Identifier'}
+        name: {type: string}
+        short_name: {type: string}
+        portrait_url: {type: string, format: uri}
+        piece_count: {type: integer, minimum: 0}
+        destination:
+          type: object
+          required: [kind, id]
+          properties:
+            kind: {type: string, enum: [composer_repertoire]}
+            id: {$ref: '#/components/schemas/Identifier'}
+    DiscoverPieceSummary:
+      type: object
+      required: [id, title, composer, attribution, artwork_url, difficulty, is_new, is_free_pick, available_media, destination]
+      properties:
+        id: {$ref: '#/components/schemas/Identifier'}
+        title: {type: string}
+        composer: {$ref: '#/components/schemas/DiscoverComposerSummary'}
+        attribution: {type: string, nullable: true}
+        artwork_url: {type: string, format: uri}
+        difficulty:
+          type: object
+          required: [name, label]
+          properties:
+            name: {type: string, nullable: true}
+            label: {type: string, nullable: true}
+        is_new: {type: boolean}
+        is_free_pick:
+          type: boolean
+          description: Current identity only; neither this flag nor section position grants media access.
+        available_media:
+          type: object
+          required: [video, audio, score, synthesia]
+          description: Media availability only; native entitlements remain a separate contract.
+          properties:
+            video: {type: boolean}
+            audio: {type: boolean}
+            score: {type: boolean}
+            synthesia: {type: boolean}
+        destination:
+          type: object
+          required: [kind, id]
+          properties:
+            kind: {type: string, enum: [piece]}
+            id: {$ref: '#/components/schemas/Identifier'}
+    DiscoverPieceSection:
+      type: object
+      required: [id, title, kind, items]
+      properties:
+        id:
+          type: string
+          enum: [free_pick, recently_viewed, latest_pieces, for_you, past_highlights, mood, similar_to_free_pick]
+        title: {type: string}
+        subtitle: {type: string}
+        kind: {type: string, enum: [featured_piece, compact_piece_rail, artwork_piece_rail, featured_piece_list]}
+        query: {type: string}
+        items:
+          type: array
+          maxItems: 12
+          description: Shared feed limits apply; For you at most six, past highlights seven, current Free Pick one.
+          items: {$ref: '#/components/schemas/DiscoverPieceSummary'}
+    DiscoverComposerSection:
+      type: object
+      required: [id, title, kind, items]
+      properties:
+        id: {type: string, enum: [composers]}
+        title: {type: string}
+        kind: {type: string, enum: [composer_rail]}
+        items:
+          type: array
+          maxItems: 12
+          items: {$ref: '#/components/schemas/DiscoverComposerSummary'}
+    DiscoverComposerFeature:
+      type: object
+      required: [id, title, kind, group, composer, biography_excerpt, items]
+      properties:
+        id: {type: string, enum: [composer_feature]}
+        title: {type: string}
+        kind: {type: string, enum: [composer_feature]}
+        group: {type: string, enum: [women, black]}
+        composer: {$ref: '#/components/schemas/DiscoverComposerSummary'}
+        biography_excerpt: {type: string}
+        query: {type: string}
+        items:
+          type: array
+          minItems: 1
+          maxItems: 12
+          items: {$ref: '#/components/schemas/DiscoverPieceSummary'}
+    DiscoverLevelsSection:
+      type: object
+      required: [id, title, subtitle, kind, systems]
+      properties:
+        id: {type: string, enum: [levels]}
+        title: {type: string}
+        subtitle: {type: string}
+        kind: {type: string, enum: [level_systems]}
+        systems:
+          type: array
+          minItems: 3
+          maxItems: 3
+          description: RCM, ABRSM, Suzuki order; activate the first system with items, disabling empty systems.
+          items:
+            type: object
+            required: [id, label, items]
+            properties:
+              id: {type: string, enum: [rcm, abrsm, suzuki]}
+              label: {type: string}
+              items:
+                type: array
+                description: Natural numeric order supplied by the shared feed helper.
+                items:
+                  type: object
+                  required: [number, label, piece_count, destination]
+                  properties:
+                    number: {type: string}
+                    label: {type: string}
+                    piece_count: {type: integer, minimum: 0}
+                    destination:
+                      type: object
+                      required: [kind, query]
+                      properties:
+                        kind: {type: string, enum: [search]}
+                        query: {type: string}
+    UtcInstant:
+      type: string
+      format: date-time
+      pattern: 'Z$'
+      example: "2026-10-22T12:00:00Z"
+    PageInfo:
+      type: object
+      required: [next_cursor, has_more]
+      properties:
+        next_cursor:
+          type: string
+          nullable: true
+          description: Opaque cursor; null exactly when has_more is false.
+        has_more:
+          type: boolean
+    ResponseMeta:
+      type: object
+      required: [request_id]
+      properties:
+        request_id:
+          type: string
+          description: Non-secret server-generated correlation identifier.
+        page:
+          $ref: '#/components/schemas/PageInfo'
+    ErrorEnvelope:
+      type: object
+      required: [error, meta]
+      properties:
+        error:
+          type: object
+          required: [code, message, fields]
+          properties:
+            code:
+              type: string
+              example: invalid_request
+            message:
+              type: string
+              example: Please check the highlighted fields.
+            fields:
+              type: object
+              description: Empty object for non-validation errors; values are arrays of safe display messages.
+              additionalProperties:
+                type: array
+                items: {type: string}
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema: {type: integer, minimum: 1, maximum: 50, default: 20}
+    Cursor:
+      name: cursor
+      in: query
+      schema: {type: string, minLength: 1}
+  responses:
+    Unauthorized:
+      description: Missing, malformed, expired or revoked credential.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+    ValidationError:
+      description: Invalid request.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}
+    RateLimited:
+      description: Retry after the specified number of seconds.
+      headers:
+        Retry-After:
+          schema: {type: integer, minimum: 1}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorEnvelope'}

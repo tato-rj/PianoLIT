@@ -1,5 +1,5 @@
 <a href="{{ $url }}" class="resource-card card card-lift h-100" aria-labelledby="{{ $id }}-title" aria-describedby="{{ $id }}-description" @if($preview ?? false) data-ds-preview @endif>
-    <div class="resource-card__art" aria-hidden="true">{{ $artwork ?? '' }}</div>
+    <div class="resource-card__art {{ $artworkClass ?? '' }}" aria-hidden="true">{{ $artwork ?? '' }}</div>
     <div class="resource-card__body p-4">
         <p class="resource-card__format mb-2">{{ $format }}</p>
         <h3 id="{{ $id }}-title" class="h5 mb-2">{{ $title }}</h3>

@@ -1,6 +1,6 @@
 schema_version: 1
-revision: "2026-10-22.2"
-updated_on: "2026-10-22"
+revision: "2026-10-26.1"
+updated_on: "2026-10-26"
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -35,7 +35,7 @@ features:
   - id: discover
     document: screens/discover.yaml
     status: draft
-    backend_status: not_started
+    backend_status: shared_feed_and_serializer_local
     ios_status: not_started
     depends_on: [foundations]
 consumer_rules:
@@ -49,6 +49,12 @@ consumer_rules:
   - Record revision, feature IDs, iOS commit, build and verification in the iOS repository.
   - Report ambiguities or missing dependencies instead of inventing endpoint or access behavior.
 changelog:
+  - revision: "2026-10-26.1"
+    changes:
+      - Arthur requires identical Discover content on web and iOS v2, with platform-specific presentation only.
+      - Implemented one shared content service and a local v2 JSON resource, including six For you pieces and the cached women/Black composer choice.
+      - Added parity tests for content order, account identity, refresh, favorite changes, Free Pick rotation and serialization isolation.
+      - Updated the draft content contract; authentication, v2 routes, staging and native integration remain unimplemented.
   - revision: "2026-10-22.2"
     changes:
       - Recorded the developer's static UIKit/iOS 17.6/email-password baseline with its verification limits.

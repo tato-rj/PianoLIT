@@ -113,13 +113,33 @@
     @component('admin.pages.settings.sample', ['label' => 'Newsletter invitation', 'usage' => 'components.newsletter.invitation · pastel-card', 'properties' => 'padding,color,background-color,border,border-radius'])
       @include('components.newsletter.invitation', ['preview' => true, 'headingId' => 'ds-newsletter-invitation-title'])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Neutral newsletter invitation', 'usage' => 'components.newsletter.invitation · appearance: plain', 'properties' => 'padding,color,background-color,border,border-radius'])
-      @include('components.newsletter.invitation', ['preview' => true, 'appearance' => 'plain', 'headingId' => 'ds-newsletter-plain-title'])
-    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Public resource card', 'usage' => 'components.resource-card · card-lift', 'properties' => 'padding,color,background-color,border,border-radius,box-shadow'])
       @component('components.resource-card', ['preview' => true, 'id' => 'ds-resource-card', 'title' => 'Circle of fifths', 'format' => 'Explore harmony', 'description' => 'See how keys connect and find your way around harmony.', 'action' => 'Explore the circle', 'url' => route('tools.circle-of-fifths')])
         @slot('artwork')@include('learn.components.artwork', ['kind' => 'circle'])@endslot
       @endcomponent
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Infographic resource card', 'usage' => 'components.resource-card · resource-card__art--poster', 'properties' => 'padding,color,background-color,border,border-radius'])
+      @component('components.resource-card', ['preview' => true, 'id' => 'ds-infographic-card', 'title' => 'Music at a glance', 'format' => 'Free visual guide', 'description' => 'A visual reference to download and keep.', 'action' => 'View & download', 'url' => route('resources.infographs.index'), 'artworkClass' => 'resource-card__art--poster'])
+        @slot('artwork')<img src="{{ asset('images/misc/thumbnails/infographs.jpg') }}" alt="" loading="lazy">@endslot
+      @endcomponent
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Quiz resource card', 'usage' => 'components.resource-card · resource-card__art--cover', 'properties' => 'padding,color,background-color,border,border-radius'])
+      @component('components.resource-card', ['preview' => true, 'id' => 'ds-quiz-card', 'title' => 'How well do you know the piano?', 'format' => 'Beginner · 5 questions · 1 minute', 'description' => 'A short challenge to discover something new.', 'action' => 'Try this quiz', 'url' => route('quizzes.index'), 'artworkClass' => 'resource-card__art--cover'])
+        @slot('artwork')<img src="{{ asset('images/backgrounds/periods/romantic/01.jpg') }}" alt="" loading="lazy">@endslot
+      @endcomponent
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Pianist resource card', 'usage' => 'components.resource-card · resource-card__art--portrait', 'properties' => 'padding,color,background-color,border,border-radius'])
+      @component('components.resource-card', ['preview' => true, 'id' => 'ds-pianist-card', 'title' => 'Artist profile', 'format' => 'Meet the artist', 'description' => 'Explore the pianist’s life and recordings.', 'action' => 'Meet the pianist', 'url' => route('resources.pianists.index'), 'artworkClass' => 'resource-card__art--portrait'])
+        @slot('artwork')<img src="{{ asset('images/misc/thumbnails/pianists.jpg') }}" alt="" loading="lazy">@endslot
+      @endcomponent
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Course signup', 'usage' => 'crashcourses.card · @input · shared primary button', 'properties' => 'padding,color,background-color,border,border-radius'])
+      @include('crashcourses.card', ['crashcourse' => (object) ['title' => 'Reading music', 'lessons_count' => 5], 'formId' => 'ds-course-signup', 'preview' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Topic navigation', 'usage' => 'components.topic-navigation · shared link buttons', 'properties' => 'padding,font-size,color'])
+      @include('components.topic-navigation', ['preview' => true, 'label' => 'Sample topics', 'items' => [
+        ['label' => 'All guides', 'url' => '#', 'active' => true], ['label' => 'Theory', 'url' => '#'], ['label' => 'Composers', 'url' => '#'],
+      ]])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Responsive piano keyboard', 'usage' => 'components.piano.keyboard · responsive: true', 'properties' => 'width,height,border,border-radius'])
       @include('components.piano.keyboard', ['designSystemPreview' => true, 'responsive' => true, 'centered' => true, 'octaves' => [3 => [[true, false], [true, false], [true, false], [true, false], [true, false], [true, false], [true, false]], 4 => []]])

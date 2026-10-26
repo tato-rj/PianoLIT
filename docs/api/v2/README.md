@@ -1,9 +1,10 @@
 # PianoLIT iOS v2 handoff
 
-Revision **2026-10-22.2 is a planning draft**. No v2 endpoint, credential,
+Revision **2026-10-26.1 remains a draft**. The shared Discover content service
+and its v2 JSON resource are implemented locally. No v2 endpoint, credential,
 database migration or native app change is implemented. The existing API stays
-unchanged. The first implementation target is Discover after the shared
-foundations are agreed and built.
+unchanged. Authentication, routing and staging/native verification remain
+required before the new Discover response can be served to an app.
 
 ## Reading the handoff
 
@@ -31,8 +32,30 @@ web implementation, section ordering, interactions, dependencies and acceptance
 checks. It also records the positional Free Pick/composer assumptions and the
 existing LoadVC/PieceVC/MatchVC dependencies that must be addressed. The proposed
 adapter reuses native views while keeping new identity/data handling explicit;
-changing only the feed URL cannot migrate this flow. This is not yet a response
-schema, implemented adapter or approved native layout.
+changing only the feed URL cannot migrate this flow. The local response schema
+is a draft; the native destination adapter and layout remain unverified.
+
+## One Discover content source
+
+Arthur requires the same Discover content on web and iOS v2. Both renderers must
+consume `App\Services\DiscoverFeed::forUser($verifiedUser)`. Web adds Blade
+presentation; `App\Http\Resources\Api\V2\DiscoverResource` produces data only.
+Do not copy the web controller's old assembly or create native recommendation
+rules. This applies to section/item order, the cached women/Black composer
+choice, the six-piece For you limit, recent history, highlights, moods, grading
+and similarity ranking. Swift renders the server response without independently
+choosing a group, trimming rails or using the old positional rows.
+
+The public content pool is shared between these two renderers, with separate
+account-scoped recommendation IDs and live account-owned history. A second v2
+content cache must not independently choose content. Any transport/JSON caching
+must follow the same shared content generation; personalized responses remain
+private and no-store. Media entitlements remain a separate native decision.
+
+The local serializer emits stable section IDs/kinds and allowlisted summaries;
+it does not make an API available. Wire it only behind the dedicated verified
+bearer boundary. The draft schema and local checks do not complete D1/D2 or
+approve the native destination adapter.
 
 ## Readiness and revisions
 
@@ -48,7 +71,7 @@ is live. `runtime.implemented`, base URLs, feature statuses, and OpenAPI's
 `x-handoff` must agree. Record verification before advancing status; the package
 checker cannot prove a server exists or that its behavior matches the contract.
 
-Use a new revision (for example `2026-10-22.3`) for any published content change,
+Use a new revision (for example `2026-10-26.2`) for any published content change,
 including a status or URL change. Published revision directories are immutable.
 Update the source manifest, this revision statement, OpenAPI's `x-handoff`, and
 the changelog together. The build refuses to overwrite different content at an
@@ -110,7 +133,7 @@ After the documentation has been deployed:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-10-22.2 \
+  --revision 2026-10-26.1 \
   --output ./PianoLITHandoff
 ```
 
@@ -142,9 +165,9 @@ Suggested instruction for the developer's Codex:
 3. Finalize Discover's typed contract, bounds, navigation and synthetic fixtures.
    Capture the current web references listed in `references.yaml`; do not use
    old marketing screenshots as design approval.
-4. Build shared Discover sections behind verified authentication, then account
-   personalization and the piece-open history flow. Review the native destination
-   adapter and downstream legacy calls. Test account isolation, Free Pick rotation
-   and legacy parity.
+4. Wire the existing shared Discover service/resource behind verified
+   authentication; do not rebuild content selection. Complete the piece-open
+   history flow. Review the native destination adapter and downstream legacy
+   calls. Test account isolation, Free Pick rotation and legacy parity.
 5. Publish a `ready_for_ios` revision only after staging verification. Compare the
    native implementation with approved references before release.

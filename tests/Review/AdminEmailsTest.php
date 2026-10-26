@@ -40,20 +40,20 @@ class AdminEmailsTest extends ReviewTestCase
     public function test_catalog_lists_all_variants_and_shares_one_editable_recipient_form()
     {
         $admin = $this->admin();
-        $response = $this->get(route('admin.emails.index'))->assertOk()->assertDontSee('Not currently sent')->assertSee('Membership confirmation')->assertSee('Sending');
+        $response = $this->get(route('admin.emails.index'))->assertOk()->assertDontSee('Not currently sent')->assertSee('Membership confirmation')->assertSee('Weekly admin snapshot')->assertSee('Sending');
         $xpath = $this->xpath($response);
-        $this->assertCount(17, $xpath->query('//table[@id="automatic-emails"]/tbody/tr'));
+        $this->assertCount(18, $xpath->query('//table[@id="automatic-emails"]/tbody/tr'));
         $this->assertCount(1, $xpath->query('//a[@href="'.route('admin.emails.index').'" and @aria-current="page"]'));
         $this->assertCount(1, $xpath->query('//ul[@id="settings" and contains(@class, "show")]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="email" and @value="'.$admin->email.'"]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@id="preview-recipient" and contains(@class,"form-control") and @type="email" and @required and @maxlength="254" and @autocomplete="email" and @aria-describedby="preview-send-help"]'));
         $this->assertCount(1, $xpath->query('//label[@for="preview-recipient"]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="_token"]'));
-        $this->assertCount(17, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
-        $this->assertCount(17, $xpath->query('//table[@id="automatic-emails"]//a[@target="_blank" and @rel="noopener noreferrer"]'));
-        $this->assertCount(14, $xpath->query('//input[@role="switch" and @checked and @value="1"]'));
-        $this->assertCount(17, $xpath->query('//label[contains(@class,"switch")]/input[@name="enabled" and not(contains(@class,"status-toggle"))]/following-sibling::span[contains(@class,"slider")]'));
-        $this->assertCount(17, $xpath->query('//input[@role="switch"]/ancestor::form/input[@type="hidden" and @name="enabled" and @value="0"]'));
+        $this->assertCount(18, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
+        $this->assertCount(18, $xpath->query('//table[@id="automatic-emails"]//a[@target="_blank" and @rel="noopener noreferrer"]'));
+        $this->assertCount(15, $xpath->query('//input[@role="switch" and @checked and @value="1"]'));
+        $this->assertCount(18, $xpath->query('//label[contains(@class,"switch")]/input[@name="enabled" and not(contains(@class,"status-toggle"))]/following-sibling::span[contains(@class,"slider")]'));
+        $this->assertCount(18, $xpath->query('//input[@role="switch"]/ancestor::form/input[@type="hidden" and @name="enabled" and @value="0"]'));
         foreach (['Website welcome', 'Web app welcome', 'iOS app welcome'] as $name) {
             $this->assertCount(1, $xpath->query('//input[@role="switch" and not(@checked) and @value="1" and @aria-label="Automatic sending: '.$name.'"]'));
         }
@@ -92,6 +92,31 @@ class AdminEmailsTest extends ReviewTestCase
             $this->assertDoesNotMatchRegularExpression('/\b(users|pieces|password_resets|auth_link_challenges|memberships|purchases)\b/i', $query['query']);
         }
         Mail::assertNothingSent(); Queue::assertNothingPushed(); Notification::assertNothingSent(); Http::assertNothingSent();
+    }
+
+    public function test_weekly_admin_snapshot_uses_sample_data_and_inert_report_links_even_when_sending_is_off()
+    {
+        $admin = $this->admin();
+        $settings = app(\App\Mail\AutomaticEmailSettings::class);
+        $this->assertTrue($settings->enabled('admin-weekly-snapshot'));
+        $this->patch(route('admin.emails.sending', 'admin-weekly-snapshot'), ['enabled' => 0])->assertRedirect();
+        $this->assertFalse($settings->enabled('admin-weekly-snapshot'));
+        $this->get(route('admin.emails.index'))->assertOk()->assertSee('Weekly admin snapshot');
+        $response = $this->get(route('admin.emails.preview', 'admin-weekly-snapshot'))
+            ->assertOk()->assertSee('The week at PianoLIT')->assertSee('Sample data')->assertSee('326');
+        $xpath = $this->xpath($response);
+        $this->assertCount(0, $xpath->query('//a[contains(@href,"/analytics/") or contains(@href,"/pieces/")]'));
+        $this->assertCount(9, $xpath->query('//a[starts-with(@href,"#email-preview")]'));
+        $this->assertCount(3, $xpath->query('//img[contains(@src,"/images/emails/welcome/preview-")]'));
+        $this->assertSame(0, \App\User::count());
+        $this->assertSame(0, \App\Piece::count());
+        $this->post(route('admin.emails.send'), ['email_key' => 'admin-weekly-snapshot', 'email' => 'chosen@example.com'])
+            ->assertRedirect(route('admin.emails.index'))->assertSessionHas('status', 'Preview sent to chosen@example.com.');
+        Mail::assertSent(EmailPreview::class, function ($mail) {
+            return $mail->hasTo('chosen@example.com') && strpos($mail->subject, '[Preview] PianoLIT weekly snapshot') === 0;
+        });
+        Mail::assertSent(EmailPreview::class, 1);
+        $this->assertDatabaseHas('automatic_email_settings', ['email_key' => 'admin-weekly-snapshot', 'enabled' => false, 'updated_by_admin_id' => $admin->id]);
     }
 
     public function test_sample_account_links_are_inert_and_shop_and_brand_links_use_the_public_host()

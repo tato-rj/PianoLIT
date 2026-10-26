@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 class AutomaticEmailSettings
 {
     private const MAILABLES = [
+        Admin\AdminReport::class => 'admin-weekly-snapshot',
         // Each signup subtype has its own switch; match them before the shared base.
         IosAccountWelcome::class => 'account-welcome-ios',
         WebsiteAccountWelcome::class => 'account-welcome-website',

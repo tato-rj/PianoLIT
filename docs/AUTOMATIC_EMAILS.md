@@ -1,9 +1,15 @@
 # Automatic email delivery
 
-Settings → Emails lists the user-facing transactional emails and their **Sending**
+Settings → Emails lists automatic emails and their **Sending**
 switches. These switches apply globally, independently of newsletter subscriptions.
 Browser and test-send previews remain available when automatic sending is off.
-Stripe/Apple provider receipts and internal admin reports are outside this catalog.
+The **Weekly admin snapshot** appears under Administration with Browser and Email
+preview actions. Its Sending switch defaults on, preserves the existing Sunday
+22:30 America/New_York delivery to managers, and suppresses new dispatches and
+already-queued reports when turned off. Its previews use fictional, labeled
+figures, existing preview artwork and inert report/piece links; rendering never
+queries customer analytics or sends to the scheduled manager list. Stripe/Apple
+provider receipts remain outside this catalog.
 
 Existing email types default to on. **Website welcome**, **Web app welcome** and
 **iOS app welcome** have independent switches and default to off. The web app welcome keeps the existing

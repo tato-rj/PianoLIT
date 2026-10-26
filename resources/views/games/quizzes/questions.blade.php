@@ -1,29 +1,22 @@
-@php($list = ['a', 'b', 'c', 'd'])
 @foreach($quiz->questions() as $question)
-<div class="mb-5 position-relative quiz-items">
-	<div class="question-overlay" id="overlay-{{$loop->iteration}}"></div>
-	<div class="quiz-question mb-4">
-		<label class="text-muted"><small>Question {{$loop->iteration}} of {{$loop->count}}</small></label>
-		<h5 style="line-height: 1.8;"><span class="bg-primary text-white rounded px-2 py-1 me-2"><strong>Q</strong></span>{{$question['Q']}}</h5>
-		@if($question['audio'])
-		<audio controls class="mt-4 w-100 d-block audio">
-			<source src="{{asset($question['audio'])}}" type="audio/mp3">
-		</audio>
-		@endif
-		@if($question['image'])
-			<img src="{{asset($question['image'])}}" class="mt-3 w-100" style="max-width: 542px">
-		@endif
-	</div>
-	<div class="quiz-answers">
-		<div class="list-group">
-			@foreach($question['A'] as $answer)
-				<button type="button" class="list-group-item list-group-item-action border-0 rounded-pill text-start mb-1 d-flex justify-content-between align-items-center" {{strhas($answer, '[x]') ? 'correct' : null}}
-						data-overlay="#overlay-{{$loop->parent->iteration}}">
-					{{$list[$loop->index]}}) {{str_replace('[x]', '', $answer)}}
-					@icon(strhas($answer, '[x]') ? 'circle-check' : 'circle-x', ['mr' => 0, 'if' => false])
-				</button>
-			@endforeach
-		</div>
-	</div>
-</div>
+<section class="quiz-item bg-white border rounded-sm p-4 mb-4" data-quiz-question aria-labelledby="quiz-question-{{ $loop->iteration }}">
+    <p class="small text-muted mb-2">Question {{ $loop->iteration }} of {{ $loop->count }}</p>
+    <h2 class="h5 mb-4" id="quiz-question-{{ $loop->iteration }}" tabindex="-1">{{ rtrim($question['Q'], '. ') }}</h2>
+    @if($question['audio'])
+        <audio controls preload="none" class="w-100 d-block mb-4" aria-label="Audio for question {{ $loop->iteration }}"><source src="{{ asset($question['audio']) }}" type="audio/mp3"></audio>
+    @endif
+    @if($question['image'])
+        <img src="{{ asset($question['image']) }}" class="quiz-question-image d-block mb-4" alt="Illustration for question {{ $loop->iteration }}" loading="lazy">
+    @endif
+    <div class="quiz-answers d-grid gap-2" role="group" aria-labelledby="quiz-question-{{ $loop->iteration }}">
+        @foreach($question['A'] as $answer)
+            <button type="button" class="btn btn-secondary quiz-answer text-start w-100" data-quiz-answer="{{ $loop->index }}" aria-pressed="false" {{ strhas($answer, '[x]') ? 'correct' : '' }}>
+                <span class="quiz-answer-letter" aria-hidden="true">{{ chr(65 + $loop->index) }}</span>
+                <span class="quiz-answer-copy">{{ str_replace('[x]', '', $answer) }}</span>
+                <span class="quiz-answer-outcome small" data-quiz-answer-outcome hidden></span>
+            </button>
+        @endforeach
+    </div>
+    <p class="small mb-0 mt-3" data-quiz-question-feedback role="status" aria-live="polite"></p>
+</section>
 @endforeach

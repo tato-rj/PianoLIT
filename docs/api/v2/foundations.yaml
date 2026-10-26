@@ -1,7 +1,7 @@
 id: foundations
 status: draft
 scope: Plan the independent v2 boundary before implementing Discover.
-evidence_date: "2026-10-22"
+evidence_date: "2026-10-26"
 source_evidence:
   - ios-baseline.yaml
   - app/Providers/RouteServiceProvider.php
@@ -10,6 +10,8 @@ source_evidence:
   - app/Http/Controllers/Auth/Api/LoginController.php
   - app/Api/Api.php
   - app/Api/Factory.php
+  - app/Services/DiscoverFeed.php
+  - app/Http/Resources/Api/V2/DiscoverResource.php
   - docs/api/activity-v1.yaml
 
 fixed_constraints:
@@ -19,7 +21,8 @@ fixed_constraints:
   - Use explicit v2 response resources; never change shared model appends/hidden fields to shape v2 JSON.
   - Never authenticate an account from a submitted user_id, analytics identifier or device identifier.
   - Existing installed clients continue using the existing API throughout this project.
-  - Do not automatically import the web Access Limits matrix into native iOS.
+  - Share all Discover content decisions with web through DiscoverFeed; Arthur confirmed content parity on 2026-10-26.
+  - Only the Discover personalization content switch is shared; do not automatically import web media or other Access Limits into native iOS.
   - Preserve App Store billing, existing memberships and the unconditional super-user override.
   - Preserve current original media delivery, including public PDFs; private delivery is a separate project.
   - Do not send emails or change billing as part of migration, login or verification.
@@ -92,7 +95,7 @@ proposed_decisions:
     client_retry: Retry safe reads with bounded backoff; do not blindly retry mutations.
     future_writes: Define idempotency and optimistic revisions per operation before releasing it.
   caching:
-    public_feed: Cache only non-personal content in a separate v2 namespace.
+    public_feed: Reuse DiscoverFeed's non-personal content pool and refresh generation; never independently select or randomize a v2 content cache. Legacy mobile caches remain separate.
     personalized_feed: Compose after shared cache lookup; send Cache-Control private, no-store initially.
     refresh: Respect the existing admin refresh signal without replacing legacy cached objects.
     free_pick: Resolve the due UTC schedule row and include current pick identity in cache invalidation.
@@ -132,6 +135,11 @@ milestones:
     deliverables: [piece details and playback, favorites and folders, collections, search and remaining screens]
 
 resolved_decisions:
+  - id: discover_content_parity
+    status: confirmed_by_arthur
+    date: "2026-10-26"
+    outcome: Web and iOS v2 consume identical shared Discover content, including six For you pieces and the cached women/Black composer choice; only rendering differs.
+    implementation: DiscoverFeed and DiscoverResource exist locally; bearer authentication, routes and staging/native verification remain pending.
   - id: native_baseline
     status: reported_static_inspection
     evidence: ios-baseline.yaml
@@ -154,7 +162,7 @@ open_decisions:
   - id: native_access
     owner: product_and_backend_and_ios
     needed_before: D2
-    question: Confirm signed-in personalization and native membership/Free-Pick entitlements without assuming the web matrix applies; guest browsing is excluded initially.
+    question: Confirm native membership/Free-Pick entitlements without assuming web media policies apply; Discover personalization content now follows the shared feed and guest browsing remains excluded.
   - id: discover_navigation
     owner: backend_and_ios
     needed_before: D1

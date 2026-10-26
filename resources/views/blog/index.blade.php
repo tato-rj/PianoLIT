@@ -17,12 +17,13 @@
         Stories, ideas, and discoveries from the world of piano.<br class="d-none d-md-block">A little inspiration for wherever music takes you.
     @endcomponent
 
-    <nav class="blog-home__topics d-flex flex-wrap gap-2 py-4 mb-4 border-top border-bottom" aria-label="Article topics">
-        <a href="{{ route('posts.index') }}" class="btn btn-sm btn-secondary" @if(empty($selectedTopics)) aria-current="page" @endif>All stories</a>
-        @foreach($topics as $topic)
-            <a href="{{ route('posts.index', ['topics' => $topic->slug]) }}" class="btn btn-sm {{ in_array($topic->slug, $selectedTopics, true) ? 'btn-primary' : 'btn-secondary' }}" @if(in_array($topic->slug, $selectedTopics, true)) aria-current="page" @endif>{{ ucfirst($topic->name) }}</a>
-        @endforeach
-    </nav>
+    @php
+        $topicLinks = [['label' => 'All stories', 'url' => route('posts.index'), 'active' => empty($selectedTopics), 'variant' => 'secondary']];
+        foreach ($topics as $topic) {
+            $topicLinks[] = ['label' => ucfirst($topic->name), 'url' => route('posts.index', ['topics' => $topic->slug]), 'active' => in_array($topic->slug, $selectedTopics, true)];
+        }
+    @endphp
+    @include('components.topic-navigation', ['items' => $topicLinks, 'label' => 'Article topics', 'class' => 'blog-home__topics'])
 
     @component('components.editorial-layout')
         @if($posts->isNotEmpty())

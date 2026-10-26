@@ -1,7 +1,19 @@
-<div class="col-lg-2 col-md-4 col-6 text-center mb-3 pianist-card">
-	<a class="link-none" href="{{route('resources.pianists.show', $pianist->slug)}}">
-		<img src="{{storage($pianist->cover_path)}}" style="width: 100px" class="rounded-circle mb-2 shadow">
-		<p class="m-0 text-truncate"><strong>{{$pianist->name}}</strong></p>
-		<p class="text-grey">{{$pianist->country->name}}</p>
-	</a>
-</div>
+@php
+    $nationality = optional($pianist->country)->nationality ?: optional($pianist->country)->name;
+    $description = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $pianist->biography)));
+@endphp
+@component('components.resource-card', [
+    'id' => $cardId ?? 'pianist-'.$pianist->id, 'title' => rtrim($pianist->name, '. '),
+    'format' => $nationality ?: 'Meet the artist',
+    'description' => $description ? Str::limit($description, 140) : 'Explore the pianist’s life and recordings.',
+    'url' => route('resources.pianists.show', $pianist->slug), 'action' => 'Meet the pianist',
+    'artworkClass' => 'resource-card__art--portrait',
+])
+    @slot('artwork')
+        @if($pianist->cover_path)
+            <img src="{{ storage($pianist->cover_path) }}" alt="" loading="lazy" decoding="async">
+        @else
+            @include('learn.components.artwork', ['kind' => 'pianists'])
+        @endif
+    @endslot
+@endcomponent

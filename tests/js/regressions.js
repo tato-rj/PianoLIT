@@ -34,6 +34,7 @@ function element(value = '') {
 }
 
 async function main() {
+    await require('./quizzes.test.cjs')();
     require('./section-navigation.test.cjs')();
     await require('./profile.test.cjs')();
     await require('./admin-notifications')();

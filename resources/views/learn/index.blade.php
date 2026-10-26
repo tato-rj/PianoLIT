@@ -43,7 +43,7 @@
         @foreach($sections as $section)
             <section id="{{ $section['id'] }}" class="learn-home__section mb-5" aria-labelledby="learn-{{ $section['id'] }}-title">
                 <div class="mb-4">
-                    <h2 id="learn-{{ $section['id'] }}-title" class="h4 mb-2"><span class="learn-home__number me-2" aria-hidden="true">0{{ $loop->iteration }} /</span>{{ $section['label'] }}</h2>
+                    <h2 id="learn-{{ $section['id'] }}-title" class="h4 mb-2">{{ $section['label'] }}</h2>
                     <p class="text-muted small mb-0">{{ $section['description'] }}</p>
                 </div>
                 <div class="row g-4">
@@ -70,8 +70,6 @@
                 @endif
             </section>
         @endforeach
-
-        @include('components.newsletter.invitation', ['headingId' => 'learn-newsletter-title', 'preview' => false, 'appearance' => 'plain'])
 
         @slot('sidebar')
             @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])

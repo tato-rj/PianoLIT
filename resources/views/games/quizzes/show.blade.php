@@ -1,90 +1,91 @@
-@extends('layouts.app', ['title' => $quiz->title . ' | PianoLIT Quiz',
-	'shareable' => [
-		'keywords' => '',
-		'title' => 'QUIZ: ' . $quiz->title,
-		'description' => $quiz->description,
-		'thumbnail' => $quiz->thumbnail_image(),
-		'created_at' => $quiz->created_at->format(DateTime::ISO8601),
-		'updated_at' => $quiz->updated_at->format(DateTime::ISO8601)
-	]])
-
-@push('header')
-<script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
-@endpush
+@extends('layouts.app', [
+    'title' => rtrim($quiz->title, '. ').' | PianoLIT Learn', 'bodyClass' => 'learn-home quiz-page',
+    'shareable' => [
+        'keywords' => 'music quiz,piano,music theory', 'title' => rtrim($quiz->title, '. '),
+        'description' => $quiz->description, 'thumbnail' => $quiz->thumbnail_image(),
+        'created_at' => $quiz->created_at->format(DateTime::ISO8601), 'updated_at' => $quiz->updated_at->format(DateTime::ISO8601),
+    ],
+])
 
 @section('content')
+<div class="container py-4 pb-5">
+    @include('components.breadcrumb', ['items' => [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Learn', 'url' => route('learn.home')],
+        ['label' => 'Quizzes', 'url' => route('quizzes.index')],
+        ['label' => rtrim($quiz->title, '. ')],
+    ]])
+    @component('components.editorial-layout')
+        <article id="quiz" data-url="{{ route('quizzes.feedback', $quiz->slug) }}" data-quiz>
+            @if(!empty($preview))
+                <div class="alert alert-secondary mb-4" role="status">@icon('eye')Admin preview · This quiz has not been published</div>
+            @endif
+            <header class="mb-4">
+                @if($quiz->topics->isNotEmpty())
+                    <div class="d-flex flex-wrap gap-2 mb-3" aria-label="Quiz topics">
+                        @foreach($quiz->topics as $topic)<a class="btn btn-secondary btn-sm" href="{{ route('quizzes.index', ['topics' => $topic->slug]) }}">{{ ucfirst($topic->name) }}</a>@endforeach
+                    </div>
+                @endif
+                <h1 class="h2 mb-3">{{ rtrim($quiz->title, '. ') }}</h1>
+                <p class="text-muted mb-4">{{ $quiz->description }}</p>
+                <div class="d-flex flex-wrap align-items-center gap-3 small text-muted">
+                    <span>@icon('list'){{ count($quiz->questions) }} {{ Str::plural('question', count($quiz->questions)) }}</span>
+                    <span>@icon('clock')About {{ $quiz->duration }}</span>
+                    @include('games.quizzes.level')
+                </div>
+            </header>
+            @if($quiz->cover_path)
+                <img src="{{ $quiz->cover_image() }}" alt="{{ rtrim($quiz->title, '. ') }}" class="quiz-cover w-100 d-block mb-4" decoding="async">
+            @endif
 
-@progressbar
+            <section class="quiz-start bg-white border rounded-sm p-4 mb-4" data-quiz-introduction aria-labelledby="quiz-start-title">
+                <h2 class="h5 mb-2" id="quiz-start-title">{{ count($quiz->questions) ? 'Ready to give it a try?' : 'This quiz is being prepared' }}</h2>
+                @if(count($quiz->questions))
+                    <p class="text-muted mb-3">Choose one answer for each question. You’ll see the correct answer as you go.</p>
+                    @if($quiz->results_count > 2)<p class="small text-muted mb-3">Average score: <strong>{{ $quiz->average_score }} out of {{ count($quiz->questions) }}</strong> · {{ number_format($quiz->results_count) }} attempts</p>@endif
+                    <button class="btn btn-primary" type="button" id="start-quiz" data-quiz-start>Start quiz @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>
+                    <noscript><p class="small text-muted mt-3 mb-0">Enable JavaScript to answer this quiz.</p></noscript>
+                @else
+                    <p class="text-muted mb-0">Explore another quiz while we get this one ready.</p>
+                @endif
+            </section>
 
-<section id="quiz" data-url="{{route('quizzes.feedback', $quiz->slug)}}" class="container mb-5">
-	<div class="row mb-6" id="main-content">
-		<div class="col-lg-9 col-md-8 col-12 mb-2">
-			@if(! empty($preview))
-			<div class="alert alert-warning" role="alert">
-			  @icon('triangle-alert', ['mr' => 2])This quiz is <u>not published</u>. Only admins can see this page.
-			</div>
-			@endif
-			<div class="mb-4">
-				@topics(['model' => $quiz])
-
-				<h1 class="mb-4">QUIZ: {{$quiz->title}}</h1>
-				<p class="text-muted blog-font">{{$quiz->description}}</p>
-				<div class="d-apart text-muted">
-					<p><small>{{$quiz->created_at->toFormattedDateString()}} &bull; {{count($quiz->questions)}} questions</small></p>
-				</div>
-				<figure class="figure w-100">
-					<img src="{{$quiz->cover_image()}}" class="figure-img img-fluid rounded w-100">
-				</figure>
-{{-- 				<div class="border-bottom mb-4 pb-3 text-center">
-					<p class="m-0 text-muted">Want a heads up when a new quiz comes out? <span class="text-blue cursor-pointer btn-subscribe">Subscribe here</span></p>
-				</div> --}}
-
-				@include('games.quizzes.level')
-			</div>
-			<div class="bg-light rounded px-5 py-4 text-center mt-5 mb-7">
-				<p>This quiz has <strong>{{count($quiz->questions)}}</strong> questions and it shouldn't take more than <u>{{$quiz->duration}}</u> to complete.</p>
-				<h5 class="mb-3">Are you ready to start?</h5>
-				<button class="btn btn-primary btn-wide" id="start-quiz"><strong>Yes, let's do this!</strong></button>
-			</div>
-			<div id="quiz-content" class="blog-font mb-6" style="display: none;">
-				@include('games.quizzes.questions')
-			</div>
-
-			<div class="mb-5 d-apart">
-				<div>
-					<div class="d-inline-block align-middle me-3">
-						<img src="{{asset(mix('images/brand/app-icon.svg'))}}" class="rounded-circle" width="50">
-					</div>
-					<div class="d-inline-block align-middle" style="max-width: 320px; line-height: 1.12">
-						<div style="font-size: .9rem"><strong>PianoLIT Team</strong></div>
-						<div class="text-muted"><small>Where pianists discover new pieces and find inspiration to play only what they love.</small></div>
-					</div>
-				</div>
-{{-- 				<div class="text-end">
-					<button  class="btn btn-primary-outline btn-sm btn-subscribe">Subscribe</button>
-				</div> --}}
-			</div>
-		</div>
-
-		<div class="col-lg-3 col-md-4 col-12 mb-2">
-			@include('components.display.ads', ['vertical' => true, 'ads' => ['ebook', 'escore', 'crashcourse']])
-		</div>
-	</div>
-
-	@include('components.display.suggestions', [
-		'title' => 'OTHER QUIZZES YOU MIGHT LIKE',
-		'card' => 'games.quizzes.components.cards.small',
-		'collection' => $suggestions])
-
-</section>
-
-@include('games.components.results', ['button' => 'Review my answers'])
+            <div id="quiz-content" hidden data-quiz-content>
+                <div class="mb-4" data-quiz-progress>
+                    <div class="d-flex justify-content-between gap-3 small mb-2"><span>Your progress</span><span data-quiz-progress-label aria-live="polite">0 of {{ count($quiz->questions) }} answered</span></div>
+                    <div class="progress quiz-progress" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="{{ count($quiz->questions) }}" aria-valuenow="0"><div class="progress-bar" style="width: 0%"></div></div>
+                </div>
+                @include('games.quizzes.questions')
+                <section class="quiz-results bg-white border rounded-sm p-4 mb-4" data-quiz-results hidden tabindex="-1" aria-label="Quiz result" aria-busy="false">
+                    <div data-quiz-result-status role="status" aria-live="polite"></div>
+                    <div id="game-feedback" data-quiz-feedback></div>
+                    <button type="button" class="btn btn-primary mt-3" data-quiz-retry hidden>Try loading my result again</button>
+                    <div class="mt-4" data-quiz-result-actions hidden><div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-primary" data-quiz-review>Review my answers</button>
+                        <button type="button" class="btn btn-secondary" data-quiz-reset>@icon('rotate-ccw')Try again</button>
+                        <a class="btn btn-secondary" href="{{ route('quizzes.index') }}">More quizzes @icon('arrow-right', ['mr' => 0, 'ml' => 2])</a>
+                    </div></div>
+                </section>
+            </div>
+        </article>
+        @if($suggestions->isNotEmpty())
+            <section class="border-top pt-4 mt-5" aria-labelledby="more-quizzes-title">
+                <h2 class="h4 mb-4" id="more-quizzes-title">Keep your curiosity going</h2>
+                <div class="row g-4">
+                    @foreach($suggestions as $suggestion)
+                        <div class="col-md-6">@include('games.quizzes.card', ['quiz' => $suggestion, 'cardId' => 'suggested-quiz-'.$suggestion->id])</div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+        <div class="mt-5">@include('components.newsletter.invitation', ['headingId' => 'quiz-newsletter-title', 'preview' => false])</div>
+        @slot('sidebar')
+            @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+        @endslot
+    @endcomponent
+</div>
 @endsection
 
 @push('scripts')
-@addthis
-<script type="text/javascript" src="{{asset('js/views/quizzes.js')}}"></script>
-<script type="text/javascript">
-$('.card-title').clamp(2);
-</script>
+<script src="{{ mix('js/views/quizzes.js') }}" defer></script>
 @endpush
