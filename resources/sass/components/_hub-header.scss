@@ -1,0 +1,12 @@
+.hub-header {
+    &__title {
+        font-size: clamp(2rem, 4vw, 3rem);
+        letter-spacing: -.045em;
+        line-height: 1.15;
+    }
+
+    &__description {
+        font-size: var(--font-size-base);
+        line-height: 1.75;
+    }
+}

@@ -1,20 +1,30 @@
-@extends('layouts.raw')
+@extends('layouts.raw', ['title' => 'Unsubscribed | PianoLIT'])
+
+@push('header')
+<meta name="robots" content="noindex, nofollow">
+<style>
+.unsubscribe-confirmation {
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.unsubscribe-confirmation__message {
+    max-width: 26rem;
+    text-wrap: balance;
+}
+
+.unsubscribe-confirmation__logo {
+    border-radius: 20%;
+}
+</style>
+@endpush
 
 @section('content')
-@php($publicSite = request()->getHost() !== 'my.'.config('app.short_url'))
-<div @if($publicSite) class="public-site d-flex flex-column min-vh-100" @endif>
-@if($publicSite)
-    @include('components.public-header')
-@endif
-<main class="w-100 d-flex flex-center {{ $publicSite ? 'py-5 flex-grow-1' : 'h-100vh' }}">
-	<div class="text-center">
-		<img src="{{asset(mix('images/brand/app-icon.svg'))}}" style="border-radius: 20%; width: 80px" class="mb-4">
-		<h3>We're sorry to see you go!</h3>
-		<h4>Your email has been successfully removed from this list.</h4>
-	</div>
+<main class="unsubscribe-confirmation container d-flex align-items-center justify-content-center text-center py-5" aria-labelledby="unsubscribe-heading">
+    <div class="unsubscribe-confirmation__message px-3">
+        <img src="{{ asset(mix('images/brand/app-icon.svg')) }}" width="72" height="72" alt="PianoLIT" class="unsubscribe-confirmation__logo d-block mx-auto mb-4">
+        <h1 id="unsubscribe-heading" class="h4 mb-3">You’re unsubscribed</h1>
+        <p class="text-muted mb-0">Your email has been removed from this list.</p>
+    </div>
 </main>
-@if($publicSite)
-    @include('components.public-footer')
-@endif
-</div>
 @endsection

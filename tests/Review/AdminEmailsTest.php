@@ -80,7 +80,7 @@ class AdminEmailsTest extends ReviewTestCase
             $this->assertStringNotContainsString('/password/reset/', $content->getContent());
             if (strpos($key, 'account-welcome') === 0) {
                 $content->assertSee('Unsubscribe / email preferences');
-                $this->assertStringContainsString('http://localhost/my-profile?tab=email-preferences', $content->getContent());
+                $this->assertStringContainsString('http://localhost/profile?tab=email-preferences', $content->getContent());
             } else {
                 $this->assertStringNotContainsString('unsubscribe', $content->getContent());
             }

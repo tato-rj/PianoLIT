@@ -1,27 +1,39 @@
 @php
     $hubLinks = [
-        ['label' => 'PianoLIT home', 'url' => route('home')],
-        ['label' => 'Web app', 'url' => route('webapp.discover')],
-        ['label' => 'iOS app', 'url' => config('app.stores.ios')],
-        ['label' => 'Shop', 'url' => route('shop.home')],
-        ['label' => 'Games', 'url' => route('games.home')],
-        ['label' => 'Learn', 'url' => route('learn.home')],
-        ['label' => 'Blog', 'url' => route('posts.index')],
-        ['label' => 'Metronome', 'url' => route('metronome.home')],
+        ['label' => 'Home', 'url' => route('home'), 'icon' => 'home', 'color' => 'blue'],
+        ['label' => 'Shop', 'url' => route('shop.home'), 'icon' => 'shopping-basket', 'color' => 'orange'],
+        ['label' => 'Games', 'url' => route('games.home'), 'icon' => 'trophy', 'color' => 'pink'],
+        ['label' => 'Learn', 'url' => route('learn.home'), 'icon' => 'graduation-cap', 'color' => 'green'],
+        ['label' => 'Blog', 'url' => route('posts.index'), 'icon' => 'newspaper', 'color' => 'indigo'],
+        ['label' => 'Metronome', 'url' => route('metronome.home'), 'icon' => 'metronome', 'color' => 'red'],
     ];
 @endphp
 <div class="offcanvas offcanvas-end hub-menu" id="public-hub-menu" tabindex="-1" aria-labelledby="public-hub-menu-title">
-    <div class="offcanvas-header p-4 border-bottom">
-        <h2 class="offcanvas-title h5 mb-0 mr-4" id="public-hub-menu-title">Explore PianoLIT</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close hub menu"></button>
-    </div>
-    <div class="offcanvas-body p-4">
+    @include('components.side-menu-header', ['titleId' => 'public-hub-menu-title', 'title' => 'Explore PianoLIT', 'closeLabel' => 'Close hub menu'])
+    <div class="offcanvas-body px-4 py-3">
         <nav aria-label="PianoLIT hubs">
-            <ul class="nav flex-column gap-3 mb-0">
+            <ul class="nav flex-column gap-2 mb-3 mx-n3" aria-label="PianoLIT apps">
+                <li class="nav-item bg-light shw rounded border px-2 py-1">
+                    <a href="{{ route('webapp.discover') }}" class="nav-link p-0 text-dark d-flex align-items-center" target="_blank" rel="noopener noreferrer">
+                        @icon('pianolit', ['color' => 'black', 'mr' => 2, 'size' => 'lg', 'classes' => 'icon-fw'])
+                        <span class="me-auto">Web app</span>
+                        @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])
+                    </a>
+                </li>
+                <li class="nav-item bg-light shw rounded border px-2 py-1">
+                    <a href="{{ config('app.stores.ios') }}" class="nav-link p-0 text-dark d-flex align-items-center" target="_blank" rel="noopener noreferrer">
+                        <span class="d-inline-flex" aria-hidden="true">@fa(['icon' => 'apple', 'fa_type' => 'b', 'color' => 'black', 'mr' => 2, 'classes' => 'icon-size-lg icon-fw', 'title' => ''])</span>
+                        <span class="me-auto">iOS app</span>
+                        @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav flex-column gap-2 mb-0">
                 @foreach($hubLinks as $hubLink)
                     @php($currentHub = request()->getHost() === parse_url($hubLink['url'], PHP_URL_HOST))
                     <li class="nav-item">
-                        <a href="{{ $hubLink['url'] }}" class="nav-link p-0 text-dark{{ $currentHub ? ' fw-semibold' : '' }}" @if($hubLink['url'] === config('app.stores.ios')) target="_blank" rel="noopener noreferrer" @endif @if($currentHub) aria-current="true" @endif>
+                        <a href="{{ $hubLink['url'] }}" class="nav-link p-0 text-dark d-flex align-items-center{{ $currentHub ? ' fw-semibold' : '' }}" @if($currentHub) aria-current="true" @endif>
+                            @icon($hubLink['icon'], ['color' => $hubLink['color'], 'mr' => 3, 'size' => 'lg'])
                             <span>{{ $hubLink['label'] }}</span>
                         </a>
                     </li>

@@ -39,8 +39,20 @@ function build() {
         icons[name] = body[1].trim().replace(/\s+/g, ' ');
     });
     fs.writeFileSync(path.join(root, 'resources/icons/lucide.json'), JSON.stringify(icons, null, 2) + '\n');
+    // PianoLIT artwork stays separate from the generated third-party catalog.
+    const customDirectory = path.join(root, 'resources/icons/custom');
+    const custom = {};
+    fs.readdirSync(customDirectory).filter(file => file.endsWith('.svg')).sort().forEach(file => {
+        const name = file.slice(0, -4);
+        if (!/^[a-z0-9-]+$/.test(name) || available.has(name)) throw new Error('Invalid custom icon name: ' + name);
+        const svg = fs.readFileSync(path.join(customDirectory, file), 'utf8');
+        const body = svg.match(/<svg\b[^>]*viewBox="0 0 24 24"[^>]*>([\s\S]*?)<\/svg>/);
+        if (!body) throw new Error('Custom icons must use a 24 × 24 viewBox: ' + name);
+        custom[name] = body[1].replace(/<!--[\s\S]*?-->/g, '').trim().replace(/\s+/g, ' ');
+    });
+    fs.writeFileSync(path.join(root, 'resources/icons/custom.json'), JSON.stringify(custom, null, 2) + '\n');
     fs.copyFileSync(path.join(root, 'node_modules/lucide-static/LICENSE'), path.join(root, 'resources/icons/LUCIDE-LICENSE'));
-    console.log('Generated ' + names.size + ' Lucide icons.');
+    console.log('Generated ' + names.size + ' Lucide icons and ' + Object.keys(custom).length + ' custom icons.');
 }
 
 module.exports = {discoverNames};

@@ -37,7 +37,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
 
     public function test_visitors_can_browse_all_main_pages_without_an_account()
     {
-        foreach (['discover', 'welcome', 'explore', 'highlights', 'playlists', 'composers.index', 'tour', 'settings', 'my-pieces', 'users.profile', 'terms', 'privacy', 'membership.pricing', 'search.results'] as $name) {
+        foreach (['discover', 'welcome', 'explore', 'highlights', 'playlists', 'composers.index', 'tour', 'settings', 'my-pieces', 'terms', 'privacy', 'membership.pricing', 'search.results'] as $name) {
             $this->get(route('webapp.'.$name))->assertOk();
             $this->assertGuest('web');
         }
@@ -45,6 +45,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->assertSame(0, Favorite::count());
         $this->assertSame(0, FavoriteFolder::count());
         $this->assertDatabaseCount('locations', 0);
+        $this->withExceptionHandling()->get(route('webapp.users.profile'))->assertRedirect('http://localhost/login');
     }
 
     public function test_visitors_can_read_piece_pages_and_blocked_collections_return_to_the_directory()

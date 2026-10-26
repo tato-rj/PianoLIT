@@ -5,7 +5,7 @@
         </div>
         <nav class="col-12 col-md-4" aria-label="Footer">
             <div class="row justify-content-center gx-4">
-                <div class="col-auto"><a href="{{ route('contact') }}">Contact</a></div>
+                <div class="col-auto"><a href="{{ route('contact') }}">Support</a></div>
                 <div class="col-auto"><a href="{{ route('privacy') }}">Privacy</a></div>
                 <div class="col-auto"><a href="{{ route('terms') }}">Terms</a></div>
             </div>

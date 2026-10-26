@@ -10,9 +10,7 @@ class UsersController extends Controller
 {
     public function profile()
     {
-        if ($user = auth('web')->user()) $user->loadMissing(['membership', 'subscription.lists']);
-
-    	return view('webapp.user.profile.index');
+        return redirect(\App\Support\ProfileUrl::get(), 301);
     }
 
     public function folder(FavoriteFolder $folder)

@@ -7,6 +7,20 @@ use Illuminate\Support\Facades\Blade;
 
 class IconTest extends ReviewTestCase
 {
+    public function test_pianolit_blade_icon_preserves_brand_geometry_and_shared_options()
+    {
+        $compiled = Blade::compileString("@icon('pianolit', ['mr' => 0, 'color' => 'black', 'size' => 'lg', 'label' => 'PianoLIT web app'])");
+        ob_start();
+        eval('?>'.$compiled);
+        $html = ob_get_clean();
+        foreach (['app-icon icon-pianolit me-0 text-black icon-size-lg', 'data-icon-name="pianolit"', 'role="img"', 'aria-label="PianoLIT web app"', 'fill="currentColor"', 'fill-rule="evenodd"', 'stroke="currentColor"'] as $value) {
+            $this->assertStringContainsString($value, $html);
+        }
+        $this->assertStringNotContainsString('circle-help', $html);
+        $this->assertStringNotContainsString('data-lucide-name', $html);
+        $this->assertStringContainsString('aria-hidden="true"', (string) Icon::render('pianolit'));
+    }
+
     public function test_sparkles_renders_lucide_geometry_instead_of_the_unknown_icon_fallback()
     {
         $html = (string) Icon::render('sparkles');
@@ -72,7 +86,10 @@ class IconTest extends ReviewTestCase
 
     public function test_every_alias_and_literal_view_icon_has_bundled_geometry()
     {
-        $icons = json_decode(file_get_contents(resource_path('icons/lucide.json')), true);
+        $icons = array_merge(
+            json_decode(file_get_contents(resource_path('icons/lucide.json')), true),
+            json_decode(file_get_contents(resource_path('icons/custom.json')), true)
+        );
         $aliases = json_decode(file_get_contents(resource_path('icons/aliases.json')), true);
         foreach ($aliases as $name => $resolved) {
             if (strpos($resolved, 'brand-') !== 0) $this->assertArrayHasKey($resolved, $icons, $name);

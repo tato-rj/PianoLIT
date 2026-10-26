@@ -1,7 +1,7 @@
 .editorial-layout__content { min-width: 0; }
 
 .promo-card {
-    color: var(--card-ink);
+    color: var(--card-ink, var(--color-text));
     letter-spacing: 0;
 
     &__image-link { display: block; }
@@ -18,7 +18,7 @@
         color: inherit;
         overflow-wrap: anywhere;
 
-        &:hover, &:focus-visible { color: var(--card-action); }
+        &:hover, &:focus-visible { color: var(--card-action, var(--color-primary)); }
     }
     &__description {
         font-size: var(--font-size-sm);

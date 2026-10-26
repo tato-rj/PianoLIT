@@ -290,3 +290,12 @@ php artisan newsletter:send-monthly
 ordinary retries from sending duplicates; opt-outs are rechecked immediately
 before delivery. See `docs/EMAIL_REPORTS.md` for sources, launch entries,
 deployment and retention.
+
+## Account email changes
+
+Edit `account/confirm-email-change.blade.php` for the subject-purpose copy and
+confirmation button used by `App\Mail\ProfileEmailChange`. It uses the existing
+Laravel HTML/plain-text mail components. The new address receives a one-hour
+signed confirmation link; no account email or subscription is changed until the
+signed-in owner confirms. This is an essential account email, independent of
+marketing-list preferences. Profile regressions fake mail delivery.

@@ -43,7 +43,6 @@
     letter-spacing: 0;
 }
 
-.blog-home__intro h1,
 .blog-article__title {
     font-size: clamp(2rem, 4vw, 3rem);
     letter-spacing: -.045em;
@@ -56,10 +55,6 @@
         font-weight: 600;
         letter-spacing: .1em;
         text-transform: uppercase;
-    }
-    &__description {
-        font-size: var(--font-size-base);
-        line-height: 1.75;
     }
 }
 

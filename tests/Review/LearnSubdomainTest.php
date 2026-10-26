@@ -127,18 +127,14 @@ class LearnSubdomainTest extends ReviewTestCase
         foreach (['tools.circle-of-fifths', 'tools.chord-finder.index', 'crashcourses.index', 'resources.infographs.index', 'quizzes.index', 'resources.pianists.index'] as $route) {
             $this->assertSame(1, $xpath->query('//a[contains(@class, "resource-card") and @href="'.route($route).'"]')->length);
         }
-        foreach ($xpath->query('//nav[@aria-label="Explore Learn"]/a') as $link) {
-            $target = substr($link->getAttribute('href'), 1);
-            $this->assertSame(1, $xpath->query('//section[@id="'.$target.'" and @aria-labelledby]')->length);
-        }
-        $this->assertSame(3, $xpath->query('//nav[@aria-label="Explore Learn"]/a')->length);
+        $this->assertSame(0, $xpath->query('//nav[@aria-label="Explore Learn"]')->length);
         foreach (['tools.scales.index', 'tools.arpeggios.index'] as $route) {
             $this->assertSame(1, $xpath->query('//main//a[@href="'.route($route).'"]')->length);
         }
         $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//a[@href="http://localhost"]')->length);
         $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//*[@aria-current="page" and contains(., "Learn")]')->length);
         $this->assertSame(2, $xpath->query('//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
-        $this->assertSame(1, $xpath->query('//header[contains(@class, "learn-home__intro")]//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
+        $this->assertSame(1, $xpath->query('//header[contains(@class, "hub-header")]//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
         foreach (['/timeline', '/birthdays', '/true-or-false', '/riddles', '/tools/staff'] as $retired) {
             $this->assertSame(0, $xpath->query('//main//a[contains(@href, "'.$retired.'")]')->length);
         }

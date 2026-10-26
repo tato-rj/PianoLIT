@@ -1,0 +1,32 @@
+.section-navigation {
+    &__links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 1.5rem;
+    }
+
+    a {
+        display: inline-flex;
+        align-items: center;
+        color: var(--color-text-muted);
+        font-size: var(--font-size-sm);
+        text-decoration: none;
+
+        &:hover, &:focus-visible, &[aria-current="location"] {
+            color: var(--color-primary);
+        }
+
+        &[aria-current="location"] { font-weight: 600; }
+    }
+
+    @media (min-width: 992px) {
+        position: sticky;
+        top: 2rem;
+
+        &__links {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+    }
+}

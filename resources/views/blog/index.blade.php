@@ -13,15 +13,9 @@
         ['label' => 'Blog'],
     ]])
 
-    <header class="blog-home__intro row align-items-end gy-4 mb-4">
-        <div class="col-lg-8">
-            <h1 class="mb-3">PianoLIT Blog</h1>
-            <p class="blog-home__description text-muted mb-0">Stories, ideas, and discoveries from the world of piano.<br class="d-none d-md-block">A little inspiration for wherever music takes you.</p>
-        </div>
-        <div class="col-lg-4 text-lg-end">
-            @include('components.newsletter.subscribe-button', ['label' => 'Join the newsletter', 'preview' => false])
-        </div>
-    </header>
+    @component('components.hub-header', ['heading' => 'PianoLIT Blog', 'preview' => false])
+        Stories, ideas, and discoveries from the world of piano.<br class="d-none d-md-block">A little inspiration for wherever music takes you.
+    @endcomponent
 
     <nav class="blog-home__topics d-flex flex-wrap gap-2 py-4 mb-4 border-top border-bottom" aria-label="Article topics">
         <a href="{{ route('posts.index') }}" class="btn btn-sm btn-secondary" @if(empty($selectedTopics)) aria-current="page" @endif>All stories</a>

@@ -24,6 +24,19 @@ module.exports = function () {
         return node;
     }
     const icon = element('i', 'app-icon icon-circle-play mr-0');
+    const brand = element('i', 'app-icon icon-pianolit me-0 text-black');
+    const brandSvg = element('svg', '');
+    brandSvg.setAttribute('data-icon-name', 'pianolit');
+    brand.appendChild(brandSvg);
+    icons.refreshIcon(brand);
+    assert.strictEqual(brand.children[0], brandSvg, 'Hydration preserves the Blade-rendered PianoLIT mark');
+    brand.classList.add('spinner-border'); icons.refreshIcon(brand);
+    assert.equal(brand.children.length, 0);
+    brand.classList.remove('spinner-border'); icons.refreshIcon(brand);
+    assert.equal(brand.children[0].getAttribute('data-icon-name'), 'pianolit');
+    assert(brand.children[0].innerHTML.includes('fill-rule="evenodd"'), 'Restored brand keeps transparent key cutouts');
+    brand.classList.remove('icon-pianolit'); brand.classList.add('icon-laptop'); icons.refreshIcon(brand);
+    assert.equal(brand.children[0].getAttribute('data-lucide-name'), 'laptop', 'Generic device icons remain available');
     const sparkles = element('i', 'app-icon icon-sparkles mr-2');
     icons.refreshIcon(sparkles);
     assert.equal(sparkles.children[0].getAttribute('data-lucide-name'), 'sparkles');
@@ -69,5 +82,5 @@ module.exports = function () {
         callback([{type: 'childList', addedNodes: [inserted.children[0]]}]);
         assert.equal(inserted.children.length, 1);
     } finally { global.MutationObserver = previousObserver; }
-    console.log('Passed: Lucide dynamic insertion, state swaps, spinner restoration, legacy HTML, and stable wrappers.');
+    console.log('Passed: custom/Lucide icons, state swaps, spinner restoration, legacy HTML, and stable wrappers.');
 };

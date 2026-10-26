@@ -157,7 +157,7 @@ class BlogSubdomainTest extends ReviewTestCase
         $response->assertSee('href="'.$blog.'/login"', false)
             ->assertSee('href="'.$baseUrl.'/contact-us"', false);
         $this->assertSame($baseUrl, $xpath->query('//header//a[@aria-label="PianoLIT home"]')->item(0)->getAttribute('href'));
-        $this->assertSame(1, $xpath->query('//footer//a[@href="'.$baseUrl.'/contact-us" and text()="Contact"]')->length);
+        $this->assertSame(1, $xpath->query('//footer//a[@href="'.$baseUrl.'/contact-us" and text()="Support"]')->length);
         $this->assertSame($baseUrl, route('home'));
         $this->assertSame(parse_url($baseUrl, PHP_URL_SCHEME).'://learn.'.$host.'/circle-of-fifths', route('tools.circle-of-fifths'));
         $this->assertSame('/circle-of-fifths', route('tools.circle-of-fifths', [], false));
@@ -234,8 +234,8 @@ class BlogSubdomainTest extends ReviewTestCase
             $this->assertSame($path, app('router')->getRoutes()->match(Request::create('http://blog.localhost/'.$path))->getName());
             $this->get('http://blog.localhost/'.$path)->assertOk()->assertSee('action="http://blog.localhost/'.$path.'"', false);
         }
-        $this->assertSame('users.profile', app('router')->getRoutes()->match(Request::create('http://blog.localhost/my-profile'))->getName());
-        $this->withExceptionHandling()->get('http://blog.localhost/my-profile')->assertRedirect('http://blog.localhost/login');
+        $this->assertSame('users.profile.legacy', app('router')->getRoutes()->match(Request::create('http://blog.localhost/my-profile'))->getName());
+        $this->get('http://blog.localhost/my-profile')->assertStatus(301)->assertRedirect('http://localhost/profile');
     }
 
     public function test_blog_subscription_forms_keep_session_csrf_enforcement()

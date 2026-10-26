@@ -1,6 +1,15 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Section navigation', 'usage' => 'components.section-navigation · profile and support menus', 'properties' => 'font-size,color,padding'])
+      @include('components.section-navigation', ['id' => 'ds-section-navigation', 'label' => 'Section navigation preview', 'heading' => 'On this page', 'preview' => true, 'items' => [
+        ['target' => 'ds-components-title', 'label' => 'Current section'],
+        ['target' => 'ds-components', 'label' => 'Another section'],
+      ]])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Side menu header', 'usage' => 'components.side-menu-header · hub and piece menus', 'properties' => 'font-size,padding,color'])
+      @include('components.side-menu-header', ['titleId' => 'ds-side-menu-title', 'title' => 'Explore PianoLIT', 'closeLabel' => 'Close menu preview', 'designSystemPreview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Bottom panel', 'usage' => 'components.bottom-sheet · components.bottom-sheet-header', 'properties' => 'padding,color'])
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="offcanvas" data-bs-target="#ds-bottom-sheet" aria-controls="ds-bottom-sheet">Open bottom panel</button>
       @component('components.bottom-sheet', ['id' => 'ds-bottom-sheet', 'titleId' => 'ds-bottom-sheet-title'])
@@ -96,11 +105,19 @@
     @component('admin.pages.settings.sample', ['label' => 'Public promotion card', 'usage' => 'components.promo-card · components.editorial-layout sidebar', 'properties' => 'color,background-color,border,border-radius'])
       @include('components.promo-card', ['preview' => true, 'category' => 'Crash courses', 'color' => 'mint', 'title' => 'Discover a new side of music', 'description' => 'Daily lessons delivered to your inbox.', 'action' => 'Start learning', 'url' => route('crashcourses.index')])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Public hub header', 'usage' => 'components.hub-header · shared newsletter action', 'properties' => 'padding,font-size,color'])
+      @component('components.hub-header', ['heading' => 'PianoLIT Learn', 'preview' => true])
+        A shared introduction and newsletter action for public hubs.
+      @endcomponent
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Newsletter invitation', 'usage' => 'components.newsletter.invitation · pastel-card', 'properties' => 'padding,color,background-color,border,border-radius'])
       @include('components.newsletter.invitation', ['preview' => true, 'headingId' => 'ds-newsletter-invitation-title'])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Neutral newsletter invitation', 'usage' => 'components.newsletter.invitation · appearance: plain', 'properties' => 'padding,color,background-color,border,border-radius'])
+      @include('components.newsletter.invitation', ['preview' => true, 'appearance' => 'plain', 'headingId' => 'ds-newsletter-plain-title'])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Public resource card', 'usage' => 'components.resource-card · card-lift', 'properties' => 'padding,color,background-color,border,border-radius,box-shadow'])
-      @component('components.resource-card', ['preview' => true, 'id' => 'ds-resource-card', 'title' => 'Circle of fifths', 'format' => 'Explore harmony', 'description' => 'See how keys connect and find your way around harmony.', 'action' => 'Explore the circle', 'color' => 'mint', 'url' => route('tools.circle-of-fifths')])
+      @component('components.resource-card', ['preview' => true, 'id' => 'ds-resource-card', 'title' => 'Circle of fifths', 'format' => 'Explore harmony', 'description' => 'See how keys connect and find your way around harmony.', 'action' => 'Explore the circle', 'url' => route('tools.circle-of-fifths')])
         @slot('artwork')@include('learn.components.artwork', ['kind' => 'circle'])@endslot
       @endcomponent
     @endcomponent
@@ -184,9 +201,9 @@
 </section>
 
 <section class="design-system__section" id="ds-icons" aria-labelledby="ds-icons-title">
-  <header class="design-system__section-heading"><span class="design-system__eyebrow">10 / ICONOGRAPHY</span><h2 id="ds-icons-title">Icons</h2><p>Lucide SVG icons inherit text color and size. The shared stroke width is <span data-ds-token="--icon-stroke-width"></span>.</p></header>
+  <header class="design-system__section-heading"><span class="design-system__eyebrow">10 / ICONOGRAPHY</span><h2 id="ds-icons-title">Icons</h2><p>SVG icons inherit text color and size. Use <code>@verbatim@icon('pianolit')@endverbatim</code> for the web app; its brand geometry stays fixed. The shared stroke width is <span data-ds-token="--icon-stroke-width"></span>.</p></header>
   <div class="design-system__icon-grid">
-    @foreach(['music', 'search', 'heart', 'bookmark', 'play', 'pause', 'download', 'upload', 'pencil', 'trash', 'plus', 'x', 'check', 'chevron-right', 'users', 'settings', 'bell', 'circle-help'] as $icon)
+    @foreach(['pianolit', 'music', 'search', 'heart', 'bookmark', 'play', 'pause', 'download', 'upload', 'pencil', 'trash', 'plus', 'x', 'check', 'chevron-right', 'users', 'settings', 'bell', 'circle-help'] as $icon)
       <div>@icon($icon, ['mr' => 0, 'classes' => 'icon-size-xl'])<code>{{ $icon }}</code></div>
     @endforeach
   </div>

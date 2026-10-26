@@ -105,7 +105,7 @@ class GoogleSecurityController extends Controller
         if ($action === 'connect') return app(GoogleController::class)->connect($request, app(Configuration::class), app(\App\Auth\Google\Provider::class), app(Accounts::class));
         if ($action === 'connect:apple') return app(AppleController::class)->connect($request, app(\App\Auth\Apple\Configuration::class), app(\App\Auth\Apple\Provider::class), app(Accounts::class));
         if ($action === 'password') return redirect('/auth/google/password');
-        if ($action === 'profile') return redirect($request->getHost() === 'my.'.config('app.short_url') ? '/profile' : '/my-profile')
+        if ($action === 'profile') return redirect(\App\Support\ProfileUrl::get('security'))
             ->with('status', 'Account confirmed. Please enter your changes again and save them.');
         return redirect('/auth/google/accounts')->with('status', 'Account confirmed. You can now update your connected accounts.');
     }

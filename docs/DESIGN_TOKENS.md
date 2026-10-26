@@ -26,6 +26,16 @@ editors. UI previews use the shared `@brandIcon` component and the actual export
 The two SVG masters live in `resources/images/brand/`; keep their six evenly
 spaced black keys, as explicitly requested by Arthur.
 
+For compact web-app references, use `@icon('pianolit')` instead of a laptop or
+other generic platform symbol. The monochrome open score and six-key mark inherits
+text color and shared icon sizing/spacing, and preserves transparent key cutouts.
+For example: `@icon('pianolit', ['color' => 'black', 'size' => 'lg', 'mr' => 2])`.
+Its fixed brand geometry is separate from Lucide stroke-weight settings.
+Edit `resources/icons/custom/pianolit.svg`, then run `npm run production` to
+regenerate `resources/icons/custom.json` and the browser bundles. The PHP renderer
+and dynamic icon handler use this same catalog; the Icons specimen previews it.
+Keep the full app/admin artwork and model/API origin values unchanged.
+
 Full-screen public projects use `components.project-watermark`: a white,
 transparent SVG with a white rounded-square border, fixed at the top left with
 safe-area spacing. Its hand-tuned small-size drawing retains the open score and
@@ -458,13 +468,23 @@ shown only on the main homepage (`home` route).
 Other public pages add `components.public-hub-menu-button` after the account
 control. Its Bootstrap offcanvas, `components.public-hub-menu`, links to the
 main website, Web app, iOS app, Shop, Games, Learn, Blog and Metronome using named routes
-or the configured App Store URL. Its `.hub-menu.offcanvas-end` sets a 360px
-width and `max-width: none` to clear Bootstrap's inherited 100% cap, as requested
-by Arthur. The hamburger/panel is absent on `home`
+or the configured App Store URL. It uses the same content-sized width as the
+piece Options menu, without a hub-specific width override. The hamburger/panel is absent on `home`
 and `my.*`; standalone account pages keep their existing layout. The button
 uses the shared raw-button and Bootstrap spacing/alignment classes, with its
 specimen in the Design System. The hamburger icon is exactly `1.5rem`.
-Panel destinations are a plain text-link list without icons or button cards.
+Web app and iOS app appear first in a shared light-background, rounded box;
+both open a new tab with `rel="noopener noreferrer"`. Their icons are black:
+the shared `@icon('pianolit')` mark and Font Awesome's Apple brand icon. Both rows end
+with the same muted `chevron-right` icon as the piece Options menu.
+The remaining hub destinations use colored Lucide icons below the app box.
+Both groups retain an 8px gap between links.
+Both this menu and the piece Options panel reuse `components.side-menu-header`:
+a 16px heading, Bootstrap `px-4 py-3` spacing with a `gap-3` between the title
+and close button, no divider and the standard
+Bootstrap close button at 0.75rem. Its styles live in the shared stylesheet,
+and the Design System specimen uses the same component. Piece-menu links
+also use 8px bottom spacing.
 The panel is pushed to the body-level script
 stack so it does not affect header layout or inherit a page stacking context.
 `layouts.header` supplies it to the public layout; the homepage and public
@@ -668,6 +688,18 @@ opener used in the Blog and Learn introductions and newsletter invitations.
 Its modal URL stays on the request host; `label` changes the caption and
 `preview: true` makes a Design System sample inert.
 
+`components.hub-header` owns the shared landing-page heading, description and
+placement of that newsletter action. Blog and Learn pass a plain `heading`
+(`PianoLIT Blog` / `PianoLIT Learn`) and their description as the slot. Every
+redesigned hub root uses this same simple title treatment, matching Blog's
+responsive 32–48px size, line height and letter spacing; the description uses
+the shared 16px body token and muted text. The shared styles live in
+`components/_hub-header.scss`, including the Design System specimen.
+The button appears to the right,
+bottom-aligned on desktop, and below the introduction on phones, without
+extra text above it. Reuse this component as other public hub roots are
+redesigned. Its Design System specimen uses `preview: true`.
+
 `components.newsletter.invitation` provides the reusable pastel newsletter panel
 with the standard primary button and existing same-host subscription modal.
 Pass a unique `headingId`; `preview: true` renders an inert Design System sample.
@@ -681,26 +713,35 @@ the directory's responsive grid, without Masonry or JavaScript clamping.
 `learn.home` renders `learn.index`, replacing its placeholder with a directory
 of six projects grouped by purpose: Interactive tools (Circle of fifths and
 Chord finder), Courses & guides (Crash courses and Infographics), and Quizzes &
-pianists. Anchor links at the top jump to each group without hiding content or
-requiring JavaScript. Each project has a clear description, format label and
+pianists. The introduction leads directly into those groups, without an
+additional section-navigation strip. Each project has a clear description, format label and
 action. Scales and arpeggios stay in a smaller More practice tools row.
 
 Reuse `components.resource-card` for project/resource navigation cards. It uses
-`.card.rounded.shadow-light`, `.card-lift`, a pastel artwork panel and the shared
-color/type/radius tokens; the whole card is one named link and titles keep their
-normal color on hover. Pass a unique `id`, `title`, `description`, `format`,
-`action`, `url`, `color`, and an `artwork` slot. `preview: true` marks the Design
+a white surface, fine border, shared small radius and `.card-lift`, with full-width
+2:1 artwork instead of an inset pastel panel. The whole card is one named link
+and titles keep their normal color on hover. Pass a unique `id`, `title`,
+`description`, `format`, `action`, `url`, and an `artwork` slot. `preview: true` marks the Design
 System sample, which renders this same component and circle artwork. The common
 styles in `components/_resource-card.scss` are imported by app and admin.
 
-`learn/components/artwork.blade.php` supplies small decorative, editable SVG
-previews of each project. These use the card's palette and the existing PianoLIT
-illustration style. They contain no screenshots, invented content totals or
-external image requests. Learn retains the familiar public header/footer,
-breadcrumb, `components.editorial-layout` and pastel course/shop promotions.
-The introduction uses Blog's Subscribe action in place of its decorative image,
-with the same Bootstrap alignment and mobile stacking. Both that action and its
-newsletter invitation subscribe to PianoLIT-wide news on the Learn host.
+`learn/components/artwork.blade.php` supplies editable 480×240 SVG previews:
+a blue key wheel, ink-black chord keyboard, vermilion lesson sheet, neutral
+dynamics reference, yellow quiz and typographic pianist poster. These illustration
+pigments are local to the artwork; shared brand/surface/type tokens remain in use.
+They contain no screenshots, invented content totals or external image requests.
+The introduction leads with the plain PianoLIT Learn title and names concrete
+activities in its description. It uses the same `components.hub-header`, title
+and description styles and newsletter placement as Blog.
+Learn retains the public header/footer, breadcrumb and `components.editorial-layout`.
+Its sidebar ads always use `components.display.ads` with `variant: cards`, which
+renders the same `components.promo-card` as Blog, including the existing pastel
+surfaces, category tags, spacing and buttons. Do not add a hub-specific ads design,
+appearance variant or introductory heading. This reusable ads area stays consistent
+across public hubs. The newsletter invitation alone opts into `appearance: plain`,
+with a white surface and the shared primary button; both newsletter variants have
+Design System specimens.
+The introduction and footer invitation use the shared newsletter action on the Learn host.
 The Circle of Fifths and Chord Finder also use this shell; other deep resource and tool layouts
 remain for later work. Keep their routes, calculations, signup/download/quiz
 requests and mobile contracts intact.
@@ -748,3 +789,10 @@ when notes change. The standalone Chord Finder script also uses versioned `mix()
 ### Standalone metronome settings
 
 `metronome.index` retains Arthur’s original full-screen canvas and uses the shared Bootstrap bottom sheet for settings. Only this page loads `css/metronome.css` and `js/metronome.js`. The canvas defaults to `--color-primary`, with the matching `#0055fe` reset value in the local preference module. Its tempo numeral retains the original thin system face; the settings inherit PianoLIT body/heading typography and standard sizes from `app.css`. Reuse `components.segmented-control`, `@select`, `@toggle`, `.btn-close`, `.btn.btn-secondary` and `.btn.btn-primary`, including their existing shadows. `components.form.color` supplies the native `.form-control.form-control-color` control, also shown in Settings → Design System. Local settings CSS caps the centered content at 560px and hides unrelated fields during recording; shared bottom-sheet styles and Bootstrap own the panel geometry, scrolling and transitions.
+
+
+### Section navigation
+
+`components.section-navigation` renders the shared Support center and My profile menus. Pass a unique `id`, an accessible `label`, and ordered `items` with `target` (section ID), `label`, and optional `icon`; optional `heading` adds the muted introduction. The single `_section-navigation.scss` in `shared.scss` owns wrapping mobile links, sticky desktop placement, and the primary-color/semibold current link. Neither page defines its own menu markup or finish.
+
+The component includes the versioned `components/section-navigation.js` once. It highlights the visible section on initial load, manual scrolling, resizing, page restoration and FAQ expansion/collapse, with a bottom-of-page fallback for short final sections. Exactly one valid link per menu receives `aria-current="location"`; ordinary fragment links and keyboard navigation remain native. Keep scroll behavior here rather than in page scripts. The Design System renders this same component with `preview: true`, which shows a static current item without attaching scroll listeners.

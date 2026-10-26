@@ -1,6 +1,7 @@
 // Blade renders SVG immediately. This also covers AJAX fragments and class-based
 // state changes while retaining the <i> wrapper and its existing event handlers.
-const icons = require('../../icons/lucide.json');
+const custom = require('../../icons/custom.json');
+const icons = Object.assign({}, require('../../icons/lucide.json'), custom);
 const aliases = require('../../icons/aliases.json');
 const selector = 'i.app-icon, i.fas, i.far, i.fa-solid';
 const namespace = 'http://www.w3.org/2000/svg';
@@ -29,15 +30,16 @@ function refreshIcon(element) {
     const token = Array.from(element.classList).find(name => name.indexOf('icon-') === 0 && icons[resolve(name.slice(5))]);
     const name = token ? resolve(token.slice(5)) : 'circle-help';
     const current = element.querySelector('svg');
-    if (current && current.getAttribute('data-lucide-name') === name) return;
+    const nameAttribute = custom[name] ? 'data-icon-name' : 'data-lucide-name';
+    if (current && current.getAttribute(nameAttribute) === name) return;
     const svg = element.ownerDocument.createElementNS(namespace, 'svg');
     Object.entries({
-        'data-lucide-name': name, width: '24', height: '24', viewBox: '0 0 24 24',
+        [nameAttribute]: name, width: '24', height: '24', viewBox: '0 0 24 24',
         fill: 'none', stroke: 'currentColor', 'stroke-width': '2',
         'stroke-linecap': 'round', 'stroke-linejoin': 'round',
         'aria-hidden': 'true', focusable: 'false'
     }).forEach(([key, value]) => svg.setAttribute(key, value));
-    // Only locally generated, allowlisted Lucide geometry enters the SVG.
+    // Only locally generated, allowlisted geometry enters the SVG.
     svg.innerHTML = icons[name];
     if (current) current.remove();
     element.appendChild(svg);

@@ -7,6 +7,7 @@ use Illuminate\Support\HtmlString;
 class Icon
 {
     protected static $icons;
+    protected static $customIcons;
     protected static $aliases;
 
     protected static function solidColor($value): ?string
@@ -43,7 +44,8 @@ class Icon
     {
         $name = static::resolve($name);
         if (static::$icons === null) {
-            static::$icons = json_decode(file_get_contents(resource_path('icons/lucide.json')), true);
+            static::$customIcons = json_decode(file_get_contents(resource_path('icons/custom.json')), true);
+            static::$icons = array_merge(json_decode(file_get_contents(resource_path('icons/lucide.json')), true), static::$customIcons);
         }
         $brand = strpos($name, 'brand-') === 0 && isset(static::$aliases[$name]);
         if (!$brand && !isset(static::$icons[$name])) {
@@ -93,7 +95,8 @@ class Icon
                 // Keep the check visible against its filled circle.
                 $geometry = str_replace('<path ', '<path fill="none" stroke="var(--color-surface, #fff)" ', $geometry);
             }
-            $html .= '<svg data-lucide-name="'.$name.'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="'.e($fill).'"'.$fillStyle.' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'.$geometry.'</svg>';
+            $nameAttribute = isset(static::$customIcons[$name]) ? 'data-icon-name' : 'data-lucide-name';
+            $html .= '<svg '.$nameAttribute.'="'.$name.'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="'.e($fill).'"'.$fillStyle.' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'.$geometry.'</svg>';
         }
         return new HtmlString($html.'</i>');
     }

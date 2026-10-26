@@ -114,8 +114,8 @@ class WelcomeEmailContentTest extends ReviewTestCase
         $response = $this->get(route('users.profile').'?tab=email-preferences')->assertOk();
         $dom = new \DOMDocument; @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
-        $this->assertCount(1, $xpath->query('//*[@id="list-email-preferences" and contains(@class,"show active")]'));
-        $this->assertCount(0, $xpath->query('//*[@id="list-profile" and contains(@class,"active")]'));
-        $this->get(route('users.profile'))->assertOk()->assertSee('tab-pane fade show active', false);
+        $this->assertCount(1, $xpath->query('//section[@id="email-preferences"]'));
+        $this->assertCount(1, $xpath->query('//nav[@aria-label="Profile sections"]/a[@href="#email-preferences"]'));
+        $this->get(route('users.profile'))->assertOk()->assertSee('Personal information');
     }
 }

@@ -1,88 +1,112 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="280" height="140" viewBox="0 0 280 140" fill="none" aria-hidden="true" focusable="false">
+{{-- Editable examples, not interactive controls. Each card names its destination. --}}
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="240" viewBox="0 0 480 240" fill="none" aria-hidden="true" focusable="false" font-family="var(--font-family-body)">
     @switch($kind)
         @case('circle')
-            <circle cx="140" cy="70" r="65" fill="var(--color-surface)"/>
-            <circle cx="140" cy="70" r="48" stroke="currentColor" stroke-opacity=".13" stroke-width="22"/>
-            <circle cx="140" cy="70" r="48" stroke="currentColor" stroke-opacity=".45" stroke-width="22" stroke-dasharray="23 279" transform="rotate(-103 140 70)"/>
+            <path fill="var(--color-primary)" d="M0 0H480V240H0z"/>
+            @foreach(range(0, 480, 30) as $line)
+                <path d="M{{ $line }} 0V240" stroke="white" stroke-opacity=".07"/>
+            @endforeach
+            @foreach(range(0, 240, 30) as $line)
+                <path d="M0 {{ $line }}H480" stroke="white" stroke-opacity=".07"/>
+            @endforeach
+            <g fill="white">
+                <text x="28" y="44" font-size="12" letter-spacing="2">FIND YOUR KEY</text>
+                <text x="26" y="106" font-size="35" font-weight="600">It all</text>
+                <text x="26" y="146" font-size="35" font-weight="600">connects</text>
+                <path d="M28 187H112M105 180L112 187L105 194" stroke="white" stroke-width="2"/>
+            </g>
+            <circle cx="336" cy="120" r="102" fill="white"/>
+            <circle cx="336" cy="120" r="76" stroke="#e8ecf3" stroke-width="35"/>
+            <circle cx="336" cy="120" r="76" stroke="#ffd338" stroke-width="35" stroke-dasharray="37 441" transform="rotate(-104 336 120)"/>
             @foreach(['C', 'G', 'D', 'A', 'E', 'B', 'F♯', 'D♭', 'A♭', 'E♭', 'B♭', 'F'] as $index => $note)
                 @php($angle = deg2rad($index * 30 - 90))
-                <text x="{{ 140 + 49 * cos($angle) }}" y="{{ 73 + 49 * sin($angle) }}" fill="currentColor" text-anchor="middle" font-family="var(--font-family-body)" font-size="10" font-weight="600">{{ $note }}</text>
+                <text x="{{ 336 + 76 * cos($angle) }}" y="{{ 125 + 76 * sin($angle) }}" fill="#20242b" text-anchor="middle" font-size="16" font-weight="600">{{ $note }}</text>
             @endforeach
-            <circle cx="140" cy="70" r="27" fill="currentColor" fill-opacity=".07"/>
-            <path d="M140 80V55L151 52V75" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-            <ellipse cx="135" cy="81" rx="6" ry="4" fill="currentColor"/>
-            <ellipse cx="146" cy="76" rx="6" ry="4" fill="currentColor"/>
+            <text x="336" y="122" fill="#20242b" text-anchor="middle" font-size="29" font-weight="600">C</text>
+            <text x="336" y="143" fill="#5b6575" text-anchor="middle" font-size="12">MAJOR</text>
             @break
         @case('chords')
-            <rect x="97" y="7" width="86" height="28" rx="14" fill="var(--color-surface)"/>
-            <text x="140" y="25" text-anchor="middle" fill="currentColor" font-family="var(--font-family-body)" font-size="11" font-weight="600">C major</text>
-            <rect x="24" y="48" width="232" height="78" rx="8" fill="var(--color-surface)"/>
-            @foreach([24, 90, 156] as $keyX)
-                <rect x="{{ $keyX + 3 }}" y="51" width="28" height="72" rx="4" fill="currentColor" fill-opacity=".16"/>
-                <circle cx="{{ $keyX + 17 }}" cy="109" r="4" fill="currentColor"/>
+            <path fill="#20242b" d="M0 0H480V240H0z"/>
+            <text x="30" y="36" fill="#bcc3ce" font-size="12" letter-spacing="2">THREE NOTES. ONE CHORD</text>
+            <text x="30" y="84" fill="white" font-size="35" font-weight="600">C + E + G</text>
+            <path d="M240 73H276M269 66L276 73L269 80" stroke="#ffd338" stroke-width="2"/>
+            <text x="300" y="84" fill="#ffd338" font-size="29" font-weight="600">C major</text>
+            <rect x="30" y="112" width="420" height="140" rx="6" fill="white"/>
+            @foreach([30, 150, 270] as $keyX)
+                <path d="M{{ $keyX + 2 }} 114H{{ $keyX + 58 }}V240H{{ $keyX + 2 }}z" fill="#ffd338"/>
             @endforeach
-            @foreach([57, 90, 123, 156, 189, 222] as $keyX)
-                <path d="M{{ $keyX }} 49V125" stroke="currentColor" stroke-opacity=".15"/>
+            @foreach([90, 150, 210, 270, 330, 390] as $keyX)
+                <path d="M{{ $keyX }} 113V240" stroke="#c5cad2"/>
             @endforeach
-            @foreach([49, 82, 148, 181, 214] as $keyX)
-                <rect x="{{ $keyX }}" y="48" width="16" height="43" rx="3" fill="var(--card-ink)"/>
+            @foreach([74, 134, 254, 314, 374] as $keyX)
+                <rect x="{{ $keyX }}" y="112" width="32" height="78" rx="3" fill="#20242b"/>
+                <path d="M{{ $keyX + 5 }} 120V181H{{ $keyX + 27 }}" stroke="white" stroke-opacity=".12"/>
+            @endforeach
+            @foreach(['C' => 60, 'E' => 180, 'G' => 300] as $note => $keyX)
+                <text x="{{ $keyX }}" y="222" fill="#20242b" text-anchor="middle" font-size="19" font-weight="600">{{ $note }}</text>
             @endforeach
             @break
         @case('courses')
-            <rect x="76" y="9" width="139" height="99" rx="10" fill="currentColor" fill-opacity=".13" transform="rotate(7 145 60)"/>
-            <rect x="61" y="10" width="151" height="111" rx="10" fill="var(--color-surface)" transform="rotate(-4 136 65)"/>
-            <circle cx="88" cy="37" r="12" fill="currentColor" fill-opacity=".13"/>
-            <text x="88" y="41" text-anchor="middle" fill="currentColor" font-family="var(--font-family-body)" font-size="11" font-weight="600">1</text>
-            <path d="M110 33H184M110 41H161M78 61H186M78 72H169" stroke="currentColor" stroke-opacity=".3" stroke-width="4" stroke-linecap="round"/>
-            <rect x="43" y="83" width="194" height="49" rx="10" fill="var(--card-accent)"/>
-            <path d="M48 88L132 119C137 121 143 121 148 119L232 88" stroke="currentColor" stroke-opacity=".55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path fill="#e85632" d="M0 0H480V240H0z"/>
+            <path d="M0 195L125 72L273 240H0M373 0L480 91V0" fill="#c53a1a"/>
+            <g transform="rotate(-5 246 130)">
+                <path d="M114 39H399V260H114z" fill="#a53118" fill-opacity=".4"/>
+                <path d="M100 24H385V260H100z" fill="#fffdf7"/>
+                <text x="124" y="55" fill="#c53a1a" font-size="11" letter-spacing="1.8">PIANOLIT / CRASH COURSES</text>
+                <path d="M124 70H361" stroke="#d7d2c8"/>
+                <text x="121" y="112" fill="#20242b" font-family="var(--font-family-serif)" font-size="34">A little learning,</text>
+                <text x="121" y="151" fill="#20242b" font-family="var(--font-family-serif)" font-size="34">a little closer</text>
+                <text x="124" y="181" fill="#5b6575" font-size="13">Your next musical discovery, by email</text>
+                <path d="M124 202H361M124 213H320M124 224H345" stroke="#d7d2c8" stroke-width="3"/>
+            </g>
             @break
         @case('infographics')
-            <rect x="69" y="13" width="110" height="117" rx="8" fill="currentColor" fill-opacity=".13" transform="rotate(-9 124 71)"/>
-            <rect x="96" y="8" width="110" height="124" rx="8" fill="var(--color-surface)" transform="rotate(5 151 70)"/>
-            <g transform="rotate(5 151 70)">
-                <rect x="108" y="21" width="60" height="7" rx="3.5" fill="currentColor" fill-opacity=".6"/>
-                <path d="M108 38H190" stroke="currentColor" stroke-opacity=".15" stroke-width="3" stroke-linecap="round"/>
-                @foreach([0, 1, 2, 3, 4] as $line)
-                    <path d="M108 {{ 52 + $line * 5 }}H190" stroke="currentColor" stroke-opacity=".17"/>
+            <path fill="#edece7" d="M0 0H480V240H0z"/>
+            <g transform="rotate(4 240 120)">
+                <path d="M57 -20H436V270H57z" fill="#d4d1c9"/>
+                <path d="M43 -27H422V260H43z" fill="#fffdf7"/>
+                <text x="70" y="32" fill="#5b6575" font-size="11" letter-spacing="2">THE VISUAL REFERENCE</text>
+                <text x="70" y="73" fill="#20242b" font-family="var(--font-family-serif)" font-size="34">Make music make sense</text>
+                <path d="M70 92H395" stroke="#20242b" stroke-width="2"/>
+                <text x="70" y="125" fill="#c53a1a" font-size="12" letter-spacing="2">DYNAMICS / SOFT TO LOUD</text>
+                @foreach(['pp' => 91, 'p' => 157, 'mf' => 234, 'f' => 309, 'ff' => 375] as $dynamic => $position)
+                    <text x="{{ $position }}" y="170" fill="#20242b" text-anchor="middle" font-family="var(--font-family-serif)" font-style="italic" font-weight="700" font-size="36">{{ $dynamic }}</text>
                 @endforeach
-                <ellipse cx="132" cy="66" rx="6" ry="4" fill="currentColor"/>
-                <path d="M138 65V47" stroke="currentColor" stroke-width="2"/>
-                <ellipse cx="170" cy="61" rx="6" ry="4" fill="currentColor"/>
-                <path d="M176 60V42" stroke="currentColor" stroke-width="2"/>
-                <rect x="108" y="88" width="23" height="27" rx="5" fill="currentColor" fill-opacity=".12"/>
-                <rect x="138" y="88" width="23" height="27" rx="5" fill="currentColor" fill-opacity=".24"/>
-                <rect x="168" y="88" width="23" height="27" rx="5" fill="currentColor" fill-opacity=".4"/>
+                <path d="M75 198L390 185M75 198L390 211" stroke="#c53a1a" stroke-width="2"/>
             </g>
             @break
         @case('quizzes')
-            <rect x="66" y="12" width="148" height="116" rx="14" fill="var(--color-surface)"/>
-            <rect x="82" y="27" width="116" height="5" rx="2.5" fill="currentColor" fill-opacity=".1"/>
-            <rect x="82" y="27" width="67" height="5" rx="2.5" fill="currentColor" fill-opacity=".5"/>
-            <text x="140" y="82" text-anchor="middle" fill="currentColor" font-family="var(--font-family-heading)" font-size="43" font-weight="600">?</text>
-            <rect x="82" y="94" width="54" height="21" rx="8" fill="currentColor" fill-opacity=".13"/>
-            <path d="M102 104L107 109L116 100" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect x="144" y="94" width="54" height="21" rx="8" fill="currentColor" fill-opacity=".07"/>
-            <path d="M167 101L174 108M174 101L167 108" stroke="currentColor" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>
+            <path fill="#ffd338" d="M0 0H480V240H0z"/>
+            <circle cx="398" cy="120" r="104" stroke="#20242b" stroke-width="1.5"/>
+            <circle cx="398" cy="120" r="88" stroke="#20242b" stroke-opacity=".25"/>
+            <text x="398" y="169" fill="#20242b" text-anchor="middle" font-family="var(--font-family-serif)" font-size="151">?</text>
+            <text x="28" y="43" fill="#20242b" font-size="12" letter-spacing="2">A LITTLE MUSICAL CHALLENGE</text>
+            <text x="26" y="102" fill="#20242b" font-size="32" font-weight="600">Think you</text>
+            <text x="26" y="141" fill="#20242b" font-size="32" font-weight="600">know music?</text>
+            <path d="M28 187H190M28 197H190M28 207H190M28 217H190M28 227H190" stroke="#20242b" stroke-opacity=".25"/>
+            <g fill="#20242b" stroke="#20242b" stroke-width="2">
+                <ellipse cx="64" cy="217" rx="7" ry="5" transform="rotate(-20 64 217)"/><path d="M71 217V184"/>
+                <ellipse cx="110" cy="207" rx="7" ry="5" transform="rotate(-20 110 207)"/><path d="M117 207V174"/>
+                <ellipse cx="156" cy="212" rx="7" ry="5" transform="rotate(-20 156 212)"/><path d="M163 212V179"/>
+            </g>
             @break
         @case('pianists')
-            <g transform="rotate(-8 95 75)">
-                <rect x="44" y="22" width="95" height="105" rx="10" fill="var(--color-surface)"/>
-                <rect x="53" y="31" width="77" height="70" rx="6" fill="currentColor" fill-opacity=".07"/>
-                <path d="M68 99C68 79 115 79 115 99" fill="currentColor" fill-opacity=".65"/>
-                <ellipse cx="91" cy="62" rx="15" ry="19" fill="currentColor" fill-opacity=".22"/>
-                <path d="M76 64C65 38 113 31 107 65L100 50L78 58Z" fill="currentColor" fill-opacity=".65"/>
-                <path d="M66 112H117" stroke="currentColor" stroke-opacity=".25" stroke-width="4" stroke-linecap="round"/>
+            <path fill="#20242b" d="M0 0H480V240H0z"/>
+            <path d="M359 0H480V240H359z" fill="#e85632"/>
+            <text x="28" y="39" fill="#bcc3ce" font-size="12" letter-spacing="2">THE PEOPLE BEHIND THE PIANO</text>
+            <g fill="#fffdf7" font-family="var(--font-family-serif)" font-size="39">
+                <text x="26" y="96">Martha Argerich</text>
+                <text x="26" y="143">Arthur Rubinstein</text>
+                <text x="26" y="190">Vladimir Horowitz</text>
             </g>
-            <g transform="rotate(6 185 67)">
-                <rect x="143" y="9" width="95" height="116" rx="10" fill="var(--color-surface)"/>
-                <rect x="152" y="18" width="77" height="82" rx="6" fill="currentColor" fill-opacity=".12"/>
-                <path d="M166 97C166 76 216 76 216 97" fill="currentColor" fill-opacity=".65"/>
-                <path d="M171 66C161 24 219 26 211 73L203 90H177Z" fill="currentColor" fill-opacity=".6"/>
-                <ellipse cx="191" cy="55" rx="14" ry="18" fill="var(--card-surface)"/>
-                <path d="M176 52L196 39L207 58C211 32 176 26 176 52Z" fill="currentColor" fill-opacity=".65"/>
-                <path d="M165 112H216" stroke="currentColor" stroke-opacity=".25" stroke-width="4" stroke-linecap="round"/>
-            </g>
+            <text x="28" y="222" fill="#bcc3ce" font-size="11" letter-spacing="1.5">EXTRAORDINARY LIVES. UNFORGETTABLE MUSIC</text>
+            <path d="M389 61H465V207H389z" fill="#fffdf7"/>
+            @foreach([89, 118, 147, 176] as $keyY)
+                <path d="M389 {{ $keyY }}H465" stroke="#20242b"/>
+            @endforeach
+            @foreach([80, 109, 167] as $keyY)
+                <path d="M423 {{ $keyY }}H465V{{ $keyY + 17 }}H423z" fill="#20242b"/>
+            @endforeach
             @break
     @endswitch
 </svg>

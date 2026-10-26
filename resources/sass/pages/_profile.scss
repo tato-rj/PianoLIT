@@ -1,0 +1,46 @@
+.profile-page {
+    max-width: 1160px;
+}
+
+.profile-section {
+    scroll-margin-top: 2rem;
+    margin-bottom: 3rem;
+
+    h2 { font-size: var(--font-size-xl); }
+}
+
+.profile-panel {
+    padding: 1.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+
+    @media (min-width: 768px) { padding: 2rem; }
+}
+
+.profile-facts dt {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    margin-bottom: .25rem;
+}
+
+.profile-provider-row, .profile-list-row {
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.profile-list-row { padding-bottom: 1.5rem; }
+
+.profile-provider-row > .d-flex {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.profile-provider-details { min-width: 0; }
+
+.profile-delete-confirm summary {
+    cursor: pointer;
+    font-weight: 600;
+}

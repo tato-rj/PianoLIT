@@ -3,7 +3,7 @@
 		@brandIcon
 	</a>
 	@guest('web')
-	<a href="{{ route('login') }}" class="btn btn-secondary">Sign in</a>
+	<a href="{{ route('login') }}" class="btn btn-secondary">@icon('user')Sign in</a>
 	@endguest
 </div>
 

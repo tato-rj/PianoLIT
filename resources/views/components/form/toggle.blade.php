@@ -19,6 +19,10 @@
 		role="switch" aria-label="{{$ariaLabel}}"
 		@endisset
 
+		@isset($describedBy)
+		aria-describedby="{{$describedBy}}"
+		@endisset
+
 		@if($submitOnChange ?? false)
 		onchange="this.form.requestSubmit()"
 		@endif

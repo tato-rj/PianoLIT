@@ -27,7 +27,7 @@ class FeedbackContextTest extends ReviewTestCase
 
     public function test_standard_guest_pages_share_one_launcher_and_one_modal_and_settings_has_a_second_entry()
     {
-        foreach (['discover', 'explore', 'search.results', 'playlists', 'my-pieces', 'composers.index', 'settings', 'users.profile', 'terms', 'privacy'] as $name) {
+        foreach (['discover', 'explore', 'search.results', 'playlists', 'my-pieces', 'composers.index', 'settings', 'terms', 'privacy'] as $name) {
             $response = $this->get(route('webapp.'.$name))->assertOk();
             $html = $response->getContent();
             $this->assertSame(1, substr_count($html, 'data-feedback-launcher'), $name);

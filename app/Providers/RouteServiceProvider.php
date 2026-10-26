@@ -25,6 +25,13 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         URL::formatHostUsing(function ($root, $route) {
+            // Support links from every hub and the web app return to main.
+            if ($route && $route->named('contact')) {
+                return \App\Support\ProfileUrl::base();
+            }
+            if ($route && $route->named('users.profile', 'users.profile.*', 'webapp.users.profile', 'users.update', 'users.destroy', 'users.subscriptions.*')) {
+                return \App\Support\ProfileUrl::base();
+            }
             // Public preview links must leave the admin host when paths overlap.
             if ($route && $route->getAction('public_site')) {
                 $host = request()->getHost();
@@ -57,6 +64,9 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapAdminRoutes();
 
         $this->mapActivityRoutes();
+
+        Route::middleware(['web', \App\Http\Middleware\CanonicalProfile::class])
+            ->namespace($this->namespace)->group(base_path('routes/profile.php'));
 
         $this->mapWebAppRoutes();
 

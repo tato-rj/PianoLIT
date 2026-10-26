@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\{User, Piece, Api, Admin, EmailList};
-use App\Notifications\User\AccountDeleted;
+use App\{User, EmailList};
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\ResetsPasswords;
 
 class UsersController extends Controller
 {
-    use ResetsPasswords;
-
     public function __construct()
     {
         $this->middleware('auth', ['except' => ['gift']]);
@@ -41,7 +37,7 @@ class UsersController extends Controller
 
     public function profile()
     {
-        return view('users.profile.index');
+        return redirect(\App\Support\ProfileUrl::get(), 301);
     }
 
     public function purchases()
@@ -67,50 +63,36 @@ class UsersController extends Controller
     {
         $this->authorize('update', $user);
 
-        if ($request->filled('password') && !app(\App\Auth\Google\Accounts::class)->hasPassword($user)) {
-            return redirect('/auth/google/password');
-        }
-
-        // The older profile form must not bypass Google linking's recent-proof
-        // requirement by changing the account email/password first.
-        if (($request->filled('password') || ($request->has('email') && $request->email !== $user->email))
-            && app(\App\Auth\Google\Configuration::class)->ready()
-            && !app(\App\Auth\Google\Accounts::class)->recent($request, $user)) {
+        $accounts = app(\App\Auth\Google\Accounts::class);
+        if ($request->filled('password') && !$accounts->hasPassword($user)) return redirect('/auth/google/password');
+        $sensitive = $request->filled('password') || ($request->has('email') && $request->email !== $user->email);
+        if ($sensitive && !$accounts->recent($request, $user)) {
+            if (!app(\App\Auth\Google\Configuration::class)->ready()) return redirect(\App\Support\ProfileUrl::get('security'));
             return app(\App\Http\Controllers\Auth\GoogleController::class)->confirm($request, 'profile');
         }
-
-        $request->validate([
-            'email' => 'email',
-            'password' => 'confirmed|min:8|nullable'
-        ]);
-
-        $subscription = $user->subscription;
-
-        $user->update([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email
-        ]);
-
-        if ($request->password)
-            $this->resetPassword($user, $request->password);
-
-        if ($request->password)
-            app(\App\Auth\Google\Accounts::class)->verified($request, $user);
-
-        if ($subscription)
-            $subscription->update(['email' => $request->email]);
-
-        return back()->with(['status' => 'Update successful.']);
+        $request->validate(['first_name' => 'required|string|max:200', 'last_name' => 'nullable|string|max:200',
+            'email' => ['required', 'string', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users')->ignore($user->id)],
+            'password' => 'nullable|string|min:8|max:1024|confirmed']);
+        $profile = app(ProfileController::class);
+        if ($request->filled('password')) $profile->password($request);
+        $result = $profile->details($request);
+        // Legacy forms share the new proof-of-address flow too.
+        if (mb_strtolower($request->email) !== mb_strtolower($user->email)) {
+            return $profile->email($request, app(\App\Services\Profile\EmailChange::class));
+        }
+        return $result;
     }
 
-    public function updateSubscription(EmailList $list)
+    public function updateSubscription(Request $request, EmailList $list)
     {
-        $list->toggle(auth()->user()->subscription);
-        
+        if ($request->has('enabled')) $request->validate(['enabled' => 'required|boolean']);
+        $subscriber = $request->user('web')->subscription;
+        $enabled = $request->has('enabled') ? $request->boolean('enabled') : !($subscriber && $subscriber->in($list));
+        app(\App\Services\Profile\EmailPreferences::class)->save($request->user('web')->id, $list, $enabled);
+
         return view('components.alert', [
             'color' => 'green',
-            'message' => '<i class="fas fa-check-circle mr-2"></i>Your subscription has been updated',
+            'message' => 'Your subscription has been updated',
             'temporary' => true,
             'dismissible' => true,
             'floating' => 'top'
@@ -123,16 +105,10 @@ class UsersController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
         $this->authorize('update', $user);
 
-        $user->delete();
-
-        session()->flush();
-
-        Admin::notifyAll(new AccountDeleted($user));
-
-        return back()->with('status', 'The user has been successfully deleted');
+        return app(ProfileController::class)->destroy($request, app(\App\Services\Profile\CloseAccount::class));
     }
 }

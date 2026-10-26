@@ -159,7 +159,7 @@ class PublicProjectPagesTest extends ReviewTestCase
             $scheme = parse_url($website, PHP_URL_SCHEME).'://';
             $host = parse_url($website, PHP_URL_HOST);
             $destinations = [
-                'PianoLIT home' => $website,
+                'Home' => $website,
                 'Web app' => $scheme.'my.'.$host,
                 'iOS app' => config('app.stores.ios'),
                 'Shop' => $scheme.'shop.'.$host,
@@ -202,7 +202,7 @@ class PublicProjectPagesTest extends ReviewTestCase
             $this->assertSame($prefix === '' ? 1 : 0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
             $this->assertSame(1, $xpath->query('//header//button[@data-bs-toggle="dropdown" and contains(@class, "account-circle")]')->length);
             $this->assertSame('H', trim($xpath->query('//header//button//span[contains(@class, "account-circle__initial")]')->item(0)->textContent));
-            $this->assertSame(1, $xpath->query('//header//a[@href="'.$origin.'/my-profile"]')->length);
+            $this->assertSame(1, $xpath->query('//header//a[@href="http://localhost/profile"]')->length);
             $this->assertSame(1, $xpath->query('//header//form[@action="'.$origin.'/logout" and @method="POST"]//input[@name="_token"]')->length);
             $this->assertSame($prefix === '' ? 0 : 1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu"]')->length);
         }

@@ -6,6 +6,8 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::get('modal', 'SubscriptionsController@modal')->name('modal');
 
+	Route::get('unsubscribed', 'SubscriptionsController@unsubscribed')->name('unsubscribed');
+
 	Route::get('{subscription}/unsubscribe/{list}', 'SubscriptionsController@unsubscribe')->name('unsubscribe');
 
 });

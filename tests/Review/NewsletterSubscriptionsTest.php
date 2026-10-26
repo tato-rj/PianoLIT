@@ -77,7 +77,7 @@ class NewsletterSubscriptionsTest extends ReviewTestCase
     {
         foreach (['subscription', 'blog-subscription', 'newsletter-subscription'] as $view) {
             $response = $this->get('http://blog.localhost/subscriptions/modal?view='.$view)->assertOk()
-                ->assertSee('Stay in tune with PianoLIT.')->assertSee('one monthly email')
+                ->assertSee('Stay in tune with PianoLIT')->assertSee('one monthly email')
                 ->assertSee('only when there’s something new.')->assertSee('Keep me in the loop')
                 ->assertSee('action="http://blog.localhost/newsletter/subscribe"', false)
                 ->assertSee('autocomplete="email"', false)->assertSee('pianolit-input', false)
@@ -348,7 +348,7 @@ class NewsletterSubscriptionsTest extends ReviewTestCase
         $free = $this->list(EmailList::FREE_PICK); $free->add($subscriber);
         app(MonthlyDigest::class)->queuePreviousMonth();
         $url = 'http://blog.localhost/subscriptions/'.$subscriber->email.'/unsubscribe/'.$this->list()->id;
-        $this->get($url)->assertOk();
+        $this->get($url)->assertRedirect('/subscriptions/unsubscribed');
         $transport = $this->transport();
         $id = DB::table('newsletter_deliveries')->value('id');
         (new SendNewsletterEmail($id))->handle(app(MonthlyDigest::class));

@@ -15,7 +15,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
     {
         parent::setUp();
         Redis::shouldReceive('get')->andReturn(null);
-        $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
+        $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\Logs\RecordWebLog::class, \App\Http\Middleware\UpdateLocation::class]);
         Model::withoutEvents(function () {
             $this->user = create(User::class);
             $this->user->setAppends(['full_name']);
@@ -48,7 +48,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
             'pieces.collection' => [$this->pieces[0]], 'pieces.timeline' => [$this->pieces[0]],
             'playlists.show' => [$this->playlist], 'search.results' => ['search' => 'happy', 'model' => Tag::class, 'lazy-load' => '', 'page' => 1],
             'search.count' => ['search' => 'happy', 'model' => Tag::class, 'count' => 1],
-            'my-pieces' => [], 'settings' => [], 'users.profile' => [], 'pieces.save-to' => [$this->pieces[0]],
+            'my-pieces' => [], 'settings' => [], 'pieces.save-to' => [$this->pieces[0]],
             'users.favorites.folders.show' => [$this->folder],
         ];
         $counts = [];
@@ -82,7 +82,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
             'pieces.similar' => 10, 'pieces.collection' => 6, 'pieces.timeline' => 8,
             // Audio sections add two fixed bulk reads: performance videos and their moments.
             'playlists.show' => 8, 'search.results' => 7, 'search.count' => 3,
-            'my-pieces' => 11, 'settings' => 1, 'users.profile' => 2,
+            'my-pieces' => 11, 'settings' => 1,
             // Folder playback now resolves the account membership and its source (two fixed queries).
             'pieces.save-to' => 4, 'users.favorites.folders.show' => 9,
         ];
@@ -181,11 +181,11 @@ class WebAppQueryRegressionTest extends ReviewTestCase
         $this->actingAs($this->user, 'web');
         DB::enableQueryLog();
         DB::flushQueryLog();
-        $this->get(route('webapp.users.profile'))->assertOk()->assertSee('Your Apple membership');
+        $this->get(route('users.profile'))->assertOk()->assertSee('Your membership needs to end first')->assertSee('Email preferences');
         $queries = collect(DB::getQueryLog());
         DB::disableQueryLog();
-        $this->assertCount(4, $queries);
         $this->assertCount(1, $queries->filter(function ($query) { return strpos($query['query'], 'from "memberships"') !== false; }));
+        $this->assertCount(1, $queries->filter(function ($query) { return strpos($query['query'], 'inner join "email_list_subscription" on "email_lists"') !== false; }), 'All saved list preferences are loaded once.');
     }
 
     public function test_discover_does_not_add_browser_attributes_to_shared_cached_models()

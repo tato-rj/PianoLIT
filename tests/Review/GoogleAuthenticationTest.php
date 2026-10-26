@@ -636,7 +636,7 @@ class GoogleAuthenticationTest extends ReviewTestCase
         $this->assertSame($this->googleEmail, $user->fresh()->email);
         $this->assertSame($before, $user->fresh()->password);
         $this->get('http://localhost/auth/google/confirm')->assertOk();
-        $this->proofPost('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect('/my-profile');
+        $this->proofPost('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect('http://localhost/profile#security');
         $this->patch('http://localhost/my-profile/'.$user->id, ['first_name' => 'Updated', 'last_name' => 'Pianist', 'email' => $user->email, 'password' => 'replacement-password', 'password_confirmation' => 'replacement-password'])->assertRedirect();
         $this->assertTrue(Hash::check('replacement-password', $user->fresh()->password));
         $this->assertTrue((new Accounts)->recent(request(), $user->fresh()));

@@ -82,6 +82,26 @@ class SubscriptionsController extends Controller
     {
         $list->remove($subscription);
 
+        // Keep the legacy stateless API response outside the browser flow.
+        if (request()->routeIs('subscriptions.unsubscribe')) {
+            return redirect()->to(route('subscriptions.unsubscribed', [], false))
+                ->with('unsubscribe-confirmation', true)
+                ->header('Cache-Control', 'no-store, private');
+        }
+
         return view('subscriptions.unsubscribed');
+    }
+
+    public function unsubscribed(Request $request)
+    {
+        if (! $request->session()->pull('unsubscribe-confirmation')) {
+            $website = rtrim(config('app.url'), '/');
+
+            return redirect()->to(preg_match('#^https?://#i', $website) ? $website : $request->getScheme().'://'.ltrim($website, '/'))
+                ->header('Cache-Control', 'no-store, private');
+        }
+
+        return response()->view('subscriptions.unsubscribed')
+            ->header('Cache-Control', 'no-store, private');
     }
 }

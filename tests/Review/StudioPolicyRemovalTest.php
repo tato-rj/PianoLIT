@@ -39,7 +39,7 @@ class StudioPolicyRemovalTest extends ReviewTestCase
 
         $user = Model::withoutEvents(function () { return create(User::class); });
         $this->actingAs($user, 'web');
-        $this->get(route('users.profile'))->assertOk()->assertSee('My profile information')->assertDontSee('Studio Policy');
+        $this->get(route('users.profile'))->assertOk()->assertSee('Personal information')->assertDontSee('Studio Policy');
         $this->get(route('users.purchases'))->assertOk()->assertDontSee('Studio Policy');
     }
 
