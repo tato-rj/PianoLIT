@@ -269,6 +269,8 @@ body {
     width: 175%;
     height: auto;
     overflow: visible;
+    // Crisp silhouette shadow follows the hand and baton without a soft halo.
+    filter: drop-shadow(6px 5px 0 rgba(0, 0, 0, .22));
     // Place the reference SVG's baton tip, rather than its center, on the beat.
     transform: translate(calc(-100% * 46 / 978), calc(-100% * 54 / 946));
 }

@@ -1,0 +1,5 @@
+## {{ $title }}
+
+{{ $slot }}
+
+{{ $button }}: {{ $url }}

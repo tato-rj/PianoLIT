@@ -1,0 +1,16 @@
+.download-offer__preview {
+    background: var(--pastel-cream-surface);
+}
+
+.download-offer__image {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 280px;
+    margin-inline: auto;
+}
+
+@media (max-width: 767.98px) {
+    .download-offer__image { max-height: 150px; }
+}

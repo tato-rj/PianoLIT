@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'resources/images/emails/welcome'
 parser = argparse.ArgumentParser(description=__doc__)
 selection = parser.add_mutually_exclusive_group()
-selection.add_argument('--logo-only', action='store_true', help='Rebuild only the floating logo, preserving the screenshot mockups.')
+selection.add_argument('--logo-only', action='store_true', help='Rebuild the shared plain/floating logos, preserving the screenshot mockups.')
 selection.add_argument('--platform-mockups-only', action='store_true', help='Rebuild only the web app/iOS device variants, preserving the website mockup.')
 selection.add_argument('--badge-only', action='store_true', help='Export only the supplied Apple download badge for email use.')
 selection.add_argument('--hubs-only', action='store_true', help='Export compact JPEG crops of the approved homepage hub artwork.')
@@ -105,13 +105,16 @@ with tempfile.TemporaryDirectory(prefix='pianolit-welcome-') as temp:
            '-alpha', 'off', '-compose', 'CopyOpacity', '-composite', temp / 'logo-border.png')
     magick(temp / 'logo.png', temp / 'logo-border.png', '-compose', 'Over', '-composite',
            temp / 'logo.png')
-    magick('-size', '480x450', 'xc:white', '-fill', '#21252920', '-draw',
+    # The identical outlined artwork, without the welcome canvas/floor shadow.
+    magick(temp / 'logo.png', '-strip', OUTPUT / 'logo.png')
+    magick('-size', '480x450', 'xc:none', '-fill', '#21252920', '-draw',
            'ellipse 240,370 120,10 0,360', '-blur', '0x9', temp / 'floor.png')
     magick(temp / 'floor.png', temp / 'logo.png', '-geometry', '+96+36', '-composite',
            '-strip', OUTPUT / 'floating-logo.png')
 
     if args.logo_only:
         print(OUTPUT / 'floating-logo.png')
+        print(OUTPUT / 'logo.png')
         raise SystemExit(0)
 
     magick(ROOT / 'resources/images/webapp/carousel/screens/discover-desktop.jpg',

@@ -78,7 +78,12 @@ class AdminEmailsTest extends ReviewTestCase
             $this->assertStringContainsString('sandbox;', $content->headers->get('Content-Security-Policy'));
             $this->assertStringNotContainsString('signature=', $content->getContent());
             $this->assertStringNotContainsString('/password/reset/', $content->getContent());
-            $this->assertStringNotContainsString('unsubscribe', $content->getContent());
+            if (strpos($key, 'account-welcome') === 0) {
+                $content->assertSee('Unsubscribe / email preferences');
+                $this->assertStringContainsString('http://localhost/my-profile?tab=email-preferences', $content->getContent());
+            } else {
+                $this->assertStringNotContainsString('unsubscribe', $content->getContent());
+            }
             $this->assertStringContainsString('/emails/'.$key.'/preview', $url, 'URL generator must be restored after rendering.');
             $this->assertSame('admin.localhost', parse_url(route('admin.emails.index'), PHP_URL_HOST));
         }

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Rebuild PianoLIT web/install icons from the two approved SVG masters.
 
+Copy the separately drawn small-size white watermark without regenerating it.
+
 Requires ImageMagick 7 (`magick`). Run manually with npm run brand:icons;
 ordinary frontend builds use the committed exports without this dependency.
 """
@@ -53,11 +55,6 @@ def pinned(svg, color='#000', title='PianoLIT pinned tab'):
     return '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>' + title + '</title><g fill="' + color + '"><path fill-rule="evenodd" d="' + body + ' ' + pages + '"/>' + marks + keys + '</g></svg>\n'
 
 
-def white_watermark(svg):
-    border = '<rect x="8" y="8" width="496" height="496" rx="96" fill="none" stroke="#fff" stroke-width="16"/>'
-    return pinned(svg, '#fff', 'PianoLIT white icon').replace('</svg>', border + '</svg>')
-
-
 if not shutil.which('magick'):
     raise SystemExit('ImageMagick 7 is required: install it before running brand:icons.')
 
@@ -69,11 +66,6 @@ with tempfile.TemporaryDirectory(prefix='pianolit-brand-') as directory:
     ]:
         source = BRAND / f'{variant}-icon.svg'
         svg = source.read_text()
-        if variant == 'app':
-            # Reuse the approved monochrome silhouette with a transparent canvas.
-            watermark = white_watermark(svg)
-            (BRAND / 'icon-white.svg').write_text(watermark)
-            (PUBLIC / 'images/brand/icon-white.svg').write_text(watermark)
         square = work / f'{variant}-square.png'
         tile = work / f'{variant}-rounded.svg'
         tile.write_text(rounded(svg))
@@ -100,6 +92,7 @@ with tempfile.TemporaryDirectory(prefix='pianolit-brand-') as directory:
         else:
             export(square, BRAND / 'admin-icon.png', '512x512', opaque=True)
         for source_file in BRAND.glob('*'):
+            # Includes icon-white.svg: preserve its hand-tuned small-size geometry.
             if source_file.suffix in ('.svg', '.png'):
                 shutil.copyfile(source_file, PUBLIC / 'images/brand' / source_file.name)
         icons = []

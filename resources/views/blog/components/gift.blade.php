@@ -1,19 +1,10 @@
-<button class="position-fixed bg-white shadow rounded-pill px-3 py-2 d-flex align-items-center border-0" id="gift" style="bottom: 40px; right: 30px">
-	<span class="me-2 text-muted"><small>We have a gift for you!</small></span>
-	@icon('gift', ['mr' => 0, 'classes' => 'icon-size-1x animated infinite bounce delay-4s', 'styles' => 'color: #E92C59'])
+<button type="button" class="btn btn-secondary position-fixed rounded-pill d-inline-flex align-items-center gap-2" id="gift" style="bottom: 24px; right: 24px" data-bs-toggle="modal" data-bs-target="#blog-gift-modal" aria-controls="blog-gift-modal" aria-haspopup="dialog">
+    @icon('gift', ['mr' => 0])Free download
 </button>
 
-@component('components.modal', ['id' => 'blog-gift-modal'])
-@slot('body')
-<div class="text-center">
-	<img src="{{$post->gift_path}}" class="border mb-3" style="width: 210px">
-	<div class="">
-		<div class="mb-3">
-			<div>We'll send you this gift directly on your inbox!</div>
-		</div>
-
-		@include('components.form.subscription', ['formId' => 'gift-subscription-form', 'gift' => $post->gift_path, 'label' => 'SEND ME THE GIFT'])
-	</div>
-</div>
-@endslot
-@endcomponent
+@include('components.download-offer', [
+    'id' => 'blog-gift-modal', 'image' => $post->gift_path, 'imageAlt' => 'Article gift preview',
+    'heading' => 'A little extra for your piano time',
+    'description' => 'Keep the inspiration going. Enter your email and we’ll send you the free download that goes with this story.',
+    'giftUrl' => url($post->gift_path), 'actionLabel' => 'Email me the download',
+])

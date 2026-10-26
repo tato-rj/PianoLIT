@@ -12,10 +12,6 @@
 
 @push('header')
 <script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
-<script>
-    window.app.page_url = <?php echo json_encode(url()->current()); ?>;
-    window.app.page_id = <?php echo json_encode($post->slug); ?>;
-</script>
 @endpush
 
 @section('content')
@@ -97,17 +93,7 @@
             </section>
         @endif
 
-        @env('production')
-            <section class="mt-5" aria-label="Comments">
-                <div id="disqus_thread"></div>
-            </section>
-        @endenv
-
         @slot('sidebar')
-            <div class="mb-4">
-                <h2 class="h5 mb-2">Explore PianoLIT</h2>
-                <p class="text-muted small mb-0">Keep your curiosity playing.</p>
-            </div>
             @include('components.display.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
@@ -115,25 +101,15 @@
 
 @if($post->hasGift())
 <div id="gift-container" data-url="{{route('posts.gift', $post)}}"></div>
-{{-- @include('blog.components.gift') --}}
 @endif
 @endsection
 
 @push('scripts')
 @addthis
 
-@env('production')
-<script type="text/javascript" src="{{asset('js/components/disqus.js')}}"></script>
-@endenv
 <script type="text/javascript">
 $(document).ready(function() {
 	showScrollProgressBar($('#main-content'));
-});
-
-$(document).on('click', "button#gift", function() {
-	let $button = $(this);
-	$button.find('i').removeClass('animated');
-	$('#blog-gift-modal').modal('show');
 });
 
 @if($post->hasGift())

@@ -174,6 +174,7 @@ class DiscoverPieceRowsTest extends ReviewTestCase
     {
         return [
             ['From women composers', 'women-composers-heading'],
+            ['From black composers', 'black-composers-heading'],
         ];
     }
 

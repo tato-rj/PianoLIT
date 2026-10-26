@@ -5,22 +5,26 @@
 
 $email-button-font-size: math.div($font-size-base, 1rem) * 16px * $button-font-scale;
 $email-button-height: $button-line-height + 2 * $button-padding-y + 2 * $button-border-width;
+// Resolved for inboxes that cannot use the web app's --color-surface-subtle.
+$email-background: #f8f9fa;
 
-// Dedicated welcome theme; foundations match the web app. Compiled to the
+// Shared editorial email theme; foundations match the web app. Compiled to the
 // Laravel Markdown theme, which inlines these values for email clients.
 body, table, td, p, a { font-family: $font-family-sans-serif; }
-body { margin: 0; padding: 0; background: #fff; color: $text-color; -webkit-text-size-adjust: 100%; }
+body { margin: 0; padding: 0; background: $email-background; color: $text-color; -webkit-text-size-adjust: 100%; }
 table { border-collapse: collapse; }
 img { border: 0; outline: none; max-width: 100%; }
 a { color: $brand-primary; text-decoration: none; }
 p { margin: 0; font-size: 16px; line-height: 1.65; }
 h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; font-weight: 600; text-align: center; }
-.welcome-wrapper { width: 100%; background: #fff; }
+.welcome-wrapper { width: 100%; background: $email-background; }
 .welcome-container { width: 600px; max-width: 600px; }
 .welcome-padding { padding-left: 48px; padding-right: 48px; }
 .welcome-preheader { display: none !important; visibility: hidden; mso-hide: all; font-size: 1px; line-height: 1px; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; }
 .welcome-hero { padding-top: 28px; padding-bottom: 40px; text-align: center; }
-.welcome-logo { display: block; width: 130px; height: auto; margin: 0 auto 14px; }
+.editorial-logo { display: block; height: auto; }
+.welcome-logo { width: 130px; margin: 0 auto 14px; }
+.editorial-logo-plain { width: 48px; height: 48px; margin: 0 auto; }
 .welcome-hero h1 { margin: 0 0 18px; font-size: 36px; line-height: 1.25; letter-spacing: -1px; overflow-wrap: break-word; word-break: break-word; }
 .welcome-introduction p, .welcome-description p { text-align: center; color: #6c757d; }
 .welcome-section { padding-bottom: 40px; text-align: center; }
@@ -28,23 +32,30 @@ h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; fo
 .welcome-section h2 { font-size: 25px; line-height: 1.35; letter-spacing: -.5px; margin: 36px 0 14px; }
 .welcome-description { margin: 0 auto 24px; }
 .welcome-mockup { display: block; width: 504px; height: auto; margin: 0 auto 20px; }
-.welcome-hubs { padding-bottom: 24px; }
-.welcome-hubs h2 { margin-top: 28px; }
-.welcome-hubs .welcome-description { margin-bottom: 16px; }
-.welcome-hub-list { width: 100%; margin-bottom: 20px; }
-.welcome-hub-row { padding-bottom: 4px; }
-.welcome-hub { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; border-radius: 7px; }
-.welcome-hub-copy { box-sizing: border-box; width: 66%; padding: 12px 16px; text-align: left; }
+.welcome-hubs { padding-top: 40px; padding-bottom: 40px; background-color: mix(white, map-get($pastel-palette, 'lavender'), 65%); }
+.welcome-hubs h2 { margin-top: 0; }
+.welcome-hubs .welcome-description { margin-bottom: 28px; }
+.welcome-hub-list { width: 100%; margin-bottom: 8px; }
+.welcome-hub-row { padding-bottom: 24px; }
+.welcome-hub { width: 100%; table-layout: fixed; }
+.welcome-hub-copy { box-sizing: border-box; width: 70%; padding: 0 0 0 24px; text-align: left; }
 .welcome-hub-copy h3 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; font-size: 20px; font-weight: 600; line-height: 1.3; margin: 0 0 7px; text-align: left; }
 .welcome-hub-copy p { color: #6c757d; font-size: 14px; line-height: 1.6; text-align: left; }
 .welcome-hub-copy .welcome-hub-status { margin: 0 0 7px; font-size: 11px; line-height: 1.4; color: #6c757d; }
-.welcome-hub-image { width: 34%; }
-.welcome-hub-image img { display: block; width: 160px; max-width: 100%; height: auto; border-radius: 7px; }
-@each $name in ('mint', 'rose', 'sky', 'peach', 'butter') {
-    $tone: map-get($pastel-palette, $name);
-    .welcome-hub-#{$name} { background-color: mix(white, $tone, 55%); }
-    .welcome-hub-#{$name} .welcome-hub-copy p { color: mix(#273244, $tone, 72%); }
-}
+.welcome-hub-image { width: 30%; }
+.welcome-hub-image img { display: block; width: 128px; max-width: 100%; height: auto; border-radius: 7px; }
+.welcome-benefits { padding-top: 40px; }
+.welcome-benefits h2 { margin-top: 0; margin-bottom: 32px; }
+.welcome-benefit { padding-bottom: 28px; text-align: center; }
+.welcome-benefit-icon { display: block; width: 40px; height: 40px; margin: 0 auto 12px; }
+.welcome-benefit h3 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; font-size: 20px; font-weight: 600; line-height: 1.3; margin: 0 0 7px; text-align: center; }
+.welcome-benefit p { color: #6c757d; font-size: 14px; line-height: 1.6; text-align: center; }
+.welcome-pieces h2 { margin-top: 12px; }
+.welcome-piece-list { width: 100%; table-layout: fixed; margin-bottom: 28px; }
+.welcome-piece { padding: 0 6px; overflow-wrap: break-word; word-break: break-word; }
+.welcome-piece img { display: block; width: 100%; height: auto; border-radius: 7px; margin-bottom: 12px; }
+.welcome-piece-title { display: block; color: $text-color; font-size: 14px; font-weight: 600; line-height: 1.4; }
+.welcome-piece p { color: #6c757d; font-size: 12px; line-height: 1.5; margin-top: 4px; text-align: left; }
 .welcome-actions { margin: 0 auto; }
 .welcome-actions td { padding: 0 5px; }
 .welcome-button {
@@ -73,7 +84,64 @@ h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; fo
     mso-padding-alt: 0;
 }
 .welcome-app-store img { display: block; width: auto; height: $email-button-height; }
-.welcome-footer { padding-top: 8px; padding-bottom: 36px; text-align: center; }
-.welcome-footer p { margin-bottom: 20px; color: #6c757d; font-size: 13px; text-align: center; }
-.welcome-footer strong { color: $text-color; font-weight: 600; }
-.welcome-footer .welcome-copyright { margin: 28px 0 0; font-size: 11px; }
+.welcome-footer { padding-top: 8px; padding-bottom: 36px; text-align: left; }
+.welcome-footer p { margin-bottom: 18px; color: #6c757d; font-size: 16px; text-align: left; }
+.editorial-footer-social { margin-bottom: 28px; }
+.editorial-footer-youtube img { display: block; width: 32px; height: 23px; opacity: .55; }
+.editorial-footer-details { width: 100%; table-layout: fixed; }
+.editorial-footer-copy { overflow-wrap: break-word; word-break: break-word; }
+.editorial-footer-brand { width: 72px; padding-left: 24px; }
+.editorial-footer-brand .editorial-logo { margin: 0 0 2px auto; }
+.welcome-footer .editorial-footer-note { font-size: 14px; line-height: 1.6; }
+.welcome-footer .editorial-footer-links { font-size: 14px; line-height: 1.8; }
+.editorial-footer-links a { color: #6c757d; text-decoration: underline; }
+.editorial-footer-links span { color: #adb5bd; }
+.welcome-footer .welcome-copyright { margin: 22px 0 0; font-size: 12px; }
+
+// Freepick shares the welcome family's outer shell, buttons and footer.
+.freepick-email .welcome-button { font-size: 16px; }
+.freepick-header { padding: 24px; text-align: center; }
+.freepick-header .editorial-logo { margin-bottom: 12px; }
+.freepick-panel { width: 100%; background: white; border-collapse: separate; border-spacing: 0; border-radius: 24px 24px 0 0; }
+.freepick-panel-overlap { position: relative; z-index: 1; margin-top: -24px; }
+.freepick-heading { font-size: 25px; line-height: 1.3; letter-spacing: -.5px; text-align: center; margin: 0; }
+.freepick-cover img { display: block; width: 600px; max-width: 100%; height: 240px; object-fit: cover; object-position: center; }
+.freepick-piece { padding-top: 24px; padding-bottom: 24px; }
+.freepick-identity { width: 100%; table-layout: fixed; }
+.freepick-portrait { width: 80px; padding-right: 20px; }
+.freepick-portrait img { display: block; width: 80px; height: 80px; border-radius: 50%; }
+.freepick-piece-copy { overflow-wrap: break-word; word-break: break-word; text-align: left; }
+.freepick-level { color: #6c757d; font-size: 16px; line-height: 1.5; letter-spacing: .6px; margin: 0 0 7px; }
+.freepick-level-dot { font-size: 18px; vertical-align: middle; line-height: 1; }
+@each $name, $color in ('elementary': $elementary, 'beginner': $beginner, 'intermediate': $intermediate, 'advanced': $advanced) {
+    .freepick-level-#{$name} { color: $color; }
+}
+.freepick-piece h2 { margin: 0 0 6px; font-size: 27px; line-height: 1.3; letter-spacing: -.5px; text-align: left; }
+.freepick-piece h2 a { color: $text-color; }
+.freepick-composer { font-size: 16px; line-height: 1.5; color: #6c757d; }
+.freepick-introduction { padding-bottom: 36px; text-align: center; }
+.freepick-description { white-space: pre-line; color: #6c757d; font-size: 16px; text-align: left; margin: 0 0 24px; }
+.freepick-features { padding-bottom: 16px; }
+.freepick-features h2, .freepick-premium h2 { margin: 0 0 16px; font-size: 25px; line-height: 1.35; letter-spacing: -.5px; }
+.freepick-access-note { color: #6c757d; font-size: 16px; line-height: 1.6; text-align: center; margin: 0 0 20px; }
+.editorial-feature { width: 100%; table-layout: fixed; }
+.editorial-feature-row { padding-bottom: 28px; }
+.editorial-feature-icon { width: 56px; padding-top: 3px; }
+.editorial-feature-icon img { display: block; width: 40px; height: 40px; }
+.editorial-feature-copy h3 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; font-size: 20px; font-weight: 600; line-height: 1.3; margin: 0 0 8px; text-align: left; }
+.editorial-feature-copy p { color: #6c757d; font-size: 14px; line-height: 1.6; text-align: left; }
+.freepick-features h2 { font-size: 21px; margin-bottom: 12px; }
+.freepick-features .editorial-feature-row { padding-bottom: 18px; }
+.freepick-features .editorial-feature-icon { width: 40px; }
+.freepick-features .editorial-feature-icon img { width: 24px; height: 24px; }
+.freepick-features .editorial-feature-copy h3 { font-size: 16px; line-height: 1.4; margin-bottom: 4px; }
+.freepick-features .editorial-feature-copy p { font-size: 16px; line-height: 1.6; }
+.freepick-latest { padding-top: 36px; }
+.freepick-latest h2 { font-size: 21px; margin-top: 0; }
+.freepick-latest .welcome-description p { font-size: 16px; line-height: 1.6; }
+.freepick-latest .welcome-piece-title { font-size: 16px; }
+.freepick-latest .welcome-piece p { font-size: 16px; }
+.freepick-premium { padding-top: 36px; padding-bottom: 40px; background-color: mix(white, map-get($pastel-palette, 'lavender'), 65%); }
+.freepick-premium-copy p { color: #6c757d; text-align: center; font-size: 16px; line-height: 1.65; margin-bottom: 16px; }
+.freepick-premium .welcome-mockup { margin-top: 24px; }
+.freepick-footer-gap { height: 32px; font-size: 1px; line-height: 1px; }

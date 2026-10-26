@@ -92,9 +92,9 @@ class AutomaticEmails
         $request = (new TutorialRequest)->setRelation('user', $user)->setRelation('piece', $piece);
 
         switch ($key) {
-            case 'account-welcome': return new AccountWelcome('Jamie');
-            case 'account-welcome-website': return new WebsiteAccountWelcome('Jamie');
-            case 'account-welcome-ios': return new IosAccountWelcome('Jamie');
+            case 'account-welcome': return $this->welcomeSample(new AccountWelcome('Jamie'));
+            case 'account-welcome-website': return $this->welcomeSample(new WebsiteAccountWelcome('Jamie'));
+            case 'account-welcome-ios': return $this->welcomeSample(new IosAccountWelcome('Jamie'));
             case 'verify-email':
                 $notification = new class extends VerifyEmail {
                     protected function verificationUrl($notifiable) { return '#email-preview'; }
@@ -136,5 +136,17 @@ class AutomaticEmails
         };
 
         return $mail->subject($message->subject)->markdown($message->markdown, $message->data());
+    }
+
+    private function welcomeSample(AccountWelcome $mail)
+    {
+        // Stable fictional cards keep preview/test sends independent of live data.
+        $mail->welcomePieces = [
+            ['title' => 'Prelude in E minor', 'composer' => 'Frédéric Chopin', 'image' => (string) mix('images/emails/welcome/preview-prelude.jpg'), 'url' => '#email-preview'],
+            ['title' => 'Arabesque No. 1', 'composer' => 'Claude Debussy', 'image' => (string) mix('images/emails/welcome/preview-arabesque.jpg'), 'url' => '#email-preview'],
+            ['title' => 'Bagatelle in A minor', 'composer' => 'Ludwig van Beethoven', 'image' => (string) mix('images/emails/welcome/preview-bagatelle.jpg'), 'url' => '#email-preview'],
+        ];
+
+        return $mail;
     }
 }

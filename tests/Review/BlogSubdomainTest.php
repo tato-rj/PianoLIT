@@ -94,7 +94,7 @@ class BlogSubdomainTest extends ReviewTestCase
         $post = $this->article();
         $origin = 'http://blog.localhost';
         $this->get(route('posts.index'))->assertOk()->assertSee('PianoLIT Blog')->assertSee($post->title)->assertDontSee('Coming up soon!')->assertDontSee('Latest story');
-        $response = $this->get(route('posts.show', $post))->assertOk()->assertSee('Existing article content.');
+        $response = $this->get(route('posts.show', $post))->assertOk()->assertSee('Existing article content.')->assertDontSee('disqus');
         $response->assertSee('<link rel="canonical" href="'.$origin.'/'.$post->slug.'"', false)
             ->assertSee('href="http://blog.localhost/login"', false)
             ->assertSee('href="http://localhost/contact-us"', false)
@@ -114,6 +114,25 @@ class BlogSubdomainTest extends ReviewTestCase
         $this->assertSame($origin.'/'.$post->slug, route('posts.show', $post));
         $row = view('webapp.explore.rows.original', ['row' => ['collection' => $post, 'label' => 'From the blog']])->render();
         $this->assertStringContainsString('href="'.$origin.'/'.$post->slug.'"', $row);
+    }
+
+    public function test_article_gift_form_queues_its_download_on_the_blog_host()
+    {
+        $post = $this->article(['gift_path' => '/storage/gifts/piano-poster.jpg']);
+        $response = $this->get(route('posts.gift', $post))->assertOk();
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $form = $xpath->query('//form[@id="blog-gift-modal-form"]')->item(0);
+        $this->assertSame('http://blog.localhost/subscriptions', $form->getAttribute('action'));
+        $giftUrl = $xpath->query('.//input[@name="gift_url"]', $form)->item(0)->getAttribute('value');
+        $this->assertSame('http://blog.localhost/storage/gifts/piano-poster.jpg', $giftUrl);
+
+        $this->from(route('posts.show', $post))->post($form->getAttribute('action'), [
+            'email' => 'gift-reader@example.test', 'gift_url' => $giftUrl,
+            'started_at' => now()->subSeconds(10)->toDateTimeString(),
+        ])->assertRedirect(route('posts.show', $post))->assertSessionHas('status');
+        \Mail::assertQueued(\App\Mail\Gift::class, function ($mail) use ($giftUrl) {
+            return $mail->hasTo('gift-reader@example.test') && $mail->gift_url === $giftUrl;
+        });
     }
 
     /** @dataProvider domains */

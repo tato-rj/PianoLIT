@@ -22,7 +22,7 @@ class Api extends Factory
         $key = self::freePickCacheKey($key);
 
         $collection = \Cache::remember($key, days(1), function() {
-            return collect([
+            $rows = collect([
                 $this->order(0)->free('Free weekly pick'),
                 $this->order(1)->composers('Composers'),
                 $this->order(2)->latest('Latest pieces'),
@@ -39,6 +39,20 @@ class Api extends Factory
                 // $this->order(8)->improve('Improve your'),
                 // $this->order(9)->for('Great for'),
             ]);
+
+            if ($this->for === 'webapp') {
+                // Pick once per web feed refresh, retaining both original pools
+                // and leaving the legacy mobile feed and its fields unchanged.
+                $features = $rows->whereIn('title', ['From women composers', 'From black composers'])
+                    ->filter(function ($row) { return collect($row['content'])->isNotEmpty(); });
+                $featureTitle = $features->isNotEmpty() ? $features->random()['title'] : null;
+                $rows = $rows->map(function ($row) use ($featureTitle) {
+                    if ($row['title'] === 'From women composers') $row['web_composer_feature'] = $featureTitle;
+                    return $row;
+                });
+            }
+
+            return $rows;
         });
         
         $collection = clone $collection;

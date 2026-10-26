@@ -1,13 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>PianoLIT white icon</title><g fill="#fff"><path fill-rule="evenodd" d="M128 112h256q24 0 24 24v150h104v90H0v-90h104V136q0-24 24-24z M128 148q0-7 7-9 61-20 121 5v152q-60-25-121-5-7 2-7-6z M256 144q60-25 121-5 7 2 7 9v137q0 8-7 6-61-20-121 5z"/><path xmlns="http://www.w3.org/2000/svg" d="M155 168q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M155 206q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M155 244q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M283 168q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M283 206q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M283 244q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z" />
-  <path xmlns="http://www.w3.org/2000/svg" d="M55 376h36v79q0 9-9 9H64q-9 0-9-9z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M128 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M201 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M275 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M348 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
-    <path xmlns="http://www.w3.org/2000/svg" d="M421 376h36v79q0 9-9 9h-18q-9 0-9-9z" />
-  </g><rect x="8" y="8" width="496" height="496" rx="96" fill="none" stroke="#fff" stroke-width="16"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>PianoLIT white icon</title>
+  <!-- A small-size optical drawing of the open score and six-key brand mark. -->
+  <g fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="12" y="12" width="488" height="488" rx="96"/>
+    <path d="M256 140c-44-23-89-27-140-12v152c51-15 96-11 140 12 44-23 89-27 140-12V128c-51-15-96-11-140 12z"/>
+    <path d="M256 140v152"/>
+    <path stroke-width="12" d="M153 176q34-5 65 7m-65 39q34-5 65 7m76-46q31-12 65-7m-65 53q31-12 65-7"/>
+  </g>
+  <!-- Transparent key cutouts let the page color show through on every theme. -->
+  <path fill="#fff" fill-rule="evenodd" d="M12 336h488v68c0 53-43 96-96 96H108c-53 0-96-43-96-96z
+    M68 336h36v76q0 8-8 8H76q-8 0-8-8z
+    M136 336h36v76q0 8-8 8h-20q-8 0-8-8z
+    M204 336h36v76q0 8-8 8h-20q-8 0-8-8z
+    M272 336h36v76q0 8-8 8h-20q-8 0-8-8z
+    M340 336h36v76q0 8-8 8h-20q-8 0-8-8z
+    M408 336h36v76q0 8-8 8h-20q-8 0-8-8z
+    M82 420h8v80h-8z M150 420h8v80h-8z M218 420h8v80h-8z
+    M286 420h8v80h-8z M354 420h8v80h-8z M422 420h8v80h-8z"/>
+</svg>

@@ -18,10 +18,15 @@ class TabsController extends Controller
     {
         $composers = Composer::atLeast(1)->get()->sortBy('last_name')->values();
         $rows = $api->for('webapp')->discover();
+        $womenRow = $rows->firstWhere('title', 'From women composers');
+        $composerFeature = $rows->firstWhere('title', $womenRow['web_composer_feature'] ?? 'From women composers');
 
-        // Replace this band only on the web; leave the shared/mobile feed intact.
-        $rows = $rows->map(function ($row) use ($api) {
-            if ($row['title'] === 'From black composers') {
+        // Use one composer feature in the existing slot and keep Past highlights.
+        // Presentation changes stay outside the shared/mobile feed.
+        $rows = $rows->map(function ($row) use ($api, $composerFeature) {
+            if ($row['title'] === 'From women composers' && $composerFeature) {
+                return $composerFeature;
+            } elseif ($row['title'] === 'From black composers') {
                 $row['title'] = 'Past highlights';
                 $row['content'] = Piece::freePicks()->free(false)
                     ->where('highlighted_at', '<=', now())->orderByDesc('id')->with('composer')->take(7)->get();

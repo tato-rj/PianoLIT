@@ -1,4 +1,4 @@
-<div class="tab-pane fade" id="list-email-preferences" role="tabpanel" aria-labelledby="list-email-preferences-list">
+<div class="tab-pane fade {{ request('tab') === 'email-preferences' ? 'show active' : '' }}" id="list-email-preferences" role="tabpanel" aria-labelledby="list-email-preferences-list">
 	<div>
 			@if(auth()->user()->relationLoaded('subscription') ? auth()->user()->subscription : auth()->user()->subscription()->exists())
 			<div class="mb-4">

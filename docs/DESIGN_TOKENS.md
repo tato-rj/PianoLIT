@@ -27,14 +27,17 @@ The two SVG masters live in `resources/images/brand/`; keep their six evenly
 spaced black keys, as explicitly requested by Arthur.
 
 Full-screen public projects use `components.project-watermark`: a white,
-transparent SVG with a white rounded-square border, derived from the approved
-monochrome silhouette, fixed at the top left with safe-area spacing. It links to
+transparent SVG with a white rounded-square border, fixed at the top left with
+safe-area spacing. Its hand-tuned small-size drawing retains the open score and
+six evenly spaced keys, with two stronger lines per page, an open gap above the
+keyboard and transparent key cutouts. Edit `resources/images/brand/icon-white.svg`
+directly; the website/admin icon masters and Safari mask remain separate. It links to
 the absolute `home` route, uses 30%
 opacity at rest and 65% on hover/keyboard focus, and disables its transition for
 reduced motion. The metronome uses this component without adding public
 navigation. The Components section previews the same link against blue; the
 Website & web app download modal includes `icon-white.svg`. Regenerating brand
-icons also regenerates this derivative, without changing the two icon masters.
+icons copies this artwork unchanged instead of recreating it from the Safari mask.
 
 `components.bottom-sheet` and `components.bottom-sheet-header` provide the shared
 bottom offcanvas used by the web-app Save to panel and standalone metronome
@@ -418,6 +421,8 @@ The admin layout embeds `admin.components.page-loading` first in the body so its
 ## Standard confirmation dialogs
 
 Use `components.modal` for ordinary dialogs and confirmations. Its `header`, `body` and `footer` slots retain shared typography, button classes and `--radius-modal`. Pass `centered: true` for a centered confirmation and `descriptionId` for the ID of its explanatory text. The component supplies a focusable dialog root, a title association when a header is present, and an accessible Close button. Bootstrap handles the backdrop, Escape, focus trap and return to the opener. Keep destructive actions behind an explicit submit button, with a separate dismiss button. Web app views can push markup into `page-modals` to render it at body level, outside tab panes and other stacking containers. Settings → Design System’s interactive modal uses this same component.
+
+`components.download-offer` supplies the free-poster popup and article-specific blog gift dialog. It composes the shared modal, `@input` and primary button, with a cream poster preview, explicit email-delivery copy and a Maybe later dismissal. Desktop uses two Bootstrap columns; phone previews are capped at 150px. Pass a unique `id`, image/alt text, heading, description, `giftUrl` and `actionLabel`; the automatic poster keeps its existing cookie and timing. Its Design System specimen renders the same component with `preview: true`, replacing the form with a non-submitting container. Only preview layout lives in `components/_download-offer.scss`; input and button finishes stay shared.
 
 Signup and Premium invitations use `components.access-modal`, with `kind`, `id`, `title`, `description` and a string array of up to six `benefits`. It composes the shared modal, `access-prompt-icon`, `access-prompt-body` and green-check `access-benefits` list. Signup uses a user icon, emphasizes **free** in the description and **Sign up free** action, and includes a login link. Premium uses a crown and **Go Premium**. Titles belong in the body; the modal's optional `titleId` points its accessible label there. Default body spacing is `px-4 pb-4 pt-0`; an explicit numeric `options.body.padding` still produces `p-N`.
 

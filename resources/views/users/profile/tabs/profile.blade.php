@@ -1,4 +1,4 @@
-<div class="tab-pane fade show active" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
+<div class="tab-pane fade {{ request('tab') === 'email-preferences' ? '' : 'show active' }}" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
 	<div>
 		<h5>My profile information</h5>
 		<p>Use the form below to edit your profile.</p>

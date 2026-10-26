@@ -25,14 +25,14 @@ class EmailViewComponentsTest extends ReviewTestCase
                 $this->app->forgetInstance(Markdown::class);
                 foreach (['account-welcome-website' => WebsiteAccountWelcome::class, 'account-welcome' => AccountWelcome::class, 'account-welcome-ios' => IosAccountWelcome::class] as $key => $class) {
                     $sample = app(AutomaticEmails::class)->render($key);
-                    $this->assertStringContainsString('Welcome, Jamie.', $sample['html']);
-                    $this->assertStringContainsString('Welcome, Jamie.', $sample['text']);
+                    $this->assertStringContainsString('Welcome, Jamie', $sample['html']);
+                    $this->assertStringContainsString('Welcome, Jamie', $sample['text']);
                     $this->assertStringContainsString('width: 130px', $sample['html']);
                     $this->assertStringNotContainsString('<table', $sample['text']);
 
                     app(AutomaticEmailSettings::class)->setEnabled($key, true, null);
                     (new $class('Jamie'))->to('jamie@example.com')->send($mailer);
-                    $this->assertStringContainsString('Welcome, Jamie.', $transport->messages()->last()->getBody());
+                    $this->assertStringContainsString('Welcome, Jamie', $transport->messages()->last()->getBody());
                 }
                 $legacy = app(AutomaticEmails::class)->render('membership-confirmation');
                 $this->assertStringContainsString('You’re all set!', $legacy['html']);

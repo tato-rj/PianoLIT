@@ -31,17 +31,18 @@ class LocalEmailImagesTest extends ReviewTestCase
         return array_values(array_filter($message->getChildren(), function ($part) { return $part instanceof \Swift_Image; }));
     }
 
-    private function assertWelcomeImages($message, $hasAppStoreBadge)
+    private function assertWelcomeImages($message, $hasAppStoreBadge, $hasSampleCards = false)
     {
         $images = $this->images($message);
-        $this->assertCount($hasAppStoreBadge ? 8 : 7, $images);
+        $this->assertCount(($hasAppStoreBadge ? 14 : 13) + ($hasSampleCards ? 3 : 0), $images);
         $filenames = array_map(function ($image) { return $image->getFilename(); }, $images);
         $this->assertSame($hasAppStoreBadge, in_array('app-store.png', $filenames, true));
         $this->assertStringNotContainsString('src="http', $message->getBody());
         foreach ($images as $image) {
             $this->assertSame('inline', $image->getDisposition());
             $this->assertStringContainsString('src="cid:'.$image->getId().'"', $message->getBody());
-            $this->assertSame(file_get_contents(public_path('images/emails/welcome/'.$image->getFilename())), $image->getBody());
+            $directory = $image->getFilename() === 'youtube.png' ? 'images/emails/' : 'images/emails/welcome/';
+            $this->assertSame(file_get_contents(public_path($directory.$image->getFilename())), $image->getBody());
         }
         $raw = $message->toString();
         $this->assertStringContainsString('multipart/related;', $raw);
@@ -58,7 +59,7 @@ class LocalEmailImagesTest extends ReviewTestCase
             $this->assertStringContainsString('src="http://pianolit.test/images/', $sample['html']);
             $this->assertStringNotContainsString('cid:', $sample['html']);
             $message = $this->deliver(new EmailPreview($sample['subject'], $sample['html'], $sample['text']));
-            $this->assertWelcomeImages($message, $key !== 'account-welcome-ios');
+            $this->assertWelcomeImages($message, $key !== 'account-welcome-ios', true);
             $plain = array_values(array_filter($message->getChildren(), function ($part) { return $part->getBodyContentType() === 'text/plain'; }));
             $this->assertCount(1, $plain);
             $this->assertSame($sample['text'], $plain[0]->getBody());

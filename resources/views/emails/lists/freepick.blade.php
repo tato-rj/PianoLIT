@@ -1,37 +1,65 @@
-@component('mail::message', ['subscription' => $subscription, 'list' => $list])
-<h1 class="mail-title"><span class="text-blue">Free</span> pick of the week</h1>
-
-@component('mail::highlights.cover', ['piece' => $piece])	
+@component('mail::editorial.message', ['title' => 'Free pick of the week', 'preheader' => $piece->medium_name.' by '.$piece->composer->name.'. Your next piano discovery is here.', 'websiteUrl' => $websiteUrl, 'footerReason' => 'You’re receiving this email because you are subscribed to PianoLIT Free Picks.', 'unsubscribeUrl' => $unsubscribeUrl, 'unsubscribeLabel' => $subscription ? 'Unsubscribe' : 'Unsubscribe / email preferences', 'emailClass' => 'freepick-email'])
+@component('mail::freepick.header', ['title' => 'Free pick of the week', 'websiteUrl' => $websiteUrl])
 @endcomponent
 
-<div class="mb-6">
-<p style="margin-bottom: -10px"><strong>💡 What's it about?</strong></p>
-<p style="white-space: pre-wrap;">
-{{$piece->description}}
-</p>
-</div>
-
-@component('mail::button', ['url' => 'https://my.pianolit.com/'])
-Open with the Webapp
+@component('mail::freepick.hero', ['piece' => $piece, 'url' => $pieceUrl, 'websiteUrl' => $websiteUrl])
+@component('mail::freepick.piece', ['piece' => $piece, 'url' => $pieceUrl, 'websiteUrl' => $websiteUrl])
 @endcomponent
 
-@component('mail::button', ['url' => config('app.stores.ios'), 'color' => 'outline-primary'])
-Open with the iOS app
+@component('mail::freepick.introduction', ['url' => $pieceUrl, 'button' => 'Explore this piece'])
+{{ $piece->description }}
 @endcomponent
 
-@include('mail::divider', ['orientation' => 'vertical'])
+@if($hasScore || $hasPerformance || $hasSynthesia || $hasAudio || $hasVideoComments)
+@component('mail::freepick.features', ['title' => "Let's dive in", 'introduction' => 'Sign in with your PianoLIT account to explore this week’s piece while it’s featured.'])
+@if($hasScore)
+@component('mail::editorial.feature', ['title' => 'Score & annotations', 'image' => $websiteUrl.mix('images/emails/welcome/premium-file-music.png')])
+Read the full score and keep your own practice markings.
+@endcomponent
+@endif
 
-@component('mail::panel')
+@if($hasPerformance)
+@component('mail::editorial.feature', ['title' => 'Performance video', 'image' => $websiteUrl.mix('images/emails/welcome/premium-video.png')])
+Watch the full performance for ideas on sound and phrasing.
+@endcomponent
+@endif
 
-<p><strong>Don't miss out on more from PianoLIT:</strong></p>
+@if($hasVideoComments)
+@component('mail::editorial.feature', ['title' => 'Comments as you watch', 'image' => $websiteUrl.mix('images/emails/welcome/premium-video.png')])
+Read helpful comments in sync with the video, and jump straight to the passages they explain.
+@endcomponent
+@endif
 
-<p>🎹 On the <u>Webapp</u> you can now upload <strong>your own video recordings</strong>. Just navigate to the new <i>Stage</i> tab and follow the instructions to get started.</p>
+@if($hasSynthesia)
+@component('mail::editorial.feature', ['title' => 'Synthesia', 'image' => $websiteUrl.mix('images/emails/welcome/premium-piano.png')])
+See every note and how both hands fit together.
+@endcomponent
+@endif
 
-<p>▶️ On our <strong>Youtube Channel</strong> we post not only recordings from the pieces we like the most, but also special in-depth videos about harmonic analysis. <a href="https://youtube.com/pianolit" target="_blank">Subscribe here</a></p>
+@if($hasAudio)
+@component('mail::editorial.feature', ['title' => 'Audio for practice', 'image' => $websiteUrl.mix('images/emails/welcome/premium-headphones.png')])
+@if($hasSeparateHands)
+Listen to the full recording and available separate-hand audio.
+@else
+Get to know the piece with the full recording.
+@endif
+@endcomponent
+@endif
 
-<p>📚 Check out our <strong>eBooks</strong>! Dive into your favorite music topics and keep on learning (and if you are a member you can download them all for FREE). <a href="{{ route('ebooks.index') }}" target="_blank">Find our store here</a></p>
+@endcomponent
+@endif
 
 @endcomponent
 
-@include('mail::signature')
+@if(count($latestPieces))
+@component('mail::welcome.pieces', ['title' => 'More music to discover', 'pieces' => $latestPieces, 'url' => $libraryUrl, 'button' => 'Browse the PianoLIT library', 'variant' => 'freepick-latest'])
+Some of our latest additions. Explore the full library with Premium.
+@endcomponent
+@endif
+
+@component('mail::freepick.premium', ['title' => 'Keep the inspiration going', 'image' => $websiteUrl.mix('images/emails/welcome/app-devices.jpg'), 'url' => $premiumUrl, 'button' => 'Go Premium'])
+This week is just the beginning. With PianoLIT Premium, keep exploring the full library of pieces, available videos and recordings, and public-domain scores.
+
+Save your markings, build a repertoire you love, and download or print public-domain scores for your piano. The same account works on the web and in the iOS app.
+@endcomponent
 @endcomponent

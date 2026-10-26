@@ -25,7 +25,8 @@
             aria-describedby="metronome-instructions"
         >
             <span class="metronome__pulse" data-metronome-pulse aria-hidden="true"></span>
-            <span class="metronome__tempo" data-tempo data-number-font="nunito" aria-hidden="true">120</span>
+            {{-- JavaScript sets the restored tempo before the number's first paint. --}}
+            <span class="metronome__tempo" data-tempo data-number-font="nunito" aria-hidden="true"></span>
             <span class="metronome__conductor" data-conductor aria-hidden="true">
                 @for ($beat = 1; $beat <= 4; $beat++)
                     <span class="conductor-count" data-conductor-count>{{ $beat }}</span>

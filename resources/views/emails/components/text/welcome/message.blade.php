@@ -1,8 +1,3 @@
+@component('mail::editorial.message', ['websiteUrl' => $websiteUrl, 'footerReason' => 'You’re receiving this email because you signed up for a PianoLIT account.', 'unsubscribeUrl' => $unsubscribeUrl])
 {{ $slot }}
-
-Questions? Just reply, or say hello at contact@pianolit.com.
-
-Enjoy the music,
-The PianoLIT team
-
-© {{ date('Y') }} PianoLIT
+@endcomponent

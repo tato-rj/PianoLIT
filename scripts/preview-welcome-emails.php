@@ -24,13 +24,15 @@ if (config('database.default') !== 'sqlite' || config('database.connections.sqli
 config(['app.short_url' => 'pianolit.com', 'app.debug' => false, 'activity.enabled' => false, 'attribution.enabled' => false]);
 $output = $argv[1] ?? sys_get_temp_dir().'/pianolit-welcome-preview';
 if (!is_dir($output.'/assets')) mkdir($output.'/assets', 0755, true);
-foreach (['floating-logo.png', 'app-devices.jpg', 'tablet-iphone.jpg', 'webapp-devices.jpg', 'resource-browser.jpg', 'app-store.png',
-    'hub-learn.jpg', 'hub-blog.jpg', 'hub-metronome.jpg', 'hub-shop.jpg', 'hub-games.jpg'] as $file) {
+foreach (glob(resource_path('images/emails/welcome/*.{png,jpg}'), GLOB_BRACE) as $source) {
+    $file = basename($source);
     copy(resource_path('images/emails/welcome/'.$file), $output.'/assets/'.$file);
 }
+copy(resource_path('images/emails/youtube.png'), $output.'/assets/youtube.png');
 foreach (['website' => 'account-welcome-website', 'webapp' => 'account-welcome', 'ios' => 'account-welcome-ios'] as $file => $key) {
     $sample = app(App\Services\Admin\AutomaticEmails::class)->render($key);
     $html = preg_replace('#https://pianolit\.com/images/emails/welcome/([^"?]+)\?id=[a-f0-9]+#', 'assets/$1', $sample['html']);
+    $html = str_replace('https://pianolit.com/images/emails/youtube.png', 'assets/youtube.png', $html);
     file_put_contents($output.'/'.$file.'.html', $html);
     file_put_contents($output.'/'.$file.'.txt', $sample['text']);
     echo $output.'/'.$file.'.html'.PHP_EOL;

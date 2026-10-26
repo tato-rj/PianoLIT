@@ -61,6 +61,9 @@
         <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="modal" data-bs-target="#ds-{{ $kind }}-prompt">Open {{ $label }}</button>
       @endcomponent
     @endforeach
+    @component('admin.pages.settings.sample', ['label' => 'Free download offer', 'usage' => 'components.download-offer · @input', 'properties' => 'padding,color,background-color,border-radius'])
+      <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="modal" data-bs-target="#ds-download-offer">Open download offer</button>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Membership plan card', 'usage' => 'components.membership-plan-card', 'properties' => 'padding,background-color,border-radius,box-shadow'])
       @component('components.membership-plan-card', ['plan' => (object) ['name' => 'yearly', 'price' => 8999], 'monthlyPlan' => (object) ['name' => 'monthly', 'price' => 999], 'headingId' => 'ds-membership-plan', 'preview' => true])
         @slot('action')<button type="button" class="btn btn-primary">Choose Yearly @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>@endslot
@@ -217,3 +220,11 @@
 @foreach(['signup', 'premium'] as $kind)
     @include('components.access-modal', app(\App\Services\WebApp\AccessPrompts::class)->prompt('favorites', $kind) + ['id' => 'ds-'.$kind.'-prompt', 'preview' => true, 'actionUrl' => '#'])
 @endforeach
+
+@include('components.download-offer', [
+    'id' => 'ds-download-offer', 'preview' => true,
+    'image' => asset('images/misc/thumbnails/infographs.jpg'), 'imageAlt' => 'Music poster preview',
+    'heading' => 'A little inspiration, on us',
+    'description' => 'Make room for more music. Enter your email and we’ll send you this free poster to download and print.',
+    'giftUrl' => '#', 'actionLabel' => 'Email me the poster',
+])

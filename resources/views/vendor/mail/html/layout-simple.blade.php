@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
-<body>
+<body bgcolor="#f8f9fa">
     <style>
         body {
-            background-color: white !important;
+            background-color: #f8f9fa !important;
         }
         @media only screen and (max-width: 600px) {
             .main-body {
@@ -31,7 +31,7 @@
         }
     </style>
 
-    <table class="" width="100%" cellpadding="0" cellspacing="0">
+    <table class="" width="100%" cellpadding="0" cellspacing="0" bgcolor="#f8f9fa">
         <tr>
             <td align="left">
                 <table class="" width="100%" cellpadding="0" cellspacing="0">

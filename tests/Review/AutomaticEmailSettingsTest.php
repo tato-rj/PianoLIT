@@ -212,23 +212,24 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
     public function test_welcome_variants_share_the_minimal_layout_and_highlight_the_other_platforms()
     {
         $catalog = app(\App\Services\Admin\AutomaticEmails::class);
-        foreach (['account-welcome-website' => 3, 'account-welcome' => 2, 'account-welcome-ios' => 2] as $key => $buttonCount) {
+        foreach (['account-welcome-website' => 5, 'account-welcome' => 4, 'account-welcome-ios' => 4] as $key => $buttonCount) {
             $sample = $catalog->render($key);
             $this->assertSame('Welcome to PianoLIT!', $sample['subject']);
             $dom = new \DOMDocument; @$dom->loadHTML($sample['html']);
             $xpath = new \DOMXPath($dom);
-            $this->assertCount(2, $xpath->query('//h2'));
-            $this->assertCount($key === 'account-welcome-ios' ? 7 : 8, $xpath->query('//img[@alt and @width]'));
-            $buttons = $xpath->query('//a[contains(concat(" ", normalize-space(@class), " "), " welcome-button ")]');
+            $this->assertCount(4, $xpath->query('//h2'));
+            $this->assertCount($key === 'account-welcome-ios' ? 16 : 17, $xpath->query('//img[@alt and @width]'));
+            $buttons = $xpath->query('//a[contains(concat(" ", normalize-space(@class), " "), " welcome-button ") and not(ancestor::td[contains(@class,"welcome-footer")])]');
             $this->assertCount($buttonCount, $buttons);
-            $this->assertSame('http://localhost', $buttons[$buttonCount - 1]->getAttribute('href'));
+            $this->assertSame(route('webapp.explore'), $buttons[$buttonCount - 1]->getAttribute('href'));
+            $this->assertSame('Browse the PianoLIT library', $buttons[$buttonCount - 1]->textContent);
             $appUrls = array_map(function ($button) { return $button->getAttribute('href'); }, iterator_to_array($buttons));
             $this->assertSame($key !== 'account-welcome', in_array(route('webapp.discover'), $appUrls));
             $this->assertSame($key !== 'account-welcome-ios', in_array(config('app.stores.ios'), $appUrls));
             foreach ($xpath->query('//h2 | //h3') as $heading) {
                 $this->assertStringContainsString($heading->textContent, $sample['text']);
             }
-            foreach (['Welcome, Jamie.', 'same', 'account', 'theory tools', 'quiz', 'blog', 'contact@pianolit.com'] as $copy) {
+            foreach (['Welcome, Jamie', 'same', 'account', 'theory tools', 'quiz', 'blog', 'contact@pianolit.com'] as $copy) {
                 $this->assertStringContainsString($copy, $sample['html']);
                 $this->assertStringContainsString($copy, $sample['text']);
             }
@@ -245,7 +246,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         config(['app.url' => 'pianolit.example']);
         $this->app['url']->setRequest(\Illuminate\Http\Request::create('https://admin.pianolit.example'));
         $html = (new WebsiteAccountWelcome('<Jamie>'))->render();
-        $this->assertStringContainsString('Welcome, &lt;Jamie&gt;.', $html);
+        $this->assertStringContainsString('Welcome, &lt;Jamie&gt;', $html);
         $this->assertStringContainsString('href="https://pianolit.example"', $html);
         $this->assertStringContainsString('src="https://pianolit.example/images/emails/welcome/', $html);
         $this->assertStringNotContainsString('admin.pianolit.example', $html);
@@ -293,11 +294,13 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
                 $sample = app(\App\Services\Admin\AutomaticEmails::class)->render($key);
                 $dom = new \DOMDocument; @$dom->loadHTML($sample['html']);
                 $images = (new \DOMXPath($dom))->query('//img');
-                $this->assertCount($key === 'account-welcome-ios' ? 7 : 8, $images);
+                $this->assertCount($key === 'account-welcome-ios' ? 16 : 17, $images);
                 foreach ($images as $image) {
                     $url = $image->getAttribute('src');
-                    $this->assertStringStartsWith($scheme.'://pianolit.test/images/emails/welcome/', $url);
-                    $this->assertNotEmpty(parse_url($url, PHP_URL_QUERY));
+                    $this->assertStringStartsWith($scheme.'://pianolit.test/images/emails/', $url);
+                    if (basename(parse_url($url, PHP_URL_PATH)) !== 'youtube.png') {
+                        $this->assertNotEmpty(parse_url($url, PHP_URL_QUERY));
+                    }
                     $this->assertFileExists(public_path(parse_url($url, PHP_URL_PATH)));
                 }
                 $this->assertStringContainsString('href="'.$scheme.'://pianolit.test"', $sample['html']);
