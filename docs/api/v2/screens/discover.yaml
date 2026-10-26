@@ -1,17 +1,17 @@
 id: discover
 status: draft
 depends_on: [foundations]
-backend_status: shared_feed_and_serializer_local
-ios_status: not_started
+backend_status: implemented_local
+ios_status: not_verified
 objective: Render the exact shared web Discover content using native iOS components; change selection once in DiscoverFeed for both renderers.
 proposed_operation:
   method: GET
   path: /api/v2/discover
   operation_id: getDiscover
-  implemented: false
-  schema_status: local_resource_draft_pending_authenticated_runtime_and_native_adapter
+  implemented: true
+  schema_status: implemented_local_HTTP_and_fixture_validated_pending_staging_and_native_adapter
   authentication: Required verified bearer credential. Missing, expired, revoked or invalid credentials return 401; no guest feed in the initial release.
-  response: DiscoverData under data, matching the local DiscoverResource schemas in openapi.yaml; runtime meta/errors remain pending. Stable section IDs/kinds, never title-based dispatch.
+  response: DiscoverEnvelope containing data.sections and meta.request_id, as specified in openapi.yaml. Stable section IDs/kinds; no title-based dispatch.
   persistence: Fetching Discover does not record a piece view or mutate favorites.
 
 shared_content:
@@ -22,7 +22,19 @@ shared_content:
   rule: Both renderers consume the same account-specific feed; neither controllers nor Swift may independently select, shuffle or trim content.
   caching: Share public content generation and account-scoped recommendation IDs; keep recent history outside public caches. Do not make an independent v2 random choice.
   identity: Pass the verified bearer principal explicitly; no request user_id or browser-account fallback.
-  compatibility: Legacy /api/discover remains unchanged; this is a local service/resource, not a callable v2 endpoint.
+  compatibility: Legacy /api/discover remains unchanged. V2 runtime routes are implemented locally; no remote deployment or verified base URL is claimed.
+
+runtime_operations:
+  login: POST /api/v2/auth/login
+  session: GET /api/v2/auth/me
+  feed: GET /api/v2/discover
+  piece_open: POST /api/v2/pieces/{piece_id}/view
+  logout: POST /api/v2/auth/logout
+  contract: openapi.yaml
+  developer_instructions: CONNECT_DISCOVER.md
+  fixtures: [fixtures/login.json, fixtures/account.json, fixtures/discover.json, fixtures/discover-with-history.json, fixtures/discover-empty.json, fixtures/unauthenticated.json, fixtures/invalid-credentials.json, fixtures/invalid-request.json, fixtures/logout.json]
+  activation: Use fixtures while draft; enable requests only against a verified base URL in a ready handoff revision.
+  client_changes: Replace legacy Discover fetching with the isolated v2 client and typed sections. Fetching the YAML alone does not rewrite Swift code.
 
 native_baseline: ios-baseline.yaml
 native_changes_required:
@@ -56,6 +68,8 @@ proposed_migration_boundary:
 web_evidence:
   - app/Api/Api.php
   - app/Api/Factory.php
+  - routes/api-v2.php
+  - tests/Review/ApiV2Test.php
   - app/Services/DiscoverFeed.php
   - app/Http/Resources/Api/V2/DiscoverResource.php
   - tests/Review/DiscoverFeedParityTest.php
@@ -89,7 +103,7 @@ proposed_sections_in_display_order:
     audience: Verified signed-in account with permitted personalization and nonempty history.
     ordering: Distinct pieces ordered by most recent account-owned view, with piece ID tie-breaker.
     empty: Omit for excluded accounts, unavailable personalization and empty history.
-    dependency: D2 must include a verified native piece-open history write, not only a history read.
+    dependency: The authenticated POST /pieces/{piece_id}/view exists; D2 must wire and verify it only after actual native detail opens.
   - id: latest_pieces
     title: Latest pieces
     presentation: artwork_piece_rail
@@ -146,7 +160,7 @@ data_contract_to_finalize_in_D1:
   - Specify required fields versus nullable fields and approved artwork fallbacks.
   - Represent destinations by kind and entity/filter IDs, not PHP class names or legacy source URLs.
   - Specify the native destinations before enabling View all and composer/level taps.
-  - Add unauthenticated-401, expired-session-401, populated-account, empty-account, missing-artwork, no-Free-Pick and error JSON fixtures.
+  - Use the packaged synthetic login/account/Discover/history/empty/error fixtures for decoding/UI tests; verify expired sessions, missing artwork and no-Free-Pick behavior against staging before readiness.
   - Document unsupported section-kind handling and unavailable navigation targets.
   - Keep account data out of shared cached objects and clear local personal data after logout.
   - Discover personalization content follows the shared feed by Arthur's explicit decision; resolve native media entitlements separately.

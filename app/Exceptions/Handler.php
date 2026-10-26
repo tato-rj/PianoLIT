@@ -38,6 +38,17 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
+        if (\App\Api\V2\Responses::handles(request())) {
+            if (!$this->shouldntReport($exception)) {
+                // Do not attach bearer headers, passwords, SQL bindings or raw
+                // exception messages to request-aware external error reporters.
+                \Log::channel('daily')->error('V2 request failed', [
+                    'request_id' => app(\App\Api\V2\Responses::class)->requestId(request()),
+                    'exception_type' => get_class($exception),
+                ]);
+            }
+            return;
+        }
         parent::report($exception);
     }
 
@@ -50,6 +61,9 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if (\App\Api\V2\Responses::handles($request)) {
+            return app(\App\Api\V2\Responses::class)->exception($request, $exception);
+        }
         if (onWebapp() && $this->codeIs(404, $exception))
             return redirect(route('webapp.discover'));
 

@@ -12,13 +12,15 @@ allowlists fields and returns `data.sections`. It does not select, shuffle or
 truncate pieces. The native app supplies its own views/styles. Both renderers
 use the same level grouping/order and composer biography excerpt helpers.
 
-This work implements the shared service and JSON resource locally, **not a live
-v2 endpoint**. Authentication, route/error/meta plumbing, native destination
-adapters and staging/native verification remain prerequisites in
-`docs/api/v2/`. A future v2 controller must obtain its principal through the
-verified bearer guard and pass that account directly to `DiscoverFeed` before
-constructing `DiscoverResource`. Never obtain it from `user_id` or the browser
-guard. Until that boundary exists there is deliberately no public JSON route.
+`GET /api/v2/discover` now serves that resource behind the independent
+`api_v2` bearer guard. Password login, account-session read/logout and the
+confirmed-piece-open POST are implemented in `routes/api-v2.php`. The controller
+passes only the verified principal to DiscoverFeed; it never derives identity
+from user_id or browser cookies. Error/meta handling, token expiry/revocation
+and the session-table migration are described in `docs/API_V2_RUNTIME.md`.
+These operations are implemented/tested locally, with deployment, staging and
+native verification still pending. The existing YAML handoff and its new
+`CONNECT_DISCOVER.md` deliver the contract, fixtures and native wiring steps.
 
 ## Content and caches
 
@@ -60,6 +62,8 @@ serialized section/item order for both composer groups, checks the six-piece
 account selection, history/account isolation, favorite invalidation, admin
 refresh, due Free Pick rotation and the JSON allowlist. Existing Discover,
 cache, history, schedule and browser-access tests remain compatibility checks.
+
+The HTTP runtime and token lifecycle are covered in `tests/Review/ApiV2Test.php`.
 
 Run isolated regressions with `php -d error_reporting=8191 vendor/bin/phpunit -c
 phpunit-review.xml`. No deployment, production data change or native build is

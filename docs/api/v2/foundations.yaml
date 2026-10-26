@@ -1,6 +1,6 @@
 id: foundations
 status: draft
-scope: Plan the independent v2 boundary before implementing Discover.
+scope: Independent v2 authentication and shared Discover runtime implemented locally; staging/native verification pending.
 evidence_date: "2026-10-26"
 source_evidence:
   - ios-baseline.yaml
@@ -9,6 +9,10 @@ source_evidence:
   - app/Http/Middleware/AttemptLoginAppUser.php
   - app/Http/Controllers/Auth/Api/LoginController.php
   - app/Api/Api.php
+  - routes/api-v2.php
+  - app/Auth/ApiV2/Sessions.php
+  - app/Http/Middleware/ApiV2/Authenticate.php
+  - tests/Review/ApiV2Test.php
   - app/Api/Factory.php
   - app/Services/DiscoverFeed.php
   - app/Http/Resources/Api/V2/DiscoverResource.php
@@ -36,21 +40,31 @@ proposed_decisions:
     route_file: routes/api-v2.php
     controller_namespace: App\Http\Controllers\Api\V2
     resource_namespace: App\Http\Resources\Api\V2
-    middleware_group: api.v2
+    middleware_group: Dedicated Boundary, Throttle and Authenticate middleware classes; no legacy api group.
     registration: Register explicitly outside the existing routes/api directory and legacy api group.
     identity_boundary: Do not run AttemptLoginAppUser or reuse legacy request-derived auth state.
     errors: Use v2-only JSON rendering; never change the global legacy error contract.
     cache_namespace: api.v2.*
   identity:
     transport: Authorization bearer credential over HTTPS
-    recommended_credential: Opaque random per-device token with only a hash stored server-side.
-    status: Credential lifecycle and Laravel-compatible implementation require a separate implementation decision.
+    recommended_credential: Implemented opaque per-login token with 256 random bits; only its SHA-256 hash is stored in api_v2_sessions.
+    status: implemented_local
+    guard: api_v2
+    login: POST /api/v2/auth/login
+    account_session: GET /api/v2/auth/me
+    logout: POST /api/v2/auth/logout
+    lifetime: Absolute 30 days by default, not extended by reads; config/api-v2.php controls it.
+    renewal: No refresh-token or renewal endpoint; require password login after expiry or invalidation.
+    revocation: Logout deletes only the presented session. Password/hash or normalized email changes invalidate all existing sessions; account deletion cascades session removal.
+    storage: Independent session table, keyed password/email fingerprint, UTC expiry, daily expired-session pruning; no shared User appends or provider fields.
+    implementation_evidence: routes/api-v2.php and app/Auth/ApiV2/Sessions.php
+    connection_instructions: CONNECT_DISCOVER.md
     guest_requests: Discover and browsing require a verified bearer credential. Only explicitly unauthenticated account-entry operations may omit it.
     invalid_credentials: A supplied malformed, expired or revoked credential returns 401; never silently becomes a guest.
     ownership: Resolve account from the verified v2 credential; account IDs in requests never establish ownership.
     account_fields: Account-owned endpoints reject submitted user_id rather than use it as an override.
     legacy_migration: Require fresh credential proof; an old app's locally stored account JSON is not a login credential.
-    registration_and_recovery: Define verified v2 credential issuance after registration and reauthentication after password reset; legacy registration JSON is not sufficient credential proof.
+    registration_and_recovery: Retain existing registration/recovery flows; obtain a v2 token through password login after registration or completed password reset. Legacy registration JSON alone is not sufficient credential proof.
     sign_in_scope: Preserve email/password as the initial native method; adding Apple/Google sign-in is outside this first migration.
     provider_login: If later added, verify provider credentials for the native app audience; do not reuse browser handoff tokens.
     client_migration: Keep existing numeric account identity as decimal strings; do not introduce UUIDs or treat UserDefaults isLoggedIn as v2 authentication.
@@ -61,7 +75,7 @@ proposed_decisions:
       - Scope credentials per installation/session and support revocation without logging out other devices unintentionally.
       - Store credentials in the iOS Keychain and exclude them from logs and handoff files.
       - Rate-limit credential issuance and return consistent invalid-credential errors.
-    implementation_constraint: Do not install a latest auth package blindly; the backend currently uses Laravel 8.
+    implementation_constraint: Implemented with the installed Laravel 8 request-guard boundary; no new auth package, browser-cookie changes or legacy middleware edits.
   serialization:
     envelope: Successful JSON responses use data and meta; errors use error and meta.
     identifiers: Serialize existing numeric database IDs as opaque decimal strings; Swift treats them as String.
@@ -112,7 +126,7 @@ proposed_decisions:
     legacy: Keep existing ungrouped mobile events and SQL logging contracts intact.
     v2: Design authenticated app visit/screen/event transport in its own later feature; no legacy identity trust.
     exclusions: Preserve existing exclusions for both analytics and recently viewed history.
-    history: No guest writes; record only a verified account's actual piece opening, never feed fetch or prefetch.
+    history: POST /api/v2/pieces/{piece_id}/view records only a verified account's confirmed piece opening through RecentlyViewedPieces; feed fetch/prefetch does not write history.
 
 milestones:
   - id: F0
@@ -135,11 +149,17 @@ milestones:
     deliverables: [piece details and playback, favorites and folders, collections, search and remaining screens]
 
 resolved_decisions:
+  - id: native_authentication
+    status: implemented_local
+    date: "2026-10-26"
+    outcome: Independent opaque per-login bearer sessions with 30-day absolute expiry, current-session logout, credential-change/deletion invalidation, password reauthentication and no refresh token.
+    migration: Existing installations sign in once with password proof. Registration/recovery retain existing flows followed by v2 login; no local user_id token exchange.
+    verification: tests/Review/ApiV2Test.php covers real HTTP routes, account/guard isolation, expiry/logout/reset and legacy compatibility in isolated SQLite; staging/native checks remain pending.
   - id: discover_content_parity
     status: confirmed_by_arthur
     date: "2026-10-26"
     outcome: Web and iOS v2 consume identical shared Discover content, including six For you pieces and the cached women/Black composer choice; only rendering differs.
-    implementation: DiscoverFeed and DiscoverResource exist locally; bearer authentication, routes and staging/native verification remain pending.
+    implementation: Shared DiscoverFeed/DiscoverResource and authenticated runtime routes exist locally; deployment, staging and native verification remain pending.
   - id: native_baseline
     status: reported_static_inspection
     evidence: ios-baseline.yaml
@@ -151,10 +171,6 @@ resolved_decisions:
     outcome: Keep sign-in required for the initial v2 iOS release; media entitlements are a separate decision.
 
 open_decisions:
-  - id: native_authentication
-    owner: backend_and_ios
-    needed_before: F1
-    question: Choose token implementation, lifetimes/renewal and one-time reauthentication UX for existing email/password accounts; local legacy identity cannot be exchanged for a token by itself.
   - id: staging
     owner: backend
     needed_before: ready_for_ios

@@ -17,7 +17,6 @@
   gap: 12px;
   margin-bottom: 18px;
   font-size: 13px;
-  .btn { font-size: 12px; }
 }
 .results-game { font-weight: 700; }
 .results-greeting h1 {
@@ -121,7 +120,16 @@
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   margin-top: 20px;
-  .btn { padding: 12px 16px; font-size: 15px; border-color: $dark-color !important; border-radius: $corner-radius !important; }
+  .btn {
+    // The scoped button reset also reads these, keeping every action the same height.
+    --bs-btn-padding-y: 12px;
+    --bs-btn-padding-x: 16px;
+    --bs-btn-font-size: 15px;
+    padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
+    font-size: var(--bs-btn-font-size);
+    border-color: $dark-color !important;
+    border-radius: $corner-radius !important;
+  }
 }
 @keyframes resultBurstArrive {
   from { opacity: 0; transform: rotate(-30deg) scale(.45); }
@@ -214,7 +222,11 @@
   .result-score-spark--one { font-size: 22px; left: 16px; top: 10px; }
   .result-score-spark--two { font-size: 18px; right: 20px; top: 20px; }
   .results-actions { grid-template-columns: 1fr; gap: 12px; }
-  .results-actions .btn { padding: 10px 12px; font-size: 14px; }
+  .results-actions .btn {
+    --bs-btn-padding-y: 10px;
+    --bs-btn-padding-x: 12px;
+    --bs-btn-font-size: 14px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   #final-overlay *, #final-overlay *::before, #final-overlay *::after,

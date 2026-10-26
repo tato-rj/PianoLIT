@@ -1,22 +1,28 @@
 # PianoLIT iOS v2 handoff
 
-Revision **2026-10-26.1 remains a draft**. The shared Discover content service
-and its v2 JSON resource are implemented locally. No v2 endpoint, credential,
-database migration or native app change is implemented. The existing API stays
-unchanged. Authentication, routing and staging/native verification remain
-required before the new Discover response can be served to an app.
+Revision **2026-10-26.2 remains a draft pending deployment/staging verification**.
+The backend now implements password login, independent bearer authentication,
+account-session read/logout, the shared Discover endpoint and authenticated
+piece-open history. These operations are HTTP-tested locally. The new session
+migration has not been run against the normal environment, and no server or
+native app has been deployed or verified here. The legacy API stays unchanged.
+
+The existing Swift handoff sync script is the delivery mechanism for this update.
+It fetches the new YAML, `CONNECT_DISCOVER.md` and synthetic fixtures declared
+in the manifest. Read that connection file for the exact steps to implement in
+the current iOS project. Downloading YAML alone does not rewrite Swift requests.
 
 ## Reading the handoff
 
 Read `manifest.yaml`, this file, `ios-baseline.yaml`, `foundations.yaml`, `openapi.yaml`, `design.yaml`,
 `references.yaml`, then the selected `screens/*.yaml`. The manifest identifies
 feature dependencies and backend/iOS readiness. `openapi.yaml` uses
-[OpenAPI 3.0.3](https://spec.openapis.org/oas/v3.0.3.html); its `paths` is
-intentionally empty until operations are specified. The `.invalid` server is a
-documentation placeholder, not a service to call.
+[OpenAPI 3.0.3](https://spec.openapis.org/oas/v3.0.3.html) and specifies the five
+implemented operations. The `.invalid` server remains a documentation placeholder;
+only a verified URL recorded in a later ready manifest identifies a service.
 
-`foundations.yaml` separates fixed compatibility requirements from proposed
-decisions. `ios-baseline.yaml` records the developer's static report: UIKit and
+`foundations.yaml` records the implemented authentication choices, fixed
+compatibility requirements and remaining staging/native decisions. `ios-baseline.yaml` records the developer's static report: UIKit and
 storyboards, iOS 17.6 for Debug/Release in the inspected checkout, iPhone/iPad,
 Swift 5 language mode and email/password sign-in. These client findings are
 attributed to the developer; the native repository is not available in this
@@ -24,7 +30,7 @@ backend workspace. The native commit, shipped builds and runtime behavior remain
 unverified. Keep the existing UIKit architecture and deployment target.
 
 Arthur confirmed **sign-in remains required** for the initial native v2 release.
-Discover will require a verified bearer credential. This does not decide media
+Discover requires the new verified bearer credential. This does not decide media
 entitlements or authorize copying the web Access Limits matrix into iOS.
 
 `screens/discover.yaml` starts the Discover work with evidence from the current
@@ -52,16 +58,17 @@ content cache must not independently choose content. Any transport/JSON caching
 must follow the same shared content generation; personalized responses remain
 private and no-store. Media entitlements remain a separate native decision.
 
-The local serializer emits stable section IDs/kinds and allowlisted summaries;
-it does not make an API available. Wire it only behind the dedicated verified
-bearer boundary. The draft schema and local checks do not complete D1/D2 or
-approve the native destination adapter.
+The v2 endpoint now wraps that serializer behind the dedicated bearer guard.
+The native destination adapter and real staging/device checks remain pending.
+Local route implementation and tests do not establish a deployed service or
+approve a native build. `CONNECT_DISCOVER.md` covers the account migration,
+exact calls, Keychain, error handling and the isolated legacy destination bridge.
 
 ## Readiness and revisions
 
 | Feature status | Meaning |
 | --- | --- |
-| `draft` | Planning and local mockups only; APIs or decisions may be missing. |
+| `draft` | Local implementation and fixture tests; staging/native verification or decisions remain missing. |
 | `ready_for_ios` | Contract/fixtures are validated, dependencies are ready, and backend operations are verified at the manifest's staging URL. |
 | `released` | Native integration is verified and the production API is available at the manifest's production URL. |
 
@@ -71,7 +78,7 @@ is live. `runtime.implemented`, base URLs, feature statuses, and OpenAPI's
 `x-handoff` must agree. Record verification before advancing status; the package
 checker cannot prove a server exists or that its behavior matches the contract.
 
-Use a new revision (for example `2026-10-26.2`) for any published content change,
+Use a new revision (for example `2026-10-26.3`) for any published content change,
 including a status or URL change. Published revision directories are immutable.
 Update the source manifest, this revision statement, OpenAPI's `x-handoff`, and
 the changelog together. The build refuses to overwrite different content at an
@@ -133,7 +140,7 @@ After the documentation has been deployed:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-10-26.1 \
+  --revision 2026-10-26.2 \
   --output ./PianoLITHandoff
 ```
 
@@ -152,22 +159,25 @@ Suggested instruction for the developer's Codex:
 > against our current native commit and identify any differences. Work only
 > on the selected feature. Open all available reference images. Use mocks while
 > the feature is draft; use only the documented staging operations once it is
-> ready_for_ios. Preserve existing app behavior and record a handoff receipt with
+> ready_for_ios. Apply CONNECT_DISCOVER.md; fetching this bundle does not itself
+> connect the app or change its networking. Preserve existing app behavior and record a handoff receipt with
 > the build and verification results.
 
-## First implementation pass
+## Remaining integration pass
 
-1. Use the reported native baseline and sign-in-first decision. Resolve the
-   authentication lifecycle, staging destination and remaining native entitlement
-   decisions in `foundations.yaml`; attach the native commit/release identifier.
-2. Implement a separate v2 route/auth/resource/error boundary and verify that the
-   legacy API has not changed. Do not inherit the legacy identity middleware.
-3. Finalize Discover's typed contract, bounds, navigation and synthetic fixtures.
-   Capture the current web references listed in `references.yaml`; do not use
-   old marketing screenshots as design approval.
-4. Wire the existing shared Discover service/resource behind verified
-   authentication; do not rebuild content selection. Complete the piece-open
-   history flow. Review the native destination adapter and downstream legacy
-   calls. Test account isolation, Free Pick rotation and legacy parity.
-5. Publish a `ready_for_ios` revision only after staging verification. Compare the
-   native implementation with approved references before release.
+1. Deploy the new session-table migration, PHP, configuration and routes through
+   the normal backend release. Rebuild deployment caches and verify HTTPS,
+   Authorization forwarding and shared stores. No native URL is published as
+   live by this local build.
+2. Verify the implemented authentication lifecycle and exact shared Discover
+   content on staging using synthetic accounts. Record the verified base URL
+   and evidence in a new revision before marking `ready_for_ios`.
+3. Have the iOS developer fetch that revision with the existing sync script and
+   apply `CONNECT_DISCOVER.md`. While draft, use its fixtures for decoding/UI
+   work, preserve UIKit and audit the current native baseline.
+4. Finish the explicit piece/composer/search destination bridge, native access
+   resolution, account-owned piece-open write and account-switch handling.
+   Preserve existing media/billing behavior and never forward bearer credentials
+   to legacy operations or image/media hosts.
+5. Compare the same-account web/iOS content, phone/iPad layouts and error states,
+   record the native build/results and publish a verified release revision.

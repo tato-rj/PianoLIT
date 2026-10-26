@@ -36,6 +36,11 @@ return [
     */
 
     'guards' => [
+        'api_v2' => [
+            'driver' => 'pianolit-v2',
+            'provider' => 'users',
+        ],
+
         'web' => [
             'driver' => 'session',
             'provider' => 'users',

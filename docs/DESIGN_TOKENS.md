@@ -562,7 +562,10 @@ cover` with top-center alignment; natural side/bottom crops are intentional. Gen
 pastel cards elsewhere retain their existing finish.
 Project titles explicitly use Bootstrap's `text-body` utility so they keep the
 regular text color regardless of inherited link states; descriptions also keep
-their regular color on hover. Each card has a muted top-right `arrow-up-right`
+their regular color on hover. Each title includes its matching 20px muted-grey
+hub icon with an 8px gap, using the shared PianoLIT mark for Web app and Apple's
+brand icon for iOS. The title and icon stay centered as one group. Each card has
+a muted 16px top-right `arrow-up-right`
 from the shared icon renderer, positioned with Bootstrap utilities 16px inward
 from the top and right edges to indicate its destination link. The gallery has
 no previous/next arrow controls.

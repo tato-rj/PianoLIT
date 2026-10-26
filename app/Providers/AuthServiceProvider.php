@@ -33,6 +33,14 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        \Auth::extend('pianolit-v2', function ($app, $name, $config) {
+            $guard = new \App\Auth\ApiV2\BearerGuard(function ($request) {
+                return app(\App\Auth\ApiV2\Sessions::class)->authenticate($request);
+            }, $app['request'], $app['auth']->createUserProvider($config['provider']));
+            $app->refresh('request', $guard, 'setRequest');
+            return $guard;
+        });
+
         // Keep the original middleware identity so Apple's stateless POST keeps
         // its existing withoutMiddleware boundary.
         $this->app->singleton(\Illuminate\Session\Middleware\StartSession::class, function ($app) {

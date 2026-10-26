@@ -9,7 +9,7 @@
   </a>
   @endif
 
-  <div class="dropdown-menu py-2 px-3 {{ ($showGamesProfile ?? false) ? 'games-account-menu dropdown-menu-end' : 'animated fadeInUp' }}" style="left: initial; right: 1px; min-width: auto" aria-labelledby="navbarDropdown">
+  <div class="dropdown-menu dropdown-menu-end py-2 px-3{{ ($showGamesProfile ?? false) ? ' games-account-menu' : '' }}" style="min-width: auto" aria-labelledby="navbarDropdown">
     @if($menuAccount)
         <a class="nav-link" style="white-space: nowrap;" href="{{route('users.profile')}}">My profile</a>
         <div class="dropdown-divider my-1"></div>

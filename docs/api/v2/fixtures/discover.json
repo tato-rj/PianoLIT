@@ -1,0 +1,617 @@
+{
+    "data": {
+        "sections": [
+            {
+                "id": "free_pick",
+                "title": "Free weekly pick",
+                "kind": "featured_piece",
+                "items": []
+            },
+            {
+                "id": "composers",
+                "title": "Composers",
+                "kind": "composer_rail",
+                "items": [
+                    {
+                        "id": "1",
+                        "name": "Example Composer",
+                        "short_name": "E. Composer",
+                        "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                        "piece_count": 4,
+                        "destination": {
+                            "kind": "composer_repertoire",
+                            "id": "1"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "latest_pieces",
+                "title": "Latest pieces",
+                "kind": "artwork_piece_rail",
+                "items": [
+                    {
+                        "id": "1",
+                        "title": "Example piece 1 WoO 84 No.7",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/06.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "1"
+                        }
+                    },
+                    {
+                        "id": "2",
+                        "title": "Example piece 2 Op. posth.23 No.1",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/08.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "2"
+                        }
+                    },
+                    {
+                        "id": "3",
+                        "title": "Example piece 3 S 11 No.7",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/01.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "3"
+                        }
+                    },
+                    {
+                        "id": "4",
+                        "title": "Example piece 4 Op.68 No.10",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/10.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "4"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "for_you",
+                "title": "For you",
+                "kind": "compact_piece_rail",
+                "items": [
+                    {
+                        "id": "2",
+                        "title": "Example piece 2 Op. posth.23 No.1",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/08.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "2"
+                        }
+                    },
+                    {
+                        "id": "1",
+                        "title": "Example piece 1 WoO 84 No.7",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/06.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "1"
+                        }
+                    },
+                    {
+                        "id": "3",
+                        "title": "Example piece 3 S 11 No.7",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/01.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "3"
+                        }
+                    },
+                    {
+                        "id": "4",
+                        "title": "Example piece 4 Op.68 No.10",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/10.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "4"
+                        }
+                    }
+                ],
+                "subtitle": "Picked for your level and taste."
+            },
+            {
+                "id": "composer_feature",
+                "title": "From women composers",
+                "kind": "composer_feature",
+                "items": [
+                    {
+                        "id": "1",
+                        "title": "Example piece 1 WoO 84 No.7",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/06.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "1"
+                        }
+                    },
+                    {
+                        "id": "2",
+                        "title": "Example piece 2 Op. posth.23 No.1",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/08.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "2"
+                        }
+                    },
+                    {
+                        "id": "4",
+                        "title": "Example piece 4 Op.68 No.10",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/10.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "4"
+                        }
+                    },
+                    {
+                        "id": "3",
+                        "title": "Example piece 3 S 11 No.7",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/01.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "3"
+                        }
+                    }
+                ],
+                "group": "women",
+                "composer": {
+                    "id": "1",
+                    "name": "Example Composer",
+                    "short_name": "E. Composer",
+                    "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                    "piece_count": 4,
+                    "destination": {
+                        "kind": "composer_repertoire",
+                        "id": "1"
+                    }
+                },
+                "biography_excerpt": "Assumenda et quas rem recusandae qui expedita veritatis. Veritatis nihil ut non maxime et soluta corrupti sint. Fuga rerum dicta pariatur nam voluptatibus sed. Repudiandae quidem s...",
+                "query": "women composers"
+            },
+            {
+                "id": "past_highlights",
+                "title": "Past highlights",
+                "kind": "featured_piece_list",
+                "items": [
+                    {
+                        "id": "1",
+                        "title": "Example piece 1 WoO 84 No.7",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/06.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "1"
+                        }
+                    },
+                    {
+                        "id": "2",
+                        "title": "Example piece 2 Op. posth.23 No.1",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/08.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "2"
+                        }
+                    },
+                    {
+                        "id": "3",
+                        "title": "Example piece 3 S 11 No.7",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/01.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "3"
+                        }
+                    },
+                    {
+                        "id": "4",
+                        "title": "Example piece 4 Op.68 No.10",
+                        "composer": {
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.invalid/images/misc/placeholder-image.png",
+                            "piece_count": 4,
+                            "destination": {
+                                "kind": "composer_repertoire",
+                                "id": "1"
+                            }
+                        },
+                        "attribution": null,
+                        "artwork_url": "https://example.invalid/images/backgrounds/periods/romantic/10.jpg",
+                        "difficulty": {
+                            "name": "intermediate",
+                            "label": "Intermediate"
+                        },
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "available_media": {
+                            "video": false,
+                            "audio": false,
+                            "score": false,
+                            "synthesia": true
+                        },
+                        "destination": {
+                            "kind": "piece",
+                            "id": "4"
+                        }
+                    }
+                ],
+                "query": "black composers"
+            },
+            {
+                "id": "mood",
+                "title": "Pieces that are ",
+                "kind": "compact_piece_rail",
+                "items": []
+            },
+            {
+                "id": "similar_to_free_pick",
+                "title": "Like this week's free pick",
+                "kind": "compact_piece_rail",
+                "items": []
+            }
+        ]
+    },
+    "meta": {
+        "request_id": "00000000-0000-4000-8000-000000000001"
+    }
+}

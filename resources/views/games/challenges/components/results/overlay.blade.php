@@ -1,8 +1,10 @@
 <div id="final-overlay" data-result-tier="excellent" data-result-variant="0" aria-labelledby="result-title">
     <div class="results-sheet">
         <div class="results-topline">
-            <span class="results-game">{{$settings->gameName()}}</span>
-            <a href="{{route('games.home')}}" class="btn btn-raw text-muted small">All games @include('games.challenges.components.icon', ['icon' => 'arrow-up-right-from-square', 'mr' => 0])</a>
+            @include('games.challenges.components.identity')
+            <div class="btn-floating flex-shrink-0">
+                <a href="{{route('games.home')}}" class="btn btn-white btn-sm text-nowrap">All games @include('games.challenges.components.icon', ['icon' => 'arrow-up-right-from-square', 'mr' => 0])</a>
+            </div>
         </div>
 
         <div id="result-greeting" class="results-greeting">
