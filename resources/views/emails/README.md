@@ -190,7 +190,11 @@ icon is 78px wide in welcomes and 48px wide in Freepick. Rebuild both assets wit
 separate square app icon. Freepick begins with the smaller centered logo and
 **Free pick of the week**, then a shorter cover image (240px desktop / 170px phone)
 and the familiar piece identity/description/action. The content panel has
-24px rounded top corners overlapping the cover's bottom by 24px. This panel is
+24px rounded top corners overlapping the cover's bottom by 24px. The cover is a
+linked table background with a rounded white edge in its last 24px, followed by
+the white content table. Keep this structure instead of negative margins or
+positioned layers, which Gmail does not retain; the cover keeps its 240px/170px
+responsive heights and a regular image fallback for Word-based Outlook. This panel is
 white through the end of the resource features; More music to discover returns
 to the shared `#f8f9fa` background with 36px of top padding, matching Keep the
 inspiration going. The logo/title

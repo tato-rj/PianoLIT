@@ -10,7 +10,11 @@ centers the shared shadow-free `mail::editorial.logo` at 48px, followed by
 **Free pick of the week**. The cover begins below both, cropped to 240px high on
 desktop and 170px on phones. Its top corners are square. The white content panel
 extends from the piece identity through the end of the resource features. It retains its rounded 24px
-top corners, overlapping the bottom of the cover by 24px. It leads into the familiar composer portrait,
+top corners, overlapping the bottom of the cover by 24px. The rounded white edge
+occupies the cover table's last 24px, with the white content table continuing
+directly below it. This preserves the effect in Gmail without negative margins
+or positioned layers. The linked cover has an accessible piece label and a
+regular image fallback for Word-based Outlook. It leads into the familiar composer portrait,
 colored level marker, piece
 title and composer credit. The primary action links directly to the pinned
 piece. The former Prefer your phone / iOS app line is removed.
@@ -60,6 +64,26 @@ is required. See `resources/views/emails/README.md` for the editing map and safe
 `scripts/preview-freepick-email.php` exporter.
 
 ## Scheduling and delivery
+
+### Preview delivery troubleshooting
+
+The admin preview confirmation means the mailable was queued, not delivered.
+A Redis/default worker must process it. A failed job with
+`View [freepick.header] not found` means email rendering failed before delivery.
+The current release includes both
+`resources/views/emails/components/html/freepick/header.blade.php` and
+`resources/views/emails/components/text/freepick/header.blade.php`.
+
+Check that both files exist in the active production release. Deploy the complete
+matching email component tree, `config/mail.php`, `AppServiceProvider` and mail
+classes/traits if that release is incomplete. Once the files are in place, rebuild
+the configuration cache (`php artisan config:cache`), clear compiled views
+(`php artisan view:clear`) and reload workers (`php artisan queue:restart`).
+Workers retain their booted component paths until they restart; the restart
+command requests a graceful exit, so the process manager must start them again.
+Send a new single-recipient preview afterward. Inspect any new failed job's
+exception if rendering still fails; the older failed-job record does not change
+when code is fixed. These steps do not require retrying historical campaigns.
 
 The Pieces directory's **Schedule** action opens the shared modal. Administrators can select the piece immediately or choose a future local date and whole hour. The hour selector defaults to **8am**. The form displays `America/New_York`; schedule instants are stored in UTC so the autumn clock change cannot restore an older selection. A saved cover image is required, as it was for the previous editor action.
 

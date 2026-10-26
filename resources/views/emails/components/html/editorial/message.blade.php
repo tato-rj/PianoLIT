@@ -18,7 +18,9 @@
     .freepick-portrait { width: 60px !important; padding-right: 16px !important; }
     .freepick-portrait img { width: 60px !important; height: 60px !important; }
     .freepick-piece h2 { font-size: 23px !important; }
-    .freepick-cover img { height: 170px !important; }
+    .freepick-cover { height: 170px !important; }
+    .freepick-cover-space, .freepick-cover-link { height: 146px !important; }
+    .freepick-cover-link { line-height: 146px !important; }
     .freepick-latest .welcome-piece { display: block !important; width: 100% !important; padding: 0 0 18px !important; overflow: hidden; }
     .freepick-latest .welcome-piece img { float: left !important; width: 88px !important; margin: 0 14px 0 0 !important; }
 }

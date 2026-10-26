@@ -1,5 +1,17 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-10-25 — Keep the Free Pick rounded cover edge visible in Gmail (P3, complete locally)
+
+- **Evidence / change:** Arthur confirmed delivery works, then supplied Gmail desktop and iPhone Mail screenshots: the desktop white panel started below the photo instead of overlapping it. Replaced the negative-margin/positioned table in `components/html/freepick/hero.blade.php` with a linked cover background and a rounded white edge occupying its last 24px. The white content table follows directly, preserving the existing portrait/content inset. Kept the desktop/mobile 240px/170px cover heights, 24px corners, cover link, no-cover panel and a regular linked image fallback for Word-based Outlook. Recompiled the shared email theme and updated its editing documentation.
+- **Verification:** Existing isolated Free Pick design, admin-list, cached-component, welcome-content and local-image checks pass **30 tests / 889 assertions**. Browser-reviewed static previews at 900px and 390px: the rounded edge occupies the cover's last 24px, meets the white content table without a layout gap and causes no horizontal overflow. Proofs: `freepick-corners/{desktop,desktop-corners,mobile}.png` in this chat's visualization directory. Theme compilation and whitespace checks pass. No new tests for this cosmetic change.
+- **Compatibility / remaining:** Delivery, recipients, tracking, plain text, access rules and mobile/API contracts are unchanged. No live send or deployment performed; a fresh Gmail/iPhone inbox preview after deployment remains the client-specific confirmation.
+
+### 2026-10-25 — Free Pick preview rendering failure on production (P2, recovery confirmed by Arthur)
+
+- **Evidence:** Arthur reported that the local preview arrived after starting its queue worker. Production failed mailable 2317 at 22:27:22 matches the reported preview attempt; its saved exception is `InvalidArgumentException: View [freepick.header] not found`. This identifies a rendering failure but does not establish whether the active production release lacks a component or the worker retains old component paths.
+- **Inspection / guidance:** Both HTML/text Free Pick headers are tracked in the current release. `AppServiceProvider` registers the current component tree even with older cached Markdown paths. Added active-release file checks, configuration/view cache refresh and graceful worker reload guidance to `docs/FREEPICKS.md`. No application behavior or delivery code changed.
+- **Verification / remaining:** Isolated Free Pick design/admin-list and cached-component checks pass **19 tests / 276 assertions**. Arthur subsequently confirmed production delivery works and supplied desktop/iPhone screenshots of the received preview. No production commands, live mail sends, historical retries, account changes or mobile/API changes were performed by the agent.
+
 ### 2026-10-25 — Keep floating alerts within their clickable boundaries (P3, complete locally)
 
 - **Evidence/change:** Reproduced the full-width `components.alert` wrapper intercepting links on both sides of a page-load alert. In `resources/sass/shared/_base.scss`, floating top/bottom-right wrappers now pass pointer events through, while their visible `.alert` children retain normal interaction. Placement, size, appearance, inline alerts and dismissal behavior remain intact.
