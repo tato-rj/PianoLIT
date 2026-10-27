@@ -17,7 +17,7 @@
         @foreach($options as $value => $optionLabel)
         <label class="dropdown-item d-flex align-items-center gap-2 mb-0">
             <input class="form-check-input m-0 flex-shrink-0" type="checkbox" name="{{ $name }}[]" value="{{ $value }}" data-checkbox-menu-option data-label="{{ $optionLabel }}" @if(in_array($value, $menuSelected, true)) checked @endif aria-errormessage="{{ $menuId }}-error" @if($menuError) aria-invalid="true" @endif>
-            <span>{{ $optionLabel }}</span>
+            <span class="text-nowrap">{{ $optionLabel }}</span>
         </label>
         @endforeach
         <p class="text-danger small mb-0 px-3" id="{{ $menuId }}-error" data-checkbox-menu-error role="alert" @if(!$menuError) hidden @endif>{{ $menuError ?: 'Choose at least one option.' }}</p>
