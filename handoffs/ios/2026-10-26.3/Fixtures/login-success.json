@@ -1,0 +1,16 @@
+{
+    "data": {
+        "token_type": "Bearer",
+        "access_token": "EXAMPLE_TOKEN_DO_NOT_USE",
+        "expires_at": "2026-11-25T16:00:00Z",
+        "account": {
+            "id": "1",
+            "first_name": "Synthetic",
+            "last_name": "Account",
+            "email": "synthetic@example.test"
+        }
+    },
+    "meta": {
+        "request_id": "00000000-0000-4000-8000-000000000001"
+    }
+}

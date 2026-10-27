@@ -1,0 +1,14 @@
+{
+    "error": {
+        "code": "invalid_request",
+        "message": "Please check the request fields.",
+        "fields": {
+            "request": [
+                "Unsupported request fields. Do not submit account IDs or tokens in request fields."
+            ]
+        }
+    },
+    "meta": {
+        "request_id": "00000000-0000-4000-8000-000000000001"
+    }
+}

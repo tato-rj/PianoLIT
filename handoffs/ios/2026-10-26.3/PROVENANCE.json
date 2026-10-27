@@ -1,0 +1,76 @@
+{
+  "revision": "2026-10-26.3",
+  "backend_commit": "fd877946de985a8a5b73cfd703c6e1ea37137e61",
+  "audit_date": "2026-10-26",
+  "canonical_revision_rewritten": false,
+  "fixture_generator": "tests/Review/ApiV2HandoffDeliveryTest.php",
+  "fixture_generator_sha256": "52dc62a1ebc26d35047bf96ab419b1685068f26c9872c0228e41b94af56e46c5",
+  "fixture_environment": "in-memory SQLite, fake HTTP/mail/Redis; no normal .env",
+  "normalizations": [
+    "bearer tokens replaced with non-credential placeholder",
+    "request IDs fixed",
+    "URL origins replaced with example.invalid"
+  ],
+  "audited_source_files": [
+    {
+      "path": "routes/api-v2.php",
+      "sha256": "6e8f03bba123845eef25792b971d37d29a902568d2e90703a088597ce288e1cf",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Auth/ApiV2/Sessions.php",
+      "sha256": "e159a02c02be9a671661be57befc9474ca82533833f2d45033f6171dbc1d3589",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Api/V2/Input.php",
+      "sha256": "a9b0d571796d77927f20b8db2cba21fc5265ed73665969d7fb4d4b11b002a35f",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Api/V2/Responses.php",
+      "sha256": "f8b82dcd099c8760b72b8a527a55b7f2e4748c9d8ece2c71aae58041f427d87d",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Http/Resources/Api/V2/DiscoverResource.php",
+      "sha256": "e325f7c7532af4e0f9ed8c1bce4024630064dba0287f42b04c41441d65f55f46",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Services/DiscoverFeed.php",
+      "sha256": "6bcd82cf900f08b6c30fd4998be9f5d3b445fcf6ec0ffb9ffd61b10dcd3f6ef6",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Services/RecentlyViewedPieces.php",
+      "sha256": "ce2bd2d10f0ebef4aeba048ace8d273e2cd880547bbb0de7d5920659b2626c70",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Http/Controllers/Api/V2/PieceViewsController.php",
+      "sha256": "17865cf90727ca1bebd20d72b025c6002302feb23c3e0051323f5049f34e5084",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Http/Controllers/Api/PiecesController.php",
+      "sha256": "d6b0d74a22a4062720c8239205710678f720117fe6abae494775773c340021f0",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Http/Controllers/MembershipsController.php",
+      "sha256": "3fed3a51e8405a350a9e7961fd182b40d9804e5f4e72ca4dc4ff34dcc9228763",
+      "matches_commit": true
+    },
+    {
+      "path": "app/Api/Search.php",
+      "sha256": "fb83909458e198ee6dc9b09d52fc7d83bfa82ce132ada693f25291e57f951543",
+      "matches_commit": true
+    },
+    {
+      "path": "config/api-v2.php",
+      "sha256": "255582502d0ac024ad000a2a7dce6ff95fd81633960ac453a3e5a28c0e8c770f",
+      "matches_commit": true
+    }
+  ]
+}

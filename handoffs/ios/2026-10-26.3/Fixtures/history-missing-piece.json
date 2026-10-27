@@ -1,0 +1,10 @@
+{
+    "error": {
+        "code": "not_found",
+        "message": "The requested resource was not found.",
+        "fields": {}
+    },
+    "meta": {
+        "request_id": "00000000-0000-4000-8000-000000000001"
+    }
+}

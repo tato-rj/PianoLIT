@@ -1,0 +1,83 @@
+{
+  "revision": "2026-10-26.3",
+  "category": "client_scenarios_not_api_responses",
+  "synthetic": true,
+  "network_mode": "all_network_disabled",
+  "native_entitlement_contract_available": false,
+  "cases": [
+    {
+      "id": "confirmed-open",
+      "piece_id": "4",
+      "discover_response": "discover-complete.json",
+      "legacy_status_response": "legacy-status-active-override.json",
+      "legacy_detail_response": "legacy-piece-detail.json",
+      "local_test_double_access_decision": "allowed",
+      "native_view_outcome": "detail_did_open",
+      "expected_history_requests": [
+        {
+          "method": "POST",
+          "path": "/api/v2/pieces/4/view",
+          "body": {},
+          "http_status": 200,
+          "response_file": "history-success.json"
+        }
+      ],
+      "then_discover_response": "discover-after-open.json"
+    },
+    {
+      "id": "denied-regular-piece",
+      "piece_id": "4",
+      "legacy_status_response": "legacy-status-no-membership.json",
+      "local_test_double_access_decision": "denied",
+      "native_view_outcome": "detail_did_not_open",
+      "expected_history_requests": [],
+      "note": "Authored client test double only; no server locked field or approved native entitlement policy is implied."
+    },
+    {
+      "id": "failed-detail-load",
+      "piece_id": "4",
+      "native_view_outcome": "detail_load_failed",
+      "expected_history_requests": []
+    },
+    {
+      "id": "impression-prefetch-or-cancel",
+      "piece_id": "4",
+      "native_view_outcome": "not_confirmed_open",
+      "expected_history_requests": []
+    },
+    {
+      "id": "free-pick-without-membership",
+      "piece_id": "1",
+      "discover_response": "discover-complete.json",
+      "legacy_status_response": "legacy-status-no-membership.json",
+      "display_free_pick_badge": true,
+      "local_test_double_access_decision": "unresolved",
+      "expected_history_requests": [],
+      "note": "Free Pick identity is true; media/open access is not supplied by v2 and must not be inferred."
+    },
+    {
+      "id": "retry-confirmed-open",
+      "piece_id": "4",
+      "responses": [
+        "history-success.json",
+        "history-retry-success.json"
+      ],
+      "observed_backend_assertions": {
+        "one_row_per_account_piece": true,
+        "retry_updates_server_recency": true
+      },
+      "note": "Not a strict event-idempotency guarantee; retries may reorder recency."
+    },
+    {
+      "id": "membership-unavailable-in-v2",
+      "login_response": "login-success.json",
+      "discover_response": "discover-complete.json",
+      "expected_membership_field": "absent",
+      "must_not_infer": [
+        "membership_from_account_id",
+        "access_from_media_availability",
+        "access_from_row_position"
+      ]
+    }
+  ]
+}

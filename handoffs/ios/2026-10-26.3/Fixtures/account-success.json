@@ -1,0 +1,13 @@
+{
+    "data": {
+        "account": {
+            "id": "1",
+            "first_name": "Synthetic",
+            "last_name": "Account",
+            "email": "synthetic@example.test"
+        }
+    },
+    "meta": {
+        "request_id": "00000000-0000-4000-8000-000000000001"
+    }
+}

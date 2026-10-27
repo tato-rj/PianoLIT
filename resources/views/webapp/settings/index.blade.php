@@ -5,6 +5,7 @@
 
 @section('content')
 @include('webapp.layouts.header', ['title' => 'Settings', 'subtitle' => 'Control your profile and membership preferences'])
+@php($website = \App\Support\ProfileUrl::base())
 
 <div class="row">
 	<div class="col-lg-8 col-12 mx-auto p-0 list-group">
@@ -16,21 +17,17 @@
 		@include('webapp.settings.item', ['url' => route('webapp.membership.pricing'), 'label' => 'Subscribe ' . \App\Support\Icon::render('star', ['mr' => 0, 'classes' => 'text-yellow', 'filled' => true]) . ''])
 		@endif
 		@auth('web')
-		@include('webapp.settings.item', ['url' => route('users.profile'), 'label' => 'My profile'])
-		@include('webapp.settings.item', ['url' => route('google.accounts'), 'label' => 'Connected Accounts'])
+		@include('webapp.settings.item', ['url' => route('users.profile'), 'external' => true, 'label' => 'My profile'])
 		@else
-		@include('webapp.settings.item', ['url' => route('login'), 'label' => 'Sign in'])
-		@include('webapp.settings.item', ['url' => route('register'), 'label' => 'Create an account'])
+		@include('webapp.settings.item', ['url' => $website.route('login', [], false), 'external' => true, 'label' => 'Sign in'])
+		@include('webapp.settings.item', ['url' => $website.route('register', [], false), 'external' => true, 'label' => 'Create an account'])
 		@endauth
-		@include('webapp.settings.item', ['url' => route('contact'), 'label' => 'Support center'])
-		<button type="button" class="list-group-item py-4 rounded-0 list-group-item-action text-start" data-bs-toggle="modal" data-bs-target="#feedback-modal" aria-controls="feedback-modal">Send feedback</button>
-		@include('webapp.settings.item', ['url' => route('webapp.terms'), 'label' => 'Terms of service'])
-		@include('webapp.settings.item', ['url' => route('webapp.privacy'), 'label' => 'Privacy policy'])
-		@include('webapp.settings.item', ['url' => config('app.url'), 'external' => true, 'label' => 'Visit the website'])
+		@include('webapp.settings.item', ['url' => route('contact'), 'external' => true, 'label' => 'Support center'])
+		@include('webapp.settings.item', ['url' => $website.route('terms', [], false), 'external' => true, 'label' => 'Terms of service'])
+		@include('webapp.settings.item', ['url' => $website.route('privacy', [], false), 'external' => true, 'label' => 'Privacy policy'])
 		@auth('web')
-		<a href="" class="list-group-item py-4 rounded-0 list-group-item-action" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-			<form id="logout-form" action="{{ route('webapp.logout') }}" method="POST" style="display: none;">@csrf</form>Log out
-		</a>
+		<button type="submit" form="logout-form" class="list-group-item py-4 rounded-0 list-group-item-action text-start">Log out</button>
+		<form id="logout-form" action="{{ route('webapp.logout') }}" method="POST" style="display: none;">@csrf</form>
 		@endauth
 	</div>
 </div>

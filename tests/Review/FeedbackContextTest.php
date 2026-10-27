@@ -25,7 +25,7 @@ class FeedbackContextTest extends ReviewTestCase
         return html_entity_decode($match[1], ENT_QUOTES);
     }
 
-    public function test_standard_guest_pages_share_one_launcher_and_one_modal_and_settings_has_a_second_entry()
+    public function test_standard_guest_pages_share_one_launcher_and_one_modal_without_a_second_settings_entry()
     {
         foreach (['discover', 'explore', 'search.results', 'playlists', 'my-pieces', 'composers.index', 'settings', 'terms', 'privacy'] as $name) {
             $response = $this->get(route('webapp.'.$name))->assertOk();
@@ -37,7 +37,9 @@ class FeedbackContextTest extends ReviewTestCase
             $this->assertStringNotContainsString('GIVE YOUR FEEDBACK', $html);
             $this->contextToken($response);
         }
-        $this->get(route('webapp.settings'))->assertSee('Send feedback')->assertSee('aria-controls="feedback-modal"', false);
+        $settings = $this->get(route('webapp.settings'))->assertOk();
+        $dom = new \DOMDocument; @$dom->loadHTML($settings->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertSame(0, $xpath->query('//main//*[contains(@class, "list-group-item") and @data-bs-target="#feedback-modal"]')->length);
         $this->getJson(route('webapp.search.results', ['catalogue' => 1]))->assertOk()
             ->assertDontSee('data-feedback-launcher', false)->assertDontSee('id="feedback-modal"', false);
         $this->assertGuest('web');

@@ -1,0 +1,10 @@
+{
+    "error": {
+        "code": "invalid_json",
+        "message": "The JSON request could not be read.",
+        "fields": {}
+    },
+    "meta": {
+        "request_id": "00000000-0000-4000-8000-000000000001"
+    }
+}

@@ -1,0 +1,2942 @@
+[
+    {
+        "id": 8,
+        "name": "Fixture Piece 08",
+        "nickname": null,
+        "catalogue_name": null,
+        "catalogue_number": null,
+        "collection_name": null,
+        "collection_number": null,
+        "movement_number": null,
+        "key": "C major",
+        "description": "We're updating our database, please check back in just a few days.",
+        "curiosity": null,
+        "audio_path": null,
+        "audio_path_rh": null,
+        "audio_path_lh": null,
+        "itunes": null,
+        "videos": null,
+        "score_url": null,
+        "score_path": null,
+        "score_editor": "No information available",
+        "score_publisher": "No information available",
+        "score_copyright": "This work is protected by copyright",
+        "cover_path": null,
+        "show_on_tour": false,
+        "is_attributed_to": false,
+        "highlighted_at": "2026-10-23T16:00:00.000000Z",
+        "composer_id": 2,
+        "composed_in": 2001,
+        "published_in": 2011,
+        "creator_id": 14,
+        "created_at": "2026-10-26T15:43:00.000000Z",
+        "updated_at": "2026-10-26T16:00:00.000000Z",
+        "views_count": 0,
+        "tags_count": 10,
+        "favorites_count": 0,
+        "tutorials_count": 1,
+        "is_favorited": false,
+        "is_free": false,
+        "short_name": "Fixture Piece 08 in C major",
+        "medium_name": "Fixture Piece 08 in C major",
+        "long_name": "Fixture Piece 08 in C major",
+        "catalogue": " ",
+        "collection": "",
+        "recordingsAvailable": 0,
+        "is_public_domain": true,
+        "extended_level_name": "intermediate",
+        "level_name": "intermediate",
+        "level_id": 1,
+        "level_number": 3,
+        "timeline_url": "https://example.invalid/api/pieces/8/timeline",
+        "period_name": "Romantic",
+        "rankings": {
+            "rcm": "Equivalent to RCM level 10",
+            "abrsm": "Equivalent to ABRSM level 10",
+            "suzuki": "Equivalent to Suzuki book 10"
+        },
+        "videos_array": [
+            {
+                "id": 12,
+                "piece_id": 8,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            }
+        ],
+        "itunes_array": false,
+        "score": null,
+        "audio": null,
+        "audio_rh": null,
+        "audio_lh": null,
+        "medium_name_with_composer": "Fixture Piece 08 in C major by F.C. Two",
+        "is_new": true,
+        "number_of_pages": "1-2 pages",
+        "for_who": "A great piece for intermediate pianists who are polishing their technique and expanding their repertoire.",
+        "has_siblings": false,
+        "image_background": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+        "source": "https://example.invalid/api/pieces/find",
+        "media": {
+            "performance": null,
+            "synthesia": {
+                "id": 12,
+                "piece_id": 8,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            "lessons": []
+        },
+        "pivot": {
+            "tag_id": 7,
+            "piece_id": 8
+        },
+        "composer": {
+            "id": 2,
+            "name": "Fixture Composer Two",
+            "biography": "<p>Synthetic biography for offline testing.</p>",
+            "cover_path": "",
+            "gender": "male",
+            "ethnicity": "black",
+            "curiosity": "Autem autem et aut. Sunt quam quam illo dolores illum maxime.",
+            "period": "Impressionist",
+            "country_id": 2,
+            "is_famous": true,
+            "is_pedagogical": false,
+            "mood": null,
+            "date_of_birth": "1800-01-01T04:56:02.000000Z",
+            "date_of_death": "1870-01-01T04:56:02.000000Z",
+            "creator_id": 2,
+            "created_at": "2026-10-26T16:00:00.000000Z",
+            "updated_at": "2026-10-26T16:00:00.000000Z",
+            "pieces_count": 12,
+            "cover_image": null,
+            "alive_on": "1800 - 1870",
+            "short_name": "F.C. Two",
+            "born_at": "Jan 1, 1800",
+            "died_at": "Jan 1, 1870",
+            "lifespan": "Jan 1, 1800 - Jan 1, 1870",
+            "reversed_name": "Two, Fixture Composer ",
+            "country": {
+                "id": 2,
+                "name": "nisi",
+                "nationality": "voluptatem",
+                "flag_code": null,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z"
+            }
+        },
+        "tags": [
+            {
+                "id": 1,
+                "type": "level",
+                "name": "intermediate",
+                "creator_id": 3,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 1
+                }
+            },
+            {
+                "id": 2,
+                "type": "period",
+                "name": "romantic",
+                "creator_id": 4,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 2
+                }
+            },
+            {
+                "id": 3,
+                "type": "length",
+                "name": "short",
+                "creator_id": 5,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 3
+                }
+            },
+            {
+                "id": 4,
+                "type": "mood",
+                "name": "happy",
+                "creator_id": 6,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 4
+                }
+            },
+            {
+                "id": 5,
+                "type": "ranking",
+                "name": "rcm 10",
+                "creator_id": 31,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 5
+                }
+            },
+            {
+                "id": 6,
+                "type": "ranking",
+                "name": "rcm 2",
+                "creator_id": 32,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 6
+                }
+            },
+            {
+                "id": 7,
+                "type": "ranking",
+                "name": "rcm 1",
+                "creator_id": 33,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 7
+                }
+            },
+            {
+                "id": 8,
+                "type": "ranking",
+                "name": "abrsm 10",
+                "creator_id": 34,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 8
+                }
+            },
+            {
+                "id": 9,
+                "type": "ranking",
+                "name": "abrsm 2",
+                "creator_id": 35,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 9
+                }
+            },
+            {
+                "id": 10,
+                "type": "ranking",
+                "name": "abrsm 1",
+                "creator_id": 36,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 10
+                }
+            },
+            {
+                "id": 11,
+                "type": "ranking",
+                "name": "suzuki 10",
+                "creator_id": 37,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 11
+                }
+            },
+            {
+                "id": 12,
+                "type": "ranking",
+                "name": "suzuki 2",
+                "creator_id": 38,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 12
+                }
+            },
+            {
+                "id": 13,
+                "type": "ranking",
+                "name": "suzuki 1",
+                "creator_id": 39,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 8,
+                    "tag_id": 13
+                }
+            }
+        ],
+        "favorites": [],
+        "tutorials": [
+            {
+                "id": 12,
+                "piece_id": 8,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Fixture Piece 07",
+        "nickname": null,
+        "catalogue_name": null,
+        "catalogue_number": null,
+        "collection_name": null,
+        "collection_number": null,
+        "movement_number": null,
+        "key": "C major",
+        "description": "We're updating our database, please check back in just a few days.",
+        "curiosity": null,
+        "audio_path": "fixtures/audio.mp3",
+        "audio_path_rh": null,
+        "audio_path_lh": null,
+        "itunes": null,
+        "videos": null,
+        "score_url": null,
+        "score_path": "fixtures/score.pdf",
+        "score_editor": "No information available",
+        "score_publisher": "No information available",
+        "score_copyright": "This work is protected by copyright",
+        "cover_path": null,
+        "show_on_tour": false,
+        "is_attributed_to": false,
+        "highlighted_at": "2026-10-22T16:00:00.000000Z",
+        "composer_id": 1,
+        "composed_in": 1997,
+        "published_in": 1973,
+        "creator_id": 13,
+        "created_at": "2026-10-26T15:42:00.000000Z",
+        "updated_at": "2026-10-26T16:00:00.000000Z",
+        "views_count": 0,
+        "tags_count": 10,
+        "favorites_count": 0,
+        "tutorials_count": 2,
+        "is_favorited": false,
+        "is_free": false,
+        "short_name": "Fixture Piece 07 in C major",
+        "medium_name": "Fixture Piece 07 in C major",
+        "long_name": "Fixture Piece 07 in C major",
+        "catalogue": " ",
+        "collection": "",
+        "recordingsAvailable": 1,
+        "is_public_domain": true,
+        "extended_level_name": "intermediate",
+        "level_name": "intermediate",
+        "level_id": 1,
+        "level_number": 3,
+        "timeline_url": "https://example.invalid/api/pieces/7/timeline",
+        "period_name": "Romantic",
+        "rankings": {
+            "rcm": "Equivalent to RCM level 10",
+            "abrsm": "Equivalent to ABRSM level 10",
+            "suzuki": "Equivalent to Suzuki book 10"
+        },
+        "videos_array": [
+            {
+                "id": 10,
+                "piece_id": 7,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            {
+                "id": 11,
+                "piece_id": 7,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            }
+        ],
+        "itunes_array": false,
+        "score": "https://example.invalid/storage/fixtures/score.pdf",
+        "audio": "https://example.invalid/storage/fixtures/audio.mp3",
+        "audio_rh": null,
+        "audio_lh": null,
+        "medium_name_with_composer": "Fixture Piece 07 in C major by F.C. One",
+        "is_new": true,
+        "number_of_pages": "1-2 pages",
+        "for_who": "A great piece for intermediate pianists who are polishing their technique and expanding their repertoire.",
+        "has_siblings": false,
+        "image_background": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+        "source": "https://example.invalid/api/pieces/find",
+        "media": {
+            "performance": {
+                "id": 11,
+                "piece_id": 7,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            },
+            "synthesia": {
+                "id": 10,
+                "piece_id": 7,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            "lessons": []
+        },
+        "pivot": {
+            "tag_id": 7,
+            "piece_id": 7
+        },
+        "composer": {
+            "id": 1,
+            "name": "Fixture Composer One",
+            "biography": "<p>Synthetic biography for offline testing.</p>",
+            "cover_path": "",
+            "gender": "female",
+            "ethnicity": "white",
+            "curiosity": "Odit commodi id qui et dolorum qui occaecati repellendus. Ad odio aut culpa maxime placeat cum optio.",
+            "period": "Romantic",
+            "country_id": 1,
+            "is_famous": true,
+            "is_pedagogical": false,
+            "mood": null,
+            "date_of_birth": "1800-01-01T04:56:02.000000Z",
+            "date_of_death": "1870-01-01T04:56:02.000000Z",
+            "creator_id": 1,
+            "created_at": "2026-10-26T16:00:00.000000Z",
+            "updated_at": "2026-10-26T16:00:00.000000Z",
+            "pieces_count": 12,
+            "cover_image": null,
+            "alive_on": "1800 - 1870",
+            "short_name": "F.C. One",
+            "born_at": "Jan 1, 1800",
+            "died_at": "Jan 1, 1870",
+            "lifespan": "Jan 1, 1800 - Jan 1, 1870",
+            "reversed_name": "One, Fixture Composer ",
+            "country": {
+                "id": 1,
+                "name": "autem",
+                "nationality": "qui",
+                "flag_code": null,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z"
+            }
+        },
+        "tags": [
+            {
+                "id": 1,
+                "type": "level",
+                "name": "intermediate",
+                "creator_id": 3,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 1
+                }
+            },
+            {
+                "id": 2,
+                "type": "period",
+                "name": "romantic",
+                "creator_id": 4,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 2
+                }
+            },
+            {
+                "id": 3,
+                "type": "length",
+                "name": "short",
+                "creator_id": 5,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 3
+                }
+            },
+            {
+                "id": 4,
+                "type": "mood",
+                "name": "happy",
+                "creator_id": 6,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 4
+                }
+            },
+            {
+                "id": 5,
+                "type": "ranking",
+                "name": "rcm 10",
+                "creator_id": 31,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 5
+                }
+            },
+            {
+                "id": 6,
+                "type": "ranking",
+                "name": "rcm 2",
+                "creator_id": 32,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 6
+                }
+            },
+            {
+                "id": 7,
+                "type": "ranking",
+                "name": "rcm 1",
+                "creator_id": 33,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 7
+                }
+            },
+            {
+                "id": 8,
+                "type": "ranking",
+                "name": "abrsm 10",
+                "creator_id": 34,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 8
+                }
+            },
+            {
+                "id": 9,
+                "type": "ranking",
+                "name": "abrsm 2",
+                "creator_id": 35,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 9
+                }
+            },
+            {
+                "id": 10,
+                "type": "ranking",
+                "name": "abrsm 1",
+                "creator_id": 36,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 10
+                }
+            },
+            {
+                "id": 11,
+                "type": "ranking",
+                "name": "suzuki 10",
+                "creator_id": 37,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 11
+                }
+            },
+            {
+                "id": 12,
+                "type": "ranking",
+                "name": "suzuki 2",
+                "creator_id": 38,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 12
+                }
+            },
+            {
+                "id": 13,
+                "type": "ranking",
+                "name": "suzuki 1",
+                "creator_id": 39,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 7,
+                    "tag_id": 13
+                }
+            }
+        ],
+        "favorites": [],
+        "tutorials": [
+            {
+                "id": 10,
+                "piece_id": 7,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            {
+                "id": 11,
+                "piece_id": 7,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Fixture Piece 06",
+        "nickname": null,
+        "catalogue_name": null,
+        "catalogue_number": null,
+        "collection_name": null,
+        "collection_number": null,
+        "movement_number": null,
+        "key": "C major",
+        "description": "We're updating our database, please check back in just a few days.",
+        "curiosity": null,
+        "audio_path": null,
+        "audio_path_rh": null,
+        "audio_path_lh": null,
+        "itunes": null,
+        "videos": null,
+        "score_url": null,
+        "score_path": null,
+        "score_editor": "No information available",
+        "score_publisher": "No information available",
+        "score_copyright": "This work is protected by copyright",
+        "cover_path": null,
+        "show_on_tour": false,
+        "is_attributed_to": false,
+        "highlighted_at": "2026-10-21T16:00:00.000000Z",
+        "composer_id": 2,
+        "composed_in": 2009,
+        "published_in": 1985,
+        "creator_id": 12,
+        "created_at": "2026-10-26T15:41:00.000000Z",
+        "updated_at": "2026-10-26T16:00:00.000000Z",
+        "views_count": 0,
+        "tags_count": 10,
+        "favorites_count": 0,
+        "tutorials_count": 1,
+        "is_favorited": false,
+        "is_free": false,
+        "short_name": "Fixture Piece 06 in C major",
+        "medium_name": "Fixture Piece 06 in C major",
+        "long_name": "Fixture Piece 06 in C major",
+        "catalogue": " ",
+        "collection": "",
+        "recordingsAvailable": 0,
+        "is_public_domain": true,
+        "extended_level_name": "intermediate",
+        "level_name": "intermediate",
+        "level_id": 1,
+        "level_number": 3,
+        "timeline_url": "https://example.invalid/api/pieces/6/timeline",
+        "period_name": "Romantic",
+        "rankings": {
+            "rcm": "Equivalent to RCM level 10",
+            "abrsm": "Equivalent to ABRSM level 10",
+            "suzuki": "Equivalent to Suzuki book 10"
+        },
+        "videos_array": [
+            {
+                "id": 9,
+                "piece_id": 6,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            }
+        ],
+        "itunes_array": false,
+        "score": null,
+        "audio": null,
+        "audio_rh": null,
+        "audio_lh": null,
+        "medium_name_with_composer": "Fixture Piece 06 in C major by F.C. Two",
+        "is_new": true,
+        "number_of_pages": "1-2 pages",
+        "for_who": "A great piece for intermediate pianists who are polishing their technique and expanding their repertoire.",
+        "has_siblings": false,
+        "image_background": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+        "source": "https://example.invalid/api/pieces/find",
+        "media": {
+            "performance": null,
+            "synthesia": {
+                "id": 9,
+                "piece_id": 6,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            "lessons": []
+        },
+        "pivot": {
+            "tag_id": 7,
+            "piece_id": 6
+        },
+        "composer": {
+            "id": 2,
+            "name": "Fixture Composer Two",
+            "biography": "<p>Synthetic biography for offline testing.</p>",
+            "cover_path": "",
+            "gender": "male",
+            "ethnicity": "black",
+            "curiosity": "Autem autem et aut. Sunt quam quam illo dolores illum maxime.",
+            "period": "Impressionist",
+            "country_id": 2,
+            "is_famous": true,
+            "is_pedagogical": false,
+            "mood": null,
+            "date_of_birth": "1800-01-01T04:56:02.000000Z",
+            "date_of_death": "1870-01-01T04:56:02.000000Z",
+            "creator_id": 2,
+            "created_at": "2026-10-26T16:00:00.000000Z",
+            "updated_at": "2026-10-26T16:00:00.000000Z",
+            "pieces_count": 12,
+            "cover_image": null,
+            "alive_on": "1800 - 1870",
+            "short_name": "F.C. Two",
+            "born_at": "Jan 1, 1800",
+            "died_at": "Jan 1, 1870",
+            "lifespan": "Jan 1, 1800 - Jan 1, 1870",
+            "reversed_name": "Two, Fixture Composer ",
+            "country": {
+                "id": 2,
+                "name": "nisi",
+                "nationality": "voluptatem",
+                "flag_code": null,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z"
+            }
+        },
+        "tags": [
+            {
+                "id": 1,
+                "type": "level",
+                "name": "intermediate",
+                "creator_id": 3,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 1
+                }
+            },
+            {
+                "id": 2,
+                "type": "period",
+                "name": "romantic",
+                "creator_id": 4,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 2
+                }
+            },
+            {
+                "id": 3,
+                "type": "length",
+                "name": "short",
+                "creator_id": 5,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 3
+                }
+            },
+            {
+                "id": 4,
+                "type": "mood",
+                "name": "happy",
+                "creator_id": 6,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 4
+                }
+            },
+            {
+                "id": 5,
+                "type": "ranking",
+                "name": "rcm 10",
+                "creator_id": 31,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 5
+                }
+            },
+            {
+                "id": 6,
+                "type": "ranking",
+                "name": "rcm 2",
+                "creator_id": 32,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 6
+                }
+            },
+            {
+                "id": 7,
+                "type": "ranking",
+                "name": "rcm 1",
+                "creator_id": 33,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 7
+                }
+            },
+            {
+                "id": 8,
+                "type": "ranking",
+                "name": "abrsm 10",
+                "creator_id": 34,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 8
+                }
+            },
+            {
+                "id": 9,
+                "type": "ranking",
+                "name": "abrsm 2",
+                "creator_id": 35,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 9
+                }
+            },
+            {
+                "id": 10,
+                "type": "ranking",
+                "name": "abrsm 1",
+                "creator_id": 36,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 10
+                }
+            },
+            {
+                "id": 11,
+                "type": "ranking",
+                "name": "suzuki 10",
+                "creator_id": 37,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 11
+                }
+            },
+            {
+                "id": 12,
+                "type": "ranking",
+                "name": "suzuki 2",
+                "creator_id": 38,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 12
+                }
+            },
+            {
+                "id": 13,
+                "type": "ranking",
+                "name": "suzuki 1",
+                "creator_id": 39,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 6,
+                    "tag_id": 13
+                }
+            }
+        ],
+        "favorites": [],
+        "tutorials": [
+            {
+                "id": 9,
+                "piece_id": 6,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Fixture Piece 05",
+        "nickname": null,
+        "catalogue_name": null,
+        "catalogue_number": null,
+        "collection_name": null,
+        "collection_number": null,
+        "movement_number": null,
+        "key": "C major",
+        "description": "We're updating our database, please check back in just a few days.",
+        "curiosity": null,
+        "audio_path": "fixtures/audio.mp3",
+        "audio_path_rh": null,
+        "audio_path_lh": null,
+        "itunes": null,
+        "videos": null,
+        "score_url": null,
+        "score_path": null,
+        "score_editor": "No information available",
+        "score_publisher": "No information available",
+        "score_copyright": "This work is protected by copyright",
+        "cover_path": null,
+        "show_on_tour": false,
+        "is_attributed_to": false,
+        "highlighted_at": "2026-10-20T16:00:00.000000Z",
+        "composer_id": 1,
+        "composed_in": 1979,
+        "published_in": 1988,
+        "creator_id": 11,
+        "created_at": "2026-10-26T15:40:00.000000Z",
+        "updated_at": "2026-10-26T16:00:00.000000Z",
+        "views_count": 0,
+        "tags_count": 10,
+        "favorites_count": 0,
+        "tutorials_count": 2,
+        "is_favorited": false,
+        "is_free": false,
+        "short_name": "Fixture Piece 05 in C major",
+        "medium_name": "Fixture Piece 05 in C major",
+        "long_name": "Fixture Piece 05 in C major",
+        "catalogue": " ",
+        "collection": "",
+        "recordingsAvailable": 1,
+        "is_public_domain": true,
+        "extended_level_name": "intermediate",
+        "level_name": "intermediate",
+        "level_id": 1,
+        "level_number": 3,
+        "timeline_url": "https://example.invalid/api/pieces/5/timeline",
+        "period_name": "Romantic",
+        "rankings": {
+            "rcm": "Equivalent to RCM level 10",
+            "abrsm": "Equivalent to ABRSM level 10",
+            "suzuki": "Equivalent to Suzuki book 10"
+        },
+        "videos_array": [
+            {
+                "id": 7,
+                "piece_id": 5,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            {
+                "id": 8,
+                "piece_id": 5,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            }
+        ],
+        "itunes_array": false,
+        "score": null,
+        "audio": "https://example.invalid/storage/fixtures/audio.mp3",
+        "audio_rh": null,
+        "audio_lh": null,
+        "medium_name_with_composer": "Fixture Piece 05 in C major by F.C. One",
+        "is_new": true,
+        "number_of_pages": "1-2 pages",
+        "for_who": "A great piece for intermediate pianists who are polishing their technique and expanding their repertoire.",
+        "has_siblings": false,
+        "image_background": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+        "source": "https://example.invalid/api/pieces/find",
+        "media": {
+            "performance": {
+                "id": 8,
+                "piece_id": 5,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            },
+            "synthesia": {
+                "id": 7,
+                "piece_id": 5,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            "lessons": []
+        },
+        "pivot": {
+            "tag_id": 7,
+            "piece_id": 5
+        },
+        "composer": {
+            "id": 1,
+            "name": "Fixture Composer One",
+            "biography": "<p>Synthetic biography for offline testing.</p>",
+            "cover_path": "",
+            "gender": "female",
+            "ethnicity": "white",
+            "curiosity": "Odit commodi id qui et dolorum qui occaecati repellendus. Ad odio aut culpa maxime placeat cum optio.",
+            "period": "Romantic",
+            "country_id": 1,
+            "is_famous": true,
+            "is_pedagogical": false,
+            "mood": null,
+            "date_of_birth": "1800-01-01T04:56:02.000000Z",
+            "date_of_death": "1870-01-01T04:56:02.000000Z",
+            "creator_id": 1,
+            "created_at": "2026-10-26T16:00:00.000000Z",
+            "updated_at": "2026-10-26T16:00:00.000000Z",
+            "pieces_count": 12,
+            "cover_image": null,
+            "alive_on": "1800 - 1870",
+            "short_name": "F.C. One",
+            "born_at": "Jan 1, 1800",
+            "died_at": "Jan 1, 1870",
+            "lifespan": "Jan 1, 1800 - Jan 1, 1870",
+            "reversed_name": "One, Fixture Composer ",
+            "country": {
+                "id": 1,
+                "name": "autem",
+                "nationality": "qui",
+                "flag_code": null,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z"
+            }
+        },
+        "tags": [
+            {
+                "id": 1,
+                "type": "level",
+                "name": "intermediate",
+                "creator_id": 3,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 1
+                }
+            },
+            {
+                "id": 2,
+                "type": "period",
+                "name": "romantic",
+                "creator_id": 4,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 2
+                }
+            },
+            {
+                "id": 3,
+                "type": "length",
+                "name": "short",
+                "creator_id": 5,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 3
+                }
+            },
+            {
+                "id": 4,
+                "type": "mood",
+                "name": "happy",
+                "creator_id": 6,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 4
+                }
+            },
+            {
+                "id": 5,
+                "type": "ranking",
+                "name": "rcm 10",
+                "creator_id": 31,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 5
+                }
+            },
+            {
+                "id": 6,
+                "type": "ranking",
+                "name": "rcm 2",
+                "creator_id": 32,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 6
+                }
+            },
+            {
+                "id": 7,
+                "type": "ranking",
+                "name": "rcm 1",
+                "creator_id": 33,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 7
+                }
+            },
+            {
+                "id": 8,
+                "type": "ranking",
+                "name": "abrsm 10",
+                "creator_id": 34,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 8
+                }
+            },
+            {
+                "id": 9,
+                "type": "ranking",
+                "name": "abrsm 2",
+                "creator_id": 35,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 9
+                }
+            },
+            {
+                "id": 10,
+                "type": "ranking",
+                "name": "abrsm 1",
+                "creator_id": 36,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 10
+                }
+            },
+            {
+                "id": 11,
+                "type": "ranking",
+                "name": "suzuki 10",
+                "creator_id": 37,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 11
+                }
+            },
+            {
+                "id": 12,
+                "type": "ranking",
+                "name": "suzuki 2",
+                "creator_id": 38,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 12
+                }
+            },
+            {
+                "id": 13,
+                "type": "ranking",
+                "name": "suzuki 1",
+                "creator_id": 39,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 5,
+                    "tag_id": 13
+                }
+            }
+        ],
+        "favorites": [],
+        "tutorials": [
+            {
+                "id": 7,
+                "piece_id": 5,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            {
+                "id": 8,
+                "piece_id": 5,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Fixture Piece 04",
+        "nickname": null,
+        "catalogue_name": null,
+        "catalogue_number": null,
+        "collection_name": null,
+        "collection_number": null,
+        "movement_number": null,
+        "key": "C major",
+        "description": "We're updating our database, please check back in just a few days.",
+        "curiosity": null,
+        "audio_path": null,
+        "audio_path_rh": null,
+        "audio_path_lh": null,
+        "itunes": null,
+        "videos": null,
+        "score_url": null,
+        "score_path": "fixtures/score.pdf",
+        "score_editor": "No information available",
+        "score_publisher": "No information available",
+        "score_copyright": "This work is protected by copyright",
+        "cover_path": null,
+        "show_on_tour": false,
+        "is_attributed_to": false,
+        "highlighted_at": "2026-10-19T16:00:00.000000Z",
+        "composer_id": 2,
+        "composed_in": 2016,
+        "published_in": 1977,
+        "creator_id": 10,
+        "created_at": "2026-10-26T15:39:00.000000Z",
+        "updated_at": "2026-10-26T16:00:00.000000Z",
+        "views_count": 0,
+        "tags_count": 10,
+        "favorites_count": 0,
+        "tutorials_count": 1,
+        "is_favorited": false,
+        "is_free": false,
+        "short_name": "Fixture Piece 04 in C major",
+        "medium_name": "Fixture Piece 04 in C major",
+        "long_name": "Fixture Piece 04 in C major",
+        "catalogue": " ",
+        "collection": "",
+        "recordingsAvailable": 0,
+        "is_public_domain": true,
+        "extended_level_name": "intermediate",
+        "level_name": "intermediate",
+        "level_id": 1,
+        "level_number": 3,
+        "timeline_url": "https://example.invalid/api/pieces/4/timeline",
+        "period_name": "Romantic",
+        "rankings": {
+            "rcm": "Equivalent to RCM level 10",
+            "abrsm": "Equivalent to ABRSM level 10",
+            "suzuki": "Equivalent to Suzuki book 10"
+        },
+        "videos_array": [
+            {
+                "id": 6,
+                "piece_id": 4,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            }
+        ],
+        "itunes_array": false,
+        "score": "https://example.invalid/storage/fixtures/score.pdf",
+        "audio": null,
+        "audio_rh": null,
+        "audio_lh": null,
+        "medium_name_with_composer": "Fixture Piece 04 in C major by F.C. Two",
+        "is_new": true,
+        "number_of_pages": "1-2 pages",
+        "for_who": "A great piece for intermediate pianists who are polishing their technique and expanding their repertoire.",
+        "has_siblings": false,
+        "image_background": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+        "source": "https://example.invalid/api/pieces/find",
+        "media": {
+            "performance": null,
+            "synthesia": {
+                "id": 6,
+                "piece_id": 4,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            "lessons": []
+        },
+        "pivot": {
+            "tag_id": 7,
+            "piece_id": 4
+        },
+        "composer": {
+            "id": 2,
+            "name": "Fixture Composer Two",
+            "biography": "<p>Synthetic biography for offline testing.</p>",
+            "cover_path": "",
+            "gender": "male",
+            "ethnicity": "black",
+            "curiosity": "Autem autem et aut. Sunt quam quam illo dolores illum maxime.",
+            "period": "Impressionist",
+            "country_id": 2,
+            "is_famous": true,
+            "is_pedagogical": false,
+            "mood": null,
+            "date_of_birth": "1800-01-01T04:56:02.000000Z",
+            "date_of_death": "1870-01-01T04:56:02.000000Z",
+            "creator_id": 2,
+            "created_at": "2026-10-26T16:00:00.000000Z",
+            "updated_at": "2026-10-26T16:00:00.000000Z",
+            "pieces_count": 12,
+            "cover_image": null,
+            "alive_on": "1800 - 1870",
+            "short_name": "F.C. Two",
+            "born_at": "Jan 1, 1800",
+            "died_at": "Jan 1, 1870",
+            "lifespan": "Jan 1, 1800 - Jan 1, 1870",
+            "reversed_name": "Two, Fixture Composer ",
+            "country": {
+                "id": 2,
+                "name": "nisi",
+                "nationality": "voluptatem",
+                "flag_code": null,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z"
+            }
+        },
+        "tags": [
+            {
+                "id": 1,
+                "type": "level",
+                "name": "intermediate",
+                "creator_id": 3,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 1
+                }
+            },
+            {
+                "id": 2,
+                "type": "period",
+                "name": "romantic",
+                "creator_id": 4,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 2
+                }
+            },
+            {
+                "id": 3,
+                "type": "length",
+                "name": "short",
+                "creator_id": 5,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 3
+                }
+            },
+            {
+                "id": 4,
+                "type": "mood",
+                "name": "happy",
+                "creator_id": 6,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 4
+                }
+            },
+            {
+                "id": 5,
+                "type": "ranking",
+                "name": "rcm 10",
+                "creator_id": 31,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 5
+                }
+            },
+            {
+                "id": 6,
+                "type": "ranking",
+                "name": "rcm 2",
+                "creator_id": 32,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 6
+                }
+            },
+            {
+                "id": 7,
+                "type": "ranking",
+                "name": "rcm 1",
+                "creator_id": 33,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 7
+                }
+            },
+            {
+                "id": 8,
+                "type": "ranking",
+                "name": "abrsm 10",
+                "creator_id": 34,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 8
+                }
+            },
+            {
+                "id": 9,
+                "type": "ranking",
+                "name": "abrsm 2",
+                "creator_id": 35,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 9
+                }
+            },
+            {
+                "id": 10,
+                "type": "ranking",
+                "name": "abrsm 1",
+                "creator_id": 36,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 10
+                }
+            },
+            {
+                "id": 11,
+                "type": "ranking",
+                "name": "suzuki 10",
+                "creator_id": 37,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 11
+                }
+            },
+            {
+                "id": 12,
+                "type": "ranking",
+                "name": "suzuki 2",
+                "creator_id": 38,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 12
+                }
+            },
+            {
+                "id": 13,
+                "type": "ranking",
+                "name": "suzuki 1",
+                "creator_id": 39,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 4,
+                    "tag_id": 13
+                }
+            }
+        ],
+        "favorites": [],
+        "tutorials": [
+            {
+                "id": 6,
+                "piece_id": 4,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Fixture Piece 03",
+        "nickname": null,
+        "catalogue_name": null,
+        "catalogue_number": null,
+        "collection_name": null,
+        "collection_number": null,
+        "movement_number": null,
+        "key": "C major",
+        "description": "We're updating our database, please check back in just a few days.",
+        "curiosity": null,
+        "audio_path": "fixtures/audio.mp3",
+        "audio_path_rh": null,
+        "audio_path_lh": null,
+        "itunes": null,
+        "videos": null,
+        "score_url": null,
+        "score_path": null,
+        "score_editor": "No information available",
+        "score_publisher": "No information available",
+        "score_copyright": "This work is protected by copyright",
+        "cover_path": null,
+        "show_on_tour": false,
+        "is_attributed_to": false,
+        "highlighted_at": "2026-10-18T16:00:00.000000Z",
+        "composer_id": 1,
+        "composed_in": 1990,
+        "published_in": 2014,
+        "creator_id": 9,
+        "created_at": "2026-10-26T15:38:00.000000Z",
+        "updated_at": "2026-10-26T16:00:00.000000Z",
+        "views_count": 0,
+        "tags_count": 10,
+        "favorites_count": 0,
+        "tutorials_count": 2,
+        "is_favorited": false,
+        "is_free": false,
+        "short_name": "Fixture Piece 03 in C major",
+        "medium_name": "Fixture Piece 03 in C major",
+        "long_name": "Fixture Piece 03 in C major",
+        "catalogue": " ",
+        "collection": "",
+        "recordingsAvailable": 1,
+        "is_public_domain": true,
+        "extended_level_name": "intermediate",
+        "level_name": "intermediate",
+        "level_id": 1,
+        "level_number": 3,
+        "timeline_url": "https://example.invalid/api/pieces/3/timeline",
+        "period_name": "Romantic",
+        "rankings": {
+            "rcm": "Equivalent to RCM level 10",
+            "abrsm": "Equivalent to ABRSM level 10",
+            "suzuki": "Equivalent to Suzuki book 10"
+        },
+        "videos_array": [
+            {
+                "id": 4,
+                "piece_id": 3,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            {
+                "id": 5,
+                "piece_id": 3,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            }
+        ],
+        "itunes_array": false,
+        "score": null,
+        "audio": "https://example.invalid/storage/fixtures/audio.mp3",
+        "audio_rh": null,
+        "audio_lh": null,
+        "medium_name_with_composer": "Fixture Piece 03 in C major by F.C. One",
+        "is_new": true,
+        "number_of_pages": "1-2 pages",
+        "for_who": "A great piece for intermediate pianists who are polishing their technique and expanding their repertoire.",
+        "has_siblings": false,
+        "image_background": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+        "source": "https://example.invalid/api/pieces/find",
+        "media": {
+            "performance": {
+                "id": 5,
+                "piece_id": 3,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            },
+            "synthesia": {
+                "id": 4,
+                "piece_id": 3,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            "lessons": []
+        },
+        "pivot": {
+            "tag_id": 7,
+            "piece_id": 3
+        },
+        "composer": {
+            "id": 1,
+            "name": "Fixture Composer One",
+            "biography": "<p>Synthetic biography for offline testing.</p>",
+            "cover_path": "",
+            "gender": "female",
+            "ethnicity": "white",
+            "curiosity": "Odit commodi id qui et dolorum qui occaecati repellendus. Ad odio aut culpa maxime placeat cum optio.",
+            "period": "Romantic",
+            "country_id": 1,
+            "is_famous": true,
+            "is_pedagogical": false,
+            "mood": null,
+            "date_of_birth": "1800-01-01T04:56:02.000000Z",
+            "date_of_death": "1870-01-01T04:56:02.000000Z",
+            "creator_id": 1,
+            "created_at": "2026-10-26T16:00:00.000000Z",
+            "updated_at": "2026-10-26T16:00:00.000000Z",
+            "pieces_count": 12,
+            "cover_image": null,
+            "alive_on": "1800 - 1870",
+            "short_name": "F.C. One",
+            "born_at": "Jan 1, 1800",
+            "died_at": "Jan 1, 1870",
+            "lifespan": "Jan 1, 1800 - Jan 1, 1870",
+            "reversed_name": "One, Fixture Composer ",
+            "country": {
+                "id": 1,
+                "name": "autem",
+                "nationality": "qui",
+                "flag_code": null,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z"
+            }
+        },
+        "tags": [
+            {
+                "id": 1,
+                "type": "level",
+                "name": "intermediate",
+                "creator_id": 3,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 1
+                }
+            },
+            {
+                "id": 2,
+                "type": "period",
+                "name": "romantic",
+                "creator_id": 4,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 2
+                }
+            },
+            {
+                "id": 3,
+                "type": "length",
+                "name": "short",
+                "creator_id": 5,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 3
+                }
+            },
+            {
+                "id": 4,
+                "type": "mood",
+                "name": "happy",
+                "creator_id": 6,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 4
+                }
+            },
+            {
+                "id": 5,
+                "type": "ranking",
+                "name": "rcm 10",
+                "creator_id": 31,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 5
+                }
+            },
+            {
+                "id": 6,
+                "type": "ranking",
+                "name": "rcm 2",
+                "creator_id": 32,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 6
+                }
+            },
+            {
+                "id": 7,
+                "type": "ranking",
+                "name": "rcm 1",
+                "creator_id": 33,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 7
+                }
+            },
+            {
+                "id": 8,
+                "type": "ranking",
+                "name": "abrsm 10",
+                "creator_id": 34,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 8
+                }
+            },
+            {
+                "id": 9,
+                "type": "ranking",
+                "name": "abrsm 2",
+                "creator_id": 35,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 9
+                }
+            },
+            {
+                "id": 10,
+                "type": "ranking",
+                "name": "abrsm 1",
+                "creator_id": 36,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 10
+                }
+            },
+            {
+                "id": 11,
+                "type": "ranking",
+                "name": "suzuki 10",
+                "creator_id": 37,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 11
+                }
+            },
+            {
+                "id": 12,
+                "type": "ranking",
+                "name": "suzuki 2",
+                "creator_id": 38,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 12
+                }
+            },
+            {
+                "id": 13,
+                "type": "ranking",
+                "name": "suzuki 1",
+                "creator_id": 39,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 3,
+                    "tag_id": 13
+                }
+            }
+        ],
+        "favorites": [],
+        "tutorials": [
+            {
+                "id": 4,
+                "piece_id": 3,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            {
+                "id": 5,
+                "piece_id": 3,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Fixture Piece 02",
+        "nickname": null,
+        "catalogue_name": null,
+        "catalogue_number": null,
+        "collection_name": null,
+        "collection_number": null,
+        "movement_number": null,
+        "key": "C major",
+        "description": "We're updating our database, please check back in just a few days.",
+        "curiosity": null,
+        "audio_path": null,
+        "audio_path_rh": null,
+        "audio_path_lh": null,
+        "itunes": null,
+        "videos": null,
+        "score_url": null,
+        "score_path": null,
+        "score_editor": "No information available",
+        "score_publisher": "No information available",
+        "score_copyright": "This work is protected by copyright",
+        "cover_path": null,
+        "show_on_tour": false,
+        "is_attributed_to": false,
+        "highlighted_at": "2026-10-17T16:00:00.000000Z",
+        "composer_id": 2,
+        "composed_in": 1988,
+        "published_in": 2015,
+        "creator_id": 8,
+        "created_at": "2026-10-26T15:37:00.000000Z",
+        "updated_at": "2026-10-26T16:00:00.000000Z",
+        "views_count": 0,
+        "tags_count": 10,
+        "favorites_count": 0,
+        "tutorials_count": 1,
+        "is_favorited": false,
+        "is_free": false,
+        "short_name": "Fixture Piece 02 in C major",
+        "medium_name": "Fixture Piece 02 in C major",
+        "long_name": "Fixture Piece 02 in C major",
+        "catalogue": " ",
+        "collection": "",
+        "recordingsAvailable": 0,
+        "is_public_domain": true,
+        "extended_level_name": "intermediate",
+        "level_name": "intermediate",
+        "level_id": 1,
+        "level_number": 3,
+        "timeline_url": "https://example.invalid/api/pieces/2/timeline",
+        "period_name": "Romantic",
+        "rankings": {
+            "rcm": "Equivalent to RCM level 10",
+            "abrsm": "Equivalent to ABRSM level 10",
+            "suzuki": "Equivalent to Suzuki book 10"
+        },
+        "videos_array": [
+            {
+                "id": 3,
+                "piece_id": 2,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            }
+        ],
+        "itunes_array": false,
+        "score": null,
+        "audio": null,
+        "audio_rh": null,
+        "audio_lh": null,
+        "medium_name_with_composer": "Fixture Piece 02 in C major by F.C. Two",
+        "is_new": true,
+        "number_of_pages": "1-2 pages",
+        "for_who": "A great piece for intermediate pianists who are polishing their technique and expanding their repertoire.",
+        "has_siblings": false,
+        "image_background": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+        "source": "https://example.invalid/api/pieces/find",
+        "media": {
+            "performance": null,
+            "synthesia": {
+                "id": 3,
+                "piece_id": 2,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            "lessons": []
+        },
+        "pivot": {
+            "tag_id": 7,
+            "piece_id": 2
+        },
+        "composer": {
+            "id": 2,
+            "name": "Fixture Composer Two",
+            "biography": "<p>Synthetic biography for offline testing.</p>",
+            "cover_path": "",
+            "gender": "male",
+            "ethnicity": "black",
+            "curiosity": "Autem autem et aut. Sunt quam quam illo dolores illum maxime.",
+            "period": "Impressionist",
+            "country_id": 2,
+            "is_famous": true,
+            "is_pedagogical": false,
+            "mood": null,
+            "date_of_birth": "1800-01-01T04:56:02.000000Z",
+            "date_of_death": "1870-01-01T04:56:02.000000Z",
+            "creator_id": 2,
+            "created_at": "2026-10-26T16:00:00.000000Z",
+            "updated_at": "2026-10-26T16:00:00.000000Z",
+            "pieces_count": 12,
+            "cover_image": null,
+            "alive_on": "1800 - 1870",
+            "short_name": "F.C. Two",
+            "born_at": "Jan 1, 1800",
+            "died_at": "Jan 1, 1870",
+            "lifespan": "Jan 1, 1800 - Jan 1, 1870",
+            "reversed_name": "Two, Fixture Composer ",
+            "country": {
+                "id": 2,
+                "name": "nisi",
+                "nationality": "voluptatem",
+                "flag_code": null,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z"
+            }
+        },
+        "tags": [
+            {
+                "id": 1,
+                "type": "level",
+                "name": "intermediate",
+                "creator_id": 3,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 1
+                }
+            },
+            {
+                "id": 2,
+                "type": "period",
+                "name": "romantic",
+                "creator_id": 4,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 2
+                }
+            },
+            {
+                "id": 3,
+                "type": "length",
+                "name": "short",
+                "creator_id": 5,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 3
+                }
+            },
+            {
+                "id": 4,
+                "type": "mood",
+                "name": "happy",
+                "creator_id": 6,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 4
+                }
+            },
+            {
+                "id": 5,
+                "type": "ranking",
+                "name": "rcm 10",
+                "creator_id": 31,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 5
+                }
+            },
+            {
+                "id": 6,
+                "type": "ranking",
+                "name": "rcm 2",
+                "creator_id": 32,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 6
+                }
+            },
+            {
+                "id": 7,
+                "type": "ranking",
+                "name": "rcm 1",
+                "creator_id": 33,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 7
+                }
+            },
+            {
+                "id": 8,
+                "type": "ranking",
+                "name": "abrsm 10",
+                "creator_id": 34,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 8
+                }
+            },
+            {
+                "id": 9,
+                "type": "ranking",
+                "name": "abrsm 2",
+                "creator_id": 35,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 9
+                }
+            },
+            {
+                "id": 10,
+                "type": "ranking",
+                "name": "abrsm 1",
+                "creator_id": 36,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 10
+                }
+            },
+            {
+                "id": 11,
+                "type": "ranking",
+                "name": "suzuki 10",
+                "creator_id": 37,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 11
+                }
+            },
+            {
+                "id": 12,
+                "type": "ranking",
+                "name": "suzuki 2",
+                "creator_id": 38,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 12
+                }
+            },
+            {
+                "id": 13,
+                "type": "ranking",
+                "name": "suzuki 1",
+                "creator_id": 39,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 2,
+                    "tag_id": 13
+                }
+            }
+        ],
+        "favorites": [],
+        "tutorials": [
+            {
+                "id": 3,
+                "piece_id": 2,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            }
+        ]
+    },
+    {
+        "id": 1,
+        "name": "Fixture Piece 01",
+        "nickname": null,
+        "catalogue_name": null,
+        "catalogue_number": null,
+        "collection_name": null,
+        "collection_number": null,
+        "movement_number": null,
+        "key": "C major",
+        "description": "We're updating our database, please check back in just a few days.",
+        "curiosity": null,
+        "audio_path": "fixtures/audio.mp3",
+        "audio_path_rh": null,
+        "audio_path_lh": null,
+        "itunes": null,
+        "videos": null,
+        "score_url": null,
+        "score_path": "fixtures/score.pdf",
+        "score_editor": "No information available",
+        "score_publisher": "No information available",
+        "score_copyright": "This work is protected by copyright",
+        "cover_path": null,
+        "show_on_tour": false,
+        "is_attributed_to": false,
+        "highlighted_at": "2026-10-16T16:00:00.000000Z",
+        "composer_id": 1,
+        "composed_in": 1970,
+        "published_in": 2009,
+        "creator_id": 7,
+        "created_at": "2026-10-26T15:36:00.000000Z",
+        "updated_at": "2026-10-26T16:00:00.000000Z",
+        "views_count": 0,
+        "tags_count": 10,
+        "favorites_count": 0,
+        "tutorials_count": 2,
+        "is_favorited": false,
+        "is_free": true,
+        "short_name": "Fixture Piece 01 in C major",
+        "medium_name": "Fixture Piece 01 in C major",
+        "long_name": "Fixture Piece 01 in C major",
+        "catalogue": " ",
+        "collection": "",
+        "recordingsAvailable": 1,
+        "is_public_domain": true,
+        "extended_level_name": "intermediate",
+        "level_name": "intermediate",
+        "level_id": 1,
+        "level_number": 3,
+        "timeline_url": "https://example.invalid/api/pieces/1/timeline",
+        "period_name": "Romantic",
+        "rankings": {
+            "rcm": "Equivalent to RCM level 10",
+            "abrsm": "Equivalent to ABRSM level 10",
+            "suzuki": "Equivalent to Suzuki book 10"
+        },
+        "videos_array": [
+            {
+                "id": 1,
+                "piece_id": 1,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            {
+                "id": 2,
+                "piece_id": 1,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            }
+        ],
+        "itunes_array": false,
+        "score": "https://example.invalid/storage/fixtures/score.pdf",
+        "audio": "https://example.invalid/storage/fixtures/audio.mp3",
+        "audio_rh": null,
+        "audio_lh": null,
+        "medium_name_with_composer": "Fixture Piece 01 in C major by F.C. One",
+        "is_new": true,
+        "number_of_pages": "1-2 pages",
+        "for_who": "A great piece for intermediate pianists who are polishing their technique and expanding their repertoire.",
+        "has_siblings": false,
+        "image_background": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+        "source": "https://example.invalid/api/pieces/find",
+        "media": {
+            "performance": {
+                "id": 2,
+                "piece_id": 1,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            },
+            "synthesia": {
+                "id": 1,
+                "piece_id": 1,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            "lessons": []
+        },
+        "pivot": {
+            "tag_id": 7,
+            "piece_id": 1
+        },
+        "composer": {
+            "id": 1,
+            "name": "Fixture Composer One",
+            "biography": "<p>Synthetic biography for offline testing.</p>",
+            "cover_path": "",
+            "gender": "female",
+            "ethnicity": "white",
+            "curiosity": "Odit commodi id qui et dolorum qui occaecati repellendus. Ad odio aut culpa maxime placeat cum optio.",
+            "period": "Romantic",
+            "country_id": 1,
+            "is_famous": true,
+            "is_pedagogical": false,
+            "mood": null,
+            "date_of_birth": "1800-01-01T04:56:02.000000Z",
+            "date_of_death": "1870-01-01T04:56:02.000000Z",
+            "creator_id": 1,
+            "created_at": "2026-10-26T16:00:00.000000Z",
+            "updated_at": "2026-10-26T16:00:00.000000Z",
+            "pieces_count": 12,
+            "cover_image": null,
+            "alive_on": "1800 - 1870",
+            "short_name": "F.C. One",
+            "born_at": "Jan 1, 1800",
+            "died_at": "Jan 1, 1870",
+            "lifespan": "Jan 1, 1800 - Jan 1, 1870",
+            "reversed_name": "One, Fixture Composer ",
+            "country": {
+                "id": 1,
+                "name": "autem",
+                "nationality": "qui",
+                "flag_code": null,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z"
+            }
+        },
+        "tags": [
+            {
+                "id": 1,
+                "type": "level",
+                "name": "intermediate",
+                "creator_id": 3,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 1
+                }
+            },
+            {
+                "id": 2,
+                "type": "period",
+                "name": "romantic",
+                "creator_id": 4,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": "https://example.invalid/images/backgrounds/periods/romantic.jpg",
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 2
+                }
+            },
+            {
+                "id": 3,
+                "type": "length",
+                "name": "short",
+                "creator_id": 5,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 3
+                }
+            },
+            {
+                "id": 4,
+                "type": "mood",
+                "name": "happy",
+                "creator_id": 6,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 4
+                }
+            },
+            {
+                "id": 5,
+                "type": "ranking",
+                "name": "rcm 10",
+                "creator_id": 31,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 5
+                }
+            },
+            {
+                "id": 6,
+                "type": "ranking",
+                "name": "rcm 2",
+                "creator_id": 32,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 6
+                }
+            },
+            {
+                "id": 7,
+                "type": "ranking",
+                "name": "rcm 1",
+                "creator_id": 33,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 7
+                }
+            },
+            {
+                "id": 8,
+                "type": "ranking",
+                "name": "abrsm 10",
+                "creator_id": 34,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 8
+                }
+            },
+            {
+                "id": 9,
+                "type": "ranking",
+                "name": "abrsm 2",
+                "creator_id": 35,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 9
+                }
+            },
+            {
+                "id": 10,
+                "type": "ranking",
+                "name": "abrsm 1",
+                "creator_id": 36,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 10
+                }
+            },
+            {
+                "id": 11,
+                "type": "ranking",
+                "name": "suzuki 10",
+                "creator_id": 37,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 11
+                }
+            },
+            {
+                "id": 12,
+                "type": "ranking",
+                "name": "suzuki 2",
+                "creator_id": 38,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 12
+                }
+            },
+            {
+                "id": 13,
+                "type": "ranking",
+                "name": "suzuki 1",
+                "creator_id": 39,
+                "order": 0,
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "cover_image": null,
+                "source": "https://example.invalid/api/search",
+                "pivot": {
+                    "piece_id": 1,
+                    "tag_id": 13
+                }
+            }
+        ],
+        "favorites": [],
+        "tutorials": [
+            {
+                "id": 1,
+                "piece_id": 1,
+                "type": "Synthesia",
+                "category": "synthesia",
+                "description": "Synthetic tutorial",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/synthesia.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Synthesia"
+            },
+            {
+                "id": 2,
+                "piece_id": 1,
+                "type": "Performance",
+                "category": "performance",
+                "description": "Synthetic performance",
+                "filename": "synthetic",
+                "video_url": "https://example.invalid/fixtures/performance.mp4",
+                "created_at": "2026-10-26T16:00:00.000000Z",
+                "updated_at": "2026-10-26T16:00:00.000000Z",
+                "title": "Performance"
+            }
+        ]
+    }
+]

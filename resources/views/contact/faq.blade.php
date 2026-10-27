@@ -45,7 +45,7 @@
             <p>If the issue continues, <a href="#contact-support">send us the page or piece name</a>, your device details, and any error message. For metronome voice recordings, allow microphone access when prompted.</p>
         @endcomponent
         @component('components.layout.accordion-item', ['id' => 'support-content-feedback', 'title' => 'Can I report a mistake or suggest something?'])
-            <p>Yes. Use Send feedback in the web app’s Settings, or <a href="#contact-support">email us</a>. Include a link to the piece, article, or tool and describe the correction or idea.</p>
+            <p>Yes. Use the feedback button in the web app, or <a href="#contact-support">email us</a>. Include a link to the piece, article, or tool and describe the correction or idea.</p>
         @endcomponent
     @endcomponent
 </section>

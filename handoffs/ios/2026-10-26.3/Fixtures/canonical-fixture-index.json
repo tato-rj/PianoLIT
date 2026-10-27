@@ -1,0 +1,138 @@
+{
+  "revision": "2026-10-26.3",
+  "category": "historical_canonical_snapshots",
+  "sequence_compatible": false,
+  "note": "Original snapshots use different synthetic states/accounts; use the supplemental fixtures for coherent navigation scenarios.",
+  "cases": {
+    "login": {
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/auth/login",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "account-a@example.test",
+          "password": "REDACTED_NOT_A_PASSWORD"
+        }
+      },
+      "http_status": 200,
+      "schema": "LoginEnvelope",
+      "response_file": "Canonical/2026-10-26.3/fixtures/login.json"
+    },
+    "account": {
+      "request": {
+        "method": "GET",
+        "path": "/api/v2/auth/me",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer EXAMPLE_TOKEN_DO_NOT_USE"
+        }
+      },
+      "http_status": 200,
+      "schema": "AccountEnvelope",
+      "response_file": "Canonical/2026-10-26.3/fixtures/account.json"
+    },
+    "logout": {
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/auth/logout",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer EXAMPLE_TOKEN_DO_NOT_USE",
+          "Content-Type": "application/json"
+        },
+        "body": {}
+      },
+      "http_status": 200,
+      "schema": "LogoutEnvelope",
+      "response_file": "Canonical/2026-10-26.3/fixtures/logout.json"
+    },
+    "discover": {
+      "request": {
+        "method": "GET",
+        "path": "/api/v2/discover",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer EXAMPLE_TOKEN_DO_NOT_USE"
+        }
+      },
+      "http_status": 200,
+      "schema": "DiscoverEnvelope",
+      "response_file": "Canonical/2026-10-26.3/fixtures/discover.json"
+    },
+    "discover-with-history": {
+      "request": {
+        "method": "GET",
+        "path": "/api/v2/discover",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer EXAMPLE_TOKEN_DO_NOT_USE"
+        }
+      },
+      "http_status": 200,
+      "schema": "DiscoverEnvelope",
+      "response_file": "Canonical/2026-10-26.3/fixtures/discover-with-history.json"
+    },
+    "discover-empty": {
+      "request": {
+        "method": "GET",
+        "path": "/api/v2/discover",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer EXAMPLE_TOKEN_DO_NOT_USE"
+        }
+      },
+      "http_status": 200,
+      "schema": "DiscoverEnvelope",
+      "response_file": "Canonical/2026-10-26.3/fixtures/discover-empty.json"
+    },
+    "unauthenticated": {
+      "request": {
+        "method": "GET",
+        "path": "/api/v2/auth/me",
+        "headers": {
+          "Accept": "application/json"
+        }
+      },
+      "http_status": 401,
+      "schema": "ErrorEnvelope",
+      "response_file": "Canonical/2026-10-26.3/fixtures/unauthenticated.json"
+    },
+    "invalid-credentials": {
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/auth/login",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "missing@example.test",
+          "password": "REDACTED_NOT_A_PASSWORD"
+        }
+      },
+      "http_status": 401,
+      "schema": "ErrorEnvelope",
+      "response_file": "Canonical/2026-10-26.3/fixtures/invalid-credentials.json"
+    },
+    "invalid-request": {
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/auth/login",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": [],
+          "password": ""
+        }
+      },
+      "http_status": 422,
+      "schema": "ErrorEnvelope",
+      "response_file": "Canonical/2026-10-26.3/fixtures/invalid-request.json"
+    }
+  }
+}
