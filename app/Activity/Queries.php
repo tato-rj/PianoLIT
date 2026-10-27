@@ -45,6 +45,20 @@ class Queries
         return $query->where('e.type', 'page_view')->where('e.source', 'server')->where('e.resource_type', 'piece')->whereNotNull('e.resource_id');
     }
 
+    public function pageViews(Filters $filters)
+    {
+        // A page belongs to the date it opened, even when its visit began before
+        // the selected period. Audience/identity still comes from owned visits.
+        $visits = $this->visits();
+        if ($filters->values['audience'] === 'registered') $visits->whereRaw(self::account().' IS NOT NULL');
+        if ($filters->values['audience'] === 'anonymous') $visits->whereRaw(self::account().' IS NULL');
+        $query = $this->events()->whereIn('e.visit_id', $visits->select('v.id'))
+            ->whereIn('e.platform', ['web', 'webapp'])->where('e.type', 'page_view')->where('e.source', 'server')
+            ->where(function ($q) { $q->whereNull('e.method')->orWhere('e.method', 'GET'); })
+            ->where(function ($q) { $q->whereNull('e.status')->orWhereBetween('e.status', [200, 299]); });
+        return $filters->apply($query, 'e.occurred_at', 'e.platform');
+    }
+
     public function visitList(Filters $filters = null, $userId = null, $perPage = AdminPagination::PER_PAGE, VisitSort $sort = null)
     {
         $base = $this->visits($filters, $userId);

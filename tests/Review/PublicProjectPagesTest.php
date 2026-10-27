@@ -66,7 +66,7 @@ class PublicProjectPagesTest extends ReviewTestCase
         }, iterator_to_array($cards)));
         $this->assertSame(3, $xpath->query('//a[@data-project and contains(@class, "project-card--compact")]')->length);
         $this->assertSame(7, $xpath->query('//a[@data-project]//img[@alt=""]')->length);
-        $this->assertSame(1, $xpath->query('//header//span[@class="site-header__name" and text()="PianoLIT"]')->length);
+        $this->assertSame(1, $xpath->query('//header//span[contains(@class, "site-header__name") and text()="PianoLIT"]')->length);
         $this->assertSame(1, $xpath->query('//a[@data-project="ios" and @target="_blank" and @rel="noopener noreferrer"]')->length);
     }
 
@@ -85,8 +85,12 @@ class PublicProjectPagesTest extends ReviewTestCase
                 ->assertSee('css/metronome.css?id=', false)->assertSee('js/metronome.js?id=', false)
                 ->assertDontSee('Arthur Villar')->assertDontSee('data-project-deck', false);
             $xpath = $this->xpath($response->getContent());
-            $this->assertSame(0, $xpath->query('//footer | //header[contains(@class, "site-header")]')->length);
-            $this->assertSame(1, $xpath->query('//body/a[@class="project-watermark" and @href="'.$website.'" and @aria-label="PianoLIT home"]/img[@alt="" and @src="'.asset(mix('images/brand/icon-white.svg')).'"]')->length);
+            $this->assertSame(0, $xpath->query('//footer | //a[@class="project-watermark"]')->length);
+            $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header--overlay")]')->length);
+            $this->assertSame(1, $xpath->query('//header//a[@href="'.$website.'" and @aria-label="PianoLIT home"]//*[@role="img" and @aria-label="PianoLIT icon" and contains(@class, "brand-icon--transparent")]')->length);
+            $this->assertSame(1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu" and contains(@class, "text-reset")]')->length);
+            $this->assertSame(0, $xpath->query('//header//*[contains(@class, "account-circle")]')->length);
+            $this->assertSame(1, $xpath->query('//div[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]')->length);
             $this->assertSame(1, $xpath->query('//button[@data-metronome and @aria-pressed="false"]')->length);
             $this->assertSame(3, $xpath->query('//*[@class="segmented-control"]')->length);
             $this->assertSame(1, $xpath->query('//select[@id="metronome-sound" and contains(@class, "form-control")]')->length);

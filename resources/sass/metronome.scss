@@ -3,8 +3,20 @@
 :root {
     --metronome-color: var(--color-primary);
     --metronome-ink: #fff;
+    --site-header-ink: #fff;
     color-scheme: light;
     background: var(--metronome-color);
+}
+
+// Retain the shared header grid and spacing above the full-screen canvas.
+.site-header--overlay {
+    padding-top: max(1.5rem, env(safe-area-inset-top)) !important;
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-left: max(12px, env(safe-area-inset-left));
+
+    @media (min-width: 768px) {
+        padding-top: max(3rem, env(safe-area-inset-top)) !important;
+    }
 }
 
 * {

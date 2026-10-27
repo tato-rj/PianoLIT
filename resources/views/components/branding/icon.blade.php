@@ -12,6 +12,12 @@
 	@icon('contact-round', ['mr' => 0, 'size' => '2x'])
 </div>
 @endif
+@if($transparent ?? false)
+<span class="d-block shadow mb-{{$mb ?? null}} {{$classes ?? null}} {{$impostor ? 'opacity-4' : null}}" style="border-radius: 20%;">
+    <span class="brand-icon--transparent d-block" role="img" aria-label="PianoLIT icon" style="width: {{$size ?? '60px'}}; --brand-icon-mask: url('{{ asset(mix('images/brand/icon-white.svg')) }}');"></span>
+</span>
+@else
 <img src="{{asset(mix(isset($admin) && $admin ? 'images/brand/admin-icon.svg' : 'images/brand/app-icon.svg'))}}" alt="PianoLIT icon" class="mb-{{$mb ?? null}} {{$classes ?? null}} {{$impostor ? 'opacity-4' : null}} shadow" style="border-radius: 20%; width: {{$size ?? '60px'}};
 ">
+@endif
 </div>

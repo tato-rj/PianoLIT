@@ -7,6 +7,9 @@ import { conductorPreparationBeats, ConductorView } from './metronome/conductor'
 import { VoiceRecorder } from './metronome/voice-recorder';
 import { SoundMenu } from './metronome/sound-menu';
 import { FontSelect } from './controls/font-select';
+import initializeLogoTilt from './components/logo-tilt';
+
+initializeLogoTilt(window);
 
 const surface = document.querySelector('[data-metronome]');
 const pulseLayer = document.querySelector('[data-metronome-pulse]');
@@ -17,6 +20,7 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const settingsButton = document.querySelector('[data-settings-open]');
 const settingsPanel = document.querySelector('[data-settings-panel]');
 const settingsOffcanvas = new Offcanvas(settingsPanel);
+const hubMenu = document.querySelector('#public-hub-menu');
 const beatInputs = document.querySelectorAll('[name="metronome-beats"]');
 const typeInputs = document.querySelectorAll('[name="metronome-type"]');
 const markerInputs = document.querySelectorAll('[name="metronome-marker"]');
@@ -42,6 +46,7 @@ let backgroundPulseTempo = DEFAULT_TEMPO;
 let edgePress = null;
 let edgeRepeatTimer = null;
 let settingsOpen = false;
+let navigationOpen = false;
 let settings = { ...DEFAULT_SETTINGS };
 let voiceRecorder = null;
 let soundMenu = null;
@@ -129,7 +134,7 @@ function setTempo(value) {
 }
 
 function toggle() {
-    if (settingsOpen) return;
+    if (settingsOpen || navigationOpen) return;
     message.hidden = true;
     if (clock.running) clock.stop();
     else clock.start({ leadInBeats: settings.type === 'conductor' ? conductorPreparationBeats(settings.beats) : 0 });
@@ -142,7 +147,7 @@ function syncConductor(force = false) {
     }
     const position = clock.getBeatPosition();
     if (reducedMotion.matches) position.progress = 0;
-    const animate = clock.ready && !settingsOpen && !document.hidden && !reducedMotion.matches;
+    const animate = clock.ready && !settingsOpen && !navigationOpen && !document.hidden && !reducedMotion.matches;
     conductor.sync(position, tempo, animate, force);
 }
 
@@ -159,6 +164,7 @@ function applySettings(value, persist = true) {
     document.documentElement.style.setProperty('--metronome-color', settings.color);
     document.documentElement.style.setProperty('--metronome-pulse', palette.pulse);
     document.documentElement.style.setProperty('--metronome-ink', palette.ink);
+    document.documentElement.style.setProperty('--site-header-ink', palette.headerInk);
     document.querySelector('meta[name="theme-color"]').setAttribute('content', settings.color);
     surface.dataset.mode = settings.type;
     surface.dataset.showPath = String(settings.showPath);
@@ -214,6 +220,18 @@ settingsPanel.addEventListener('hidden.bs.offcanvas', () => {
     settingsButton.focus();
     syncConductor();
 });
+hubMenu?.addEventListener('show.bs.offcanvas', () => {
+    navigationOpen = true;
+    stopEdgeRepeat();
+    gesture = null;
+    pointerId = null;
+    surface.classList.remove('is-dragging');
+    syncConductor();
+});
+hubMenu?.addEventListener('hidden.bs.offcanvas', () => {
+    navigationOpen = false;
+    syncConductor();
+});
 beatInputs.forEach(input => input.addEventListener('change', () => {
     if (input.checked) applySettings({ ...settings, beats: Number(input.value) });
 }));
@@ -241,7 +259,7 @@ reducedMotion.addEventListener('change', () => {
 });
 
 surface.addEventListener('pointerdown', event => {
-    if (settingsOpen || !event.isPrimary || event.button !== 0 || pointerId !== null || edgePress) return;
+    if (settingsOpen || navigationOpen || !event.isPrimary || event.button !== 0 || pointerId !== null || edgePress) return;
     pointerId = event.pointerId;
     suppressClick = false;
     gesture = new TempoGesture(tempo, event.clientX, event.clientY, event.timeStamp);
@@ -298,7 +316,7 @@ function repeatEdgeStep() {
 edgeButtons.forEach(button => {
     const step = Number(button.dataset.tempoStep);
     button.addEventListener('pointerdown', event => {
-        if (settingsOpen || !event.isPrimary || event.button !== 0 || pointerId !== null || edgePress) return;
+        if (settingsOpen || navigationOpen || !event.isPrimary || event.button !== 0 || pointerId !== null || edgePress) return;
         edgePress = { button, pointerId: event.pointerId, step };
         button.setPointerCapture(event.pointerId);
         setTempo(tempo + step);
@@ -316,17 +334,17 @@ edgeButtons.forEach(button => {
     button.addEventListener('contextmenu', event => event.preventDefault());
     button.addEventListener('click', event => {
         // Pointer presses already step immediately; keep native keyboard/AT clicks.
-        if (!settingsOpen && event.detail === 0) setTempo(tempo + step);
+        if (!settingsOpen && !navigationOpen && event.detail === 0) setTempo(tempo + step);
     });
 });
 
 document.addEventListener('keydown', event => {
-    if (settingsOpen || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (settingsOpen || navigationOpen || event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         event.preventDefault();
         setTempo(tempo + (event.key === 'ArrowUp' ? 1 : -1) * (event.shiftKey ? 10 : 1));
     } else if (event.code === 'Space' || event.key === 'Enter') {
-        if (event.target?.closest('a[href], [data-tempo-step], [data-settings-open]')) return;
+        if (event.target?.closest('a[href], [data-tempo-step], [data-settings-open], button:not([data-metronome])')) return;
         event.preventDefault();
         if (!event.repeat) toggle();
     } else if (event.key === 'Escape') {

@@ -121,23 +121,36 @@
     .project-card:not(.project-card--compact) .project-card__media { aspect-ratio: 1; object-position: center; }
 }
 
-// Scroll progress shares one expansion between adjacent cards. Their combined
-// height stays constant, keeping native scrolling stable in either direction.
+// Fixed Bootstrap slots reserve one shared expansion. Scroll frames translate
+// slots and clip full-size cards, without reflowing the page or resizing images.
 @media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
     .project-deck[data-mobile-cards] {
         overflow-anchor: none;
+        overflow: clip;
         padding-bottom: var(--project-scroll-tail, 0px);
+
+        > .row { padding-bottom: var(--project-expansion, 360px); }
 
         > .row > div {
             flex: 0 0 100%;
             width: 100%;
             max-width: 100%;
+            height: var(--project-compact-height, 144px);
+            transform: translate3d(0, var(--project-shift, 0px), 0);
+            will-change: transform;
         }
 
         .project-card {
             --project-open: 0;
-            height: calc(var(--project-compact-height, 144px) + var(--project-expansion, 360px) * var(--project-open));
+            --project-closed-height: calc(var(--project-expansion, 360px) * (1 - var(--project-open)));
+            height: calc(var(--project-compact-height, 144px) + var(--project-expansion, 360px));
             min-height: 0;
+            contain: layout paint;
+            clip-path: inset(0 0 var(--project-closed-height) 0 round 22px);
+            will-change: clip-path;
+            // Touch hover must not add a second movement during a handoff.
+            transform: none;
+            transition: none;
         }
 
         .project-card__copy {
@@ -146,16 +159,30 @@
             width: 100%;
             padding: 20px 20px 16px;
 
-            h2 { font-size: calc(var(--font-size-h4) + (var(--font-size-h2) - var(--font-size-h4)) * var(--project-open)); }
+            h2 {
+                font-size: var(--font-size-h2);
+                transform: translate3d(0, calc(var(--project-tag-space, 34px) * (var(--project-open) - 1)), 0);
+
+                > span:first-child {
+                    transform: translateY(calc(var(--project-heading-collapse, 10px) * (var(--project-open) - 1) / 2));
+                }
+
+                > span:last-child {
+                    transform: scale(calc(.75 + .25 * var(--project-open)));
+                    transform-origin: left top;
+                }
+            }
+
+            p { transform: translate3d(0, calc((var(--project-tag-space, 34px) + var(--project-heading-collapse, 10px)) * (var(--project-open) - 1)), 0); }
         }
 
         .project-card__tag {
             display: flex;
             width: max-content;
             overflow: hidden;
-            max-height: calc(26px * var(--project-open));
-            margin-bottom: calc(8px * var(--project-open)) !important;
-            padding-block: calc(2px * var(--project-open));
+            max-height: 26px;
+            margin-bottom: 8px !important;
+            padding-block: 2px;
             opacity: var(--project-open);
             vertical-align: top;
         }
@@ -169,26 +196,36 @@
             aspect-ratio: auto;
             border-radius: 24px 24px 0 0;
             opacity: clamp(0, var(--project-open) * 4, 1);
+            will-change: opacity;
 
             &::after { display: none; }
         }
 
         .project-card__action.btn {
             --radius-button: var(--radius-pill);
-            left: calc(16px + (100% - 74px) * (1 - var(--project-open)));
+            left: 16px;
             right: auto;
             bottom: 16px;
-            width: calc(42px + 134px * var(--project-open));
+            width: 176px;
             height: 42px;
             padding: 0;
             justify-content: center;
+            transform: translate3d(calc(var(--project-action-travel, 286px) * (1 - var(--project-open))), calc(-1 * var(--project-closed-height)), 0);
+            clip-path: inset(0 calc(134px * (1 - var(--project-open))) 0 0 round 21px);
 
-            .app-icon { margin-left: calc(8px * var(--project-open)) !important; }
+            .app-icon {
+                position: absolute;
+                left: 14px;
+                margin-left: 0 !important;
+                transform: translate3d(calc(134px * var(--project-open)), 0, 0);
+            }
         }
 
         .project-card__action-label {
             display: block;
-            max-width: calc(132px * var(--project-open));
+            position: absolute;
+            left: 16px;
+            max-width: 132px;
             overflow: hidden;
             white-space: nowrap;
             opacity: clamp(0, (var(--project-open) - .85) * 7, 1);

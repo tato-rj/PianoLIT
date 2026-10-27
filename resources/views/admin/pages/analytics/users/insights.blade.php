@@ -4,11 +4,11 @@
     @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'User analytics', 'url' => route('admin.analytics.users')]], 'breadcrumbLabel' => 'Insights', 'title' => 'User analytics', 'subtitle' => 'Content activity, repeat visits and subscription steps.'])
     @include('admin.pages.analytics.users.nav', ['active' => 'insights'])
     @include('admin.pages.analytics.users.filters')
+    @include('admin.pages.analytics.users.pageviews')
     <h2 class="ua-section-title">Content activity</h2>
     <div class="ua-grid">
         <section class="ua-card"><h2>Most opened pieces</h2><ol class="ua-ranking">@forelse($pieces as $piece)<li><a href="{{ route('webapp.pieces.show', $piece->id) }}" target="_blank" rel="noopener noreferrer">{{ $piece->name }}</a><strong>{{ number_format($piece->total) }}</strong></li>@empty<li>No piece opens recorded.</li>@endforelse</ol></section>
         <section class="ua-card"><h2>Composers and tags</h2><ul class="ua-piece-list">@forelse($composers as $composer)<li><a href="{{ route('admin.composers.edit', $composer->id) }}">{{ $composer->name }}</a><strong>{{ $composer->total }} opens</strong></li>@empty<li>No composer exploration recorded.</li>@endforelse</ul><div class="ua-tags">@foreach($tags as $tag)<span class="ua-badge">{{ $tag->name }} · {{ $tag->total }}</span>@endforeach</div><p class="ua-meta">A piece can belong to several genres. These counts overlap.</p></section>
-        <section class="ua-card"><h2>Pages people visit</h2><ul class="ua-piece-list">@forelse($pages as $page)<li><span>{{ \App\Activity\Presentation::page($page) }}</span><strong>{{ $page->total }}</strong></li>@empty<li>No page views recorded.</li>@endforelse</ul></section>
         <section class="ua-card"><h2>Recorded actions</h2><div class="ua-engagement">@foreach(['media_play' => 'Media starts', 'meaningful_playback' => 'Playbacks with ≥50% unique coverage', 'synthesia' => 'Synthesia starts', 'media_end' => 'Playback ends', 'score_opened' => 'Scores opened', 'annotation_saved' => 'Annotation saves', 'favorites_added' => 'Favorites added', 'folder_additions' => 'Pieces added to folders', 'folder_created' => 'Folders created'] as $key => $label)<div><span>{{ $label }}</span><strong>{{ $engagement[$key] ?? 'Not recorded' }}</strong></div>@endforeach</div><p class="ua-meta">Playback ends mean the end position was reached. Visit journeys show unique watch coverage when available.</p></section>
     </div>
     <h2 class="ua-section-title">Last pages and registration</h2>

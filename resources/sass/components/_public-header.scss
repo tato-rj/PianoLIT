@@ -9,6 +9,15 @@
 
     // Page containers add Bootstrap py-4 (24px), giving the homepage's 36px gap.
     + main { padding-top: 12px; }
+
+    &--overlay {
+        position: relative;
+        z-index: 3;
+        color: var(--site-header-ink, var(--color-text));
+        pointer-events: none;
+
+        a, button { pointer-events: auto; }
+    }
 }
 
 @media (max-width: 767px) {

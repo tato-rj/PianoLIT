@@ -64,6 +64,7 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->get(route('admin.analytics.users.people'))->assertOk();
         foreach (['admin.analytics.users', 'admin.analytics.users.insights'] as $route) {
             foreach ([null => 'registered', 'all' => 'all', 'anonymous' => 'anonymous'] as $audience => $expected) {
+                if (!$audience && $route === 'admin.analytics.users.insights') $expected = 'all';
                 $this->get(route($route, $audience ? ['audience' => $audience] : []))->assertOk()
                     ->assertViewHas('filters', function ($filters) use ($expected) { return $filters->values['audience'] === $expected; });
             }

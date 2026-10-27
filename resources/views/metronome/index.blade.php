@@ -13,8 +13,8 @@
     <link href="{{ mix('css/metronome.css') }}" rel="stylesheet">
     <script src="{{ mix('js/metronome.js') }}" defer></script>
 </head>
-<body>
-    @include('components.branding.watermark')
+<body class="public-site">
+    @include('components.layout.public.header', ['transparentHeader' => true, 'showAccount' => false])
     <main>
         <button
             class="metronome"
@@ -75,6 +75,7 @@
         <noscript><p class="metronome__message">Enable JavaScript to use the metronome.</p></noscript>
     </main>
     @include('metronome.settings')
+    @stack('scripts')
     @include('components.tracking.activity')
 </body>
 </html>

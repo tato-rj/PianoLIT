@@ -1,0 +1,5 @@
+.brand-icon--transparent {
+    aspect-ratio: 1;
+    background: currentColor;
+    mask: var(--brand-icon-mask) center / contain no-repeat;
+}

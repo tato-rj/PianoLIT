@@ -80,8 +80,8 @@ keyboard and transparent key cutouts. Edit `resources/images/brand/icon-white.sv
 directly; the website/admin icon masters and Safari mask remain separate. It links to
 the absolute `home` route, uses 30%
 opacity at rest and 65% on hover/keyboard focus, and disables its transition for
-reduced motion. The metronome uses this component without adding public
-navigation. The Components section previews the same link against blue; the
+reduced motion. The metronome instead uses the shared public header’s transparent overlay variant,
+with the account control omitted. The Components section previews the same link against blue; the
 Website & web app download modal includes `icon-white.svg`. Regenerating brand
 icons copies this artwork unchanged instead of recreating it from the Safari mask.
 
@@ -516,6 +516,13 @@ shown only on the main homepage (`home` route).
 It reuses `components.navigation.youtube-button`: a black pill with a white
 YouTube mark, the label “Youtube” and a white diagonal arrow, using the shared dark button, pill radius
 and Bootstrap sizing/alignment. The Design System uses this same component.
+The standalone metronome passes `transparentHeader => true` and `showAccount => false`.
+This preserves the header grid, size, shadow and logo tilt while showing transparent
+branding and the hamburger only. The shared `@brandIcon` transparent option masks
+`icon-white.svg` with current text color; `hub-menu.button` accepts `inheritColor`.
+Selected background luminance chooses black or white for both. The Components
+specimen previews these same components on blue and light surfaces.
+
 Other public pages add `components.navigation.hub-menu.button` after the account
 control. Its Bootstrap offcanvas, `components.navigation.hub-menu.panel`, links to the
 main website, Web app, iOS app, Shop, Games, Learn, Blog and Metronome using named routes
@@ -621,15 +628,20 @@ into a scroll-driven accordion. As a card leaves the reading position, it become
 compact while the adjacent card expands; scrolling upward reverses the handoff.
 Mobile compact cards are clean colored text/arrow rows. Each photograph stays at
 the full card width and its measured full photo height, anchored below the copy;
-the card's changing height reveals/clips that stationary image with a brief fade.
+the card's changing clip reveals that stationary image with a brief fade.
 Never resize or translate the image window with scroll progress: that causes
 `object-fit: cover` to zoom and reframe the artwork during the handoff. Copy keeps
 the full card width, and action labels fade in near full expansion to avoid
 showing fragments of button text. Desktop compact cards retain their thumbnails.
-The two cards share a constant amount of expansion, so the list height stays
-steady. The script uses passive native scrolling and one animation-frame update
-per scroll burst, without wheel/touch interception or an idle animation loop.
-Copy heights are measured in both states, viewport-height changes from mobile
+The Bootstrap columns reserve fixed compact slots plus one shared expansion.
+Translate the slots and clip full-size cards instead of changing layout heights;
+heading/button geometry is also fixed, with transforms and fades supplying the
+compact appearance. Only changed card/slot properties are written. Passive native
+scrolling feeds a short, elapsed-time-based animation-frame ease (45ms response),
+so sparse events and 60Hz/120Hz displays follow the same timing. It stops once
+settled and never intercepts wheel/touch input. Copy/tag/heading measurements happen
+at initialization or a layout-width change, never inside scroll frames;
+viewport-height changes from mobile
 browser chrome retain stable anchors, and a small measured bottom allowance lets
 the final card expand fully. Keyboard-focused links are brought into the expanded
 position. Desktop, reduced-motion preference and no-JavaScript views keep the
@@ -638,7 +650,8 @@ those additions in the desktop compact variant; the Design System specimens
 continue to use the shared card component.
 
 The header keeps the shared logo, YouTube action and account control. Its optional
-`showBrandName` adds PianoLIT beside the logo only on the homepage. All public
+`showBrandName` adds PianoLIT beside the logo only on the homepage, hidden below
+768px with Bootstrap `d-none d-md-inline` so mobile header controls share one row. All public
 pages and hubs share the 1360px container limit through `.public-site .container`
 in `_public-overrides.scss`. This shell excludes `my.*`, admin and mobile embeds;
 the full-screen metronome and individual games keep their focused layouts.

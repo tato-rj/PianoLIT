@@ -1,5 +1,6 @@
 @component('admin.components.filters.form', ['id' => 'activity-filters', 'label' => 'Activity filters'])
     @isset($visitSort)<input type="hidden" name="visit_sort" value="{{ $visitSort->field }}"><input type="hidden" name="visit_order" value="{{ $visitSort->order }}">@endisset
+    @isset($pageViews)<input type="hidden" name="page_hub" value="{{ $pageViews['selected_hub'] }}">@endisset
     @include('admin.components.filters.select', ['label' => 'Period', 'name' => 'range', 'options' => \App\Support\AdminDateRanges::LABELS, 'value' => $filters->values['range']])
     @include('components.forms.checkbox-menu', ['name' => 'platform', 'label' => 'Platform', 'options' => \App\Activity\Filters::PLATFORMS, 'selected' => $filters->platforms, 'allLabel' => 'All platforms'])
     @unless(!empty($profileFilters))

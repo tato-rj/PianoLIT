@@ -30,19 +30,7 @@ class Presentation
     public static function page($page, $piece = null)
     {
         if ($piece) return $piece->name;
-        $route = $page->route_name ?? '';
-        if (!$route && empty($page->url)) return 'Page not recorded';
-        $names = [
-            'discover' => 'Discover', 'welcome' => 'Home', 'explore' => 'Explore', 'search' => 'Search',
-            'favorites' => 'Favorites', 'folder' => 'Collection', 'playlists' => 'Collections',
-            'highlights' => 'Highlights', 'composers' => 'Composers', 'pricing' => 'Premium',
-            'checkout' => 'Subscription checkout', 'profile' => 'Profile', 'register' => 'Registration',
-            'login' => 'Sign in', 'find-your-match' => 'Find your match', 'match' => 'Find your match',
-        ];
-        foreach ($names as $key => $title) if (strpos($route, $key) !== false) return $title;
-        $path = parse_url($page->url ?? '', PHP_URL_PATH) ?: '/';
-        if ($path === '/') return 'Home';
-        return ucfirst(str_replace(['-', '_', '/'], [' ', ' ', ' / '], trim($path, '/')));
+        return PageIdentity::describe($page)->name;
     }
 
     public static function isPreviewPlayClick($event)

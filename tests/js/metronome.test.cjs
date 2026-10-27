@@ -283,6 +283,8 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
         addEventListener(name, handler) { this.onchange = handler; },
     };
     const settingsDialog = element({ open: false });
+    const hubMenu = element();
+    page.context.initializeLogoTilt = () => {};
     // Bootstrap owns transitions and dismissal; expose its public lifecycle here.
     page.context.Offcanvas = class {
         constructor(panel) { this.panel = panel; page.offcanvas = this; }
@@ -342,6 +344,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
             '[data-metronome]': surface, '[data-tempo]': number, '[data-metronome-message]': message,
             '[data-metronome-pulse]': pulseLayer,
             '[data-settings-open]': settingsButton, '[data-settings-panel]': settingsDialog,
+            '#public-hub-menu': hubMenu,
             '[data-settings-color]': colorInput, '[data-color-value]': colorValue,
             '[data-settings-color-reset]': colorReset,
             '#metronome-sound': soundInput, '[data-conductor]': svg, 'meta[name="theme-color"]': theme,
@@ -368,7 +371,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
         preventDefault() {}, ...extra,
     });
     return { ...page, edges, edge, attributes, number, pointer, click, listeners, documentListeners, windowListeners,
-        settingsButton, settingsDialog, closeButton, beatInputs, typeInputs, markerInputs, conductorOptions,
+        settingsButton, settingsDialog, hubMenu, closeButton, beatInputs, typeInputs, markerInputs, conductorOptions,
         colorInput, soundInput, fontInput, pathInput, storage, surface,
         conductorParts, conductorAnimations, beatNumbers, animations, pulseLayer, theme, motionPreference };
 }
@@ -663,6 +666,7 @@ test('settings apply immediately, stay readable for light colors, and persist ac
     page.markerInputs[1].listeners.change();
     assert.equal(page.surface.dataset.mode, 'conductor');
     assert.equal(page.context.document.documentElement.style['--metronome-ink'], '#112037');
+    assert.equal(page.context.document.documentElement.style['--site-header-ink'], '#000000');
     assert.equal(page.theme.attributes.content, '#ffffff');
     const saved = page.storage.get('metronome.settings.v1');
     assert.deepEqual(JSON.parse(saved), {
@@ -677,6 +681,26 @@ test('settings apply immediately, stay readable for light colors, and persist ac
     assert.equal(next.surface.dataset.showPath, 'false');
     assert.equal(next.markerInputs[1].checked, true);
     assert.equal(next.surface.dataset.conductorMarker, 'hand');
+});
+
+test('hub navigation uses contrasting ink and isolates metronome keyboard controls until hidden', () => {
+    const page = setupPage();
+    const playbackState = page.attributes['aria-pressed'];
+    assert.equal(page.context.document.documentElement.style['--site-header-ink'], '#ffffff');
+    const tempo = page.number.textContent;
+    page.edge(1, 'pointerdown');
+    page.hubMenu.listeners['show.bs.offcanvas']();
+    page.tick(600);
+    assert.equal(Number(page.number.textContent), Number(tempo) + 1);
+    const beforeMenuKey = page.number.textContent;
+    page.documentListeners.keydown({ key: 'ArrowUp', preventDefault() { throw new Error('Menu arrow intercepted'); } });
+    page.documentListeners.keydown({ key: 'Enter', preventDefault() { throw new Error('Menu link intercepted'); } });
+    page.edge(1, 'pointerdown');
+    assert.equal(page.number.textContent, beforeMenuKey);
+    assert.equal(page.attributes['aria-pressed'], playbackState);
+    page.hubMenu.listeners['hidden.bs.offcanvas']();
+    page.documentListeners.keydown({ key: 'ArrowUp', preventDefault() {} });
+    assert.equal(Number(page.number.textContent), Number(beforeMenuKey) + 1);
 });
 
 test('conductor indicator choices appear only in conductor mode and changing them preserves motion', async () => {

@@ -21,6 +21,41 @@ The old timestamp columns use the application timezone (`America/New_York`), inc
 
 ## Architecture and navigation
 
+### Browser pageviews by hub — 2026-10-27
+
+Analytics → Users → Insights now opens with a browser-pageview report and defaults
+to Everyone, including anonymous visitors. Explicit audience/platform/date filters
+remain available; Activity and account reports retain their existing defaults.
+The report shows total pageviews, Quizzes (directory and individual quizzes),
+Chord Finder and Circle of Fifths, plus hub totals/shares and a paginated page
+ranking. Selecting a hub filters the page ranking; summary totals still describe
+all matching hubs. Pagination is twelve pages per screen and retains filters.
+
+`PageViews` reads server-confirmed `page_view` events on web/webapp only. Actions,
+AJAX/request events, native iOS requests, Redis imports and daily snapshots do not
+become pageviews. Existing `ExcludedAccounts` scopes apply to both events and
+visits, including confirmed identity links. Pageview dates use the opening event,
+including a visit begun before the selected period; other existing visit-based
+insights retain their documented period semantics. The first matching opening is
+displayed without claiming that earlier tracking is complete.
+
+`PageIdentity` resolves names from recorded routes and public paths, rather than
+treating missing URLs as `/`. It combines canonical and older tool/resource/blog
+URLs under the current content hub, including pre-subdomain Learn URLs. Query
+strings/fragments do not split a page, while individual quiz/article paths remain
+distinct. Current catalogue names are fetched in bounded scalar queries for the
+visible rows; deleted/missing content retains a readable path-based label. No
+historical title is invented. Account/reset/verification path parameters and query
+values are omitted from the ranking. Last-page summaries retain route, URL and
+platform so their names no longer collapse into Home.
+
+This is a read-only reporting change: no migrations, backfill, collector changes,
+new cookies, ads or mobile contract changes. Verify with `PageViewAnalyticsTest`,
+`UserAnalyticsTest`, `UserAnalyticsPlatformFilterTest`, `ActivityHistoryTest`,
+`ActivityTrafficFilterTest`, `ExcludedActivityTest` and
+`IosActivityAnalyticsTest` in the isolated review suite. Set
+`ANALYTICS_PREVIEW_DIR` to export synthetic rendered report HTML for visual QA.
+
 Admin\UserAnalyticsController serves /analytics/users (Activity), /analytics/users/people, /analytics/users/insights, /analytics/users/{user}/{overview|visits|music|account}, and /analytics/users/visits/{visit}. All require the existing admin guard and host. As of 2026-10-19, the old Users → Locations, Activity Logs and Memberships Logs pages and their dedicated endpoints/controllers/views are removed, including the old raw-activity pages, load-logs/log-data endpoints and /analytics/logs chart. There are no legacy page aliases. Collection services, SQL history, imports, mobile logging/location capture and membership records remain. Dashboard activity/person links lead into the current Analytics area; account management stays separate. New-account notifications open the account's Users profile.
 
 App\Activity\Queries owns identity scopes and bounded summaries; People reads account/saved state; Insights performs grouped SQL queries; Journey combines page groups with unassociated actions at their recorded times. Presentation centralizes language, icons and safe metadata. Time resolves UTC timestamps with historical fallbacks. There is no AI summarization, Redis dual write, external reporting service or new background worker.

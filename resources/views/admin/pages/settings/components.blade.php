@@ -45,6 +45,18 @@
         @endforeach
       </div>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Transparent hub branding', 'usage' => '@brandIcon · transparent / hub-menu.button · inheritColor', 'properties' => 'color,box-shadow'])
+      <div class="row g-3">
+        @foreach(['bg-primary text-white', 'bg-light text-black'] as $brandingSurface)
+          <div class="col-12 col-md-6">
+            <div class="d-flex align-items-center justify-content-between rounded p-4 {{ $brandingSurface }}">
+              @brandIcon(['size' => '64px', 'transparent' => true])
+              @include('components.navigation.hub-menu.button', ['designSystemPreview' => true, 'inheritColor' => true])
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Full-screen project watermark', 'usage' => 'components.branding.watermark', 'properties' => 'width,height,padding,opacity'])
       <div class="position-relative bg-primary rounded p-5">
         @include('components.branding.watermark', ['preview' => true])

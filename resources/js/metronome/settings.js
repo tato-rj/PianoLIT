@@ -66,5 +66,6 @@ export function colorPalette(color) {
     return {
         pulse: hexColor(mixColor(channels, [0, 0, 0], 0.42)),
         ink: luminance(channels) > 0.4 ? '#112037' : '#ffffff',
+        headerInk: luminance(channels) > 0.179 ? '#000000' : '#ffffff',
     };
 }
