@@ -34,7 +34,7 @@
     <p class="small text-muted">Not sure who bills you? Check your receipt or <a href="{{ route('webapp.membership.edit') }}">My membership</a>. An Apple receipt means Apple handles billing. Deleting the app or signing out does not cancel a subscription.</p>
     <p class="small mb-4"><a href="https://support.apple.com/en-us/118428" target="_blank" rel="noopener noreferrer">Apple’s cancellation guide</a></p>
 
-    @component('components.layout.accordion', ['id' => 'support-billing-faq'])
+    @component('components.layout.accordion', ['id' => 'support-billing-faq', 'variant' => 'minimal'])
         @component('components.layout.accordion-item', ['id' => 'support-renewals', 'title' => 'When will I be charged?'])
             <p>Memberships renew automatically unless canceled. Your checkout shows the price, billing interval, and any trial offered. For web billing, check your next date in <a href="{{ route('webapp.membership.edit') }}">My membership</a>; for App Store billing, check Apple’s subscription settings. Follow the cancellation steps above before renewal if you do not want to continue.</p>
         @endcomponent

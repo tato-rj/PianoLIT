@@ -5,7 +5,7 @@ body {
     line-height: var(--line-height-body);
     letter-spacing: var(--letter-spacing-body);
     color: var(--color-text);
-    background-color: var(--color-surface-subtle);
+    background-color: var(--color-page, var(--color-surface-subtle));
 }
 
 // Heading elements, heading utilities and editorial alternatives.

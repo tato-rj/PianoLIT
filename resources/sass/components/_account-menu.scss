@@ -1,0 +1,140 @@
+// Keep the actual trigger above the popup: its circle never moves or changes size.
+.account-circle[data-account-menu-toggle] {
+    transition: background-color 180ms ease, color 180ms ease;
+}
+
+.account-circle[data-account-menu-toggle][aria-expanded='true'] {
+    position: relative;
+    z-index: 1001;
+}
+
+.account-circle[data-account-menu-toggle][aria-expanded='true']:not([data-account-menu-tone='yellow']) {
+    background: var(--color-text);
+    color: var(--color-surface);
+}
+
+.account-menu.dropdown-menu {
+    width: 17rem;
+    max-width: calc(100vw - 1rem);
+    padding: 0.75rem 0 0;
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+
+    &.account-menu--anchored {
+        position: fixed;
+        inset: var(--account-menu-top) auto auto var(--account-menu-left);
+        margin: 0;
+
+        &.show {
+            transform-origin: var(--account-menu-origin-x) var(--account-menu-origin-y);
+            animation: account-menu-open 180ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    }
+
+    .account-menu__identity {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: var(--field-min-height);
+        margin: 0 0.75rem 0.75rem;
+    }
+
+    .account-menu__details {
+        width: var(--account-menu-details-width, calc(100% - 3.25rem));
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .account-menu__name {
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-heading);
+        line-height: 1.4;
+    }
+
+    .account-menu__email {
+        margin-top: 0.125rem;
+        color: var(--color-text-muted);
+        font-size: var(--font-size-sm);
+        line-height: 1.4;
+    }
+
+    .account-menu__avatar {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        &:not([data-account-menu-tone='yellow']) {
+            background: var(--color-text);
+            color: var(--color-surface);
+        }
+    }
+
+    &.account-menu--stacked .account-menu__identity {
+        padding-top: calc(var(--field-min-height) + 0.5rem);
+    }
+
+    .account-menu__links {
+        padding: 0 0.5rem 0.625rem;
+    }
+
+    .account-menu__link,
+    .account-menu__row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        // min-height: 48px;
+        padding: 0.5rem 0.75rem;
+        border: 0;
+        border-radius: var(--radius-sm);
+        color: var(--color-text);
+        font-size: var(--font-size-base);
+        line-height: 1.5;
+        text-decoration: none;
+        white-space: normal;
+
+        .app-icon,
+        .account-menu__icon {
+            flex-shrink: 0;
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 1.25rem;
+        }
+    }
+
+    .account-menu__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .account-menu__link {
+        &:hover,
+        &[aria-current='page'] {
+            background: var(--color-surface-subtle);
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        &:focus-visible,
+        &:active {
+            background: var(--color-border);
+            color: var(--color-text);
+        }
+    }
+
+    .account-menu__footer {
+        padding: 0.625rem 0.5rem;
+        border-top: 1px solid var(--color-border);
+
+        form { margin: 0; }
+    }
+}
+
+@keyframes account-menu-open {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .account-circle[data-account-menu-toggle] { transition: none; }
+    .account-menu.dropdown-menu.account-menu--anchored.show { animation: none; }
+}

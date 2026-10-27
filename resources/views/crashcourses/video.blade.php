@@ -15,7 +15,7 @@
       Your browser does not support the video tag.
     </video>
   </div>
-  <div class="bg-light h-100 w-100">
+  <div class="bg-white h-100 w-100">
     <div class="d-flex flex-center flex-wrap credits" style="height: 100%">
       <div>
         <a target="_blank" href="{{route('home')}}"><img src="{{asset(mix('images/brand/app-icon.svg'))}}" style="border-radius: 20%; width: 50px"></a>

@@ -7,7 +7,7 @@
 @section('content')
 <div class="container py-4 pb-5">
     @include('components.navigation.breadcrumb', ['items' => [['label' => 'Home', 'url' => route('home')], ['label' => 'Games']]])
-    @component('components.layout.hub-header', ['heading' => 'PianoLIT Games', 'preview' => false])
+    @component('components.layout.hub-header', ['heading' => 'PianoLIT Games', 'preview' => false, 'showNewsletter' => false])
         Interactive games for practicing core music theory skills.
     @endcomponent
     <section class="music-games" data-preserve-icons>

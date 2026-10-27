@@ -1,6 +1,17 @@
 .site-header {
     letter-spacing: 0;
 
-    + main { padding-top: 30px; }
+    &__name {
+        font-family: var(--font-family-heading);
+        font-size: var(--font-size-h4);
+        font-weight: var(--font-weight-heading);
+    }
+
+    // Page containers add Bootstrap py-4 (24px), giving the homepage's 36px gap.
+    + main { padding-top: 12px; }
 }
 
+@media (max-width: 767px) {
+    // Match the homepage's 30px mobile gap after the container's 24px padding.
+    .site-header + main { padding-top: 6px; }
+}

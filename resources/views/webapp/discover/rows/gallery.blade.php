@@ -10,7 +10,7 @@
 @elseif($row['title'] === "Like today's free pick")
 	@include('webapp.discover.rows.recently-viewed', [
 		'rowHeadingId' => 'free-pick-similar-heading',
-		'rowHeading' => \App\Services\DiscoverFeed::SIMILAR_TITLE,
+		'rowHeading' => "Like this week's free pick",
 		'wrapPieceTitles' => true,
 	])
 @elseif($row['title'] === 'Latest pieces')

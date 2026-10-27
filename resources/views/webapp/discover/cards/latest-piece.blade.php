@@ -1,5 +1,5 @@
 <a class="discover-latest-card discover-piece-link link-none position-relative" href="{{ route('webapp.pieces.show', $piece) }}" data-activity-label="{{ $piece->medium_name_with_composer }}">
-	<img class="discover-latest-card__art" src="{{ ($piece->discover_artwork_url ?? $piece->web_image_background) }}" alt="" width="600" height="280" loading="lazy">
+	<img class="discover-latest-card__art" src="{{ $piece->web_image_background }}" alt="" width="600" height="280" loading="lazy">
 	@pill(['label' => 'NEW', 'color' => 'white', 'text' => 'danger', 'pos' => 'top-right', 'if' => $piece->is_new])
 	<div class="discover-latest-card__copy">
 		<p class="discover-latest-card__title clamp-2 mb-1" title="{{ $piece->name }}"><strong>{{ $piece->name }}</strong></p>

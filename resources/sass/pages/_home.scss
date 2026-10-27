@@ -1,157 +1,52 @@
 .project-home {
-    --home-wall: var(--color-surface-subtle);
-    background: var(--home-wall);
+    background: var(--color-surface);
     color: var(--color-text);
     letter-spacing: 0;
 
     &__page {
-        position: relative;
-        isolation: isolate;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
         min-height: 100svh;
-        overflow: hidden;
-        // Keep the shared wall color beneath soft daylight from the left.
-        background-color: var(--home-wall);
-        background-image:
-            radial-gradient(ellipse at 4% 8%, rgba(255, 255, 255, .75), transparent 64%),
-            linear-gradient(105deg, rgba(49, 57, 69, .065), rgba(49, 57, 69, .075) 56%, rgba(49, 57, 69, .14));
-
-        &::before {
-            content: '';
-            position: absolute;
-            z-index: -1;
-            inset: 0;
-            pointer-events: none;
-            // Broad, feathered window-light bands; no hard stripes on the wall.
-            background: linear-gradient(44deg,
-                transparent 15%,
-                rgba(255, 255, 255, .72) 18%,
-                rgba(255, 255, 255, .88) 21%,
-                transparent 26%,
-                transparent 30%,
-                rgba(255, 255, 255, .70) 34%,
-                rgba(255, 255, 255, .85) 37%,
-                transparent 42%);
-            mask-image: radial-gradient(ellipse at 0% 70%, #000 20%, transparent 70%);
-        }
     }
 
-    &__hero {
-        padding: 8px 24px 0;
-        text-align: center;
+    &__content { padding-top: 36px; padding-bottom: 20px; }
+    &__hero { margin-bottom: 28px; }
 
-        h1 {
-            margin: 0 0 8px;
-            font-size: var(--font-size-h1);
-            font-weight: var(--font-weight-heading);
-            line-height: var(--line-height-heading);
-            letter-spacing: normal;
-
-            span { color: var(--color-primary); }
-        }
-
-        > p {
-            max-width: 760px;
-            margin: 0 auto;
-            color: var(--color-text-muted);
-            font-size: var(--font-size-base);
-            line-height: var(--line-height-body);
-        }
+    &__eyebrow {
+        margin: 0 0 12px;
+        color: var(--color-text-muted);
+        font-size: var(--font-size-xs);
+        letter-spacing: .16em;
+        text-transform: uppercase;
     }
 
-    &__room {
-        --room-offset: 60px;
-        --room-floor-space: 48px;
-        position: relative;
-        z-index: 1;
-        pointer-events: none;
-        width: 100%;
-        margin: var(--room-offset) auto 0;
-        padding-bottom: var(--room-floor-space);
-
-        // The piano's rear cabinet meets the floor at 82% of the image height.
-        // Exclude room padding and put the skirting above that contact line,
-        // leaving the front feet and bench fully in front of the wall.
-        &::before {
-            content: '';
-            position: absolute;
-            z-index: -1;
-            inset: calc((100% - var(--room-floor-space)) * .82 - 7px) 0 0;
-            border-top: 7px solid rgba(255, 255, 255, .35);
-            // A translucent floor keeps the room's daylight continuous below it.
-            background: linear-gradient(rgba(105, 113, 124, .14), rgba(105, 113, 124, 0) 72%);
-            box-shadow: 0 -2px 3px rgba(67, 66, 59, .04);
-        }
+    &__hero h1 {
+        margin: 0;
+        font-size: var(--font-size-h1);
+        font-weight: var(--font-weight-heading);
+        line-height: 1.12;
+        letter-spacing: normal;
+        color: var(--color-black);
     }
 
-    &__instrument {
-        position: relative;
-        isolation: isolate;
-        width: min(620px, 52vw);
-        margin: 0 auto;
-
-        &::before {
-            content: '';
-            position: absolute;
-            z-index: -1;
-            inset: 0;
-            pointer-events: none;
-            // Contact points follow the transparent artwork's proportions.
-            // Tight shadows anchor the wheels/bench feet; wider shadows soften
-            // toward the right, away from the room's window light.
-            background:
-                radial-gradient(ellipse 3.2% 1.4% at 7.8% 88.8%, rgba(24, 28, 33, .52), rgba(24, 28, 33, .22) 38%, transparent 100%),
-                radial-gradient(ellipse 3.2% 1.4% at 92.4% 88.8%, rgba(24, 28, 33, .52), rgba(24, 28, 33, .22) 38%, transparent 100%),
-                radial-gradient(ellipse 3% 1.2% at 28.8% 94.6%, rgba(24, 28, 33, .48), rgba(24, 28, 33, .18) 40%, transparent 100%),
-                radial-gradient(ellipse 3% 1.2% at 70.6% 94.6%, rgba(24, 28, 33, .48), rgba(24, 28, 33, .18) 40%, transparent 100%),
-                radial-gradient(ellipse 3% 1.1% at 31% 87.6%, rgba(24, 28, 33, .30), transparent 100%),
-                radial-gradient(ellipse 3% 1.1% at 68.4% 87.6%, rgba(24, 28, 33, .30), transparent 100%),
-                radial-gradient(ellipse 26% 4.5% at 56% 93%, rgba(24, 28, 33, .18), transparent 100%),
-                radial-gradient(ellipse 47% 5.5% at 55% 86%, rgba(24, 28, 33, .24), transparent 100%);
-        }
+    &__intro {
+        margin: 0 0 12px;
+        font-size: var(--font-size-h5);
+        line-height: var(--line-height-heading);
     }
 
-    &__piano {
-        display: block;
-        width: 100%;
-        height: auto;
-        margin: 0 auto;
-        filter: drop-shadow(12px 10px 16px rgba(24, 28, 33, .16));
-        pointer-events: none;
-        user-select: none;
+    &__invitation {
+        color: var(--color-text-muted);
+        font-size: var(--font-size-sm);
+        letter-spacing: .06em;
     }
-}
-
-.project-home .project-deck { margin-top: 8px; z-index: 2; }
-
-@media (min-width: 768px) {
-    // Lower the decorative piano and its floor together, keeping cards in front.
-    .project-home__room { margin-top: calc(-132px + var(--room-offset)); }
-}
-
-@media (min-width: 1800px) {
-    .project-home__hero { padding-top: 48px; }
-    .project-home .project-deck { margin-top: 40px; }
-    .project-home__room { margin-top: calc(-132px + var(--room-offset)); }
-}
-
-@media (min-width: 768px) and (max-width: 1199px) {
-    .project-home__instrument { width: min(640px, 78vw); }
 }
 
 @media (max-width: 767px) {
-    .project-home__hero {
-        padding: 36px 24px 0;
-        h1 { font-size: var(--font-size-h2); }
-        > p { max-width: 360px; }
+    .project-home {
+        &__content { padding-top: 30px; }
+        &__hero h1 { font-size: var(--font-size-h2); }
+        &__intro { font-size: var(--font-size-base); }
     }
-    .project-home .project-deck { margin-top: 16px; }
-    .project-home__room {
-        --room-floor-space: 32px;
-        // Retain the responsive overlap baseline, with the same scene offset.
-        margin-top: calc(-60px - 12vw + var(--room-offset));
-    }
-    .project-home__instrument { width: 94%; }
 }

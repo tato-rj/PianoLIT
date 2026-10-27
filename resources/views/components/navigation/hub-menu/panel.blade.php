@@ -2,7 +2,7 @@
     $designSystemPreview = $designSystemPreview ?? false;
     $hubMenuId = $designSystemPreview ? 'ds-public-hub-menu' : 'public-hub-menu';
     $hubLinks = [
-        ['label' => 'Home', 'url' => route('home'), 'icon' => 'home'],
+        ['label' => 'Home', 'url' => \App\Support\ProfileUrl::base(), 'icon' => 'home'],
         ['label' => 'Shop', 'url' => route('shop.home'), 'icon' => 'shopping-basket'],
         ['label' => 'Games', 'url' => route('games.home'), 'icon' => 'trophy'],
         ['label' => 'Learn', 'url' => route('learn.home'), 'icon' => 'graduation-cap'],
@@ -16,7 +16,7 @@
         <nav aria-label="PianoLIT hubs">
             <ul class="nav flex-column gap-1 mb-3 pb-3 hub-menu__apps" aria-label="PianoLIT apps">
                 <li class="nav-item">
-                    <a href="{{ route('webapp.discover') }}" class="hub-menu__link d-flex align-items-center gap-3" target="_blank" rel="noopener noreferrer">
+                    <a href="{{ route('webapp.discover') }}" class="hub-menu__link d-flex align-items-center gap-3" @if(! $designSystemPreview && request()->getHost() === parse_url(route('webapp.discover'), PHP_URL_HOST)) aria-current="true" @endif>
                         @icon('pianolit', ['mr' => 0, 'classes' => 'hub-menu__icon'])
                         <span class="me-auto">Web app</span>
                         @icon('chevron-right', ['mr' => 0, 'classes' => 'hub-menu__arrow'])

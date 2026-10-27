@@ -6,7 +6,7 @@ This folder contains components shared across the website, hubs, web app and adm
 
 | To edit | Open |
 | --- | --- |
-| Account circle, signup cards and access prompts | [account/](account/) |
+| Account circle and menu, signup cards and access prompts | [account/](account/) |
 | Membership plans, payment-card fields and checkout dialogs | [billing/](billing/) |
 | PianoLIT logo, browser icons/splash metadata and project watermark | [branding/](branding/) |
 | Resource cards, promotional cards and related-content suggestions | [cards/](cards/) |
@@ -28,12 +28,17 @@ This folder contains components shared across the website, hubs, web app and adm
 Frequently edited files:
 
 - Public header and footer: `layout/public/header.blade.php`, `layout/public/footer.blade.php`
+- Homepage Youtube button: `navigation/youtube-button.blade.php` (also previewed in the Design System)
+- Public content inset, matching the logo/menu edges: `layout/public/content.blade.php` (used by `layouts.app`; homepage cards keep their wider layout)
 - Hub introduction: `layout/hub-header.blade.php`
 - Public editorial page columns: `layout/editorial.blade.php`
 - Resource cards and sidebar promotion cards: `cards/resource.blade.php`, `cards/promotion.blade.php`
 - Inputs and switches: `forms/input.blade.php`, `forms/toggle.blade.php`
 - Profile/Support section menu: `navigation/section-navigation.blade.php`
+- Accordions, including Support's `variant => minimal`: `layout/accordion.blade.php`, `layout/accordion-item.blade.php` and `resources/sass/components/_accordion.scss`
 - Account prompts: `account/access-modal.blade.php`, `account/signup-card.blade.php`
+- Account and Game player dropdown surface: `account/menu-panel.blade.php`
+- Web-app header account and hub controls: `webapp/layouts/header.blade.php` (under `resources/views/`), reusing `account/account-circle.blade.php`, `account/menu.blade.php` and `navigation/hub-menu/`
 - Newsletter popup: `promotions/popups/newsletter-subscription.blade.php`
 
 ## Components belonging to a section

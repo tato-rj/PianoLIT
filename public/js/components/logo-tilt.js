@@ -11,7 +11,7 @@ module.exports = function initializeLogoTilt(win) {
             logos.forEach(logo => {
                 if (motion.matches) {
                     VanillaTilt.init(logo, {
-                        max: 18,
+                        max: 12,
                         perspective: 600,
                         scale: 1,
                         speed: 350,

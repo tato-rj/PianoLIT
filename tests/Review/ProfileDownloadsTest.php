@@ -74,16 +74,13 @@ class ProfileDownloadsTest extends ReviewTestCase
         $book = $this->resource($user, eBook::class, 'The Book of Piano Techniques and how to master them', ['epub_path' => 'books/test.epub', 'price' => 0], ['cost' => 12, 'created_at' => '2026-08-17 12:00:00']);
         $this->resource($user, eScore::class, 'Piano Solos Book 1', [], ['cost' => 0, 'created_at' => '2024-12-13 12:00:00']);
         $response = $this->actingAs($user, 'web')->get(route('users.purchases').'?user_id='.$other->id)->assertOk()
-            ->assertViewIs('users.profile.index')->assertSee('My downloads')->assertSee('Infographic')->assertSee('Download PDF')->assertSee('Download ePUB')
+            ->assertViewIs('users.purchases.index')->assertSee('My downloads')->assertSee('Infographic')->assertSee('Download PDF')->assertSee('Download ePUB')
             ->assertSee('$12.00')->assertSee('Free')->assertDontSee('Private other account book')->assertDontSee('public-breadcrumb');
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
         $xpath = $this->xpath($response);
-        $this->assertCount(1, $xpath->query('//h1[normalize-space(.)="My profile"]'));
-        $this->assertCount(1, $xpath->query('//h2[normalize-space(.)="My downloads"]'));
-        $this->assertCount(0, $xpath->query('//h1[normalize-space(.)="My downloads"]'));
-        $this->assertCount(1, $xpath->query('//nav[@id="profile-navigation"]//a[@aria-current="page" and @href="http://localhost/profile/downloads"]'));
-        $this->assertCount(1, $xpath->query('//nav[@id="profile-navigation"]//a[@href="http://localhost/profile#security"]'));
-        $this->assertCount(0, $xpath->query('//nav[@id="profile-navigation" and @data-section-navigation]'));
+        $this->assertCount(1, $xpath->query('//h1[normalize-space(.)="My downloads"]'));
+        $this->assertCount(0, $xpath->query('//h1[normalize-space(.)="My profile"]'));
+        $this->assertCount(0, $xpath->query('//nav[@id="profile-navigation"]'));
         $this->assertCount(3, $xpath->query('//button[@data-bs-toggle="collapse" and @aria-expanded="false"]'));
         foreach ($xpath->query('//button[@data-bs-toggle="collapse"]') as $button) {
             $id = $button->getAttribute('aria-controls');
@@ -116,7 +113,7 @@ class ProfileDownloadsTest extends ReviewTestCase
         $this->get(route('users.purchases').'?page=99')->assertOk()->assertSee('Return to your library')->assertDontSee('Your library starts here');
     }
 
-    public function test_empty_and_removed_resources_have_clear_states_and_profile_links_to_downloads()
+    public function test_empty_and_removed_resources_have_clear_states_and_downloads_stays_out_of_the_profile_menu()
     {
         $user = $this->account();
         $empty = $this->actingAs($user, 'web')->get(route('users.purchases'))->assertOk()->assertSee('Your library starts here')
@@ -127,7 +124,9 @@ class ProfileDownloadsTest extends ReviewTestCase
         });
         $this->get(route('users.purchases'))->assertOk()->assertSee('Resource unavailable')->assertSee('This file is currently unavailable.');
         $profile = $this->get(route('users.profile'))->assertOk()->assertViewIs('users.profile.index')->assertSee('href="http://localhost/profile/downloads"', false);
-        $this->assertCount(4, $this->xpath($profile)->query('//nav[@data-section-navigation]//a[starts-with(@href,"#")]'));
+        $xpath = $this->xpath($profile);
+        $this->assertCount(4, $xpath->query('//nav[@data-section-navigation]//a[starts-with(@href,"#")]'));
+        $this->assertCount(0, $xpath->query('//nav[@id="profile-navigation"]//a[contains(@href,"/downloads")]'));
         $this->preview($profile, 'profile');
     }
 }

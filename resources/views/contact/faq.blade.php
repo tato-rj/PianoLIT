@@ -1,6 +1,6 @@
 <section id="account" class="support-section" aria-labelledby="account-heading">
     <h2 id="account-heading">Account & sign-in</h2>
-    @component('components.layout.accordion', ['id' => 'support-account-faq'])
+    @component('components.layout.accordion', ['id' => 'support-account-faq', 'variant' => 'minimal'])
         @component('components.layout.accordion-item', ['id' => 'support-sign-in', 'title' => 'How do I create an account or sign in?'])
             <p><a href="{{ route('register') }}">Create a PianoLIT account</a> or <a href="{{ route('login') }}">sign in</a> on the website. In the iOS app, use your PianoLIT email and password. If you normally use Google or Apple on the website, you can set a password in <a href="{{ route('users.profile') }}#security">My profile</a> for email sign-in.</p>
         @endcomponent
@@ -22,7 +22,7 @@
 
 <section id="using-pianolit" class="support-section" aria-labelledby="using-heading">
     <h2 id="using-heading">Using PianoLIT</h2>
-    @component('components.layout.accordion', ['id' => 'support-using-faq'])
+    @component('components.layout.accordion', ['id' => 'support-using-faq', 'variant' => 'minimal'])
         @component('components.layout.accordion-item', ['id' => 'support-free-premium', 'title' => 'What can I use for free, and what needs Premium?'])
             <p>You can browse repertoire and open piece pages in the web app without a membership. An account unlocks personal features; full media, scores, and other Premium features depend on your access. The page will explain when sign-in or Premium is needed. See <a href="{{ route('webapp.membership.pricing') }}">current membership plans</a> for details.</p>
         @endcomponent
@@ -52,7 +52,7 @@
 
 <section id="purchases" class="support-section" aria-labelledby="purchases-heading">
     <h2 id="purchases-heading">Shop purchases</h2>
-    @component('components.layout.accordion', ['id' => 'support-shop-faq'])
+    @component('components.layout.accordion', ['id' => 'support-shop-faq', 'variant' => 'minimal'])
         @component('components.layout.accordion-item', ['id' => 'support-shop-catalogs', 'title' => 'Where can I find eBooks and eScores?'])
             <p>Visit our <a href="{{ route('ebooks.index') }}">eBook catalog</a> and <a href="{{ route('escores.index') }}">eScore catalog</a> directly. The shop homepage is being prepared, but these catalogs and their checkout pages are available.</p>
         @endcomponent

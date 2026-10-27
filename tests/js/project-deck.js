@@ -1,205 +1,102 @@
 const assert = require('assert');
 const init = require('../../resources/js/components/project-deck');
 
-function setup({reduced = false, count = 7, rounded = false, width = 600} = {}) {
+function setup({mobile = true, reduced = false, count = 7, width = 390, height = 844} = {}) {
     function element() {
-        const classes = new Set();
-        return {dataset: {}, events: {}, attrs: {},
-            classList: {add: name => classes.add(name), remove: name => classes.delete(name)},
-            addEventListener(name, fn) { this.events[name] = fn; },
-            getAttribute(name) { return this.attrs[name]; },
-            setAttribute(name, value) { this.attrs[name] = value; },
-            matches() { return false; }};
+        const values = new Map();
+        return {dataset: {}, events: {}, style: {
+            setProperty(name, value) { values.set(name, String(value)); },
+            removeProperty(name) { values.delete(name); },
+            getPropertyValue(name) { return values.get(name) || ''; }
+        }, addEventListener(name, fn, options) { this.events[name] = fn; this.options = {...this.options, [name]: options}; }};
     }
-    const deck = element(), viewport = element(), doc = element();
-    let cardWidth = 200, gap = 20, left = 0;
-    function card(index) {
-        const item = element();
-        item.dataset.project = 'project-' + index;
-        item.attrs = {href: '/hub-' + index, 'aria-labelledby': 'title-' + index, 'aria-describedby': 'description-' + index};
-        const labels = [{id: 'title-' + index}, {id: 'description-' + index}];
-        item.querySelectorAll = () => labels;
-        item.closest = selector => selector === '[data-project]' ? item : null;
-        item.tabIndex = 0;
-        item.getBoundingClientRect = () => ({width: cardWidth, left: viewport.children.indexOf(item) * (cardWidth + gap) + 20 - left});
-        item.remove = () => { viewport.children = viewport.children.filter(child => child !== item); if (doc.activeElement === item) doc.activeElement = null; };
-        item.focus = options => {
-            doc.activeElement = item;
-            if (!options?.preventScroll) {
-                const position = viewport.children.indexOf(item) * (cardWidth + gap);
-                if (position < left || position + cardWidth > left + viewport.clientWidth) viewport.scrollLeft = position;
-            }
-        };
-        return item;
-    }
-    const cards = Array.from({length: count}, (_, i) => card(i));
-    Object.assign(viewport, {children: [...cards], clientWidth: width,
-        querySelectorAll() { return this.children; }, querySelector() { return this.children[0]; },
-        replaceChildren(...children) { this.children = children; },
-        append(...children) { this.children.push(...children); }, prepend(...children) { this.children.unshift(...children); },
-        setPointerCapture() { this.capture = true; }, hasPointerCapture() { return this.capture; }, releasePointerCapture() { this.capture = false; }});
-    Object.defineProperty(viewport, 'scrollWidth', {get: () => viewport.children.length * (cardWidth + gap) + 20});
-    Object.defineProperty(viewport, 'scrollLeft', {get: () => left, set: value => { left = Math.max(0, Math.min(viewport.scrollWidth - viewport.clientWidth, rounded ? Math.round(value) : value)); }});
-    deck.querySelector = () => viewport;
-    deck.contains = target => viewport.children.includes(target);
-    const media = Object.assign(element(), {matches: reduced});
-    let now = 0, id = 0, observer;
-    const frames = new Map(), timers = new Map();
+    const deck = element(), doc = element();
+    const frames = new Map();
+    let id = 0, deckTop = 360;
+    const small = Object.assign(element(), {matches: mobile});
+    const motion = Object.assign(element(), {matches: reduced});
     const win = Object.assign(element(), {
-        document: doc, getComputedStyle: () => ({columnGap: String(gap)}),
-        matchMedia: query => query.includes('reduced-motion') ? media : {matches: true},
+        innerWidth: width, innerHeight: height, scrollY: 0, document: doc,
+        matchMedia: query => query.includes('reduced') ? motion : small,
+        getComputedStyle: () => ({rowGap: '8px'}),
         requestAnimationFrame(fn) { frames.set(++id, fn); return id; },
         cancelAnimationFrame(key) { frames.delete(key); },
-        setTimeout(fn, delay) { timers.set(++id, {fn, at: now + delay}); return id; },
-        clearTimeout(key) { timers.delete(key); },
-        IntersectionObserver: class { constructor(fn) { observer = fn; } observe() {} }
+        scrollTo({top}) { this.scrollY = top; this.scrollCalls++; }, scrollCalls: 0
     });
-    function advance(ms) {
-        const until = now + ms;
-        while (now < until) {
-            now = Math.min(until, now + 16);
-            for (const [key, timer] of [...timers]) if (timer.at <= now) { timers.delete(key); timer.fn(); }
-            for (const [key, fn] of [...frames]) { frames.delete(key); fn(now); }
-        }
-    }
-    const event = props => Object.assign({detail: 1, target: cards[0], prevented: false,
-        preventDefault() { this.prevented = true; }, stopPropagation() {}}, props);
-    const progress = () => viewport.scrollLeft;
-    const resize = (card, space, viewportWidth) => { cardWidth = card; gap = space; viewport.clientWidth = viewportWidth; win.events.resize(); };
+    const cards = Array.from({length: count}, (_, index) => {
+        const card = element();
+        card.dataset.project = 'hub-' + index;
+        card.href = '/hub-' + index;
+        card.getBoundingClientRect = () => ({width: win.innerWidth - 30});
+        card.querySelector = () => ({getBoundingClientRect: () => ({height: card.style.getPropertyValue('--project-open') === '1' ? 144 : 124})});
+        card.closest = () => card;
+        card.matches = () => card.keyboardFocus || false;
+        return card;
+    });
+    const deckHeight = () => cards.length * Number.parseFloat(deck.style.getPropertyValue('--project-compact-height') || 144) +
+        Number.parseFloat(deck.style.getPropertyValue('--project-expansion') || 360) * cards.reduce((sum, card) => sum + Number(card.style.getPropertyValue('--project-open')), 0) +
+        (cards.length - 1) * 8 + Number.parseFloat(deck.style.getPropertyValue('--project-scroll-tail') || 0);
+    deck.querySelectorAll = () => cards;
+    deck.querySelector = () => ({});
+    deck.getBoundingClientRect = () => ({top: deckTop - win.scrollY, bottom: deckTop + deckHeight() - win.scrollY});
+    doc.documentElement = {};
+    Object.defineProperty(doc.documentElement, 'scrollHeight', {get: () => deckTop + deckHeight() + 80});
+    const flush = () => { for (const [key, fn] of [...frames]) { frames.delete(key); fn(); } };
+    const scroll = top => { win.scrollY = top; win.events.scroll(); flush(); };
+    const open = () => cards.map(card => Number(card.style.getPropertyValue('--project-open')));
     init(deck, win);
-    return {deck, viewport, cards, media, doc, win, frames, timers, advance, event, progress, resize, visibility: value => observer([{isIntersecting: value}])};
+    return {deck, cards, doc, win, small, motion, frames, scroll, flush, open, deckHeight};
 }
 
 function test() {
-    {
-        const {deck, viewport, cards, doc, win, event, progress} = setup();
-        assert.deepStrictEqual(viewport.children, cards, 'Each project appears exactly once.');
-        const ordinary = event(); deck.events.click(ordinary);
-        assert.strictEqual(ordinary.prevented, false);
-        const modified = event({target: cards[6], metaKey: true}); deck.events.click(modified);
-        assert.strictEqual(modified.prevented, false, 'Modified clicks retain native destinations.');
-        const wheel = event({deltaX: 0, deltaY: 5000, deltaMode: 0}); viewport.events.wheel(wheel);
-        const end = viewport.scrollWidth - viewport.clientWidth;
-        assert.strictEqual(progress(), end, 'A large wheel movement stops at the last card.');
-        assert.strictEqual(wheel.prevented, true);
-        const endWheel = event({deltaX: 0, deltaY: 100, deltaMode: 0}); viewport.events.wheel(endWheel);
-        assert.strictEqual(endWheel.prevented, false, 'Scrolling past the end releases to the page.');
-        viewport.events.wheel(event({deltaX: -15000, deltaY: 0, deltaMode: 0}));
-        assert.strictEqual(progress(), 0, 'Backward scrolling stops at the first card.');
-        const startWheel = event({deltaX: 0, deltaY: -100, deltaMode: 0}); viewport.events.wheel(startWheel);
-        assert.strictEqual(startWheel.prevented, false);
-        const zoom = event({deltaY: 100, deltaX: 0, deltaMode: 0, ctrlKey: true}); viewport.events.wheel(zoom);
-        assert.strictEqual(zoom.prevented, false);
-        assert.strictEqual(progress(), 0);
-        viewport.events.pointerdown(event({pointerType: 'mouse', button: 0, pointerId: 1, clientX: 500}));
-        viewport.events.pointermove(event({pointerId: 1, clientX: 497}));
-        win.events.pointerup(event({pointerId: 1}));
-        const tinyMove = event(); deck.events.click(tinyMove);
-        assert.strictEqual(tinyMove.prevented, false);
-        viewport.events.pointerdown(event({pointerType: 'mouse', button: 0, pointerId: 2, clientX: 500}));
-        viewport.events.pointermove(event({pointerId: 2, clientX: -1000}));
-        assert.strictEqual(progress(), end, 'Mouse dragging also has a real last card.');
-        viewport.events.pointermove(event({pointerId: 2, clientX: 600}));
-        assert.strictEqual(progress(), 0);
-        win.events.pointerup(event({pointerId: 2}));
-        const dragged = event(); deck.events.click(dragged);
-        assert.strictEqual(dragged.prevented, true);
-        const keyboardLink = event({detail: 0}); deck.events.click(keyboardLink);
-        assert.strictEqual(keyboardLink.prevented, false);
-        deck.events.keydown(event({target: cards[6], key: 'ArrowRight'}));
-        assert.strictEqual(doc.activeElement, cards[6], 'Right arrow never wraps to the first project.');
-        deck.events.keydown(event({target: cards[6], key: 'Home'}));
-        assert.strictEqual(doc.activeElement, cards[0]); assert.strictEqual(progress(), 0);
-        deck.events.keydown(event({target: cards[0], key: 'ArrowLeft'}));
-        assert.strictEqual(doc.activeElement, cards[0]);
-        deck.events.keydown(event({target: cards[0], key: 'End'}));
-        assert.strictEqual(doc.activeElement, cards[6]); assert.strictEqual(progress(), end);
-        const enter = event({key: 'Enter'}); deck.events.keydown(enter);
-        assert.strictEqual(enter.prevented, false);
-        assert.strictEqual(viewport.children.filter(card => card.tabIndex === 0).length, 7);
-    }
-    {
-        const {viewport, advance, event, progress} = setup({rounded: true});
-        advance(1000); assert.strictEqual(progress(), 0);
-        advance(2200); assert.ok(progress() >= 40 && progress() <= 45, 'Slow drift accumulates subpixels.');
-        viewport.events.pointerenter(event({pointerType: 'mouse'}));
-        const left = progress();
-        advance(5000); assert.strictEqual(progress(), left, 'Hover immediately freezes the row.');
-        viewport.events.pointerleave(event({pointerType: 'mouse'}));
-        advance(2000); assert.strictEqual(progress(), left);
-        advance(1500); assert.ok(progress() > left);
-    }
-    {
-        const {viewport, win, advance, event, progress} = setup();
-        advance(2400);
-        viewport.events.touchstart();
-        viewport.events.pointerdown(event({pointerType: 'touch', pointerId: 3}));
-        win.events.pointercancel(event({pointerId: 3}));
-        const left = progress();
-        advance(6000); assert.strictEqual(progress(), left, 'Native pointercancel does not release a held touch.');
-        viewport.scrollLeft = 400; viewport.events.scroll();
-        assert.strictEqual(progress(), 400, 'Native swipe position is preserved.');
-        win.events.touchend(event({touches: []}));
-        advance(1800);
-        viewport.scrollLeft = 500; viewport.events.scroll();
-        advance(2000); assert.strictEqual(progress(), 500, 'Native inertia postpones automatic scrolling.');
-        advance(1500); assert.ok(progress() > 500);
-    }
-    {
-        const {viewport, win, advance, event, progress} = setup();
-        advance(2400);
-        viewport.events.pointerdown(event({pointerType: 'mouse', button: 0, pointerId: 4, clientX: 500}));
-        const left = progress();
-        advance(6000); assert.strictEqual(progress(), left);
-        viewport.events.pointermove(event({pointerId: 4, clientX: 400}));
-        assert.strictEqual(progress(), left + 100);
-        win.events.pointerup(event({pointerId: 4}));
-        advance(3500); assert.ok(progress() > left + 100);
-    }
-    {
-        const {deck, advance, event, progress} = setup();
-        advance(2400);
-        deck.events.focusin(event({target: {matches: () => true}}));
-        const left = progress();
-        advance(6000); assert.strictEqual(progress(), left);
-        deck.events.focusout(event({relatedTarget: null}));
-        advance(3500); assert.ok(progress() > left);
-    }
-    for (const rounded of [false, true]) {
-        const {viewport, cards, frames, timers, advance, progress, resize} = setup({rounded});
-        advance(120000);
-        const end = viewport.scrollWidth - viewport.clientWidth;
-        assert.strictEqual(progress(), end, 'Automatic scrolling reaches the final card.');
-        advance(1800000);
-        assert.strictEqual(progress(), end, 'It stays at the end without looping or reversing.');
-        assert.deepStrictEqual(viewport.children, cards, 'No duplicated cards after thirty idle minutes.');
-        assert.strictEqual(frames.size, 0, 'The finished animation stops scheduling frames.');
-        assert.strictEqual(timers.size, 0);
-        resize(264, 28, 5000);
-        assert.strictEqual(progress(), 0, 'Resizing to fit all projects removes overflow.');
-        advance(6000); assert.strictEqual(progress(), 0);
-    }
-    {
-        const {media, doc, win, advance, visibility, progress} = setup({reduced: true});
-        advance(5000); assert.strictEqual(progress(), 0);
-        media.matches = false; media.events.change(); advance(3500);
-        assert.ok(progress() > 0);
-        for (const [pause, resume] of [
-            [() => { media.matches = true; media.events.change(); }, () => { media.matches = false; media.events.change(); }],
-            [() => { doc.hidden = true; doc.events.visibilitychange(); }, () => { doc.hidden = false; doc.events.visibilitychange(); }],
-            [() => visibility(false), () => visibility(true)],
-            [() => win.events.pagehide(), () => win.events.pageshow()]
-        ]) {
-            pause(); const left = progress(); advance(6000); assert.strictEqual(progress(), left);
-            resume(); advance(3500); assert.ok(progress() > left);
-        }
-    }
-    for (const options of [{count: 0}, {count: 1}, {width: 2000}]) {
-        const page = setup(options);
-        page.advance(6000); assert.strictEqual(page.progress(), 0, 'A non-overflowing row stays stationary.');
-        assert.strictEqual(page.viewport.children.length, page.cards.length);
-    }
-    console.log('Passed: finite seven-card row, both endpoints, no clones/wrapping, idle stop, native links, drag/touch/keyboard controls, hover/hold pauses, resize and reduced motion.');
+    const s = setup();
+    const {deck, cards, win, scroll, open, deckHeight} = s;
+    assert.deepStrictEqual(open(), [1, 0, 0, 0, 0, 0, 0]);
+    assert.strictEqual(win.options.scroll.passive, true, 'Native scrolling remains passive.');
+    assert.strictEqual(win.events.wheel, undefined);
+    assert.strictEqual(deck.events.click, undefined, 'Cards remain ordinary links without an extra activation step.');
+    const total = deckHeight();
+    // 504px full card centered in 844px: first handoff starts at 360 - 170.
+    scroll(190 + 76);
+    assert.deepStrictEqual(open(), [.5, .5, 0, 0, 0, 0, 0]);
+    assert.strictEqual(deckHeight(), total, 'Adjacent cards share expansion without changing the list height.');
+    scroll(190 + 152 * 4);
+    assert.deepStrictEqual(open(), [0, 0, 0, 0, 1, 0, 0], 'A hub from the compact desktop row also expands fully.');
+    scroll(190 + 152);
+    assert.deepStrictEqual(open(), [0, 1, 0, 0, 0, 0, 0], 'Reverse scrolling restores an earlier card.');
+    scroll(0);
+    assert.strictEqual(open()[0], 1);
+    scroll(s.doc.documentElement.scrollHeight - win.innerHeight);
+    assert.strictEqual(open()[6], 1, 'The final card can fully expand before the page ends.');
+    assert.strictEqual(win.scrollCalls, 0, 'Scroll effects never move the page themselves.');
+    assert.strictEqual(s.frames.size, 0, 'No animation loop runs after scrolling stops.');
+    assert.deepStrictEqual(cards.map(card => card.href), Array.from({length: 7}, (_, i) => '/hub-' + i));
+
+    scroll(342);
+    const before = open();
+    win.innerHeight = 760; win.events.resize(); s.flush();
+    assert.deepStrictEqual(open(), before, 'Collapsing mobile browser chrome does not shift the activation anchors.');
+    cards[3].keyboardFocus = true;
+    deck.events.focusin({target: cards[3]}); s.flush();
+    assert.strictEqual(open()[3], 1, 'A keyboard-focused link expands without changing link behavior.');
+
+    s.motion.matches = true; s.motion.events.change();
+    assert.strictEqual(deck.dataset.mobileCards, undefined, 'Reduced motion restores the static layout.');
+    assert.ok(cards.every(card => card.style.getPropertyValue('--project-open') === ''));
+    s.motion.matches = false; s.motion.events.change();
+    assert.strictEqual(deck.dataset.mobileCards, 'true');
+    s.small.matches = false; win.innerWidth = 1024; s.small.events.change();
+    assert.strictEqual(deck.dataset.mobileCards, undefined, 'Desktop does not retain mobile heights.');
+    assert.strictEqual(deck.style.getPropertyValue('--project-scroll-tail'), '');
+    s.small.matches = true; win.innerWidth = 390; s.small.events.change();
+    assert.strictEqual(deck.dataset.mobileCards, 'true', 'Returning to mobile restores the effect.');
+    win.events.pagehide(); scroll(300); assert.strictEqual(s.frames.size, 0);
+    win.events.pageshow(); assert.strictEqual(deck.dataset.mobileCards, 'true');
+    init(deck, win); assert.strictEqual(deck.dataset.projectReady, 'true');
+    assert.strictEqual(setup({mobile: false}).deck.dataset.mobileCards, undefined);
+    assert.strictEqual(setup({reduced: true}).deck.dataset.mobileCards, undefined);
+    assert.strictEqual(setup({count: 1}).deck.dataset.mobileCards, undefined);
+    console.log('Passed: mobile hub handoffs in both directions, stable list height, last-card reachability, keyboard links, reduced motion and desktop restoration.');
 }
 module.exports = test;
 if (require.main === module) test();

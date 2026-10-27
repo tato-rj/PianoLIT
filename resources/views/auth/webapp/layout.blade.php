@@ -82,7 +82,7 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
 @section('content')
 @php($websiteUrl = (parse_url(config('app.url'), PHP_URL_SCHEME) ?: request()->getScheme()).'://'.config('app.short_url'))
 @php($showCarousel = $showCarousel ?? true)
-<div class="bg-light">
+<div class="bg-white">
     <div class="{{ $showCarousel ? 'container-fluid' : 'container' }}">
         <div class="row {{ $showCarousel ? 'h-100vh' : 'min-vh-100 align-items-center justify-content-center' }}">
             <div id="action" class="{{ $showCarousel ? 'col-lg-5 col-md-12 col-12' : 'col-12 col-md-8 col-lg-6 col-xl-5' }} mx-auto p-3">

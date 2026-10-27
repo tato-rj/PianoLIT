@@ -1,11 +1,28 @@
-<div class="pt-4 pb-3 d-flex align-items-center justify-content-between">
+<header class="pt-4 pb-3 d-flex align-items-center justify-content-between">
 	<a class="navbar-brand" href="{{route('webapp.discover')}}">
 		@brandIcon(['tilt' => true])
 	</a>
-	@guest('web')
-	<a href="{{ route('login') }}" class="btn btn-secondary">@icon('user')Sign in</a>
-	@endguest
-</div>
+	<nav aria-label="Account and site navigation">
+		<ul class="d-flex align-items-center gap-3 list-unstyled mb-0">
+			@auth('web')
+				@include('layouts.menu.user', ['accountCircle' => true])
+			@else
+				<li class="nav-item d-flex align-items-center">
+					@include('components.account.account-circle')
+				</li>
+			@endauth
+			<li class="nav-item d-flex align-items-center">
+				@include('components.navigation.hub-menu.button')
+			</li>
+		</ul>
+	</nav>
+</header>
+
+@once
+	@push('scripts')
+		@include('components.navigation.hub-menu.panel')
+	@endpush
+@endonce
 
 @isset($title)
 <div class="text-center mb-4">

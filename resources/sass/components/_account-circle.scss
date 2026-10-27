@@ -1,3 +1,5 @@
+@use '../games/reference/variables' as games;
+
 .account-circle.btn-raw {
     width: var(--field-min-height);
     height: var(--field-min-height);
@@ -23,4 +25,9 @@
         font-weight: 400;
         line-height: 1;
     }
+}
+
+.games-player-circle.account-circle.btn-raw {
+    background: games.$primary-color;
+    color: games.$secondary-color;
 }

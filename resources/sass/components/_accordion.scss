@@ -1,0 +1,50 @@
+.accordion-button .accordion-toggle-icon {
+    display: none;
+}
+
+.accordion.accordion--minimal {
+    > .accordion-item {
+        background: transparent;
+        border: 0;
+        border-bottom: 1px solid var(--color-border);
+        border-radius: 0;
+    }
+
+    .accordion-button {
+        gap: 1rem;
+        padding: 1.25rem 0;
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        line-height: var(--line-height-body);
+        color: var(--color-text);
+        background: transparent;
+        box-shadow: none;
+
+        &::after {
+            display: none;
+        }
+
+        &:focus-visible {
+            color: var(--color-primary);
+        }
+
+        .accordion-toggle-icon {
+            display: inline-block;
+            margin-left: auto;
+        }
+
+        &:not(.collapsed) .accordion-toggle-icon {
+            transform: rotate(45deg);
+        }
+    }
+
+    .accordion-body {
+        padding: 0 2rem 1.25rem 0;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+
+        > :last-child {
+            margin-bottom: 0;
+        }
+    }
+}

@@ -22,19 +22,19 @@ locations are shown as Not recorded rather than inferred.
 
 ## Downloads
 
-My downloads is a tab inside My profile at `/profile/downloads` on the absolute
-main website, using the same profile view, heading, introduction and menu. The existing `users.purchases` name now generates that URL, including
+My downloads is a standalone page at `/profile/downloads` on the absolute main
+website. Its heading and library align with the logo in the shared public container, without the profile
+section menu. The account dropdown keeps separate My profile and My downloads
+links. The existing `users.purchases` name generates the downloads URL, including
 from child hosts and purchase emails. Legacy `/my-profile/purchases` and
 child-host `/profile/downloads` GET/HEAD requests redirect permanently before
 authentication, preserving the raw query string. The canonical page requires
 the web session and returns private, no-store responses.
 
-Profile and its Downloads tab share `users.profile.index` and
-`users.profile.navigation`, rendered by the same
-section-navigation component as Support. Profile keeps its four scroll-tracked
-anchors; Downloads uses main-profile anchor destinations and exactly one
-`aria-current="page"` link, without scroll tracking. The library uses the profile
-shell/panel, shared accessible accordions, primary file buttons and native
+Downloads renders `users.purchases.index` independently of `users.profile.index`.
+Profile keeps its four scroll-tracked anchors in `users.profile.navigation` and
+has no Downloads entry. The library reuses the public shell, profile panel,
+shared accessible accordions, primary file buttons and native
 pagination. It keeps eight newest account-owned purchases per page, eager-loads
 their resources and preserves pagination queries. Dates and costs come from
 the purchase record, with null/zero cost shown as Free. Missing resources or

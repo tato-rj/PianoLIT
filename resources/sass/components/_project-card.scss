@@ -1,156 +1,197 @@
-// Gallery component shared by the homepage and Design System.
+// The homepage and Design System use the same two card sizes.
 .project-deck {
-    --project-width: 244px;
-    --project-gutter: clamp(24px, 5vw, 80px);
-    --project-gap: clamp(20px, 2.2vw, 32px);
-    position: relative;
-    width: 100%;
     min-width: 0;
-    isolation: isolate;
-
-    &__viewport {
-        display: flex;
-        align-items: center;
-        gap: var(--project-gap);
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding: 20px var(--project-gutter) 36px;
-        scrollbar-width: none;
-        scroll-padding-inline: var(--project-gutter);
-        overscroll-behavior-x: contain;
-        overflow-anchor: none;
-        -webkit-overflow-scrolling: touch;
-        &::-webkit-scrollbar { display: none; }
-    }
-    &.is-enhanced &__viewport { cursor: grab; }
-    &.is-dragging &__viewport, &.is-dragging .project-card { cursor: grabbing; user-select: none; }
+    > .row { row-gap: 8px; }
 }
 
 .project-card {
-    --project-card-radius: 7px;
-    --project-card-shadow: 10px 22px 28px -8px rgba(32, 34, 33, .28), 1px 2px 4px rgba(32, 34, 33, .05);
+    --project-surface: #d0fc68;
     position: relative;
-    flex: 0 0 var(--project-width, 244px);
-    width: var(--project-width, 244px);
-    aspect-ratio: 35 / 48;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     overflow: hidden;
-    isolation: isolate;
-    border: 0;
-    border-radius: var(--project-card-radius);
-    background: #faf9f6;
+    border-radius: 22px;
+    background: var(--project-surface);
     color: var(--color-text);
-    text-align: center;
+    text-align: left;
     text-decoration: none;
-    box-shadow: var(--project-card-shadow);
-    transition-property: transform, box-shadow;
-    user-select: none;
-    -webkit-user-drag: none;
 
-    &:hover, &:focus-visible {
-        color: var(--color-text);
-        text-decoration: none;
-        box-shadow: 12px 30px 36px -10px rgba(32, 34, 33, .32), 1px 2px 4px rgba(32, 34, 33, .05);
-    }
-    &__heading {
+    &[data-project='ios'] { --project-surface: #d8c1ff; }
+    &[data-project='shop'] { --project-surface: #fff0b8; }
+    &[data-project='games'] { --project-surface: #ff8983; }
+    &[data-project='learn'] { --project-surface: #b6dfff; }
+    &[data-project='metronome'] { --project-surface: #dcefdc; }
+    &[data-project='blog'] { --project-surface: #f8dce1; }
+
+    &:hover, &:focus-visible { color: var(--color-text); text-decoration: none; }
+    &:focus-visible { box-shadow: inset 0 0 0 3px var(--color-primary); }
+
+    &__copy {
         position: relative;
-        padding: 20px 18px 0;
         z-index: 1;
+        padding: 20px 20px 16px;
+        flex: 1;
+
         h2 {
-            margin: 0;
-            font-size: var(--font-size-h4);
-            font-weight: var(--font-weight-heading);
+            margin: 0 0 4px;
+            font-size: var(--font-size-h2);
             line-height: var(--line-height-heading);
+            font-weight: var(--font-weight-heading);
+            letter-spacing: normal;
+        }
+
+        p {
+            margin: 0;
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-body);
+            letter-spacing: 0;
         }
     }
-    &__art {
+
+    &__media {
+        position: relative;
+        aspect-ratio: 4 / 5;
+        flex: 0 0 auto;
+        overflow: hidden;
+        border-radius: 24px 24px 0 0;
+
+        img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    }
+
+    &__action.btn {
+        --radius-button: var(--radius-pill);
         position: absolute;
-        inset: 40px 0 0;
-        width: 100%;
-        height: calc(100% - 40px);
-        object-fit: cover;
-        object-position: center top;
-        z-index: -1;
+        z-index: 2;
+        left: 16px;
+        bottom: 18px;
+        display: inline-flex;
+        align-items: center;
         pointer-events: none;
     }
-    &__caption {
-        position: relative;
-        margin: 6px auto 0;
-        padding: 0 18px;
-        color: var(--color-text-muted);
-        font-size: var(--font-size-base);
-        line-height: var(--line-height-body);
-        letter-spacing: var(--letter-spacing-body);
+
+    &--compact {
+        min-height: 144px;
+
+        .project-card__tag,
+        .project-card__action-label { display: none; }
+
+        .project-card__copy {
+            width: 54%;
+            padding: 22px 16px 22px 20px;
+            h2 { font-size: var(--font-size-h4); }
+        }
+
+        .project-card__media {
+            position: absolute;
+            inset: 0 0 0 40%;
+            aspect-ratio: auto;
+            border-radius: 0;
+
+            &::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(90deg, var(--project-surface), transparent 40%);
+                pointer-events: none;
+            }
+        }
+    }
+
+    &__action--compact.btn {
+        --radius-button: var(--radius-circle);
+        left: auto;
+        right: 16px;
+        bottom: 18px;
+        width: 42px;
+        height: 42px;
+        justify-content: center;
+        padding: 0;
     }
 }
 
-@media (max-width: 767px) {
-    .project-deck {
-        --project-width: 264px;
-        --project-gutter: 20px;
-        --project-gap: 20px;
+@media (min-width: 768px) and (max-width: 1199px) {
+    .project-card--compact {
+        min-height: 176px;
+        .project-card__copy { width: 70%; }
     }
 }
 
-// Desktop gallery emphasis. Transforms leave the link order and scroll geometry
-// intact; the two sides tuck toward the active card without moving it sideways.
-@mixin project-card-spotlight($active) {
-    &:has(> .project-card#{$active}) {
-        > .project-card {
-            transform: scale(.95);
-            filter: brightness(.90);
-        }
-
-        > .project-card:has(~ .project-card#{$active}) {
-            transform: translateX(32px) scale(.95);
-        }
-
-        > .project-card#{$active} ~ .project-card {
-            transform: translateX(-32px) scale(.95);
-        }
-
-        > .project-card#{$active} {
-            z-index: 3;
-            transform: translateY(-3px) scale(1.12);
-            filter: brightness(1);
-            box-shadow: 12px 30px 38px -10px rgba(32, 34, 33, .34), 1px 2px 5px rgba(32, 34, 33, .08);
-            transition-timing-function: cubic-bezier(.34, 1.56, .64, 1), ease, ease;
-        }
-    }
+@media (max-width: 575px) {
+    .project-card:not(.project-card--compact) .project-card__media { aspect-ratio: 1; object-position: center; }
 }
 
-@media (hover: hover) and (pointer: fine) {
-    .project-deck {
-        display: flow-root;
+// Scroll progress shares one expansion between adjacent cards. Their combined
+// height stays constant, keeping native scrolling stable in either direction.
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+    .project-deck[data-mobile-cards] {
+        overflow-anchor: none;
+        padding-bottom: var(--project-scroll-tail, 0px);
 
-        &__viewport {
-            // Extra paint room for the enlarged card and shadow, without
-            // changing the row's resting position or the scene below it.
-            padding-block: 40px 76px;
-            margin-block: -20px -40px;
+        > .row > div {
+            flex: 0 0 100%;
+            width: 100%;
+            max-width: 100%;
         }
-    }
 
-    .project-deck .project-card {
-        // Keep the spring's upward movement restrained near the heading.
-        transform-origin: 50% 30%;
-        transition: transform 480ms cubic-bezier(.22, 1, .36, 1), filter 220ms ease, box-shadow 240ms ease;
-    }
-
-    .project-deck:not(.is-dragging) .project-deck__viewport {
-        @include project-card-spotlight(':hover');
-
-        // Pointer hover wins when keyboard focus is left on another card.
-        &:not(:has(> .project-card:hover)) {
-            @include project-card-spotlight(':focus-visible');
+        .project-card {
+            --project-open: 0;
+            height: calc(var(--project-compact-height, 144px) + var(--project-expansion, 360px) * var(--project-open));
+            min-height: 0;
         }
-    }
-}
 
-@media (prefers-reduced-motion: reduce) {
-    .project-card { transition: none; }
+        .project-card__copy {
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            padding: 20px 20px 16px;
 
-    .project-deck .project-deck__viewport > .project-card {
-        transition: none !important;
-        transform: none !important;
+            h2 { font-size: calc(var(--font-size-h4) + (var(--font-size-h2) - var(--font-size-h4)) * var(--project-open)); }
+        }
+
+        .project-card__tag {
+            display: flex;
+            width: max-content;
+            overflow: hidden;
+            max-height: calc(26px * var(--project-open));
+            margin-bottom: calc(8px * var(--project-open)) !important;
+            padding-block: calc(2px * var(--project-open));
+            opacity: var(--project-open);
+            vertical-align: top;
+        }
+
+        .project-card__media {
+            position: absolute;
+            // The card clips a stationary photograph instead of resizing an
+            // object-fit image inside a continuously changing rectangle.
+            inset: var(--project-copy-height, 144px) 0 auto;
+            height: var(--project-photo-height, 360px);
+            aspect-ratio: auto;
+            border-radius: 24px 24px 0 0;
+            opacity: clamp(0, var(--project-open) * 4, 1);
+
+            &::after { display: none; }
+        }
+
+        .project-card__action.btn {
+            --radius-button: var(--radius-pill);
+            left: calc(16px + (100% - 74px) * (1 - var(--project-open)));
+            right: auto;
+            bottom: 16px;
+            width: calc(42px + 134px * var(--project-open));
+            height: 42px;
+            padding: 0;
+            justify-content: center;
+
+            .app-icon { margin-left: calc(8px * var(--project-open)) !important; }
+        }
+
+        .project-card__action-label {
+            display: block;
+            max-width: calc(132px * var(--project-open));
+            overflow: hidden;
+            white-space: nowrap;
+            opacity: clamp(0, (var(--project-open) - .85) * 7, 1);
+        }
     }
 }

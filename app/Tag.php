@@ -169,7 +169,7 @@ class Tag extends PianoLit
         return $this->webCoverImageExcept();
     }
 
-    public function webCoverImageExcept(array $excluded = [], ?string $seed = null)
+    public function webCoverImageExcept(array $excluded = [])
     {
         $folder = strtolower((string) $this->name);
         if (!in_array($this->type, ['period', 'genre'], true) || !preg_match('/^[a-z0-9_-]+$/D', $folder)) {
@@ -185,10 +185,6 @@ class Tag extends PianoLit
             return asset($path.'/'.rawurlencode(basename($file)));
         }, $images) : [$this->cover_image];
         $available = array_values(array_diff(array_filter($urls), $excluded));
-        if (!$available) return null;
-        // Discover can share a stable choice across renderers; other callers
-        // retain their existing independently randomized artwork.
-        $index = $seed === null ? array_rand($available) : hexdec(substr(hash('sha256', $seed), 0, 8)) % count($available);
-        return $available[$index];
+        return $available ? $available[array_rand($available)] : null;
     }
 }

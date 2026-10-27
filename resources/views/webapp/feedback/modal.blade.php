@@ -7,7 +7,7 @@
         <input type="hidden" name="rating" value="good">
         <input type="hidden" name="page_context" value="{{ app(\App\Services\FeedbackContext::class)->forPage(request()) }}">
         <div class="feedback-stage" data-feedback-swipe>
-            <h1 id="feedback-heading" class="feedback-question">How was your PianoLIT<br>experience?</h1>
+            <h1 id="feedback-heading" class="feedback-question">How is your experience<br>with PianoLIT?</h1>
             <div class="feedback-expression">@include('webapp.feedback.face')</div>
             <div class="feedback-rating-window" aria-hidden="true"><div class="feedback-rating-track" data-feedback-labels><span>BAD</span><span>NOT BAD</span><span>GOOD</span></div></div>
         </div>

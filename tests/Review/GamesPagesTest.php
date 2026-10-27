@@ -110,7 +110,8 @@ class GamesPagesTest extends GamesTestCase
             $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//div[contains(@class, "dropdown-menu")]//*[@data-games-profile]')->length);
             $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//div[contains(@class, "games-player-menu") and contains(@class, "dropdown-menu-end") and @aria-labelledby="games-player-menu-button"]')->length);
             $this->assertSame(0, $xpath->query('//header//div[@aria-labelledby="navbarDropdown"]//*[@data-games-profile]')->length);
-            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//button[@id="games-player-menu-button" and @data-bs-toggle="dropdown"]//*[@data-lucide-name="trophy"]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//button[@id="games-player-menu-button" and @data-bs-toggle="dropdown" and @data-bs-display="static" and @data-account-menu-toggle and @data-account-menu-tone="yellow"]//*[@data-lucide-name="trophy"]')->length);
+            $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//div[contains(@class, "account-menu") and @aria-labelledby="games-player-menu-button"]//h2[contains(@class, "account-menu__name")]')->length);
             $this->assertSame(0, $xpath->query('//main//*[@data-games-profile] | //*[@id="user-avatar"] | //*[@id="user-avatar-menu"]')->length);
             $this->assertSame($signedIn ? 1 : 0, $xpath->query('//header//*[@data-games-profile]//button[@data-profile-delete]')->length);
             $this->assertSame($signedIn ? 11 : 0, $xpath->query('//header//*[@data-games-profile]//*[@data-profile-game]')->length);

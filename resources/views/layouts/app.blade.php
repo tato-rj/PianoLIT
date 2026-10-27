@@ -62,7 +62,13 @@
 
         <main @if(request()->getHost() !== 'my.'.config('app.short_url')) class="flex-grow-1" @endif>
 
-            @yield('content')
+            @if(request()->getHost() !== 'my.'.config('app.short_url') && empty($projectHome) && empty($raw))
+                @component('components.layout.public.content')
+                    @yield('content')
+                @endcomponent
+            @else
+                @yield('content')
+            @endif
 
         </main>
 

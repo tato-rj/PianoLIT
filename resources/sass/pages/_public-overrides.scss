@@ -1,4 +1,13 @@
 // Public website / web app overrides. Imported at the legacy cascade position.
+:root {
+    --color-page: var(--color-surface);
+}
+
+// Public hubs share the homepage grid; my.* does not use this shell.
+.public-site .container {
+    max-width: 1360px;
+}
+
 .tooltip {
     z-index: 1040;
 }

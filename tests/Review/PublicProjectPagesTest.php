@@ -43,7 +43,7 @@ class PublicProjectPagesTest extends ReviewTestCase
         return new \DOMXPath($dom);
     }
 
-    public function test_homepage_piano_is_decorative_even_with_an_active_free_pick()
+    public function test_homepage_worlds_keep_the_requested_order_and_do_not_load_free_pick_media()
     {
         $this->useDomain('http://pianolit.test');
         $piece = Model::withoutEvents(function () {
@@ -51,13 +51,23 @@ class PublicProjectPagesTest extends ReviewTestCase
         });
         \App\FreePick::create(['piece_id' => $piece->id, 'scheduled_at' => now('UTC')->subHour()]);
         $response = $this->get('http://pianolit.test')->assertOk()
-            ->assertSee('images/home/editorial/piano.webp', false)
+            ->assertSee('Many worlds.', false)->assertSee('One love of music', false)
+            ->assertSee('images/home/worlds/webapp.webp', false)
+            ->assertDontSee('images/home/editorial/piano.webp', false)
+            ->assertSee('js/components/project-deck.js', false)
             ->assertDontSee('data-home-piano', false)->assertDontSee('data-score-toggle', false)
             ->assertDontSee('home-piano.js', false)->assertDontSee('pdfjs/pdf.js', false)
             ->assertDontSee('app/audio/current.mp3', false)->assertDontSee('app/score/current.pdf', false);
         $xpath = $this->xpath($response->getContent());
         $this->assertSame(0, $xpath->query('//audio | //canvas')->length);
-        $this->assertSame(1, $xpath->query('//div[@class="project-home__instrument" and @aria-hidden="true"]/img[@alt=""]')->length);
+        $cards = $xpath->query('//a[@data-project]');
+        $this->assertSame(['webapp', 'ios', 'learn', 'games', 'shop', 'metronome', 'blog'], array_map(function ($card) {
+            return $card->getAttribute('data-project');
+        }, iterator_to_array($cards)));
+        $this->assertSame(3, $xpath->query('//a[@data-project and contains(@class, "project-card--compact")]')->length);
+        $this->assertSame(7, $xpath->query('//a[@data-project]//img[@alt=""]')->length);
+        $this->assertSame(1, $xpath->query('//header//span[@class="site-header__name" and text()="PianoLIT"]')->length);
+        $this->assertSame(1, $xpath->query('//a[@data-project="ios" and @target="_blank" and @rel="noopener noreferrer"]')->length);
     }
 
     public function test_metronome_is_standalone_on_its_own_host_and_linked_from_the_homepage()
@@ -95,8 +105,8 @@ class PublicProjectPagesTest extends ReviewTestCase
             $this->assertSame(7, $cards->length);
             $this->assertSame('webapp', $cards->item(0)->getAttribute('data-project'));
             $this->assertSame('ios', $cards->item(1)->getAttribute('data-project'));
-            $this->assertSame($origin, $cards->item(6)->getAttribute('href'));
-            $home->assertSee('images/home/editorial/metronome.webp?id=', false);
+            $this->assertSame($origin, $this->xpath($home->getContent())->query('//a[@data-project="metronome"]')->item(0)->getAttribute('href'));
+            $home->assertSee('images/home/worlds/metronome.webp?id=', false);
             $webapp = app('router')->getRoutes()->match(Request::create(str_replace('://', '://my.', $website), 'GET'));
             $this->assertSame('webapp.discover', $webapp->getName());
         }
@@ -156,7 +166,7 @@ class PublicProjectPagesTest extends ReviewTestCase
         $this->call('HEAD', $origin)->assertOk();
     }
 
-    public function test_public_hub_menu_links_across_hosts_and_stays_off_the_homepage_and_webapp()
+    public function test_hub_menu_links_across_public_and_webapp_hosts_and_stays_off_the_homepage_and_account_screens()
     {
         foreach (['http://pianolit.test', 'https://pianolit.com'] as $website) {
             $this->useDomain($website);
@@ -172,7 +182,7 @@ class PublicProjectPagesTest extends ReviewTestCase
                 'Blog' => $scheme.'blog.'.$host,
                 'Metronome' => $scheme.'metronome.'.$host,
             ];
-            foreach (['shop.', 'games.', 'learn.', 'blog.', ''] as $prefix) {
+            foreach (['shop.', 'games.', 'learn.', 'blog.', 'my.', ''] as $prefix) {
                 $origin = $scheme.$prefix.$host;
                 $response = $this->get($origin.($prefix === '' ? '/contact-us' : ''))->assertOk();
                 $xpath = $this->xpath($response->getContent());
@@ -181,12 +191,13 @@ class PublicProjectPagesTest extends ReviewTestCase
                 $this->assertSame(1, $xpath->query('//div[@id="public-hub-menu" and contains(@class, "offcanvas-end") and @tabindex="-1" and @aria-labelledby="public-hub-menu-title"]')->length);
                 $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//button[@data-bs-dismiss="offcanvas" and @aria-label="Close hub menu"]')->length);
                 $this->assertSame(8, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a')->length);
+                $this->assertSame(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a[@href="'.$destinations['Web app'].'" and not(@target) and not(@rel)]')->length);
                 foreach ($destinations as $label => $destination) {
                     $this->assertSame(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a[@href="'.$destination.'"]/span[text()="'.$label.'"]')->length, $origin.' → '.$label);
                 }
                 $this->assertSame(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a[@aria-current="true" and @href="'.$origin.'"]')->length);
             }
-            foreach ([$website, $scheme.'my.'.$host.'/login', $scheme.'my.'.$host] as $url) {
+            foreach ([$website, $scheme.'my.'.$host.'/login'] as $url) {
                 $this->get($url)->assertOk()->assertDontSee('id="public-hub-menu"', false)->assertDontSee('aria-label="Open hub menu"', false);
             }
         }
@@ -198,16 +209,18 @@ class PublicProjectPagesTest extends ReviewTestCase
             return create(User::class, ['first_name' => 'Header <Example>', 'email' => 'header@example.test']);
         });
         $this->actingAs($user, 'web');
-        foreach (['', 'shop.', 'games.', 'learn.', 'blog.'] as $prefix) {
+        foreach (['', 'shop.', 'games.', 'learn.', 'blog.', 'my.'] as $prefix) {
             $origin = 'http://'.$prefix.'localhost';
-            $response = $this->get($origin)->assertOk()->assertSee('Header &lt;Example&gt;', false);
+            $response = $this->get($origin)->assertOk()->assertSee('Header &lt;Example&gt;', false)
+                ->assertSee('header@example.test')->assertSee('account-menu__identity', false);
             $xpath = $this->xpath($response->getContent());
             $this->assertSame(0, $xpath->query('//header//a[@href="'.$origin.'/login"]')->length);
             $this->assertSame($prefix === '' ? 1 : 0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
-            $this->assertSame(1, $xpath->query('//header//button[@data-bs-toggle="dropdown" and contains(@class, "account-circle")]')->length);
+            $this->assertSame(1, $xpath->query('//header//button[@id="navbarDropdown" and @data-bs-toggle="dropdown" and contains(@class, "account-circle")]')->length);
             $this->assertSame('H', trim($xpath->query('//header//button//span[contains(@class, "account-circle__initial")]')->item(0)->textContent));
             $this->assertSame(1, $xpath->query('//header//a[@href="http://localhost/profile"]')->length);
             $this->assertSame(1, $xpath->query('//header//form[@action="'.$origin.'/logout" and @method="POST"]//input[@name="_token"]')->length);
+            $this->assertSame(1, $xpath->query('//header//form[@action="'.$origin.'/logout"]//button[@type="submit" and normalize-space(.)="Log out"]')->length);
             $this->assertSame($prefix === '' ? 0 : 1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu"]')->length);
         }
     }

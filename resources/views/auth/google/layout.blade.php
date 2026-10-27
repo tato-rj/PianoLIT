@@ -12,7 +12,7 @@
     @include('layouts.html.theme')
 </head>
 @php($publicHeader = ! in_array(request()->getHost(), ['my.'.config('app.short_url'), 'admin.'.config('app.short_url')], true))
-<body class="bg-light{{ $publicHeader ? ' public-site d-flex flex-column min-vh-100' : '' }}">
+<body class="bg-white{{ $publicHeader ? ' public-site d-flex flex-column min-vh-100' : '' }}">
   @if($publicHeader)
     @include('components.layout.public.header')
   @endif

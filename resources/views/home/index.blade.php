@@ -1,22 +1,24 @@
-@extends('layouts.app', ['projectHome' => true, 'bodyClass' => 'project-home', 'title' => 'PianoLIT — A world of piano.'])
+@extends('layouts.app', ['projectHome' => true, 'bodyClass' => 'project-home', 'title' => 'PianoLIT — Many worlds, one love of music'])
 
 @section('content')
 <div class="project-home__page">
-    @include('components.layout.public.header')
+    @include('components.layout.public.header', ['showBrandName' => true])
 
-    <section class="project-home__hero" aria-labelledby="home-heading">
-        <h1 id="home-heading">Welcome to <span>PianoLIT</span></h1>
-        <p>A world of music, learning, and inspiration for everyone who loves piano.</p>
-    </section>
+    <div class="container project-home__content">
+        <section class="project-home__hero row align-items-end gy-4 mx-lg-4" aria-labelledby="home-heading">
+            <div class="col-12 col-lg-6 col-xxl-5">
+                <p class="project-home__eyebrow">A home for your musical curiosity</p>
+                <h1 id="home-heading" class="text-nowrap">Many worlds.<br>One love of music.</h1>
+            </div>
+            <div class="col-12 col-lg-6 col-xxl-7">
+                <p class="project-home__intro">Find your next piece.<br>Follow an idea. Play a little.<br>Every path starts at PianoLIT.</p>
+                <p class="project-home__invitation mb-0">Choose a world to begin @icon('arrow-down', ['mr' => 0, 'ml' => 1])</p>
+            </div>
+        </section>
 
-    @include('home.components.project-deck', ['projects' => $projects])
-
-    <div class="project-home__room">
-        <div class="project-home__instrument" aria-hidden="true">
-            <img class="project-home__piano" src="{{ asset(mix('images/home/editorial/piano.webp')) }}" width="1402" height="1122" alt="" draggable="false">
-        </div>
+        @include('home.components.project-deck', ['projects' => $projects])
     </div>
 
-    @include('components.layout.public.footer')
+    @include('components.layout.public.footer', ['homeWorlds' => true])
 </div>
 @endsection

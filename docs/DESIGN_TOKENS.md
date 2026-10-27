@@ -14,6 +14,42 @@ Edit `resources/sass/shared/_tokens.scss`, then run `npm run production`.
 It contains the existing Sass palette and the CSS custom properties used by the
 public website, web app and admin. Commit the rebuilt CSS and Mix manifest together.
 
+## Account menu
+
+`components.account.menu-panel` supplies the common account and Game player menu
+surface and loads the positioning script once. `components.account.menu` supplies
+the public account content and its Components specimen. Keep the name/email header, account circle, icon rows, current
+page highlight and separately divided logout area on this component. Its shared
+`components/_account-menu.scss` uses the existing surface, text, border, radius
+and dropdown-shadow tokens. Names and email addresses wrap on narrow screens.
+
+The menu is 17rem wide, reducing the space between the identity text and circle,
+with standard 16px labels and 14px email text.
+The actual header account button stays above the open menu at its original
+screen coordinates, retaining its exact 44px size and white border. Its closed
+state is grey; its open state is dark with a white initial. The popup opens with
+a 180ms fade and slight scale from the circle's center, while the circle's color
+transitions over the same duration. Reduced motion disables both effects.
+The versioned `components/account-menu.js` positions the menu around that button,
+keeps it within the viewport and moves identity text below the circle when other
+header controls leave insufficient room beside it. Resize recalculates the
+position using its untransformed layout width during animation; page scrolling
+dismisses the menu. Bootstrap retains click, keyboard,
+outside-click and Escape handling. Keep My profile and My
+downloads on the absolute main website, Support on its existing destination,
+and logout as a same-host POST form with CSRF and a native submit button.
+The Design System uses fictitious account details, the same account-circle
+renderer and an inert logout button.
+
+Games' trophy menu uses the same panel, dimensions, spacing, animation and
+positioning. Its actual 44px trophy circle stays yellow in both states through
+`data-account-menu-tone="yellow"`; the shared circle stylesheet reads its colors
+from the reference Games palette. `games.challenges.profile.menu` keeps player
+name/avatar, best scores and the existing Clear records action. Read-only scores
+use `.account-menu__row`; actions use `.account-menu__link`, so scores do not gain
+click feedback. The Game player Components specimen renders the same panel,
+profile content and yellow-circle partial without changing browser records.
+
 ## PianoLIT brand icons
 
 The first Design System section, **PianoLIT icons**, previews and downloads the
@@ -178,6 +214,13 @@ defaults to the flat `accordion-flush` variant; `flush: false` keeps the standar
 outer border. The Design System previews these same components. Avoid combining
 rounded card headers with separate card borders inside an accordion.
 
+Support uses the wrapper's `variant: minimal` option, matching the membership
+FAQ's quiet finish: semibold questions, plus/close icons, thin bottom dividers,
+muted answers and no colored expanded header. Shared `components/_accordion.scss`
+owns this option; native Bootstrap collapse behavior and accessible buttons remain.
+The Design System includes both closed and expanded minimal items. Other callers
+retain the default Bootstrap finish.
+
 Date and time displays omit timezone names and explanatory timezone captions.
 Use the configured application timezone for formatting and calculations.
 
@@ -293,9 +336,14 @@ Use `--color-text`, `--color-text-muted`, `--color-surface`,
 `--color-surface-subtle` and `--color-border` for new shared styles.
 
 The default body background across the public website, every hub and `my.*` is
-`--color-surface-subtle` (#f8f9fa), matching the homepage. Keep white cards and
-controls on `--color-surface`; page-specific backgrounds remain explicit
-exceptions. The mobile article embed retains its white body through `bg-white`.
+white. The public bundle defines `--color-page: var(--color-surface)`; shared
+body styles consume it, retaining the subtle-surface fallback for administration.
+Use this page surface for full-page game results and theory-tool areas that must
+blend into the page. Keep `--color-surface-subtle` (#f8f9fa) for controls, hover
+states and inset panels. Public account screens and legacy footer/video-credit
+wrappers also use white. Colored artwork, game controls and the standalone
+metronome canvas retain their intentional colors; email and admin surfaces are
+unchanged. The mobile article embed retains its white body through `bg-white`.
 
 Discover's horizontal piece links reuse `.discover-compact-card` for their white
 `--color-surface`, shared padding and rounded corners, including Recently viewed
@@ -465,6 +513,9 @@ The standard public header is `components.layout.public.header`, with shared lay
 `resources/sass/components/_public-header.scss`. Reuse it for public pages:
 brand icon left and the circular account control right. The YouTube button is
 shown only on the main homepage (`home` route).
+It reuses `components.navigation.youtube-button`: a black pill with a white
+YouTube mark, the label “Youtube” and a white diagonal arrow, using the shared dark button, pill radius
+and Bootstrap sizing/alignment. The Design System uses this same component.
 Other public pages add `components.navigation.hub-menu.button` after the account
 control. Its Bootstrap offcanvas, `components.navigation.hub-menu.panel`, links to the
 main website, Web app, iOS app, Shop, Games, Learn, Blog and Metronome using named routes
@@ -475,12 +526,16 @@ uses the shared raw-button and Bootstrap spacing/alignment classes, with its
 specimen in the Design System. The hamburger icon is exactly `1.5rem`.
 Web app and iOS app appear first, separated from the website destinations by a
 fine neutral divider; both open a new tab with `rel="noopener noreferrer"`.
-All destinations share aligned 20px muted-grey icons, 16px labels and full-row
+All destinations share aligned 20px icons, 16px labels and full-row
 targets at least 44px tall, with 4px between rows. Retain the shared
-`@icon('pianolit')` mark, Apple's brand icon and the apps' muted `chevron-right`
-indicators. Avoid colored icons, pill outlines and shadows. Hover/current rows
-use the subtle surface token; the current hub also has a semibold label, and
-keyboard focus uses a stronger neutral background. `components/_hub-menu.scss` owns this
+`@icon('pianolit')` mark, Apple's brand icon and the apps' `chevron-right`
+indicators. Labels and arrows use the account menu's full-contrast
+`--color-text` (#212529). Leading hub/app icons inherit that color at rest and
+use `--color-primary` on hover, keyboard focus and the current hub. Keep the
+current icon blue after hover ends. Avoid pill outlines and shadows. Hover/current
+rows use the subtle surface token; the current hub also has a semibold label, and
+keyboard focus and pressed rows use the account menu's stronger neutral border
+color as their background. `components/_hub-menu.scss` owns this
 shared finish; the Design System renders the same complete menu in preview mode.
 Both this menu and the piece Options panel reuse `components.layout.side-menu-header`:
 a 16px heading, Bootstrap `px-4 py-3` spacing with a `gap-3` between the title
@@ -549,110 +604,90 @@ Their layout lives in `pages/_project-coming-soon.scss`; content URLs below thos
 roots remain available. Return links use the named main-site route, including
 from Games and when `APP_URL` has no scheme.
 
-`home.components.project-card` renders the homepage's seven destination links and its
-Design System specimen. Its gallery finish lives in
-`resources/sass/components/_project-card.scss`; the wall, room and responsive
-arrangement live in `pages/_home.scss`. Following Arthur's October 22 reference,
-cards have a 35:48 aspect ratio, 7px corners, a warm-white surface, dark type and
-directional soft shadows. Realistic close-up product mockups fill the card width,
-with PianoLIT branding, dark hardware/printing and saturated book covers. The laptop
-and iPhone screens use the live web-app capture and Arthur's actual iOS screenshot,
-respectively, rather than invented interfaces. Neutral upper space keeps the HTML copy readable; relevant tabletop,
-score and piano details give the lower scene depth. Omit abstract shapes, folded
-paper and unrelated props. Artwork starts 40px below the top and uses `object-fit:
-cover` with top-center alignment; natural side/bottom crops are intentional. General
-pastel cards elsewhere retain their existing finish.
-Project titles explicitly use Bootstrap's `text-body` utility so they keep the
-regular text color regardless of inherited link states; descriptions also keep
-their regular color on hover. Each title includes its matching 20px muted-grey
-hub icon with an 8px gap, using the shared PianoLIT mark for Web app and Apple's
-brand icon for iOS. The title and icon stay centered as one group. Each card has
-a muted 16px top-right `arrow-up-right`
-from the shared icon renderer, positioned with Bootstrap utilities 16px inward
-from the top and right edges to indicate its destination link. The gallery has
-no previous/next arrow controls.
-Within the gallery, fine-pointer hover highlights the active card with a 1.12
-scale, 3px lift and soft 480ms spring. Other cards dim to 90% brightness and scale
-to .95; the cards on each side move 32px inward behind the active card. The active
-card stays in its original horizontal position and paints above its neighbors.
-Keyboard focus gets the same emphasis when no card is hovered. Dragging disables
-the emphasis, and reduced motion disables transforms/transitions while retaining
-the brightness contrast. Compensated scrollport padding leaves room for the larger
-card/shadow without changing the resting layout or piano position. These rules
-live in `_project-card.scss`; Blog and web-app piece cards keep the shared 3px /
-180ms `.card-lift` behavior in `components/_card-lift.scss`.
+`home.components.project-card` renders the homepage’s featured and compact hub cards,
+and the Design System previews both variants. The October 26 “Many worlds”
+reference replaces the scrolling gallery and decorative piano room. The desktop
+Bootstrap grid uses four large cards (Web app, iOS app, Learn, Games), followed by
+three horizontal cards (Shop, Metronome, Blog), restoring the original reference order. Every card remains one native
+link with its existing destination and accessible title/description; iOS opens
+safely in a new tab. There is no auto-scroll or extra click step. Hub headings
+reuse the main-menu icons: PianoLIT for Web app, Apple for iOS, graduation cap
+for Learn, trophy for Games, shopping basket for Shop, metronome and newspaper
+for Blog. Use the shared icon/brand renderers with the existing 20px utility and
+Bootstrap alignment/gap classes; icons are decorative beside the accessible title.
 
-The gallery uses `home.components.project-deck` and its standalone, versioned
-`js/components/project-deck.js`. Cards are 244px wide on desktop and 264px on
-phones, retaining the 35:48 ratio, responsive 20–32px gaps (20px on phones) and Web app / iOS / Shop /
-Learn / Games / Metronome / Blog order. Titles use `--font-size-h4` (24px); descriptions use
-`--font-size-base` (16px) and shared line-height/weight tokens. The hero also uses
-standard heading/body sizes. Every card is a direct destination link; Arthur
-withdrew the inline expansion request, so there are no open panels or extra
-navigation steps.
+Below 768px, the versioned `project-deck.js` progressively enhances all seven hubs
+into a scroll-driven accordion. As a card leaves the reading position, it becomes
+compact while the adjacent card expands; scrolling upward reverses the handoff.
+Mobile compact cards are clean colored text/arrow rows. Each photograph stays at
+the full card width and its measured full photo height, anchored below the copy;
+the card's changing height reveals/clips that stationary image with a brief fade.
+Never resize or translate the image window with scroll progress: that causes
+`object-fit: cover` to zoom and reframe the artwork during the handoff. Copy keeps
+the full card width, and action labels fade in near full expansion to avoid
+showing fragments of button text. Desktop compact cards retain their thumbnails.
+The two cards share a constant amount of expansion, so the list height stays
+steady. The script uses passive native scrolling and one animation-frame update
+per scroll burst, without wheel/touch interception or an idle animation loop.
+Copy heights are measured in both states, viewport-height changes from mobile
+browser chrome retain stable anchors, and a small measured bottom allowance lets
+the final card expand fully. Keyboard-focused links are brought into the expanded
+position. Desktop, reduced-motion preference and no-JavaScript views keep the
+static grid. The same card markup supplies tags/actions for every hub, hiding
+those additions in the desktop compact variant; the Design System specimens
+continue to use the shared card component.
 
-Native horizontal touch/trackpad scrolling is supplemented by mouse dragging
-and Arrow/Home/End keyboard navigation; there are no previous/next buttons.
-The finite row gently auto-scrolls forward at 22px/second, then stops at the
-last card. Each project appears once; there are no clones, looping or reversal.
-Both first and last cards are real boundaries. Arrow keys stay within those
-seven links, Home selects Web app, and End selects the last rendered project.
-Hover, pointer/touch holds and keyboard focus pause it immediately.
-Manual scrolling and native swipe inertia postpone its
-return until 2.4 seconds after interaction ends. It also stops while offscreen,
-in a hidden tab or when reduced motion is enabled. A drag suppresses only its
-release click; ordinary, modified and Enter clicks retain native link behavior.
-Vertical mouse-wheel scrolling browses the row and releases to the page
-at either boundary. Without JavaScript, the original seven links and native
-horizontal scrolling still work as a finite row.
-The Design System includes this same gallery component.
+The header keeps the shared logo, YouTube action and account control. Its optional
+`showBrandName` adds PianoLIT beside the logo only on the homepage. All public
+pages and hubs share the 1360px container limit through `.public-site .container`
+in `_public-overrides.scss`. This shell excludes `my.*`, admin and mobile embeds;
+the full-screen metronome and individual games keep their focused layouts.
+Header/footer rows and the homepage hero use Bootstrap `mx-lg-4` to restore the
+desktop text inset. The logo, title and footer share its left edge, with menus
+and footer captions equally inset on the right. Homepage cards retain their
+wider container and extend beyond those text edges. Other public pages use
+`components.layout.public.content` through `layouts.app`: a container, inset row
+and unpadded column around the existing page containers. Their content stays
+within the logo/menu edges. Homepage, `my.*` and raw views bypass that wrapper;
+the centered Shop placeholder retains `mx-auto`. Below `lg`, standard gutters
+keep mobile alignment unchanged.
+The gap from the header to public breadcrumbs matches the homepage eyebrow:
+36px from 768px upward and 30px on phones. The shared header's following main
+adds 12px/6px above the page container's Bootstrap `py-4` padding; keep this
+spacing shared instead of adding breadcrumb-specific margins to each page.
+The hero uses six-column blocks from `lg` and a five/seven-column split from
+`xxl`, keeping the introduction close to the title without squeezing it on
+smaller screens. “Choose a world to begin” stays left-aligned immediately below
+the subtitle on desktop and mobile.
+Edit these columns and spacing in Blade. The homepage passes
+`homeWorlds` to the shared footer
+for the reference’s “Made for the love of piano” / “PianoLIT · Come back curious”
+layout; other pages retain Support, Privacy, Terms and copyright.
 
-The main background keeps `--color-surface-subtle` (#f8f9fa) as its base, with
-homepage-only translucent daylight layers: a soft upper-left glow, gently darker
-right side and broad diagonal light bands feathered toward the left of the room.
-These static gradients live in `pages/_home.scss`; the light overlay is behind
-content and never intercepts input. The translucent floor shading lets the same
-light continue below the wall. The scene includes an upright
-piano and bench at their natural aspect ratio. The image uses `height: auto`,
-with a 620px desktop maximum. The piano retains a normal black satin finish with
-simplified surfaces, restrained texture, subtle brass trim and a softer shadow; its
-top stays bare, with no plant. Cards remain in front of the decorative scene.
-`--room-offset: 60px` in `pages/_home.scss` lowers the piano, floor and following
-content together. Desktop spacing is `calc(-132px + var(--room-offset))`.
-Below 768px, the responsive baseline remains
-`calc(-60px - 12vw + var(--room-offset))`, with the piano at 94% of viewport width.
-Adjust the shared offset to move the scene without separating it from its floor.
-Keep the piano physically grounded: `__instrument::before` supplies tight contact
-shadows under both wheels and the bench feet, plus broader soft floor shadows.
-Their percentage coordinates follow the transparent image and scale with it
-(wheels at 88.8% height, front bench feet at 94.6%). The piano's right/down drop
-shadow follows the left-side daylight. Simplifying the piano must not remove
-these contact/cast shadows or make it appear to float above the room.
-The decorative room has `pointer-events: none` so it does not intercept links
-or scrolling underneath. It is never compressed to fit the viewport.
-Its lower portion and the shared footer
-continue down the page. The floor meets the rear cabinet at 82% of the image
-height, excluding the room's bottom padding; the 7px skirting sits above that line.
-This keeps the piano's front feet and bench on the floor at every screen size.
-Header and footer continue to use their shared Bootstrap
-components, with the icon alone at left and YouTube/account controls at right.
+The homepage uses a full-window white page surface, without an outer surround,
+inset frame or rounded page corners. Content retains its responsive container.
+Its title keeps `--font-size-h1` (44px), switching to `--font-size-h2` (32px) below
+768px, with normal letter spacing. The explicit line break and Bootstrap
+`text-nowrap` keep the headline on two lines without compressing the type.
+Homepage cards, shared hub titles, Learn introductions, Blog article titles,
+article subheadings and story-card titles also use normal letter spacing.
+The project palette is lime,
+lavender, butter yellow, coral, sky blue, mint and rose, scoped to `_project-card.scss`.
+Featured titles use the shared 32px heading token, compact titles use 24px, and
+body copy uses 16px. Tags, link actions and arrow icons reuse shared components,
+Bootstrap controls and the common card lift, including reduced motion.
 
-Versioned artwork lives under `resources/images/home/editorial/`. Card WebPs are
-720 × 960; the piano is a transparent 1402 × 1122 WebP. See
-`docs/HOMEPAGE_ARTWORK.md` for source references and the exact built-in imagegen
-prompts. The older SVGs under `resources/images/home/projects/` and
-`scripts/build-home-project-mockups.js` are retained; homepage cards use the
-editorial WebPs, while coming-soon pages show no artwork.
+All featured photo windows, including iOS, clip to the same rounded upper corners.
+Compact artwork has a soft left fade behind the HTML text. Source artwork lives
+in `resources/images/home/worlds/` and is copied/versioned by Mix: four 720×900
+portrait images and three 960×640 landscape images. Image dimensions reflect
+the artwork file independently of the card’s featured/compact layout. These are decorative images
+extracted/reconstructed from the user’s approved design with the built-in imagegen
+tool; they are not live product screenshots. Exact prompts and source paths are
+in `HOMEPAGE_ARTWORK.md`. Older editorial images and SVG mockups remain available.
 
-### Decorative homepage piano
-
-Arthur removed the homepage score and playing feature on October 22. The scene
-is now only the original piano image, with an empty score rack and no interactive
-controls. The homepage no longer queries the Free Pick or loads score PDFs,
-audio sources, player scripts or player styles. The dedicated `home-piano.js`,
-score partial and SCSS have been removed. Free Pick functionality and media
-access in the web app and mobile clients are unchanged. Cards render above the
-whole decorative piano/plant scene, which has `pointer-events: none`.
+The homepage still does not query a Free Pick or load audio, PDF or score-editor
+scripts. Web-app/mobile Free Pick media and access behavior remain unchanged.
 
 ## Public editorial pages and promotions
 

@@ -29,6 +29,9 @@
     @component('admin.pages.settings.sample', ['label' => 'Guest account', 'usage' => 'components.account.account-circle · .btn-raw + user-round', 'properties' => 'width,height,font-size,color,background-color,border'])
       @include('components.account.account-circle', ['account' => null, 'designSystemPreview' => true])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Youtube link', 'usage' => 'components.navigation.youtube-button · dark pill', 'properties' => 'font-size,padding,color,background-color,border-radius'])
+      @include('components.navigation.youtube-button', ['designSystemPreview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Public hub menu', 'usage' => 'components.navigation.hub-menu.button · Bootstrap offcanvas', 'properties' => 'padding,color'])
       @include('components.navigation.hub-menu.button', ['designSystemPreview' => true])
     @endcomponent

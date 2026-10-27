@@ -12,6 +12,7 @@
 
 // Shared controls are emitted last to override framework and legacy field styles.
 @import 'components/icons';
+@import 'components/accordion';
 @import 'components/account-circle';
 @import 'components/project-watermark';
 @import 'components/voice-recorder';
@@ -19,6 +20,7 @@
 @import 'components/font-select';
 @import 'components/date-picker';
 @import 'components/dropdown';
+@import 'components/account-menu';
 @import 'components/side-menu-header';
 @import 'components/hub-menu';
 @import 'components/hub-header';

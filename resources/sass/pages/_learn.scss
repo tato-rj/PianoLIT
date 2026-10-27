@@ -1,11 +1,10 @@
 .learn-home {
-    background: var(--color-surface-subtle);
     letter-spacing: 0;
 
     &__intro {
         h1 {
             font-size: clamp(2rem, 4.2vw, 3rem);
-            letter-spacing: -.055em;
+            letter-spacing: normal;
             line-height: 1.12;
             span { color: var(--color-primary); }
         }

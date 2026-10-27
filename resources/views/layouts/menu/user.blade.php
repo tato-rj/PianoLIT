@@ -4,31 +4,10 @@
     @include('components.account.account-circle', ['account' => $menuAccount])
   @else
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    {{auth()->user()->first_name}}
+    {{$menuAccount->first_name ?? 'Account'}}
     @icon('chevron-down', ['mr' => 0, 'styles' => 'font-size: 72%'])
   </a>
   @endif
 
-  <div class="dropdown-menu dropdown-menu-end py-2 px-3" style="min-width: auto" aria-labelledby="navbarDropdown">
-    @if($menuAccount)
-        <a class="nav-link" style="white-space: nowrap;" href="{{route('users.profile')}}">My profile</a>
-        <div class="dropdown-divider my-1"></div>
-        <a class="nav-link" style="white-space: nowrap;" href="{{route('users.purchases')}}">My downloads</a>
-    @else
-        <a class="nav-link" style="white-space: nowrap;" href="{{route('login')}}" aria-label="Sign in">Sign in</a>
-    @endif
-    <div class="dropdown-divider my-1"></div>
-
-    <a class="nav-link" style="white-space: nowrap;" href="{{route('contact')}}">Help & Support</a>
-
-    @if($menuAccount)
-    <div class="dropdown-divider my-1"></div>
-
-    <a class="nav-link" href="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-        @csrf
-      </form>Log out
-    </a>
-    @endif
-  </div>
+  @include('components.account.menu', ['account' => $menuAccount])
 </li>

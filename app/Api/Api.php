@@ -16,12 +16,12 @@ class Api extends Factory
 	public function discover()
 	{
         $key = Redis::get('app.discover') ?: 'app.discover';
-        // DiscoverFeed shares this content pool between web and v2 renderers.
-        // Keep it separate from the shipped legacy mobile feed.
+        // Web ranking must never replace the cached mobile recommendation pool.
+        // Retain the existing refresh prefix and daily expiry for both feeds.
         if ($this->for === 'webapp') $key .= self::WEB_DISCOVER_CACHE_SUFFIX;
         $key = self::freePickCacheKey($key);
 
-        $build = function() {
+        $collection = \Cache::remember($key, days(1), function() {
             $rows = collect([
                 $this->order(0)->free('Free weekly pick'),
                 $this->order(1)->composers('Composers'),
@@ -41,7 +41,7 @@ class Api extends Factory
             ]);
 
             if ($this->for === 'webapp') {
-                // Pick once per modern feed refresh, retaining both original pools
+                // Pick once per web feed refresh, retaining both original pools
                 // and leaving the legacy mobile feed and its fields unchanged.
                 $features = $rows->whereIn('title', ['From women composers', 'From black composers'])
                     ->filter(function ($row) { return collect($row['content'])->isNotEmpty(); });
@@ -53,23 +53,10 @@ class Api extends Factory
             }
 
             return $rows;
-        };
-        if ($this->for === 'webapp') {
-            $collection = \Cache::get($key);
-            if ($collection === null) {
-                // Concurrent web/native cache misses must share one selection.
-                $collection = \Cache::lock($key.'.build', 30)->block(10, function () use ($key, $build) {
-                    return \Cache::remember($key, days(1), $build);
-                });
-            }
-        } else {
-            $collection = \Cache::remember($key, days(1), $build);
-        }
+        });
         
         $collection = clone $collection;
-        // Modern Discover composes account rows through DiscoverFeed, with an
-        // explicit account. Only the legacy API uses submitted user_id here.
-        if ($this->for !== 'webapp') {
+        if ($this->for !== 'webapp' || app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user())) {
             $collection->splice(3, 0, [$this->order(3)->suggestions('For you')]);
         }
 

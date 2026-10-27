@@ -1,6 +1,16 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Account menu', 'usage' => 'components.account.menu · public account dropdown', 'properties' => 'width,padding,color,border-radius,box-shadow'])
+      <span id="ds-account-menu-label" class="visually-hidden">Account menu preview</span>
+      @include('components.account.menu', ['account' => (object) ['first_name' => 'Alex', 'last_name' => 'Morgan', 'email' => 'alex@example.test'], 'menuId' => 'ds-account-menu-label', 'designSystemPreview' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Game player menu', 'usage' => 'components.account.menu-panel · games.challenges.profile.menu', 'properties' => 'width,padding,color,border-radius,box-shadow'])
+      <span id="ds-game-player-menu-label" class="visually-hidden">Game player menu preview</span>
+      @component('components.account.menu-panel', ['menuId' => 'ds-game-player-menu-label', 'menuClasses' => 'games-player-menu', 'designSystemPreview' => true])
+        @include('games.challenges.profile.menu', ['games' => [], 'profileTitleId' => 'ds-game-player-title', 'designSystemPreview' => true])
+      @endcomponent
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Section navigation', 'usage' => 'components.navigation.section-navigation · profile and support menus', 'properties' => 'font-size,color,padding'])
       @include('components.navigation.section-navigation', ['id' => 'ds-section-navigation', 'label' => 'Section navigation preview', 'heading' => 'On this page', 'preview' => true, 'items' => [
         ['target' => 'ds-components-title', 'label' => 'Current section'],
@@ -48,6 +58,16 @@
         @endcomponent
         @component('components.layout.accordion-item', ['id' => 'ds-accordion-second', 'parentId' => 'ds-accordion', 'title' => 'Level 2'])
           <p class="mb-0">Expand one level at a time.</p>
+        @endcomponent
+      @endcomponent
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Minimal accordion', 'usage' => 'components.layout.accordion · variant: minimal', 'properties' => 'padding,border,background-color'])
+      @component('components.layout.accordion', ['id' => 'ds-minimal-accordion', 'variant' => 'minimal', 'preview' => true])
+        @component('components.layout.accordion-item', ['id' => 'ds-minimal-accordion-first', 'title' => 'How does the free trial work?'])
+          <p>Trial details appear with your plan and at checkout.</p>
+        @endcomponent
+        @component('components.layout.accordion-item', ['id' => 'ds-minimal-accordion-second', 'title' => 'Can I cancel anytime?', 'open' => true])
+          <p>Manage your subscription in My membership. Your access continues through the end date shown there.</p>
         @endcomponent
       @endcomponent
     @endcomponent
@@ -100,10 +120,13 @@
     @component('admin.pages.settings.sample', ['label' => 'Pastel feature card · website / web app', 'usage' => '.pastel-card [data-pastel-color=mint]', 'properties' => 'color,background-color,border,border-radius'])
       <div class="pastel-card rounded p-4" data-pastel-color="mint" data-ds-preview><span class="pastel-card__tag">YOUR COLLECTION</span><h3 class="h5 mt-3">A little music, every day.</h3><p>A softer surface for folders and featured content.</p><button type="button" class="btn pastel-card__action">Open collection @icon('arrow-right', ['mr' => 0])</button></div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Scrolling project gallery', 'usage' => 'home.components.project-deck / project-card', 'properties' => 'color,background-color,border,border-radius,box-shadow'])
-      <div data-ds-preview>
-        @include('home.components.project-deck', ['deckId' => 'ds-project', 'projects' => [['key' => 'webapp', 'title' => 'Web app', 'description' => 'Find your next favorite piece.', 'url' => route('webapp.discover')]]])
+    @component('admin.pages.settings.sample', ['label' => 'Homepage featured hub', 'usage' => 'home.components.project-card', 'properties' => 'color,background-color,border,border-radius,box-shadow'])
+      <div style="max-width: 300px">
+        @include('home.components.project-card', ['preview' => true, 'cardPrefix' => 'ds-project', 'compact' => false, 'project' => ['key' => 'webapp', 'title' => 'Web app', 'description' => 'Find your next favorite piece.', 'url' => route('webapp.discover')]])
       </div>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Homepage compact hub', 'usage' => 'home.components.project-card · compact', 'properties' => 'color,background-color,border,border-radius,box-shadow'])
+      @include('home.components.project-card', ['preview' => true, 'cardPrefix' => 'ds-project', 'compact' => true, 'project' => ['key' => 'shop', 'title' => 'Shop', 'description' => 'Good things for your piano.', 'url' => route('shop.home')]])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Public promotion card', 'usage' => 'components.cards.promotion · components.layout.editorial sidebar', 'properties' => 'color,background-color,border,border-radius'])
       @include('components.cards.promotion', ['preview' => true, 'category' => 'Crash courses', 'color' => 'mint', 'title' => 'Discover a new side of music', 'description' => 'Daily lessons delivered to your inbox.', 'action' => 'Start learning', 'url' => route('crashcourses.index')])

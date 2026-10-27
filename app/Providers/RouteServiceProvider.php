@@ -78,10 +78,6 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapMetronomeRoutes();
 
-        // V2 must never inherit the legacy user_id identity or activity stack.
-        Route::prefix('api/v2')->name('api.v2.')->middleware(\App\Http\Middleware\ApiV2\Boundary::class)
-            ->namespace($this->namespace.'\\Api\\V2')->group(base_path('routes/api-v2.php'));
-
         $this->mapApiRoutes();
 
         Route::middleware('web')->group(base_path('routes/google-auth.php'));

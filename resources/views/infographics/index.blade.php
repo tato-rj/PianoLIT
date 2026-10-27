@@ -13,7 +13,7 @@
 @section('content')
 @php
     $selectedTopics = array_values(array_filter((array) (is_array(request('topics')) ? request('topics') : explode(' ', (string) request('topics', ''))), function ($topic) { return is_string($topic) && trim($topic) !== ''; }));
-    $topicLinks = [['label' => 'All infographics', 'url' => route('resources.infographs.index'), 'active' => empty($selectedTopics)]];
+    $topicLinks = [['label' => 'All infographics', 'url' => route('resources.infographs.index'), 'active' => empty($selectedTopics), 'variant' => 'secondary']];
     foreach ($topics as $topic) {
         $topicLinks[] = ['label' => ucfirst($topic->name), 'url' => route('resources.infographs.index', ['topics' => $topic->slug]), 'active' => in_array($topic->slug, $selectedTopics, true)];
     }

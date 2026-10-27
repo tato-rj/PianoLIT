@@ -4,16 +4,13 @@
 <div class="container profile-page py-4 py-md-5">
     <header class="mb-4 mb-md-5">
         <h1 class="mb-2">My profile</h1>
-        <p class="text-muted mb-0">Manage your profile, downloads, security and email preferences.</p>
+        <p class="text-muted mb-0">Manage your profile, security and email preferences.</p>
     </header>
     <div class="row g-4 g-lg-5">
         <aside class="col-lg-3">
             @include('users.profile.navigation')
         </aside>
         <div class="col-lg-9 profile-content">
-            @isset($purchases)
-                @include('users.purchases.index')
-            @else
             <section id="profile" class="profile-section" aria-labelledby="profile-heading">
                 <h2 id="profile-heading">Profile</h2>
                 <p class="text-muted">The basics of your account, all in one place.</p>
@@ -130,14 +127,11 @@
                     @endif
                 </div>
             </section>
-            @endisset
         </div>
     </div>
 </div>
 @endsection
 
 @push('scripts')
-@unless(isset($purchases))
 <script src="{{ mix('js/views/profile.js') }}" defer></script>
-@endunless
 @endpush

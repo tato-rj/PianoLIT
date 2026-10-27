@@ -23,7 +23,7 @@ class HomeController extends Controller
         $metronome = ['key' => 'metronome', 'title' => 'Metronome', 'description' => 'Find your rhythm.', 'destination' => 'metronome.pianolit.com', 'url' => route('metronome.home')];
 
         $projects = [
-            $webapp, $ios, $shop, $learn, $games, $metronome, $blog
+            $webapp, $ios, $learn, $games, $shop, $metronome, $blog
         ];
 
         return view('home.index', compact('projects'));

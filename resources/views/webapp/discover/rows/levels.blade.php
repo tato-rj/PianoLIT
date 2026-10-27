@@ -1,5 +1,13 @@
 @php
-	$levelSystems = \App\Services\DiscoverFeed::levelSystems($rows);
+	$levelSystems = collect([
+		['key' => 'rcm', 'label' => 'RCM', 'unit' => 'Level', 'title' => 'Equivalent to the RCM levels'],
+		['key' => 'abrsm', 'label' => 'ABRSM', 'unit' => 'Level', 'title' => 'Equivalent to the ABRSM levels'],
+		['key' => 'suzuki', 'label' => 'Suzuki', 'unit' => 'Book', 'title' => 'Equivalent to the Suzuki series'],
+	])->map(function ($system) use ($rows) {
+		$feedRow = collect($rows)->firstWhere('title', $system['title']);
+		$system['cards'] = collect($feedRow['content'] ?? [])->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)->values();
+		return $system;
+	});
 	$firstLevelSystem = $levelSystems->first(function ($system) { return $system['cards']->isNotEmpty(); });
 	$levelPalette = ['darkblue', 'lightblue', 'teal', 'green', 'yellow', 'orange', 'red'];
 @endphp
@@ -7,8 +15,8 @@
 <section class="discover-levels mb-4" aria-labelledby="discover-levels-heading">
 	<div class="discover-levels__header d-flex justify-content-between align-items-start gap-3 mb-3">
 		<div>
-			<h5 id="discover-levels-heading" class="mb-1">{{ \App\Services\DiscoverFeed::LEVELS_TITLE }}</h5>
-			<p class="text-muted mb-0">{{ \App\Services\DiscoverFeed::LEVELS_SUBTITLE }}</p>
+			<h5 id="discover-levels-heading" class="mb-1">Find pieces at your level</h5>
+			<p class="text-muted mb-0">Similar difficulty to RCM, ABRSM or Suzuki books.</p>
 		</div>
 		<div class="discover-levels__tabs pill-filters nav" role="tablist" aria-label="Level system">
 			@foreach($levelSystems as $system)

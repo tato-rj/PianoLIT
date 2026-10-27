@@ -1,6 +1,6 @@
 @empty($raw)
 @if(request()->getHost() === 'my.'.config('app.short_url'))
-<footer class="bg-light py-6">
+<footer class="bg-white py-6">
 	<div class="container">
 		<div class="col-lg-8 col-md-10 col-12 mx-auto text-center">
 			@brandIcon(['mb' => 2])

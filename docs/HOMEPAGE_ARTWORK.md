@@ -1,4 +1,78 @@
-# Homepage editorial artwork
+# Homepage artwork
+
+## Current design — Many worlds (2026-10-26)
+
+The approved reference is `/Users/arthur/Downloads/ChatGPT Image Oct 26, 2026, 10_35_30 PM.png`. The user requested its layout, colors and existing artwork, with the current header plus PianoLIT wordmark, current main-title size with tighter spacing, rounded iOS image corners, and initially Shop promoted ahead of Learn. Arthur subsequently restored the reference order: Web app, iOS app, Learn and Games are featured; Shop, Metronome and Blog are compact. The existing artwork is reused with its native image dimensions and CSS cropping; it does not use the rejected earlier image concepts.
+
+Created with the built-in imagegen tool (no CLI/API fallback), using the supplied design as the edit reference to extract/reconstruct each standalone image and remove the overlaid webpage UI. Device screens remain decorative interpretations from that design, not live screenshots. Encoded with `cwebp -q 86`: Web app, iOS, Shop and Games files are 720×900; Learn, Metronome and Blog files are 960×640. These native dimensions are independent of the card’s current featured/compact role. HTML owns all titles, badges, descriptions, controls and rounded corners.
+
+Final workspace assets: `resources/images/home/worlds/{webapp,ios,shop,games,learn,metronome,blog}.webp`. Mix copies them to matching `public/images/home/worlds/` paths and versions every file. Existing `editorial/` and SVG assets are retained.
+
+### Current iOS backdrop — teal glass and daylight (2026-10-26)
+
+Arthur found the neutral backdrop too plain and requested a more polished, interesting setting. Built-in imagegen replaced it with a teal wall, softly focused fluted glass and warm directional window light, retaining the phone composition and beige stone tabletop. The image remains distinct from the lavender HTML card; the full page remains white. No other hub artwork or layout changed.
+
+Final asset: `resources/images/home/worlds/ios.webp`, copied to `public/images/home/worlds/ios.webp` and versioned by final-content MD5 in the Mix manifest. Encoded with `cwebp -q 86 -resize 720 900`. Generated source: `/Users/arthur/.codex/generated_images/01a17af7-96dc-75b3-8990-6bba66d15d9a/exec-114539e7-2e5d-48ba-a186-2afc01ff5a01.png`. Previous neutral asset: `/Users/arthur/.codex/visualizations/2026/10/27/01a17af7-96dc-75b3-8990-6bba66d15d9a/home-worlds/ios-before-teal.webp`.
+
+Final edit prompt (built-in tool; no CLI/API fallback):
+
+Use case: precise-object-edit. Asset type: realistic editorial product photograph for the PianoLIT homepage, portrait 4:5. Input image 1 is the edit target. Replace ONLY the dull taupe backdrop behind the phone with a polished, dimensional interior setting in rich muted teal and blue-green. Use softly out-of-focus vertical fluted glass on the right, a smooth teal wall on the left, and warm afternoon window light sweeping diagonally across those surfaces. The glass should have delicate believable refractions and a few soft highlights, not neon or glitter. Create depth through light, texture and a shallow depth of field; the overall feel is sophisticated, inviting product photography, with enough restrained detail to stay interesting at small card size. Keep clear color contrast with the light lavender #d8c1ff HTML card around the photograph. Preserve the exact existing phone, its position, angle, scale, proportions and dark curved frame. Preserve the screen as shown: forest cover, composer portrait, typography and labels, piano video thumbnail and blue play button. Keep the existing warm beige stone tabletop and grounded contact shadow; adjust reflected light subtly to fit the teal setting. Do not add foreground props, people, hands, plants, extra phones, webpage text, borders, logos or watermark. Do not redesign the screen. No flat solid-color backdrop, no abstract floating shapes, no dramatic dark void. Output only the edge-to-edge rectangular photograph; CSS supplies rounded corners.
+
+### Earlier iOS backdrop contrast update (superseded)
+
+Arthur requested more contrast between the iOS mockup photograph and its lavender card. The built-in imagegen tool edited only the photograph's lavender backdrop to warm medium stone-gray/taupe, retaining the phone composition, decorative screen and beige tabletop. The HTML card remains lavender with the existing rounded image window. No other hub artwork changed.
+
+Final asset: `resources/images/home/worlds/ios.webp`, copied to `public/images/home/worlds/ios.webp` and reversioned with its final-content MD5 in the Mix manifest. Encoded with `cwebp -q 86 -resize 720 900` (78,134 bytes). Generated source: `/Users/arthur/.codex/generated_images/01a17af7-96dc-75b3-8990-6bba66d15d9a/exec-7fa2514f-839d-43c8-b156-b77847d6398b.png`. Previous artwork backup: `/Users/arthur/.codex/visualizations/2026/10/27/01a17af7-96dc-75b3-8990-6bba66d15d9a/home-worlds/ios-before-contrast.webp`.
+
+Final edit prompt (built-in tool; no CLI/API fallback):
+
+Use case: precise-object-edit. Asset type: PianoLIT homepage iOS mockup photograph, portrait 4:5. Input image 1 is the edit target. Change ONLY the lavender studio backdrop behind the phone to a warm, medium-toned stone-gray/taupe photographic backdrop (approximately #92897c), softly lit with a natural subtle tonal variation. The purpose is clear color and brightness contrast against the light lavender #d8c1ff HTML card surrounding this photograph, so its rounded upper corners are easy to see. Keep the backdrop warm neutral, not purple or pink, and not white. Preserve the exact existing phone, its position, size, angle, curved edges, dark frame, forest image, composer portrait, all screen typography and UI, piano thumbnail, and blue play button. Preserve the existing beige stone tabletop and realistic contact shadows, matching the new backdrop lighting naturally. Keep the same crop and composition. No new objects, plants, hands, people, patterns, webpage text, buttons, borders, or watermark. Output only the full rectangular photograph; the webpage supplies its rounded corners. Do not redesign or alter the phone screen. The ONLY requested visual change is the background color/environment tone.
+
+### Initial prompt set
+
+#### webapp
+
+Generated source: `/Users/arthur/.codex/generated_images/01a17af7-96dc-75b3-8990-6bba66d15d9a/exec-7e434e31-2d9d-45df-bf1b-87b53dfabf37.png`
+
+Use case: precise-object-edit. Input image is the user's APPROVED PianoLIT website design. Extract and clean up only the specified photograph/illustration from it into a standalone high-resolution image. Faithfully preserve that exact scene's subject, materials, colors, mood, angle and lighting. Do NOT invent an alternative concept. Remove all webpage headings, descriptions, badges, CTA buttons, URLs, arrows and outer borders from the extracted image, reconstructing the small areas they cover naturally. Output edge-to-edge art without rounded corners (CSS will round it). Do not add any people, hands or unrelated objects. Target: the laptop photograph in the FIRST LARGE lime card at upper left, below 'Web app'. Output portrait 4:5. Preserve the silver laptop displaying the existing PianoLIT Discover screen with the two orange pumpkins, sheet music/tabletop, cream mug at left and leafy background, same crop and natural light. The screen is part of the photograph and should stay as pictured; remove only the overlaid white 'Explore pieces' button and the little URL below it. Preserve the entire laptop screen; no lime header area.
+
+#### ios
+
+Generated source: `/Users/arthur/.codex/generated_images/01a17af7-96dc-75b3-8990-6bba66d15d9a/exec-d3504116-ed5f-4c81-93d6-f83aec89c501.png`
+
+Use case: precise-object-edit. Input image is the user's APPROVED PianoLIT website design. Extract and clean up only the specified photograph/illustration from it into a standalone high-resolution image. Faithfully preserve that exact scene's subject, materials, colors, mood, angle and lighting. Do NOT invent an alternative concept. Remove all webpage headings, descriptions, badges, CTA buttons, URLs, arrows and outer borders from the extracted image, reconstructing the small areas they cover naturally. Output edge-to-edge art without rounded corners (CSS will round it). Do not add any people, hands or unrelated objects. Target: the tilted black iPhone photograph in the SECOND LARGE lavender card, below 'iOS app'. Output portrait 4:5. Preserve the phone's curved physical corners, angle, screen exactly as shown with '2. Intermezzo Op.118', forest cover, composer circle, tabs and piano video thumbnail. Preserve the lavender background and beige tabletop. Remove only webpage text/white 'Meet the app' overlay. No extra phone, no changed screen content. Whole scene fills the image.
+
+#### shop
+
+Generated source: `/Users/arthur/.codex/generated_images/01a17af7-96dc-75b3-8990-6bba66d15d9a/exec-4f056adc-ecb7-49ad-afbe-df2fd7341d26.png`
+
+Use case: precise-object-edit. Input image is the user's APPROVED PianoLIT website design. Extract and clean up only the specified photograph/illustration from it into a standalone high-resolution image. Faithfully preserve that exact scene's subject, materials, colors, mood, angle and lighting. Do NOT invent an alternative concept. Remove all webpage headings, descriptions, badges, CTA buttons, URLs, arrows and outer borders from the extracted image, reconstructing the small areas they cover naturally. Output edge-to-edge art without rounded corners (CSS will round it). Do not add any people, hands or unrelated objects. Target: the sheet-music books and yellow pencil still life in the SMALL YELLOW SHOP card at bottom left. Reframe this SAME scene as portrait 4:5 so Shop can become a large card. Preserve the cream J. S. BACH score book, blue-gray clothbound books behind, yellow pencil on the diagonal, tactile warm paper, pale buttery yellow background and sunlight. Reveal a little more of those same books as needed to fill the taller photograph. No flowers or unrelated objects. No website title/caption/arrow button. Maintain the printed book-cover typography as part of the book.
+
+#### games
+
+Generated source: `/Users/arthur/.codex/generated_images/01a17af7-96dc-75b3-8990-6bba66d15d9a/exec-46912287-55ca-447a-ba4a-bd576261ae10.png`
+
+Use case: precise-object-edit. Input image is the user's APPROVED PianoLIT website design. Extract and clean up only the specified photograph/illustration from it into a standalone high-resolution image. Faithfully preserve that exact scene's subject, materials, colors, mood, angle and lighting. Do NOT invent an alternative concept. Remove all webpage headings, descriptions, badges, CTA buttons, URLs, arrows and outer borders from the extracted image, reconstructing the small areas they cover naturally. Output edge-to-edge art without rounded corners (CSS will round it). Do not add any people, hands or unrelated objects. Target: the colorful piano-key sculpture in the FOURTH LARGE coral card, below 'Games'. Output portrait 4:5. Keep exactly the playful still life: oversized cream piano keys with black keys, wooden arch, coral sphere, cobalt-blue egg shape, upright lavender rounded block, pink-coral stage and soft directional shadows. Same arrangement and soft sophisticated material textures. No webpage header/text or 'Let's play' overlay. Frame the sculpture exactly like the source.
+
+#### learn
+
+Generated source: `/Users/arthur/.codex/generated_images/01a17af7-96dc-75b3-8990-6bba66d15d9a/exec-f11bc660-e85f-4a7e-8d9f-d3a492a97cb1.png`
+
+Use case: precise-object-edit. Input image is the user's APPROVED PianoLIT website design. Extract and clean up only the specified photograph/illustration from it into a standalone high-resolution image. Faithfully preserve that exact scene's subject, materials, colors, mood, angle and lighting. Do NOT invent an alternative concept. Remove all webpage headings, descriptions, badges, CTA buttons, URLs, arrows and outer borders from the extracted image, reconstructing the small areas they cover naturally. Output edge-to-edge art without rounded corners (CSS will round it). Do not add any people, hands or unrelated objects. Target: the blue learning still life in the THIRD LARGE blue card, below 'Learn'. Output landscape 3:2. Preserve the open piano score above real piano keys, stack of books labeled CHOPIN DEBUSSY BACH, small cobalt-blue vase of delicate white flowers and powder-blue background, same natural sunlight and tactile paper. This becomes a small horizontal card, so arrange/crop this exact scene with the open book dominant in the lower right and the blue wall visible on the left. Remove all webpage headings, text and 'Start learning' button. No added objects.
+
+#### metronome
+
+Generated source: `/Users/arthur/.codex/generated_images/01a17af7-96dc-75b3-8990-6bba66d15d9a/exec-913a653c-f4e8-4be1-a522-0ca329d22dca.png`
+
+Use case: precise-object-edit. Input image is the user's APPROVED PianoLIT website design. Extract and clean up only the specified photograph/illustration from it into a standalone high-resolution image. Faithfully preserve that exact scene's subject, materials, colors, mood, angle and lighting. Do NOT invent an alternative concept. Remove all webpage headings, descriptions, badges, CTA buttons, URLs, arrows and outer borders from the extracted image, reconstructing the small areas they cover naturally. Output edge-to-edge art without rounded corners (CSS will round it). Do not add any people, hands or unrelated objects. Target: the physical wooden metronome photograph in the SMALL MINT card at bottom center. Output landscape 3:2. Preserve the rich brown wood metronome, brass pendulum with sliding silver weight, pale mint-green backdrop and soft blurred green foliage at the right. Metronome stands toward the right half with natural pale mint breathing room on left for webpage text. Reconstruct full metronome height naturally if needed. Remove title, caption, white arrow button and all webpage UI.
+
+#### blog
+
+Generated source: `/Users/arthur/.codex/generated_images/01a17af7-96dc-75b3-8990-6bba66d15d9a/exec-8359b9ff-33b0-4aa4-807e-c7df1bfa69f4.png`
+
+Use case: precise-object-edit. Input image is the user's APPROVED PianoLIT website design. Extract and clean up only the specified photograph/illustration from it into a standalone high-resolution image. Faithfully preserve that exact scene's subject, materials, colors, mood, angle and lighting. Do NOT invent an alternative concept. Remove all webpage headings, descriptions, badges, CTA buttons, URLs, arrows and outer borders from the extracted image, reconstructing the small areas they cover naturally. Output edge-to-edge art without rounded corners (CSS will round it). Do not add any people, hands or unrelated objects. Target: the open score, pen and headphones photograph in the SMALL PALE-PINK BLOG card at bottom right. Output landscape 3:2. Keep same open cream music pages, black pen on diagonal, black over-ear headphones at upper right, warm pale pink studio surface and beautiful soft shadows. Composition anchored right with pink breathing room at left. Remove webpage title/caption and white arrow circle only. No added objects, no different color palette.
+
+## Earlier artwork history (superseded)
 
 Updated 2026-10-22. Created with the built-in imagegen tool, then encoded as WebP with `cwebp` (quality 86 for cards, 90 with full alpha for the piano). No external service, API key, or stock image download was used.
 

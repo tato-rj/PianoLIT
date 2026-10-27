@@ -10,7 +10,7 @@
 }
 
 & {
-  background-color: var(--color-surface-subtle, #f8f9fa);
+  background-color: var(--color-page, #fff);
 }
 
 #duel-error {display: none}
@@ -258,7 +258,7 @@ button.game-countdown-step-pop {
   inset: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  background: var(--color-surface-subtle, #f8f9fa);
+  background: var(--color-page, #fff);
   display: none;
   z-index: 1000;
 }
@@ -549,7 +549,7 @@ button.game-countdown-step-pop {
 }
 
 .staff-line .line-note-name {
-  background: var(--color-surface-subtle, #f8f9fa);
+  background: var(--color-page, #fff);
   color: #666;
   font-size: 0.9rem;
   font-weight: 700;
