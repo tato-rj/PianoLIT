@@ -3,7 +3,7 @@
     <div class="row align-items-center justify-content-between">
         <div class="col-auto">
             <a href="{{ route('home') }}" class="d-inline-flex" aria-label="PianoLIT home">
-                @brandIcon(['size' => 'clamp(48px, 7vw, 64px)'])
+                @brandIcon(['size' => 'clamp(48px, 7vw, 64px)', 'tilt' => true])
             </a>
         </div>
         <nav class="col-auto" aria-label="{{ request()->routeIs('home') ? 'Account and YouTube' : ($showHubMenu ? 'Account and site navigation' : 'Account') }}">

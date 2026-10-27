@@ -1,29 +1,17 @@
-@extends('layouts.app')
-
-@push('header')
-@endpush
-
-@section('content')
-<div class="container mb-6">
-	<div class="row">
-	  <div class="col-lg-8 col-md-10 col-12 mx-auto">
-		<div class="text-center mb-4">
-			<h5>My downloads</h5>
-			@if($purchases->isEmpty())
-			@include('users.purchases.empty')
-			@else
-			<p>Here is a list of all the products you've downloaded/purchased so far</p>
-			@endif
-		</div>
-		@paginationCount(['collection' => $purchases])
-
-		@include('users.purchases.list')
-
-		@pagination(['collection' => $purchases])
-	  </div>
-	</div>
-</div>
-@endsection
-
-@push('scripts')
-@endpush
+<section class="profile-section" aria-labelledby="downloads-heading">
+    <h2 id="downloads-heading">My downloads</h2>
+    <p class="text-muted">Your eBooks, eScores and infographics, ready to download again.</p>
+    @if($purchases->total())
+        @if($purchases->isNotEmpty())
+            @paginationCount(['collection' => $purchases, 'align' => 'left', 'item' => 'resource'])
+            <div class="profile-panel p-0 overflow-hidden mb-4">
+                @include('users.purchases.list')
+            </div>
+        @else
+            <p class="profile-panel">No resources on this page. <a href="{{ route('users.purchases') }}">Return to your library</a></p>
+        @endif
+        @pagination(['collection' => $purchases])
+    @else
+        @include('users.purchases.empty')
+    @endif
+</section>

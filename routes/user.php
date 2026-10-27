@@ -1,7 +1,5 @@
 <?php
 
-Route::get('purchases', 'UsersController@purchases')->name('purchases');
-
 Route::get('invite-friends', 'UsersController@invite')->name('invite');
 
 Route::patch('{user}', 'UsersController@update')->middleware('throttle:6,1,profile-legacy-update-')->name('update');

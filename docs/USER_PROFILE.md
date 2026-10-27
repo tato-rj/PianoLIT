@@ -20,6 +20,34 @@ restored/deep-linked positions, resizing and the short final section. Location i
 approximate metadata, not proof of signup location. Missing dates/origins/
 locations are shown as Not recorded rather than inferred.
 
+## Downloads
+
+My downloads is a tab inside My profile at `/profile/downloads` on the absolute
+main website, using the same profile view, heading, introduction and menu. The existing `users.purchases` name now generates that URL, including
+from child hosts and purchase emails. Legacy `/my-profile/purchases` and
+child-host `/profile/downloads` GET/HEAD requests redirect permanently before
+authentication, preserving the raw query string. The canonical page requires
+the web session and returns private, no-store responses.
+
+Profile and its Downloads tab share `users.profile.index` and
+`users.profile.navigation`, rendered by the same
+section-navigation component as Support. Profile keeps its four scroll-tracked
+anchors; Downloads uses main-profile anchor destinations and exactly one
+`aria-current="page"` link, without scroll tracking. The library uses the profile
+shell/panel, shared accessible accordions, primary file buttons and native
+pagination. It keeps eight newest account-owned purchases per page, eager-loads
+their resources and preserves pagination queries. Dates and costs come from
+the purchase record, with null/zero cost shown as Free. Missing resources or
+resources without file links have an unavailable message rather than breaking
+the library. Existing `shop.download` links, encrypted file parameters and
+original bytes are retained; this redesign does not change file delivery or
+mobile contracts.
+
+`ProfileDownloadsTest` verifies canonical/legacy routing, account scoping,
+formats, original-file delivery, pagination, navigation and empty/unavailable
+states. Set `DOWNLOADS_PREVIEW_DIR` when running it to export synthetic Blade
+previews without changing the normal database.
+
 ## Security and email preferences
 
 Name edits allow only first and last name. Sensitive edits require a recent

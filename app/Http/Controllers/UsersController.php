@@ -42,9 +42,9 @@ class UsersController extends Controller
 
     public function purchases()
     {
-        $purchases = auth()->user()->purchases()->paginate(8);
+        $purchases = auth()->user()->purchases()->with('item')->orderByDesc('id')->paginate(8)->withQueryString();
 
-        return view('users.purchases.index', compact('purchases'));
+        return view('users.profile.index', compact('purchases'));
     }
 
     public function invite()

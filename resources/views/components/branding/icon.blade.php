@@ -1,5 +1,8 @@
 @php($impostor = session()->has('impersonator'))
 <div class="position-relative"
+@if($tilt ?? false)
+ data-logo-tilt
+@endif
 @if($impostor)
  title="You are impersonating {{possessive(auth()->user()->first_name)}} account"
 @endif

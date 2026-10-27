@@ -14,4 +14,9 @@ class ProfileUrl
     {
         return self::base().'/profile'.($fragment ? '#'.$fragment : '');
     }
+
+    public static function downloads()
+    {
+        return self::get().'/downloads';
+    }
 }

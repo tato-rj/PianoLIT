@@ -1,6 +1,6 @@
 <div class="pt-4 pb-3 d-flex align-items-center justify-content-between">
 	<a class="navbar-brand" href="{{route('webapp.discover')}}">
-		@brandIcon
+		@brandIcon(['tilt' => true])
 	</a>
 	@guest('web')
 	<a href="{{ route('login') }}" class="btn btn-secondary">@icon('user')Sign in</a>

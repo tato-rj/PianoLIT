@@ -60,6 +60,7 @@
         "tone": "^13.4.9",
         "trix": "^0.11.2",
         "typed.js": "3.0.0",
+        "vanilla-tilt": "1.8.1",
         "vexflow": "4.2.5"
     },
     "engines": {

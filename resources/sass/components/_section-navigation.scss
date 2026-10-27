@@ -12,11 +12,11 @@
         font-size: var(--font-size-sm);
         text-decoration: none;
 
-        &:hover, &:focus-visible, &[aria-current="location"] {
+        &:hover, &:focus-visible, &[aria-current="location"], &[aria-current="page"] {
             color: var(--color-primary);
         }
 
-        &[aria-current="location"] { font-weight: 600; }
+        &[aria-current] { font-weight: 600; }
     }
 
     @media (min-width: 992px) {

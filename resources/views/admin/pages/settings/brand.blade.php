@@ -43,7 +43,7 @@
     @foreach($brandVariants as $variant)
       @component('admin.pages.settings.sample', ['label' => $variant['label'], 'editable' => false])
         <div class="design-system__brand-preview">
-          @brandIcon(['admin' => $variant['admin'], 'size' => '128px'])
+          @brandIcon(['admin' => $variant['admin'], 'size' => '128px', 'tilt' => ! $variant['admin']])
         </div>
         <div class="text-center mt-3">
           <button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#{{ $variant['modalId'] }}" aria-controls="{{ $variant['modalId'] }}" aria-haspopup="dialog">@icon('download')Download</button>

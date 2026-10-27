@@ -1,4 +1,5 @@
 require('./components/icons');
+require('./components/logo-tilt')(window);
 require('./bootstrap/admin');
 if (window.AdminTableLoading) window.AdminTableLoading.bind(window.jQuery);
 require('./components/offcanvas');

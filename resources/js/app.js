@@ -1,4 +1,5 @@
 require('./components/icons');
+require('./components/logo-tilt')(window);
 require('./bootstrap/app');
 require('./components/offcanvas');
 require('./components/search-controls')(window);
