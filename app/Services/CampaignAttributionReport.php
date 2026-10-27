@@ -17,15 +17,28 @@ class CampaignAttributionReport
         'latest_desc' => 'Latest arrival',
     ];
     const PERIODS = ['7' => 'Last 7 days', '30' => 'Last 30 days', '90' => 'Last 90 days', 'all' => 'All retained arrivals'];
+    const CONVERSION_SORTS = ['trials_desc' => 'Most trials', 'paid_desc' => 'Most first payments', 'source_asc' => 'Source · A–Z', 'source_desc' => 'Source · Z–A'];
 
     public function admin(Request $request)
     {
-        $filters = AdminTableFilters::fromRequest($request, self::SORTS, 'arrivals_desc', [
+        $conversionOnly = !config('attribution.enabled');
+        $sorts = $conversionOnly ? self::CONVERSION_SORTS : self::SORTS;
+        $defaultSort = $conversionOnly ? 'trials_desc' : 'arrivals_desc';
+        $filters = AdminTableFilters::fromRequest($request, $sorts, $defaultSort, [
             'period' => 'nullable|string|in:7,30,90,all',
         ]);
         $filters['period'] = $filters['period'] ?? '30';
         $since = $filters['period'] === 'all' ? null : now()->subDays((int) $filters['period'] - 1)->startOfDay();
         $query = $this->grouped($since, $filters['search'], self::ADMIN_GROUPS);
+        if ($conversionOnly) $query->whereNotNull('v.consented_at')->whereExists(function ($query) {
+            $query->selectRaw('1')->from('campaign_subscriptions as linked')->whereColumn('linked.visit_id', 'v.id')
+                ->where(function ($query) {
+                    $query->whereNotNull('linked.trial_started_at')->orWhereExists(function ($query) {
+                        $query->selectRaw('1')->from('stripe_payment_receipts as paid')->where('paid.kind', 'invoice')->where('paid.amount', '>', 0)
+                            ->whereColumn('paid.stripe_subscription_id', 'linked.stripe_subscription_id')->whereColumn('paid.stripe_customer_id', 'linked.stripe_customer_id');
+                    });
+                });
+        });
         $order = [
             'arrivals_desc' => ['arrivals', 'desc'], 'arrivals_asc' => ['arrivals', 'asc'],
             'source_asc' => ['v.utm_source', 'asc'], 'source_desc' => ['v.utm_source', 'desc'],
@@ -34,10 +47,10 @@ class CampaignAttributionReport
         ][$filters['sort']];
         $rows = $query->orderBy(...$order);
         foreach (self::ADMIN_GROUPS as $field) $rows->orderBy('v.'.$field);
-        $rows = $rows->paginate($filters['per_page'])->appends(AdminTableFilters::query($filters, 'arrivals_desc'));
+        $rows = $rows->paginate($filters['per_page'])->appends(AdminTableFilters::query($filters, $defaultSort));
         $this->withRevenue($rows->getCollection(), $since, $filters['search'], self::ADMIN_GROUPS);
         $this->withLandingPages($rows->getCollection());
-        return ['campaigns' => $rows, 'filters' => $filters, 'enabled' => (bool) config('attribution.enabled')];
+        return ['campaigns' => $rows, 'filters' => $filters, 'enabled' => (bool) config('attribution.enabled'), 'conversionOnly' => $conversionOnly, 'sorts' => $sorts];
     }
 
     public function rows($since)
@@ -62,6 +75,7 @@ class CampaignAttributionReport
         $columns = array_map(function ($field) { return 'v.'.$field; }, $fields);
         $arrivals = $this->visits(null)->where('v.created_at', '>=', $start)->where('v.created_at', '<', $end)
             ->select($columns)->selectRaw('COUNT(*) as arrivals, 0 as trials, 0 as first_paid')->groupBy($columns);
+        if (!config('attribution.enabled')) $arrivals->whereRaw('1 = 0');
         $trials = $this->visits(null)->whereNotNull('v.consented_at')
             ->join('campaign_subscriptions as s', 's.visit_id', '=', 'v.id')
             ->where('s.trial_started_at', '>=', $start)->where('s.trial_started_at', '<', $end)
@@ -81,13 +95,15 @@ class CampaignAttributionReport
             ->selectRaw('SUM(arrivals) as arrivals, SUM(trials) as trials, SUM(first_paid) as first_paid')
             ->groupBy($fields)->orderByDesc('first_paid')->orderByDesc('trials')->orderByDesc('arrivals')
             ->orderBy('utm_campaign')->orderBy('utm_source')->orderBy('utm_medium')->limit(3)->get();
-        return [
+        $result = [
             'totals' => ['arrivals' => (int) $totals->arrivals, 'trials' => (int) $totals->trials, 'first_paid' => (int) $totals->first_paid],
             'rows' => $rows->map(function ($row) {
                 return ['campaign' => $row->utm_campaign, 'source' => $row->utm_source, 'medium' => $row->utm_medium,
                     'arrivals' => (int) $row->arrivals, 'trials' => (int) $row->trials, 'first_paid' => (int) $row->first_paid];
             })->all(),
         ];
+        if (!config('attribution.enabled')) $result['traffic_in_google'] = true;
+        return $result;
     }
 
     private function visits($since, $search = '', $fields = CampaignParameters::FIELDS)

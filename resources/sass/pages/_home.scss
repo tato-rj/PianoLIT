@@ -41,6 +41,33 @@
         font-size: var(--font-size-sm);
         letter-spacing: .06em;
     }
+
+    &__scroll-hint {
+        position: fixed;
+        z-index: 1030;
+        left: 50%;
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%);
+
+        .btn {
+            width: 52px;
+            height: 52px;
+            padding: 0;
+            font-size: var(--font-size-h4);
+            animation: home-scroll-sway 3.2s ease-in-out infinite;
+
+            &:hover, &:focus-visible { animation-play-state: paused; }
+        }
+    }
+}
+
+@keyframes home-scroll-sway {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project-home__scroll-hint .btn { animation: none; }
 }
 
 @media (max-width: 767px) {

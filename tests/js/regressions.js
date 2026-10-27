@@ -1,4 +1,5 @@
 require('./project-deck')();
+require('./home-scroll-hint')();
 require('./metronome.test.cjs');
 require('./metronome-voice.test.cjs');
 require('./chord-finder')();

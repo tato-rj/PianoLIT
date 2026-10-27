@@ -10,6 +10,25 @@ use Illuminate\Support\Str;
 
 class CampaignWeeklyReportTest extends ReviewTestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+        config(['attribution.enabled' => true]); // Explicitly exercise retained historical traffic reports.
+    }
+
+    public function test_conversion_mode_does_not_relabel_saved_links_as_weekly_traffic()
+    {
+        $visit = $this->visit('2026-10-20 12:00:00', ['consented_at' => '2026-10-20 12:00:00']);
+        $this->subscription($visit, 'linked', '2026-10-20 12:00:00');
+        $this->payment('linked', '2026-10-21 12:00:00');
+        $this->visit('2026-10-20 12:00:00', ['utm_campaign' => 'traffic_only']);
+        config(['attribution.enabled' => false]);
+        $report = $this->report();
+        $this->assertSame(['arrivals' => 0, 'trials' => 1, 'first_paid' => 1], $report['totals']);
+        $this->assertTrue($report['traffic_in_google']);
+        $this->assertCount(1, $report['rows']);
+    }
+
     private function visit(string $at, array $extra = [])
     {
         $parameters = CampaignParameters::fromQuery($extra + ['utm_source' => 'youtube.com', 'utm_campaign' => 'weekly_music'])

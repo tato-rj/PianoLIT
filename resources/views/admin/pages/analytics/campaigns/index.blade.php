@@ -2,8 +2,15 @@
 
 @section('content')
 <div class="content-wrapper"><div class="container-fluid ua">
-    @include('admin.components.page.title', ['title' => 'Campaigns', 'subtitle' => 'Where campaign visitors come from, and which links lead to web memberships.'])
+    @include('admin.components.page.title', ['title' => $conversionOnly ? 'Campaign conversions' : 'Campaigns', 'subtitle' => $conversionOnly ? 'Confirmed web memberships linked to a saved campaign' : 'Where campaign visitors come from, and which links lead to web memberships.'])
 
+    @if($conversionOnly)
+    <section class="ua-card" aria-label="Campaign conversions">
+        <h2>Traffic and acquisition in Google Analytics</h2>
+        <p>This page keeps the small link between a consented campaign and confirmed web membership trials or first payments.</p>
+        <a class="btn btn-dark" href="https://analytics.google.com/analytics/web/#/a137232556p399721623/reports/reportinghub" target="_blank" rel="noopener noreferrer">Open Google Analytics</a>
+    </section>
+    @else
     <section class="ua-card" aria-label="Campaign tracking">
         <h2>{{ $enabled ? 'Campaign tracking is enabled' : 'Campaign tracking is disabled' }}</h2>
         <p>{{ $enabled ? 'Tagged visits appear automatically. Account, trial and payment attribution is limited to visitors with an existing opt-in.' : 'Saved results are shown below. Enable CAMPAIGN_ATTRIBUTION_ENABLED in the server configuration to record new arrivals.' }}</p>
@@ -15,20 +22,22 @@
         </details>
     </section>
 
+    @endif
+
     @component('admin.components.table', [
         'id' => 'campaigns-table', 'label' => 'Campaigns', 'items' => $campaigns,
         'description' => 'Grouped by source, medium, campaign, placement and landing page.',
         'action' => route('admin.analytics.campaigns'), 'state' => $filters,
         'search' => ['label' => 'Find a source, campaign or page', 'placeholder' => 'YouTube, campaign or /pieces/174'],
-        'filters' => [['name' => 'period', 'label' => 'Arrival period', 'options' => \App\Services\CampaignAttributionReport::PERIODS]],
-        'sorts' => \App\Services\CampaignAttributionReport::SORTS,
-        'columns' => [
+        'filters' => [['name' => 'period', 'label' => $conversionOnly ? 'Campaign captured' : 'Arrival period', 'options' => $conversionOnly ? ['7' => 'Last 7 days', '30' => 'Last 30 days', '90' => 'Last 90 days', 'all' => 'All retained links'] : \App\Services\CampaignAttributionReport::PERIODS]],
+        'sorts' => $sorts,
+        'columns' => $conversionOnly ? ['Source / medium', 'Campaign / placement', 'Landing page', 'Trials', 'First paid subscriptions', 'First payment revenue'] : [
             ['label' => 'Source / medium', 'sort' => ['asc' => 'source_asc', 'desc' => 'source_desc']],
             'Campaign / placement', 'Landing page', ['label' => 'Arrivals', 'sort' => ['asc' => 'arrivals_asc', 'desc' => 'arrivals_desc']],
             'Trials', 'First paid subscriptions', 'First payment revenue', 'Latest arrival',
         ],
-        'emptyTitle' => 'No measured campaign arrivals',
-        'emptyDescription' => 'Results appear when visitors open valid tagged links. Try another search or arrival period.',
+        'emptyTitle' => $conversionOnly ? 'No linked campaign conversions' : 'No measured campaign arrivals',
+        'emptyDescription' => $conversionOnly ? 'Confirmed memberships appear when a saved campaign has attribution permission. General visits are reported in Google Analytics.' : 'Results appear when visitors open valid tagged links. Try another search or arrival period.',
     ])
         @foreach($campaigns as $campaign)
         <tr>
@@ -42,14 +51,18 @@
                 @endif
                 @if($campaign->landing_page_location)<small>{{ $campaign->landing_page_location }}</small>@endif
             </td>
-            <td>{{ number_format($campaign->arrivals) }}</td>
+            @unless($conversionOnly)<td>{{ number_format($campaign->arrivals) }}</td>@endunless
             <td>{{ number_format($campaign->trials) }}</td>
             <td>{{ number_format($campaign->first_paid_subscriptions) }}</td>
             <td>{{ $campaign->first_payment_revenue ?: '—' }}</td>
-            <td>{{ carbon($campaign->last_arrived_at)->format('M j, Y') }}<small>{{ carbon($campaign->last_arrived_at)->format('g:i A') }}</small></td>
+            @unless($conversionOnly)<td>{{ carbon($campaign->last_arrived_at)->format('M j, Y') }}<small>{{ carbon($campaign->last_arrived_at)->format('g:i A') }}</small></td>@endunless
         </tr>
         @endforeach
     @endcomponent
+    @if($conversionOnly)
+    <p class="ua-note">Only saved campaign links with attribution permission appear here. The period refers to when the campaign was captured; conversions may happen later. Revenue is the first positive payment, before fees and refunds; renewals stay out and currencies remain separate. Missing permission, blocked analytics and host-local attribution can leave a membership unlinked. Google Analytics reports general traffic.</p>
+    @else
     <p class="ua-note">Arrivals count the first tagged visit per browser session, or per 30-day campaign cookie after opt-in; they are not every click or unique people. Anonymous visits need no button click or JavaScript. Account, trial and payment attribution requires an existing opt-in. Trials and payments belong to the selected arrival period, even when they happen later. Revenue includes the first positive subscription payment, before fees and refunds; renewals are excluded and currencies stay separate. Declined measurement, known bots and excluded accounts stay out. Attribution stays on the arrival host and does not follow visitors across devices.</p>
+    @endif
 </div></div>
 @endsection

@@ -334,3 +334,9 @@ field and `[Preview]` subject prefix. Both use the same labeled fictional data
 from `App\Services\Admin\WeeklySnapshotPreview`, with existing preview images and
 inert report/piece links. The Sending switch controls scheduled and queued admin
 reports, defaults on, and does not prevent previews.
+
+As of 2026-10-27, the weekly snapshot's campaign block follows the GA/internal
+split: conversion mode shows only consented trials and first payments, omitting
+arrival totals/columns and traffic-only rankings. The shared HTML/text campaign
+partials retain compatibility with historical snapshots lacking this mode flag.
+General acquisition/traffic reporting belongs to GA; see `docs/CAMPAIGN_ATTRIBUTION.md`.

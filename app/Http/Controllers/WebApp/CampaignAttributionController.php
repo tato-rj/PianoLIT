@@ -16,13 +16,16 @@ class CampaignAttributionController extends Controller
             && ($request->input('choice') !== 'denied' || !$attribution->supportsRequest($request))) {
             return response()->json(['message' => 'Campaign measurement unavailable.'], 404);
         }
-        $data = $request->validate(['choice' => 'required|in:granted,denied', 'token' => 'nullable|string|max:4096']);
+        $data = $request->validate(['choice' => 'required|in:granted,denied', 'token' => 'nullable|string|max:4096',
+            'client_id' => ['nullable', 'string', 'regex:/^\d{1,20}\.\d{1,20}$/D'],
+            'session_id' => ['nullable', 'regex:/^\d{1,12}$/D']]);
         $campaign = null;
         if ($data['choice'] === 'granted' && ! empty($data['token'])) {
             $campaign = $attribution->campaignFromToken($data['token']);
             abort_unless($campaign, 422, 'Please reload the campaign link before allowing measurement.');
         }
         $attribution->choose($request, $data['choice'], $campaign);
+        if ($data['choice'] === 'granted') $attribution->captureGoogle($request, $data);
         return response()->json(['choice' => $data['choice']]);
     }
 }

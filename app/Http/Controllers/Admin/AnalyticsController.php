@@ -13,9 +13,14 @@ use App\Http\Controllers\Controller;
 
 class AnalyticsController extends Controller
 {
+    public function google()
+    {
+        return view('admin.pages.analytics.google.index');
+    }
+
     public function campaigns(Request $request, \App\Services\CampaignAttributionReport $report)
     {
-        if (!config('attribution.enabled')) return redirect()->away('https://analytics.google.com/analytics/web/#/a137232556p399721623/reports/reportinghub');
+        if (!config('attribution.enabled') && !config('attribution.conversion_links_enabled')) return redirect()->away('https://analytics.google.com/analytics/web/#/a137232556p399721623/reports/reportinghub');
         return view('admin.pages.analytics.campaigns.index', $report->admin($request));
     }
 

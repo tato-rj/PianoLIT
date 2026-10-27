@@ -649,6 +649,16 @@ static grid. The same card markup supplies tags/actions for every hub, hiding
 those additions in the desktop compact variant; the Design System specimens
 continue to use the shared card component.
 
+The homepage's `home.components.scroll-hint` places a shared secondary circular
+button with a black arrow at the bottom center of the viewport, above the device safe area.
+It gently sways over 3.2 seconds and scrolls down when activated. The versioned
+`home-scroll-hint.js` hides it permanently for the current document after the
+first downward scroll (16px tolerance) or activation; returning to the top or
+restoring that document from browser history does not show it again. Fresh
+navigation/reload at the top resets it without cookies or browser storage.
+Do not show it on a non-scrollable page or an already-restored scroll position.
+Reduced motion disables the sway and uses instant click scrolling.
+
 The header keeps the shared logo, YouTube action and account control. Its optional
 `showBrandName` adds PianoLIT beside the logo only on the homepage, hidden below
 768px with Bootstrap `d-none d-md-inline` so mobile header controls share one row. All public

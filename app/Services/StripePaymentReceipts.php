@@ -8,7 +8,7 @@ class StripePaymentReceipts
 {
     public function invoiceSucceeded(array $payload)
     {
-        if (! config('attribution.enabled') || ($payload['type'] ?? null) !== 'invoice.payment_succeeded') return;
+        if ((!config('attribution.enabled') && !config('attribution.conversion_links_enabled')) || ($payload['type'] ?? null) !== 'invoice.payment_succeeded') return;
         $invoice = $payload['data']['object'] ?? [];
         $subscription = $invoice['subscription'] ?? ($invoice['parent']['subscription_details']['subscription'] ?? null);
         if (is_array($subscription)) $subscription = $subscription['id'] ?? null;
@@ -28,6 +28,10 @@ class StripePaymentReceipts
             'amount' => $invoice['amount_paid'], 'currency' => $invoice['currency'],
             'paid_at' => \Carbon\Carbon::createFromTimestamp($paidAt), 'created_at' => now(),
         ]);
+        // The outbox is only a delivery request; the background sender verifies
+        // complete provider history before choosing the first positive invoice.
+        try { \App\Analytics\GoogleAnalyticsConversions::enqueueForSubscription($subscription, $customer); }
+        catch (\Throwable $exception) { /* The scheduled reconciler recovers this; billing must succeed independently. */ }
     }
 
     public function oncePerCharge(array $payload, callable $record)

@@ -13,10 +13,12 @@ class CampaignAttribution
     const VISIT_COOKIE = 'pianolit_campaign_visit';
     const CONSENT_COOKIE = 'pianolit_campaign_consent';
     const ARRIVAL_SESSION = 'campaign.arrivals';
+    const PENDING_SESSION = 'campaign.pending';
+    const GOOGLE_SESSION = 'campaign.google';
 
     public function available(Request $request)
     {
-        return config('attribution.enabled') && $this->supportsRequest($request);
+        return (config('attribution.enabled') || config('attribution.conversion_links_enabled')) && $this->supportsRequest($request);
     }
 
     public function supportsRequest(Request $request)
@@ -39,14 +41,17 @@ class CampaignAttribution
     public function landingToken(Request $request)
     {
         if (! $this->available($request) || ! $request->isMethod('GET')) return null;
-        $parameters = CampaignParameters::fromQuery($request->query());
+        $pending = $request->session()->get($this->sessionKey($request, self::PENDING_SESSION));
+        if ($pending && ($pending['captured_at'] ?? 0) < now()->subDays(config('attribution.touch_days'))->timestamp) $pending = null;
+        $parameters = CampaignParameters::fromQuery($request->query()) ?: ($pending['parameters'] ?? null);
         if (! $parameters) return null;
         if ($request->attributes->has('campaign.touch')) return Crypt::encryptString(json_encode($request->attributes->get('campaign.touch')));
         $visit = $this->arrival($request);
         $touch = [
-            'parameters' => $visit ? array_intersect_key((array) $visit, array_flip(CampaignParameters::FIELDS)) : $parameters,
-            'visit_id' => $visit ? $visit->id : (string) Str::uuid(), 'issued_at' => now()->timestamp,
-            'landing_url' => $visit ? $visit->landing_url : CampaignLandingPage::capture($request),
+            'parameters' => $visit ? array_intersect_key((array) $visit, array_flip(CampaignParameters::FIELDS)) : ($pending['parameters'] ?? $parameters),
+            'visit_id' => $visit ? $visit->id : ($pending['visit_id'] ?? (string) Str::uuid()), 'issued_at' => now()->timestamp,
+            'captured_at' => $visit ? carbon($visit->created_at)->timestamp : ($pending['captured_at'] ?? now()->timestamp),
+            'landing_url' => $visit ? $visit->landing_url : ($pending['landing_url'] ?? CampaignLandingPage::capture($request)),
             'context' => $this->context($request),
         ];
         $request->attributes->set('campaign.touch', $touch);
@@ -65,6 +70,12 @@ class CampaignAttribution
             || ! $response->isSuccessful() || stripos($response->headers->get('Content-Type', ''), 'text/html') === false) return;
         if (! $this->landingToken($request) || $this->arrival($request)) return;
         $touch = $request->attributes->get('campaign.touch');
+        if (!config('attribution.enabled')) {
+            // Keep only the first tagged destination in this host's session.
+            // GA counts the traffic; SQL starts only after attribution opt-in.
+            $request->session()->put($this->sessionKey($request, self::PENDING_SESSION), $touch);
+            return;
+        }
         // An arrival is anonymous until the existing consent endpoint explicitly
         // upgrades it. No account link or long-lived campaign cookie is created.
         DB::table('campaign_visits')->insertOrIgnore($touch['parameters'] + [
@@ -79,7 +90,12 @@ class CampaignAttribution
     private function arrivalSessionKey(Request $request)
     {
         // Session domains can be shared; attribution must still stay host-local.
-        return self::ARRIVAL_SESSION.'.'.hash('sha256', $request->getHost());
+        return $this->sessionKey($request, self::ARRIVAL_SESSION);
+    }
+
+    private function sessionKey(Request $request, $key)
+    {
+        return $key.'.'.hash('sha256', $request->getHost());
     }
 
     private function arrival(Request $request, $requireFresh = true)
@@ -143,6 +159,7 @@ class CampaignAttribution
             if ($arrival = $this->arrival($request, false)) DB::table('campaign_visits')->where('id', $arrival->id)->delete();
             if (auth('web')->check()) DB::table('campaign_visits')->where('user_id', auth('web')->id())->delete();
             $this->clearCookies($request);
+            $request->session()->forget([$this->sessionKey($request, self::PENDING_SESSION), $this->sessionKey($request, self::GOOGLE_SESSION)]);
         }
         $value = config('attribution.consent_version').':'.$choice;
         $this->queueCookie($request, self::CONSENT_COOKIE, $value);
@@ -156,7 +173,7 @@ class CampaignAttribution
             DB::table('campaign_visits')->insertOrIgnore(array_merge($touch['parameters'], [
                 'id' => $id, 'campaign' => CampaignParameters::key($touch['parameters']), 'user_id' => auth('web')->id(),
                 'landing_url' => $touch['landing_url'] ?? '',
-                'consented_at' => now(), 'created_at' => now(),
+                'consented_at' => now(), 'created_at' => isset($touch['captured_at']) ? \Carbon\Carbon::createFromTimestamp($touch['captured_at'], config('app.timezone')) : now(),
                 'expires_at' => now()->addDays(config('attribution.touch_days')),
             ]));
             // The GET may already have counted this exact anonymous arrival.
@@ -169,9 +186,45 @@ class CampaignAttribution
         $this->bind($request);
     }
 
+    public function captureGoogle(Request $request, array $context): void
+    {
+        if (!$this->available($request) || $this->consent($request) !== 'granted') return;
+        $context = \App\Analytics\GoogleAnalyticsConversions::browserContext($context);
+        if (!$context) return; // Missing/blocked Google tag is not an invented identity.
+        $request->session()->put($this->sessionKey($request, self::GOOGLE_SESSION), $context);
+        if ($visit = $this->visit($request)) {
+            DB::table('campaign_visits')->where('id', $visit->id)->update(['google_context' => Crypt::encryptString(json_encode($context))]);
+        }
+    }
+
+    public function checkout(Request $request, User $user, string $operationId): void
+    {
+        if (!$this->available($request) || $this->consent($request) !== 'granted' || auth('web')->id() !== $user->id) return;
+        $operation = DB::table('stripe_billing_operations')->where('id', $operationId)->where('user_id', $user->id)->where('kind', 'purchase')->first();
+        if (!$operation) return;
+        if (!$this->visit($request) && ($token = $this->landingToken($request))) $this->choose($request, 'granted', $this->campaignFromToken($token));
+        $visit = $this->visit($request);
+        $google = $request->session()->get($this->sessionKey($request, self::GOOGLE_SESSION));
+        if (!$visit && $google) {
+            // Direct/organic conversions need a browser link too. Blank UTM
+            // fields are not counted as campaign arrivals by the legacy reader.
+            $id = (string) Str::uuid();
+            DB::table('campaign_visits')->insert(array_fill_keys(CampaignParameters::FIELDS, '') + [
+                'id' => $id, 'campaign' => CampaignParameters::key(array_fill_keys(CampaignParameters::FIELDS, '')),
+                'user_id' => $user->id, 'consented_at' => now(), 'created_at' => now(), 'expires_at' => now()->addDays(config('attribution.touch_days')),
+                'landing_url' => '', 'google_context' => Crypt::encryptString(json_encode($google)),
+            ]);
+            $this->queueCookie($request, self::VISIT_COOKIE, $id);
+            $request->cookies->set(self::VISIT_COOKIE, $id);
+            $visit = $this->visit($request);
+        }
+        if (!$visit || (int) $visit->user_id !== $user->id) return;
+        DB::table('campaign_checkout_contexts')->insertOrIgnore(['operation_id' => $operationId, 'visit_id' => $visit->id, 'created_at' => now('UTC')]);
+    }
+
     public function clearCookies(Request $request)
     {
-        if ($request->hasSession()) $request->session()->forget($this->arrivalSessionKey($request));
+        if ($request->hasSession()) $request->session()->forget([$this->arrivalSessionKey($request), $this->sessionKey($request, self::PENDING_SESSION), $this->sessionKey($request, self::GOOGLE_SESSION)]);
         foreach ([self::VISIT_COOKIE, self::CONSENT_COOKIE] as $name) {
             Cookie::queue(new BrowserCookie($name, '', now()->subDay(), '/', null, $request->isSecure(), true, false, 'lax'));
             $request->cookies->remove($name);
@@ -205,6 +258,9 @@ class CampaignAttribution
                 'trial_started_at' => $subscription->status === 'trialing' ? \Carbon\Carbon::createFromTimestamp($subscription->trial_start ?? now()->timestamp) : null,
                 'subscribed_at' => \Carbon\Carbon::createFromTimestamp($subscription->created ?? now()->timestamp),
             ]);
+            (new CampaignConversions)->link($visit->id, $user->id, $user->membership && $user->membership->source instanceof \App\Billing\Sources\Stripe
+                ? app(\App\Billing\Stripe\Accounts::class)->forSource($user->membership->source) : ($user->isSwissCustomer() ? 'swiss' : 'us'),
+                json_decode(json_encode($subscription), true), $user->membership ? $user->membership->source->plan : null);
         });
     }
 }

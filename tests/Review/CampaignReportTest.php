@@ -199,7 +199,7 @@ class CampaignReportTest extends ReviewTestCase
             ['Campaign', 'Source', 'Medium', 'Placement', 'Arrivals', 'Trials', 'First paid subscriptions', 'First payment revenue'],
             [['(not specified)', 'future-source.example', '', '', 1, 0, 0, '']]
         )->assertExitCode(0);
-        config(['attribution.enabled' => false]);
+        config(['attribution.enabled' => false, 'attribution.conversion_links_enabled' => false]);
         $this->get(route('admin.analytics.campaigns'))->assertRedirect('https://analytics.google.com/analytics/web/#/a137232556p399721623/reports/reportinghub');
         $this->assertDatabaseCount('campaign_visits', 1);
     }
@@ -213,7 +213,7 @@ class CampaignReportTest extends ReviewTestCase
         $migration = new \AllowAnonymousCampaignArrivals;
         $migration->down();
         $migration->up();
-        $this->assertSame($before, (array) DB::table('campaign_visits')->sole());
+        $this->assertEquals($before, (array) DB::table('campaign_visits')->sole());
         $this->assertSame($subscription, (array) DB::table('campaign_subscriptions')->sole());
         $this->assertSame(1, (new CampaignAttributionReport)->rows(now()->subDay())[0]['first_paid_subscriptions']);
         $anonymous = $this->visit('reddit.com');
@@ -283,7 +283,7 @@ class CampaignReportTest extends ReviewTestCase
         $migration = new \AddCampaignLandingUrl;
         $migration->down();
         $migration->up();
-        $this->assertSame($before, (array) DB::table('campaign_visits')->sole());
+        $this->assertEquals($before, (array) DB::table('campaign_visits')->sole());
         $this->assertSame($subscription, (array) DB::table('campaign_subscriptions')->sole());
         $this->assertSame('', DB::table('campaign_visits')->sole()->landing_url);
         $this->assertSame(1, (int) DB::select('PRAGMA foreign_keys')[0]->foreign_keys);

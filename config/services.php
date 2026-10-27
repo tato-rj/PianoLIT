@@ -2,6 +2,13 @@
 
 return [
 
+    'google_analytics' => [
+        'measurement_id' => env('GA4_MEASUREMENT_ID', 'G-12WWWZZMJF'),
+        'api_secret' => env('GA4_API_SECRET'),
+        'api_secret_file' => env('GA4_API_SECRET_FILE', storage_path('app/private/google-analytics-api-secret')),
+        'conversions_enabled' => env('GA4_CONVERSIONS_ENABLED', true),
+    ],
+
     'google_login' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),

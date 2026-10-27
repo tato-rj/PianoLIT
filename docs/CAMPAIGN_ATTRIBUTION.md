@@ -1,11 +1,98 @@
 # Campaign attribution
 
-> Retired from collection on 2026-10-27: website acquisition now belongs to Google
-> Analytics. `config/attribution.php` disables new campaign arrivals and binding,
-> and the old admin route opens Google Analytics. Existing records and cleanup /
-> withdrawal support remain. The implementation and migration notes below describe
-> the previous system; they are not instructions to re-enable it. See
-> [GOOGLE_ANALYTICS.md](GOOGLE_ANALYTICS.md).
+Updated 2026-10-27: general traffic reporting remains in Google Analytics. Arthur
+subsequently authorized restoring the small **campaign-to-conversion link**, plus
+server-confirmed trial and first-payment events in GA. The changes below supersede
+the historical automatic-arrival behavior documented later in this file.
+
+## Current conversion link
+
+`attribution.enabled` remains false. Successful tagged GETs retain a bounded first
+touch only in the existing session, separately per host; they create no SQL arrival
+or new campaign cookie. `attribution.conversion_links_enabled` enables the consented
+link. Existing opt-in, saved refusals, session/host-bound signed tokens, bot/prefetch
+filters and `ExcludedAccounts` still apply. No visible campaign controls return.
+New visitors without an existing grant remain unlinked. An ordinary GA pageview
+is not permission to bind an account or export a membership conversion.
+
+The hidden acknowledgement retrieves `client_id` and `session_id` through Google's
+supported `gtag('get', …)` API only for an existing grant. Browser IDs are encrypted
+in `campaign_visits.google_context`; they never authenticate a visitor. No email,
+name, internal account ID, raw query string or payment details are sent to GA.
+No ID is invented when the tag is blocked. A direct/organic checkout with a granted
+Google context can have a blank campaign link; it is omitted from the campaign table.
+
+Verified checkout preparation stores only its owned operation-to-visit association.
+Completion links the verified subscription, and the minutely reconciler recovers
+checkout tabs that never return. Account, customer, subscription and US/Swiss
+billing account must match the persisted purchase operation. Only verified live-mode
+subscriptions enter the Google outbox. Legacy/iOS and shop transactions stay separate.
+Signed invoice receipts trigger delivery work without making Google a billing dependency.
+
+Analytics → **Campaign conversions** shows only retained, consented campaigns with
+membership links, grouped by saved labels and landing page. It shows trials, first
+paid subscriptions and first payment revenue, with separate currencies. There is no
+arrivals counter, traffic ranking or conversion rate. The period is the campaign
+capture period; a conversion can happen later. Legacy read-only report machinery
+remains available for historical reports. General acquisition lives in GA. The weekly admin snapshot also omits arrival
+counts and traffic-only campaign rankings in this mode; it retains confirmed
+campaign trials/first payments.
+
+## Google delivery and rollout
+
+Deploy `2026_10_27_190000_create_google_analytics_conversions.php` before the matching
+PHP/Blade/config/JS changes. It adds encrypted browser context, a live-mode marker,
+checkout recovery links and a durable delivery outbox. Existing rows default to
+non-exportable: no historical backfill or guessed identities. Existing campaign
+migrations and the modern Stripe operations migration are prerequisites.
+
+Configure `GA4_API_SECRET` through the normal private deployment configuration, or
+install the secret in `storage/app/private/google-analytics-api-secret` (mode 0600,
+outside version control and public storage). `GA4_API_SECRET_FILE` can select another
+private path. Never put this secret in Blade, JS, source control, logs or a screenshot.
+The default measurement ID is `G-12WWWZZMJF`; `GA4_MEASUREMENT_ID` overrides it.
+`GA4_CONVERSIONS_ENABLED=false` stops delivery independently of internal links.
+Production-only `analytics:send-conversions` runs every minute via the existing
+scheduler. `analytics:send-conversions --status` is read-only, showing configuration
+and state counts without provider calls, identities or credentials. Keep deployed
+config/view caches current. Arthur approved Google's User Data Collection Acknowledgement and secret creation
+on 2026-10-27. The acknowledgement is accepted and the secret is saved locally in
+the private file above with mode 0600, excluded from Git. Production still needs
+that secret installed through private deployment configuration, the migration/code
+rollout and verification of actual permitted events. No real event has been sent
+from this local work.
+
+- `membership_trial_started`: a confirmed trial, without a made-up monetary value
+- `purchase`: the first positive paid membership invoice only, with
+  `membership_conversion=first_payment`, actual charged value/currency, one generic
+  membership item and an opaque stable transaction ID
+
+Both include saved `membership_campaign`, `membership_source`, `membership_medium`,
+`membership_placement` and `membership_landing_host` where available. These are
+custom conversion dimensions, separate from Google's session-acquisition dimensions.
+The sender reads complete paid-invoice history from the correct Stripe account,
+including pagination, and fails closed if history is incomplete. Zero-value trial
+invoices, renewals and test subscriptions never become first-payment exports.
+
+Events use their actual server-confirmed timestamp within Google's 72-hour delivery
+window. A post-trial charge is not backdated into a weeks-old browser session; its
+saved campaign parameters remain available even when session attribution is absent.
+Only a recent real session near the conversion is included. No artificial engagement
+time, location or User-ID is added; advertising consent is denied in these payloads.
+The GA dimensions/key-event settings can be saved before events begin arriving.
+
+Outbox uniqueness prevents duplicate local conversion creation. Purchase retries
+reuse the encrypted payload/client/transaction ID, using GA purchase deduplication.
+Trials have no guaranteed equivalent: an interrupted or ambiguous HTTP outcome is
+marked `uncertain`, never blindly resent. Rate limits and safe payment retries use
+bounded backoff. A 2xx is recorded as `submitted`, meaning HTTP receipt, not proof
+that Google processed the event. Check real permitted conversions in GA after rollout;
+do not create test conversions in the live property or charge customers to verify it.
+Withdrawal and account exclusion/delete cleanup remove campaign links, checkout
+contexts and queued/frozen payloads by cascade. Existing 90-day campaign pruning
+also removes them; this does not erase already submitted Google events.
+
+## Historical implementation (superseded collection behavior)
 
 
 Updated on 2026-10-20: valid tagged visits now count automatically. Account, trial and payment attribution still requires an existing opt-in. The visible preference panel has been removed at Arthur’s request. Campaign measurement is enabled by default in application configuration. An explicit `CAMPAIGN_ATTRIBUTION_ENABLED=false` still disables collection. This is PianoLIT's own SQL report; it does not set up or export to Google Analytics. Deployment is separate from local implementation.

@@ -11,7 +11,7 @@
                 <h1 id="home-heading" class="text-nowrap">Many worlds.<br>One love of music.</h1>
             </div>
             <div class="col-12 col-lg-6 col-xxl-7">
-                <p class="project-home__intro">Find your next piece.<br>Follow an idea. Play a little.<br>Every path starts at PianoLIT.</p>
+                <p class="project-home__intro">Some days you want to play.<br>Some days you just want to explore.<br>There's room for both here.</p>
                 <p class="project-home__invitation mb-0">Choose a world to begin @icon('arrow-down', ['mr' => 0, 'ml' => 1])</p>
             </div>
         </section>
@@ -20,5 +20,6 @@
     </div>
 
     @include('components.layout.public.footer', ['homeWorlds' => true])
+    @include('home.components.scroll-hint')
 </div>
 @endsection

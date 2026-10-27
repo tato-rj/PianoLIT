@@ -30,6 +30,20 @@ module.exports = async function () {
     assert.deepStrictEqual(JSON.parse(f.requests[0].options.body), {choice: 'granted', token: 'opaque-page-token'});
     assert.strictEqual(f.requests[0].options.credentials, 'same-origin');
     assert.strictEqual(f.requests[0].options.headers['X-CSRF-TOKEN'], 'csrf-fixture');
+    const callbacks = {}, requests = [], timers = [];
+    const attributes = {'data-consent': 'granted', 'data-token': '', 'data-url': '/attribution/consent', 'data-csrf': 'csrf-fixture', 'data-measurement-id': 'G-REVIEW'};
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/campaign-attribution.js'), 'utf8'), {
+        document: {querySelector: () => ({getAttribute: name => attributes[name]})},
+        window: {gtag: (...args) => { assert.strictEqual(args[0], 'get'); assert.strictEqual(args[1], 'G-REVIEW'); callbacks[args[2]] = args[3]; }},
+        fetch: (url, options) => { requests.push({url, options}); return Promise.resolve({ok: true}); },
+        setTimeout: callback => { timers.push(callback); return 1; }, clearTimeout: () => {}
+    });
+    assert.strictEqual(requests.length, 0, 'Wait for both supported Google ID callbacks.');
+    callbacks.session_id('1793124000');
+    callbacks.client_id('123.456');
+    assert.deepStrictEqual(JSON.parse(requests[0].options.body), {choice: 'granted', token: null, client_id: '123.456', session_id: '1793124000'});
+    timers[0](); callbacks.client_id('999.111');
+    assert.strictEqual(requests.length, 1, 'Callbacks and timeout cannot duplicate acknowledgement or emit conversions.');
     await flush();
     const failed = fixture('granted', 'opaque-page-token', true);
     await flush();

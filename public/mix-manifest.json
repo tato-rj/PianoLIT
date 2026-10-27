@@ -34,7 +34,7 @@
     "/css/metronome.css": "/css/metronome.css?id=562c3133aa20ac93f4a540f40431a535",
     "/js/app.js": "/js/app.js?id=b686698ccc4a8fb97b18481ce23fba5c",
     "/js/admin.js": "/js/admin.js?id=69062775cbe46d80829d5c81272dd090",
-    "/css/app.css": "/css/app.css?id=c6c2de92e12ad9aae244535b9189a815",
+    "/css/app.css": "/css/app.css?id=c30307726dfc8c01934ff8387d5306ca",
     "/css/admin.css": "/css/admin.css?id=7a4fe7eea6248a5556630df81a129346",
     "/js/views/quizzes.js": "/js/views/quizzes.js?id=f48035129045dc303e11c66dbc22d67d",
     "/js/views/pianists.js": "/js/views/pianists.js?id=f88d1c92fa9718b848a5ff9144fe6f69",
@@ -62,7 +62,7 @@
     "/js/views/explore-transitions.js": "/js/views/explore-transitions.js?id=102926b09a7d76893f9ffcfc4e8884a4",
     "/js/views/explore.js": "/js/views/explore.js?id=de55c10918828e49a6e15f27aee41c76",
     "/js/views/highlights.js": "/js/views/highlights.js?id=1a0751279b65876cc27429e3b365c1b0",
-    "/js/views/campaign-attribution.js": "/js/views/campaign-attribution.js?id=332d367cc70bda190bf7c3d33eec9bf5",
+    "/js/views/campaign-attribution.js": "/js/views/campaign-attribution.js?id=657b4a4370a2bcb65e182db803389b2a",
     "/js/views/composer-biography-admin.js": "/js/views/composer-biography-admin.js?id=2a9ab9a59b955337ca692abb123394c8",
     "/js/views/composers.js": "/js/views/composers.js?id=f79fc481c68e09551de88db5e1e3505c",
     "/js/views/escore.js": "/js/views/escore.js?id=0709fd83d636d0e2aad1e04d55f21a76",
@@ -1730,5 +1730,6 @@
     "/css/vendor/flags/4x3/yt.svg": "/css/vendor/flags/4x3/yt.svg",
     "/css/vendor/flags/4x3/za.svg": "/css/vendor/flags/4x3/za.svg",
     "/css/vendor/flags/4x3/zm.svg": "/css/vendor/flags/4x3/zm.svg",
-    "/css/vendor/flags/4x3/zw.svg": "/css/vendor/flags/4x3/zw.svg"
+    "/css/vendor/flags/4x3/zw.svg": "/css/vendor/flags/4x3/zw.svg",
+    "/js/components/home-scroll-hint.js": "/js/components/home-scroll-hint.js?id=cad827957d488c50ad52940bd857de80"
 }

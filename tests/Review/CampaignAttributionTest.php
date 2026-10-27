@@ -259,7 +259,7 @@ class CampaignAttributionTest extends ReviewTestCase
     {
         $this->landing();
         $this->assertDatabaseCount('campaign_visits', 1);
-        config(['attribution.enabled' => false]);
+        config(['attribution.enabled' => false, 'attribution.conversion_links_enabled' => false]);
         $this->withCookie(config('session.cookie'), session()->getId());
         $this->postJson(route('webapp.attribution.consent'), ['choice' => 'denied'])->assertOk();
         $this->assertDatabaseCount('campaign_visits', 0);
@@ -320,7 +320,7 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->actingAs(create(\App\Admin::class), 'admin');
         $this->landing();
         auth('admin')->logout();
-        config(['attribution.enabled' => false]);
+        config(['attribution.enabled' => false, 'attribution.conversion_links_enabled' => false]);
         $this->landing();
         $this->assertDatabaseCount('campaign_visits', 0);
     }
@@ -738,7 +738,7 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->actingAs($this->user, 'web');
         $this->checkout($this->subscription())->assertOk();
         $this->assertDatabaseCount('campaign_subscriptions', 0);
-        config(['attribution.enabled' => false]);
+        config(['attribution.enabled' => false, 'attribution.conversion_links_enabled' => false]);
         $this->landing()->assertDontSee('data-campaign-measurement', false);
         (new StripePaymentReceipts)->invoiceSucceeded($this->invoice());
         $this->assertDatabaseCount('stripe_payment_receipts', 0);

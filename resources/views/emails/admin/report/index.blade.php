@@ -34,7 +34,7 @@
 @endcomponent
 
 @if(isset($snapshot['campaigns']))
-@component('mail::snapshot.campaigns', ['title' => 'Campaign results', 'description' => 'Top 3 by first payments, then trials and arrivals', 'campaigns' => $snapshot['campaigns'], 'url' => $campaignsUrl, 'reportLabel' => 'View campaign analytics'])
+@component('mail::snapshot.campaigns', ['title' => 'Campaign results', 'description' => !empty($snapshot['campaigns']['traffic_in_google']) ? 'Top 3 by first payments, then trials' : 'Top 3 by first payments, then trials and arrivals', 'campaigns' => $snapshot['campaigns'], 'url' => $campaignsUrl, 'reportLabel' => 'View campaign analytics'])
 @endcomponent
 @endif
 

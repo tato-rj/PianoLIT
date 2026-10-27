@@ -74,8 +74,11 @@ class MembershipsController extends Controller
     {
         $data = $request->validate(['operation_id' => 'required|uuid', 'coupon' => 'nullable|string|max:80',
             'use_saved_card' => 'sometimes|boolean', 'saved_card_reference' => ['nullable', 'string', 'regex:/^[a-f0-9]{64}$/D']]);
-        try { return response()->json($billing->prepare($request->user('web'), $data['operation_id'], 'purchase', $plan, $data['coupon'] ?? null, $request->boolean('use_saved_card'), $data['saved_card_reference'] ?? null)); }
+        try { $result = $billing->prepare($request->user('web'), $data['operation_id'], 'purchase', $plan, $data['coupon'] ?? null, $request->boolean('use_saved_card'), $data['saved_card_reference'] ?? null); }
         catch (\Throwable $exception) { return $this->failure($request, $exception); }
+        try { (new \App\Services\CampaignAttribution)->checkout($request, $request->user('web'), $result['operation_id']); }
+        catch (\Throwable $exception) { report($exception); }
+        return response()->json($result);
     }
 
     public function prepareCard(Request $request, MembershipBilling $billing)
@@ -98,6 +101,13 @@ class MembershipsController extends Controller
         catch (\Throwable $exception) { return $this->failure($request, $exception); }
         $subscription = json_decode(json_encode($result['subscription']));
         $user = $request->user('web');
+        // Retryable analytics bookkeeping stays outside billing completion and
+        // also recovers a Google context that arrived after checkout preparation.
+        try {
+            $attribution = new \App\Services\CampaignAttribution;
+            $attribution->checkout($request, $user, $data['operation_id']);
+            $attribution->subscribed($request, $user, (object) $result['customer'], $subscription);
+        } catch (\Throwable $exception) { report($exception); }
         $previous = $request->session()->get('membership-confirmation', []);
         $emailQueued = ($previous['operation_id'] ?? null) === $data['operation_id'] && !empty($previous['email_queued']);
         if ($result['first_completion']) {
@@ -115,7 +125,6 @@ class MembershipsController extends Controller
             } catch (\Throwable $exception) { report($exception); }
             try {
                 \App\Activity\Actions::record($request, $subscription->status === 'trialing' ? 'trial_started' : 'subscription_activated', ['status' => $subscription->status]);
-                (new \App\Services\CampaignAttribution)->subscribed($request, $request->user('web'), (object) $result['customer'], $subscription);
                 if ($subscription->status === 'trialing') event(new NewTrial($request->user('web')));
             } catch (\Throwable $exception) { report($exception); }
         }

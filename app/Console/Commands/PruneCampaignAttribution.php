@@ -12,7 +12,7 @@ class PruneCampaignAttribution extends Command
 
     public function handle()
     {
-        if (! config('attribution.enabled')) return 0;
+        if (!config('attribution.enabled') && !config('attribution.conversion_links_enabled')) return 0;
         DB::transaction(function () {
             DB::table('campaign_visits')->where('created_at', '<', now()->subDays(config('attribution.retention_days')))->delete();
             DB::table('stripe_payment_receipts')->where('kind', 'invoice')->where('created_at', '<', now()->subDays(config('attribution.retention_days')))

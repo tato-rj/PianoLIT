@@ -15,12 +15,13 @@
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Analytics', 'icon' => 'chart-line',
         'dropdown' => [
+          ['name' => 'Google Analytics', 'route' => route('admin.analytics.google')],
           ['name' => 'Users', 'route' => route('admin.analytics.users')],
           ['name' => 'Memberships', 'route' => route('admin.analytics.memberships')],
           ['name' => 'Pieces', 'route' => route('admin.analytics.pieces')],
           ['name' => 'Favorites', 'route' => route('admin.analytics.favorites')],
           ['name' => 'Composers', 'route' => route('admin.analytics.composers')],
-          ['name' => 'Website & hubs · Google Analytics', 'route' => route('admin.analytics.campaigns')],
+          ['name' => 'Campaign conversions', 'route' => route('admin.analytics.campaigns')],
         ]])
 
         @include('admin.layouts.header.divider', ['label' => 'ACQUISITION'])

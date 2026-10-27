@@ -75,7 +75,7 @@ class WebsiteAnalyticsSplitTest extends GamesTestCase
     public function test_admin_sends_acquisition_to_google_and_does_not_offer_website_as_an_app_platform()
     {
         $this->actingAs(create(Admin::class), 'admin');
-        $this->get(route('admin.analytics.campaigns'))->assertRedirect('https://analytics.google.com/analytics/web/#/a137232556p399721623/reports/reportinghub');
+        $this->get(route('admin.analytics.campaigns'))->assertOk()->assertSee('Campaign conversions')->assertDontSee('Most arrivals');
         $this->get(route('admin.analytics.users.insights'))->assertOk()->assertSee('Website & hub traffic in Google Analytics', false)
             ->assertDontSee('Visits by signup month')->assertDontSee('Page views by hub')->assertDontSee('value="web"', false);
         $this->assertSame(['webapp', 'app'], (new Filters(Request::create('/')))->platforms);

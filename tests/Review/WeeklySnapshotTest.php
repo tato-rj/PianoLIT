@@ -311,6 +311,24 @@ class WeeklySnapshotTest extends ReviewTestCase
         $this->assertLessThan(102400, strlen($html), 'Avoid Gmail clipping.');
     }
 
+    public function test_conversion_mode_keeps_weekly_campaign_results_without_traffic_columns()
+    {
+        $snapshot = (new \App\Services\Admin\WeeklySnapshotPreview)->data();
+        $snapshot['campaigns']['traffic_in_google'] = true;
+        $mail = new AdminReport($snapshot, new Admin(['name' => 'Preview']));
+        $mail->build();
+        $renderer = (clone app(Markdown::class))->theme($mail->theme);
+        $html = (string) $renderer->render($mail->markdown, $mail->buildViewData());
+        $text = (string) $renderer->renderText($mail->markdown, $mail->buildViewData());
+        $this->assertStringNotContainsString('>Arrivals</th>', $html);
+        $this->assertStringNotContainsString('Arrivals:', $text);
+        foreach ([$html, $text] as $body) {
+            $this->assertStringContainsString('traffic in Google Analytics', $body);
+            $this->assertStringNotContainsString('then trials and arrivals', $body);
+            $this->assertStringNotContainsString('@endif', $body);
+        }
+    }
+
     public function test_command_queues_one_identical_snapshot_per_manager_without_campaign_tracking()
     {
         create(Admin::class, ['role' => 'manager']);
