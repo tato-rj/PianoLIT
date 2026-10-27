@@ -57,10 +57,10 @@ scheduler. `analytics:send-conversions --status` is read-only, showing configura
 and state counts without provider calls, identities or credentials. Keep deployed
 config/view caches current. Arthur approved Google's User Data Collection Acknowledgement and secret creation
 on 2026-10-27. The acknowledgement is accepted and the secret is saved locally in
-the private file above with mode 0600, excluded from Git. Production still needs
-that secret installed through private deployment configuration, the migration/code
-rollout and verification of actual permitted events. No real event has been sent
-from this local work.
+the private file above with mode 0600, excluded from Git. The subsequent production
+activation audit installed that secret and verified the deployed migration/code and
+automatic sender. Actual eligible conversion receipt is still unconfirmed; see the
+production audit below. No synthetic event was sent to the live collector.
 
 - `membership_trial_started`: a confirmed trial, without a made-up monetary value
 - `purchase`: the first positive paid membership invoice only, with
@@ -91,6 +91,37 @@ do not create test conversions in the live property or charge customers to verif
 Withdrawal and account exclusion/delete cleanup remove campaign links, checkout
 contexts and queued/frozen payloads by cascade. Existing 90-day campaign pruning
 also removes them; this does not erase already submitted Google events.
+
+## Production activation audit — 2026-10-27
+
+Arthur published the migration/code and authorized the SSH rollout. Both required
+migrations and matching analytics source files were verified on `/var/www/html`.
+The private secret is installed server-side with mode 0600 and matches its local
+source; config/route/view caches were refreshed and the supervised queue worker
+was gracefully restarted. `analytics:send-conversions --status` reports configured.
+
+The SSH user's crontab had no Artisan jobs, and root's crontab was not readable
+without sudo. A conversion-only cron now runs every minute under `arthur`, with
+`flock` preventing overlap and a success heartbeat at
+`storage/app/private/google-analytics-conversions.last-success`. Multiple automatic
+successful runs were observed. The cron is scoped to analytics and does not run
+unrelated billing/email jobs. The Kernel's normal schedule registration remains;
+if root's full scheduler is later confirmed, consolidate the duplicate entry.
+The previous crontab is retained privately at
+`storage/app/private/crontab-before-google-analytics`.
+
+Google's `/debug/mp/collect` validation endpoint accepted both representative event
+formats under `ENFORCE_RECOMMENDATIONS`, with empty validation messages. No event
+was sent to the live collection endpoint for testing. Validation does not prove
+processing or validate the API secret. No real billing mutations, webhook replays,
+backfills or consent changes were performed.
+
+Production currently has zero attribution opt-ins, checkout contexts, live links
+and outbox rows. Today's GA searches for `membership_trial_started` and `purchase`
+are empty. Arthur explicitly confirmed keeping those consent rules. There is no
+visible interface granting new attribution permission, so conversion exports may
+remain empty even with real trials/payments. Server activation is complete;
+actual eligible event ingestion remains unconfirmed.
 
 ## Historical implementation (superseded collection behavior)
 

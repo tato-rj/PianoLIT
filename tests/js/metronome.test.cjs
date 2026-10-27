@@ -145,6 +145,70 @@ test('clicks follow the audio clock at 120 BPM and stop cancels queued sound', a
     assert.equal(page.clock.beats.length, 0);
 });
 
+test('user-started metronome requests playback before opening audio and restores it on stop', async () => {
+    const page = setup();
+    const session = { type: 'auto' };
+    page.context.navigator = { audioSession: session };
+    page.clock.createContext = () => {
+        assert.equal(session.type, 'playback', 'Silent Mode must not mute the metronome');
+        return page.audio;
+    };
+    assert.equal(session.type, 'auto', 'Loading the metronome leaves the audio session alone');
+    await page.clock.start();
+    assert.equal(session.type, 'playback');
+    assert.equal(page.clock.ready, true);
+    page.clock.stop();
+    assert.equal(session.type, 'auto', 'Stopping releases playback mode before recording or other audio');
+    await page.clock.start();
+    assert.equal(session.type, 'playback', 'Reusing an audio context requests playback again');
+    page.audio.state = 'interrupted';
+    page.audio.onstatechange();
+    assert.equal(page.clock.running, false);
+    assert.equal(session.type, 'auto', 'An interruption also releases playback mode');
+});
+
+test('a failed or canceled audio start restores the previous session type', async () => {
+    for (const options of [{ resumeError: true }, { deferredResume: true }]) {
+        const page = setup(options);
+        const session = { type: 'ambient' };
+        page.context.navigator = { audioSession: session };
+        const started = page.clock.start();
+        if (options.deferredResume) {
+            assert.equal(session.type, 'playback');
+            page.clock.stop();
+            page.resume();
+        }
+        await started;
+        assert.equal(session.type, 'ambient');
+        assert.equal(page.clock.ready, false);
+        assert.equal(page.timers.size, 0);
+    }
+});
+
+test('missing or restricted audio-session APIs preserve ordinary playback', async () => {
+    const restricted = { get audioSession() { throw new Error('Unavailable'); } };
+    const readOnly = { audioSession: { get type() { return 'auto'; }, set type(value) { throw new Error('Read only'); } } };
+    for (const navigator of [{}, restricted, readOnly]) {
+        const page = setup();
+        page.context.navigator = navigator;
+        await page.clock.start();
+        assert.equal(page.clock.ready, true);
+        assert.equal(page.errors.length, 0);
+        assert.ok(page.oscillators.length > 0);
+        page.clock.stop();
+    }
+});
+
+test('stopping preserves a session type changed by another audio feature', async () => {
+    const page = setup();
+    const session = { type: 'auto' };
+    page.context.navigator = { audioSession: session };
+    await page.clock.start();
+    session.type = 'play-and-record';
+    page.clock.stop();
+    assert.equal(session.type, 'play-and-record');
+});
+
 test('a tempo change preserves beat progress and replaces queued clicks', async () => {
     const page = setup();
     await page.clock.start();

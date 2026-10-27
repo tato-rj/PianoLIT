@@ -13,6 +13,7 @@ export class MetronomeClock {
         this.ready = false;
         this.generation = 0;
         this.context = null;
+        this.audioSession = null;
         this.timer = null;
         this.notes = new Set();
         this.beats = [];
@@ -32,6 +33,7 @@ export class MetronomeClock {
         this.onStateChange(true);
 
         try {
+            this.requestPlaybackAudio();
             if (!this.context || this.context.state === 'closed') {
                 this.context = this.createContext();
                 this.context.onstatechange = () => {
@@ -69,7 +71,31 @@ export class MetronomeClock {
         this.beats = [];
         this.beatAnchor = null;
         this.lastBeatIndex = null;
+        this.restoreAudioSession();
         this.onStateChange(false);
+    }
+
+    requestPlaybackAudio() {
+        try {
+            const session = typeof navigator === 'undefined' ? null : navigator.audioSession;
+            if (!session) return;
+            const previousType = session.type;
+            // iPhone Web Audio defaults to ambient, which obeys Silent Mode.
+            session.type = 'playback';
+            this.audioSession = { session, previousType };
+        } catch (error) {
+            // This optional browser API must never prevent normal playback.
+        }
+    }
+
+    restoreAudioSession() {
+        const audioSession = this.audioSession;
+        this.audioSession = null;
+        if (!audioSession) return;
+        try {
+            const { session, previousType } = audioSession;
+            if (session.type === 'playback') session.type = previousType;
+        } catch (error) { /* The browser may no longer allow session changes. */ }
     }
 
     setTempo(value) {

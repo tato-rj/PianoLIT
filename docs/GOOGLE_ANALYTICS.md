@@ -109,7 +109,7 @@ cohort panel were retired; safe historical journey page labels remain supported.
 `config/attribution.php` keeps general campaign-arrival collection disabled.
 Arthur subsequently requested a minimal consented campaign-to-membership link:
 Analytics → Campaign conversions now shows confirmed trials/first payments without
-an arrivals counter. The Google Analytics menu entry opens the metric guide. See
+an arrivals counter. The Google Analytics menu entry opens the metric guide. Campaign conversions has no extra GA callout; the Users shortcut and disabled historical Campaigns route also lead to the guide, keeping outbound GA report links in one place. See
 [CAMPAIGN_ATTRIBUTION.md](CAMPAIGN_ATTRIBUTION.md) for the conversion outbox,
 existing-opt-in limits and deployment instructions.
 
@@ -121,13 +121,45 @@ as key events; their records/rules were not deleted. Signup/download key events
 remain separate. Filter membership reporting to the two confirmed event names.
 Arthur approved the acknowledgement and private Measurement Protocol secret on
 2026-10-27; both setup steps are complete and the secret is stored locally with
-owner-only permissions outside Git. Server delivery still needs production secret
-installation, migration/code rollout and a permitted real-event check.
+owner-only permissions outside Git. Server secret installation, migration/code rollout and automatic execution are
+now verified; actual eligible conversion receipt remains unconfirmed (see below).
 
 ## Deployment and verification
 
-The Google property, reports, stream settings and Tag Manager publication are
-already saved live. The Laravel changes are local and have **not been deployed**.
+Arthur published the Laravel changes and migration on 2026-10-27. The subsequent
+SSH rollout verified matching deployed analytics source files and both prerequisite
+migrations, installed the private GA secret with mode 0600, rebuilt configuration,
+cleared route/view caches and gracefully restarted the supervised queue worker.
+The deployment had left an old config cache active: it lacked the GA settings and
+still enabled general internal campaign arrivals. The refreshed cache now enables
+conversion links/delivery while keeping general arrivals disabled.
+
+The `arthur` crontab had no Artisan jobs, and root's crontab was unavailable without
+sudo. A scoped conversion-only job now runs every minute as `arthur`, using
+`flock` and `storage/app/private/google-analytics-conversions.last-success` as a
+success marker. Automatic runs were observed successfully. This does not start or
+change other billing/email schedules; the full root Laravel scheduler remains
+unverified. The normal Kernel job registration remains available if the full
+scheduler is later confirmed; consolidate the scoped job then.
+
+Production checks found one Google installation on all hub roots and representative
+nested pages (including a standalone game). Today's GA hostname report contains
+main, My, Learn, Blog, Shop and Games. Metronome's anonymous HTML has the correct
+GA tag, but no received Metronome row was observed. The current recognized browser
+received no Google script on Metronome; tracking exclusions were not bypassed.
+Both conversion payload formats passed Google's validation-only endpoint with
+strict checks and no messages; this does not record events or validate the API
+secret. The installed secret matches the locally created secret.
+
+There are zero consented campaign visits, checkout contexts, live subscription
+links or conversion outbox rows. Both confirmed event searches in today's GA report
+are empty. Arthur explicitly chose to keep the current consent rules after this
+finding. Conversion exports can remain empty even when billing activity occurs;
+do not silently grant permission, backfill identities or manufacture conversions.
+Actual Metronome receipt and eligible trial/payment receipt remain unconfirmed.
+
+For subsequent releases:
+
 Deploy PHP/Blade/config together on all web servers and rebuild their config/view
 caches through the normal release process. The subsequent conversion-link work
 requires its new migration and rebuilt campaign script; follow the campaign rollout

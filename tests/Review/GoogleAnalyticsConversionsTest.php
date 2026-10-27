@@ -270,7 +270,7 @@ class GoogleAnalyticsConversionsTest extends GamesTestCase
             'stripe_customer_id' => 'cus_unfinished', 'billing_account' => 'us', 'plan' => 'monthly', 'subscribed_at' => now()]);
         $this->actingAs(create(Admin::class), 'admin');
         $page = $this->get(route('admin.analytics.campaigns'))->assertOk()->assertSee('Campaign conversions')->assertSee('freepick')
-            ->assertSee('Open Google Analytics')->assertDontSee('unconverted')->assertDontSee('unfinished')->assertDontSee('Most arrivals')->assertDontSee('Latest arrival');
+            ->assertDontSee('unconverted')->assertDontSee('unfinished')->assertDontSee('Most arrivals')->assertDontSee('Latest arrival');
         $this->assertSame(1, $page->viewData('campaigns')->total());
         if ($directory = getenv('CAMPAIGN_REPORT_PREVIEW_DIR')) file_put_contents($directory.'/conversions.html', $page->getContent());
     }

@@ -4,13 +4,7 @@
 <div class="content-wrapper"><div class="container-fluid ua">
     @include('admin.components.page.title', ['title' => $conversionOnly ? 'Campaign conversions' : 'Campaigns', 'subtitle' => $conversionOnly ? 'Confirmed web memberships linked to a saved campaign' : 'Where campaign visitors come from, and which links lead to web memberships.'])
 
-    @if($conversionOnly)
-    <section class="ua-card" aria-label="Campaign conversions">
-        <h2>Traffic and acquisition in Google Analytics</h2>
-        <p>This page keeps the small link between a consented campaign and confirmed web membership trials or first payments.</p>
-        <a class="btn btn-dark" href="https://analytics.google.com/analytics/web/#/a137232556p399721623/reports/reportinghub" target="_blank" rel="noopener noreferrer">Open Google Analytics</a>
-    </section>
-    @else
+    @unless($conversionOnly)
     <section class="ua-card" aria-label="Campaign tracking">
         <h2>{{ $enabled ? 'Campaign tracking is enabled' : 'Campaign tracking is disabled' }}</h2>
         <p>{{ $enabled ? 'Tagged visits appear automatically. Account, trial and payment attribution is limited to visitors with an existing opt-in.' : 'Saved results are shown below. Enable CAMPAIGN_ATTRIBUTION_ENABLED in the server configuration to record new arrivals.' }}</p>
@@ -22,7 +16,7 @@
         </details>
     </section>
 
-    @endif
+    @endunless
 
     @component('admin.components.table', [
         'id' => 'campaigns-table', 'label' => 'Campaigns', 'items' => $campaigns,

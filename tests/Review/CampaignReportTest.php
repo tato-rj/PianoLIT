@@ -200,7 +200,7 @@ class CampaignReportTest extends ReviewTestCase
             [['(not specified)', 'future-source.example', '', '', 1, 0, 0, '']]
         )->assertExitCode(0);
         config(['attribution.enabled' => false, 'attribution.conversion_links_enabled' => false]);
-        $this->get(route('admin.analytics.campaigns'))->assertRedirect('https://analytics.google.com/analytics/web/#/a137232556p399721623/reports/reportinghub');
+        $this->get(route('admin.analytics.campaigns'))->assertRedirect(route('admin.analytics.google'));
         $this->assertDatabaseCount('campaign_visits', 1);
     }
 
