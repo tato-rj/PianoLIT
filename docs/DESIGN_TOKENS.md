@@ -664,6 +664,8 @@ and unpadded column around the existing page containers. Their content stays
 within the logo/menu edges. Homepage, `my.*` and raw views bypass that wrapper;
 the centered Shop placeholder retains `mx-auto`. Below `lg`, standard gutters
 keep mobile alignment unchanged.
+The web-app header uses the same `clamp(48px, 7vw, 64px)` logo size as the public
+header, retaining its own existing container and position as the viewport narrows.
 The gap from the header to public breadcrumbs matches the homepage eyebrow:
 36px from 768px upward and 30px on phones. The shared header's following main
 adds 12px/6px above the page container's Bootstrap `py-4` padding; keep this

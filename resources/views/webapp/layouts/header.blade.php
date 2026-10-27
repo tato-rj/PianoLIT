@@ -1,6 +1,6 @@
 <header class="pt-4 pb-3 d-flex align-items-center justify-content-between">
 	<a class="navbar-brand" href="{{route('webapp.discover')}}">
-		@brandIcon(['tilt' => true])
+		@brandIcon(['size' => 'clamp(48px, 7vw, 64px)', 'tilt' => true])
 	</a>
 	<nav aria-label="Account and site navigation">
 		<ul class="d-flex align-items-center gap-3 list-unstyled mb-0">
