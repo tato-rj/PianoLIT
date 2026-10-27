@@ -12,6 +12,7 @@ class Recorder
     public function eligible(Request $request)
     {
         return config('activity.enabled') && $request->hasSession()
+            && $this->platform($request) === 'webapp'
             && !auth('admin')->check()
             && $request->getHost() !== 'admin.'.config('app.short_url')
             && !$request->routeIs('activity.*', 'admin.*', 'api.*')

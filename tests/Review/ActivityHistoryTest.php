@@ -11,6 +11,12 @@ use Illuminate\Support\Str;
 
 class ActivityHistoryTest extends ReviewTestCase
 {
+    protected function prepareUrlForRequest($uri)
+    {
+        if (strpos($uri, '/review/activity-') === 0 || $uri === '/activity/events') return 'http://my.'.config('app.short_url').$uri;
+        return parent::prepareUrlForRequest($uri);
+    }
+
     public function setUp(): void
     {
         parent::setUp();
@@ -185,10 +191,11 @@ class ActivityHistoryTest extends ReviewTestCase
         $this->assertSame('https://pianolit.test/email/verify/[redacted]', \App\Activity\Metadata::url('https://pianolit.test/email/verify/123/private-hash?signature=private'));
     }
 
-    public function test_failed_requests_are_recorded_as_failures_and_do_not_change_the_response()
+    public function test_missing_webapp_pages_keep_the_existing_redirect_and_do_not_invent_page_views()
     {
-        $this->withExceptionHandling()->get('/review/activity-error')->assertNotFound();
-        $this->assertDatabaseHas('activity_events', ['type' => 'request', 'status' => 404]);
+        $this->withExceptionHandling()->get('/review/activity-error')->assertRedirect(route('webapp.discover'));
+        $this->assertDatabaseHas('activity_events', ['type' => 'request', 'status' => 302]);
+        $this->assertDatabaseCount('activity_pages', 0);
     }
 
     public function test_browser_batch_rolls_back_completely_if_one_insert_fails()

@@ -10,6 +10,12 @@ use Illuminate\Support\Str;
 
 class ActivityTrafficFilterTest extends ReviewTestCase
 {
+    protected function prepareUrlForRequest($uri)
+    {
+        if (strpos($uri, '/review/traffic') === 0 || $uri === '/activity/events') return 'http://my.'.config('app.short_url').$uri;
+        return parent::prepareUrlForRequest($uri);
+    }
+
     public function setUp(): void
     {
         parent::setUp();
@@ -24,7 +30,7 @@ class ActivityTrafficFilterTest extends ReviewTestCase
 
     private function open($number = 1, $host = null)
     {
-        $response = $this->get(($host ?: 'http://'.config('app.short_url')).'/review/traffic/'.$number)->assertOk();
+        $response = $this->get(($host ?: 'http://my.'.config('app.short_url')).'/review/traffic/'.$number)->assertOk();
         return $this->context($response);
     }
 
@@ -101,7 +107,7 @@ class ActivityTrafficFilterTest extends ReviewTestCase
     public function test_signed_opening_context_preserves_the_route_bound_piece_and_real_metric()
     {
         $piece = Model::withoutEvents(function () { return create(Piece::class); });
-        $page = $this->context($this->get('http://'.config('app.short_url').'/review/traffic-piece/'.$piece->id)->assertOk());
+        $page = $this->context($this->get('http://my.'.config('app.short_url').'/review/traffic-piece/'.$piece->id)->assertOk());
         $this->travel(5)->seconds(); $this->send($page, 5)->assertNoContent();
         $this->assertDatabaseHas('activity_events', ['type' => 'page_view', 'source' => 'server', 'resource_type' => 'piece', 'resource_id' => $piece->id]);
         $filters = new \App\Activity\Filters(\Illuminate\Http\Request::create('/', 'GET', ['range' => 'today', 'audience' => 'all']));
@@ -239,7 +245,7 @@ class ActivityTrafficFilterTest extends ReviewTestCase
         $this->send($page, 0, 0, 'page_ready')->assertStatus(202);
         $this->travel(5)->seconds(); $this->send($page, 5)->assertNoContent();
         $this->assertDatabaseCount('activity_visits', 2);
-        $this->get('http://'.config('app.short_url').'/review/traffic/2')->assertOk();
+        $this->get('http://my.'.config('app.short_url').'/review/traffic/2')->assertOk();
         $this->assertDatabaseCount('activity_visits', 2);
         $this->assertDatabaseCount('activity_pages', 3);
     }
@@ -269,7 +275,7 @@ class ActivityTrafficFilterTest extends ReviewTestCase
 
     public function test_head_requests_do_not_create_activity_and_pending_html_is_private()
     {
-        $url = 'http://'.config('app.short_url').'/review/traffic';
+        $url = 'http://my.'.config('app.short_url').'/review/traffic';
         $this->call('HEAD', $url)->assertOk()->assertDontSee('pianoActivityConfig');
         $this->assertDatabaseCount('activity_events', 0);
         $this->get($url)->assertHeader('Cache-Control', 'no-store, private');

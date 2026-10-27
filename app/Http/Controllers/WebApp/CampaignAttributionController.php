@@ -10,7 +10,12 @@ class CampaignAttributionController extends Controller
 {
     public function consent(Request $request, CampaignAttribution $attribution)
     {
-        if (! $attribution->available($request)) return response()->json(['message' => 'Campaign measurement unavailable.'], 404);
+        // Retiring new collection must not prevent an existing visitor from
+        // withdrawing their old permission and removing owned attribution.
+        if (!$attribution->available($request)
+            && ($request->input('choice') !== 'denied' || !$attribution->supportsRequest($request))) {
+            return response()->json(['message' => 'Campaign measurement unavailable.'], 404);
+        }
         $data = $request->validate(['choice' => 'required|in:granted,denied', 'token' => 'nullable|string|max:4096']);
         $campaign = null;
         if ($data['choice'] === 'granted' && ! empty($data['token'])) {

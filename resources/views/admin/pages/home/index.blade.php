@@ -9,12 +9,12 @@
 
 @section('content')
 <div class="admin-dashboard">
-  @include('admin.components.page.title', ['title' => 'Overview', 'subtitle' => 'User activity and site metrics.'])
+  @include('admin.components.page.title', ['title' => 'Overview', 'subtitle' => 'Web-app behavior, iOS activity and account operations.'])
 
   @manager
   <div class="admin-dashboard-filters">
     <nav class="admin-segmented" aria-label="Activity platform">
-      @foreach(['all' => 'All', 'web' => 'Website', 'webapp' => 'Web app', 'app' => 'iOS'] as $key => $label)
+      @foreach(['all' => 'Both apps', 'webapp' => 'Web app', 'app' => 'iOS'] as $key => $label)
       <a href="{{route('admin.home', ['days' => $dashboard['days'], 'platform' => $key])}}" class="{{$dashboard['platform'] === $key ? 'is-active' : ''}}" @if($dashboard['platform'] === $key) aria-current="true" @endif>{{$label}}</a>
       @endforeach
     </nav>
@@ -48,7 +48,7 @@
         <div class="admin-trend-panel">
           <div class="admin-trend-top"><span><i></i> Daily activity</span><a href="{{route('admin.analytics.users')}}">View activity @icon('arrow-up-right', ['mr' => 0])</a></div>
           <div class="admin-trend-visual">
-            <h3>Activity <br>over time<span>Recorded events <br>by day.</span></h3>
+            <h3>Activity <br>over time<span>Recorded events <br>by day</span></h3>
             @include('admin.pages.home.activity-chart', ['trend' => $dashboard['trend']])
           </div>
           @if(!$dashboard['total'])<p class="admin-chart-empty">No recorded activity in this period.</p>@endif
@@ -79,12 +79,12 @@
           @endforeach
         </ol>
         @else
-        <div class="admin-engaged-empty">@icon('users', ['mr' => 0])<strong>{{$dashboard['platform'] === 'app' ? 'User rankings unavailable' : 'No active web accounts'}}</strong><p>{{$dashboard['platform'] === 'app' ? 'Choose All, Website or Web app to see engaged accounts.' : 'No signed-in web activity was recorded in this period.'}}</p></div>
+        <div class="admin-engaged-empty">@icon('users', ['mr' => 0])<strong>{{$dashboard['platform'] === 'app' ? 'User rankings unavailable' : 'No active web accounts'}}</strong><p>{{$dashboard['platform'] === 'app' ? 'Choose Both apps or Web app to see engaged accounts.' : 'No signed-in web-app activity was recorded in this period.'}}</p></div>
         @endif
         <a class="admin-card-footer-link" href="{{route('admin.users.index')}}">View all users @icon('arrow-right', ['mr' => 0])</a>
       </article>
     </div>
-    <p class="admin-activity-note">Page views, actions and app requests. Timer updates excluded. iOS identity is unverified and excluded from user rankings.</p>
+    <p class="admin-activity-note">Web-app journeys, actions and iOS requests. Timer updates excluded. iOS identity is unverified and excluded from user rankings. @include('admin.pages.analytics.users.website-link')</p>
   </section>
 
   <section class="admin-metrics-section" aria-labelledby="admin-metrics-title">
@@ -102,8 +102,6 @@
     </div>
   </section>
 
-  @include('admin.pages.home.user-countries')
-
   <section class="admin-library-section" aria-labelledby="admin-library-title">
     <div class="admin-section-heading"><h2 id="admin-library-title">Site content</h2></div>
     <div class="admin-library-grid">
@@ -116,10 +114,4 @@
   <article class="admin-glass-card admin-editor-welcome"><span class="admin-editor-icon">@icon('music', ['mr' => 0])</span><h2>Welcome, {{auth('admin')->user()->first_name}}.</h2><p>Your contributed content.</p><div><strong>{{number_format(auth('admin')->user()->pieces_count)}}</strong> pieces created <span>·</span> <strong>{{number_format(auth('admin')->user()->composers_count)}}</strong> composers created</div></article>
   @endmanager
 </div>
-@endsection
-
-@section('scripts')
-@manager
-<script src="{{ mix('js/views/admin-user-map.js') }}" defer></script>
-@endmanager
 @endsection

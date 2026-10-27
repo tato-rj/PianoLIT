@@ -80,9 +80,9 @@ class DailyActivityChartTest extends ReviewTestCase
         $this->assertSame([0, 1, 0], array_column($anonymous, 'pieces'));
         $this->assertSame([0, 1, 0], array_column($anonymous, 'media_starts'));
         $all = $queries->trend($this->filters(['audience' => 'all', 'platform' => 'all']));
-        $this->assertSame(2, array_sum(array_column($all, 'total')));
-        $this->assertSame(2, array_sum(array_column($all, 'pieces')));
-        $this->assertSame(2, array_sum(array_column($all, 'media_starts')));
+        $this->assertSame(1, array_sum(array_column($all, 'total')));
+        $this->assertSame(1, array_sum(array_column($all, 'pieces')));
+        $this->assertSame(1, array_sum(array_column($all, 'media_starts')));
     }
 
     public function test_chart_shares_one_scale_and_renders_exact_values_for_all_series_including_zero_days()

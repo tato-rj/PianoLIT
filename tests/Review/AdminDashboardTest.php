@@ -51,13 +51,13 @@ class AdminDashboardTest extends ReviewTestCase
         $this->event(['occurred_at' => '2026-10-13 00:00:00']); // Future timestamps excluded.
         $this->event(['occurred_at' => '2026-10-06 00:00:00']); // Before previous period.
         $data = app(Dashboard::class)->data(3, 'all');
-        $this->assertSame(7, $data['total']);
+        $this->assertSame(5, $data['total']);
         $this->assertSame(1, $data['previous']);
-        $this->assertEquals(600, $data['change']);
-        $this->assertSame([0, 0, 7], array_column($data['trend'], 'total'));
-        $this->assertSame(2, $data['activeUsers']);
-        $this->assertSame([$first->id, $second->id], $data['engagedUsers']->pluck('id')->all());
-        $this->assertSame([2, 1], $data['engagedUsers']->pluck('events_count')->all());
+        $this->assertEquals(400, $data['change']);
+        $this->assertSame([0, 0, 5], array_column($data['trend'], 'total'));
+        $this->assertSame(1, $data['activeUsers']);
+        $this->assertSame([$first->id], $data['engagedUsers']->pluck('id')->all());
+        $this->assertSame([2], $data['engagedUsers']->pluck('events_count')->all());
         $this->assertSame(1, $data['platforms']['app']['total']);
     }
 
@@ -67,10 +67,10 @@ class AdminDashboardTest extends ReviewTestCase
         foreach (['web', 'webapp', 'app'] as $platform) $this->event(['user_id' => $user->id, 'platform' => $platform]);
         $response = $this->get(route('admin.home', ['days' => 3, 'platform' => 'web']))->assertOk();
         $data = $response->viewData('dashboard');
-        $this->assertSame(1, $data['total']);
+        $this->assertSame(2, $data['total']);
         $this->assertSame(3, $data['days']);
-        $this->assertSame('web', $data['platform']);
-        $response->assertSee(e(route('admin.home', ['days' => 30, 'platform' => 'web'])), false)
+        $this->assertSame('all', $data['platform']);
+        $response->assertSee(e(route('admin.home', ['days' => 30, 'platform' => 'all'])), false)
             ->assertSee(e(route('admin.home', ['days' => 3, 'platform' => 'webapp'])), false);
         $this->assertSame(1, app(Dashboard::class)->data(7, 'app')['total']);
         $this->assertCount(0, app(Dashboard::class)->data(7, 'app')['engagedUsers']);
@@ -95,7 +95,7 @@ class AdminDashboardTest extends ReviewTestCase
         $this->assertSame([2, 0, 1, 1], array_column($data['metrics'], 'total'));
         $this->assertSame([1, 0, 1, 1], array_column($data['metrics'], 'added'));
         $this->assertEquals(50, $data['metrics'][0]['share']);
-        $this->assertCount(15, $queries); // Includes membership schema readiness and the country aggregate.
+        $this->assertCount(14, $queries); // Includes membership schema readiness with the public country aggregate removed.
         $this->assertStringNotContainsString('post_topic', implode(' ', array_column($queries, 'query')));
         $metricQueries = collect($queries)->filter(function ($query) {
             return strpos($query['query'], ' as added') !== false;
@@ -112,12 +112,12 @@ class AdminDashboardTest extends ReviewTestCase
     {
         $response = $this->get(route('admin.home'))->assertOk();
         $response->assertSee('Most engaged users')->assertSee('No active web accounts')
-            ->assertSee('Activity will appear here')->assertSee('Coming soon')
+            ->assertSee('No recorded activity in this period')
             ->assertSee('Analytics')->assertDontSee('Statistics')
-            ->assertSee('disabled aria-label="Dark mode (coming soon)"', false)
+            ->assertDontSee('aria-label="Dark mode (coming soon)"', false)
             ->assertSee('action="'.route('admin.logout').'"', false)
             ->assertDontSee('www.gstatic.com')->assertDontSee('PullToRefresh');
-        foreach (['api', 'analytics', 'users', 'subscriptions', 'repertoire', 'shop', 'blog', 'quizzes', 'infographics', 'crash-courses'] as $id) {
+        foreach (['settings', 'analytics', 'users', 'subscriptions', 'repertoire', 'shop', 'blog', 'quizzes', 'infographics', 'crash-courses'] as $id) {
             $response->assertSee('id="'.$id.'" data-bs-parent="#navbarResponsive"', false);
         }
         foreach (['admin.pieces.index', 'admin.timeline-events.index', 'admin.analytics.memberships', 'admin.subscriptions.lists.index', 'admin.escores.topics.index', 'admin.posts.gifts.index', 'admin.quizzes.media.images', 'admin.crashcourses.subscriptions.index', 'admin.clips.index'] as $route) {
@@ -165,7 +165,7 @@ class AdminDashboardTest extends ReviewTestCase
         $this->get(route('admin.editors.edit', $manager->id))->assertOk()
             ->assertSee($manager->name)->assertSee('Change password')
             ->assertSee('id="password-modal"', false)
-            ->assertSee(route('admin.pieces.edit', $piece), false);
+            ->assertSee(route('webapp.pieces.show', $piece), false);
 
         $editor = create(Admin::class, ['role' => 'editor']);
         $this->actingAs($editor, 'admin');

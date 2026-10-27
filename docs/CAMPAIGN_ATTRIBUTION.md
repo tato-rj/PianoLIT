@@ -1,5 +1,13 @@
 # Campaign attribution
 
+> Retired from collection on 2026-10-27: website acquisition now belongs to Google
+> Analytics. `config/attribution.php` disables new campaign arrivals and binding,
+> and the old admin route opens Google Analytics. Existing records and cleanup /
+> withdrawal support remain. The implementation and migration notes below describe
+> the previous system; they are not instructions to re-enable it. See
+> [GOOGLE_ANALYTICS.md](GOOGLE_ANALYTICS.md).
+
+
 Updated on 2026-10-20: valid tagged visits now count automatically. Account, trial and payment attribution still requires an existing opt-in. The visible preference panel has been removed at Arthur’s request. Campaign measurement is enabled by default in application configuration. An explicit `CAMPAIGN_ATTRIBUTION_ENABLED=false` still disables collection. This is PianoLIT's own SQL report; it does not set up or export to Google Analytics. Deployment is separate from local implementation.
 
 ## Links and measurement

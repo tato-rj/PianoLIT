@@ -255,6 +255,18 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->assertDatabaseCount('campaign_visits', 0);
     }
 
+    public function test_retired_collection_still_accepts_withdrawal_but_cannot_grant_new_measurement()
+    {
+        $this->landing();
+        $this->assertDatabaseCount('campaign_visits', 1);
+        config(['attribution.enabled' => false]);
+        $this->withCookie(config('session.cookie'), session()->getId());
+        $this->postJson(route('webapp.attribution.consent'), ['choice' => 'denied'])->assertOk();
+        $this->assertDatabaseCount('campaign_visits', 0);
+        $this->postJson(route('webapp.attribution.consent'), ['choice' => 'granted'])->assertNotFound();
+        $this->assertDatabaseCount('campaign_visits', 0);
+    }
+
     public function test_anonymous_session_deduplication_stays_host_local_and_ends_with_the_session()
     {
         $this->withoutMiddleware(\App\Http\Middleware\Logs\RecordWebLog::class);

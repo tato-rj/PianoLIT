@@ -28,6 +28,12 @@ class ExcludedActivityTest extends ReviewTestCase
         });
     }
 
+    protected function prepareUrlForRequest($uri)
+    {
+        if (strpos($uri, '/review/private-') === 0 || $uri === '/activity/events') return 'http://my.'.config('app.short_url').$uri;
+        return parent::prepareUrlForRequest($uri);
+    }
+
     private function user($email = 'regular@example.test', $name = 'Regular')
     {
         return Model::withoutEvents(function () use ($email, $name) { return create(User::class, ['email' => $email, 'first_name' => $name, 'super_user' => true]); });
@@ -54,8 +60,8 @@ class ExcludedActivityTest extends ReviewTestCase
             $this->actingAs($user, 'web');
             $this->get('/review/private-page')->assertOk()->assertDontSee('pianoActivityConfig');
             $this->postJson('/activity/events', ['events' => []])->assertNoContent();
-            $this->getJson(route('api.users.favorites.show', ['user_id' => $user->id]))->assertOk()->assertExactJson([]);
-            $viewResponse = $this->postJson(route('api.pieces.increment-views'), ['user_id' => $user->id, 'piece_id' => 999999])->assertOk();
+            $this->getJson(str_replace('my.'.config('app.short_url'), config('app.short_url'), route('api.users.favorites.show', ['user_id' => $user->id])))->assertOk()->assertExactJson([]);
+            $viewResponse = $this->postJson(str_replace('my.'.config('app.short_url'), config('app.short_url'), route('api.pieces.increment-views')), ['user_id' => $user->id, 'piece_id' => 999999])->assertOk();
             $this->assertSame("The piece's views have been incremented", $viewResponse->json());
             $piece = Model::withoutEvents(function () { return create(Piece::class); });
             (new RecentlyViewedPieces)->record($user, $piece);

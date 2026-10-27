@@ -30,16 +30,16 @@ class UserAnalyticsPlatformFilterTest extends ReviewTestCase
         ]);
     }
 
-    public function test_all_seven_platform_combinations_scope_visits_requests_and_daily_counts()
+    public function test_app_platform_combinations_scope_visits_requests_and_daily_counts()
     {
         $this->travelTo(carbon('2026-10-19 10:50:00'));
         $user = $this->account();
         foreach (['web', 'webapp', 'app'] as $platform) $this->activity($user, $platform);
         $this->actingAs(create(Admin::class), 'admin');
-        foreach ([['web'], ['webapp'], ['app'], ['web', 'webapp'], ['web', 'app'], ['webapp', 'app'], ['web', 'webapp', 'app']] as $platforms) {
+        foreach ([['webapp'], ['app'], ['webapp', 'app']] as $platforms) {
             $parameters = ['platform' => array_merge([''], $platforms), 'range' => 'today', 'history' => 1];
             $response = $this->get(route('admin.analytics.users', $parameters))->assertOk();
-            $expectedVisits = count(array_intersect(['web', 'webapp'], $platforms));
+            $expectedVisits = count(array_intersect(['webapp'], $platforms));
             $hasApp = in_array('app', $platforms, true);
             $this->assertSame($expectedVisits, $response->viewData('visits')->total());
             $this->assertSame($hasApp ? 1 : 0, $response->viewData('history')->total());
@@ -61,15 +61,16 @@ class UserAnalyticsPlatformFilterTest extends ReviewTestCase
         $this->actingAs(create(Admin::class), 'admin');
         $parameters = ['platform' => ['', 'webapp', 'app'], 'range' => 'today'];
         foreach ([route('admin.analytics.users'), route('admin.analytics.users.insights'), route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits'])] as $url) {
-            $response = $this->get($url.'?'.http_build_query($parameters))->assertOk()->assertSee('Webapp + iOS');
+            $response = $this->get($url.'?'.http_build_query($parameters))->assertOk()->assertSee('All platforms');
             $document = new \DOMDocument; @$document->loadHTML($response->getContent()); $xpath = new \DOMXPath($document);
             $this->assertSame(0, $xpath->query('//select[@name="platform"]')->length);
-            $this->assertSame(3, $xpath->query('//input[@type="checkbox" and @name="platform[]"]')->length);
+            $this->assertSame(2, $xpath->query('//input[@type="checkbox" and @name="platform[]"]')->length);
             $checked = $xpath->query('//input[@type="checkbox" and @name="platform[]" and @checked]');
             $this->assertSame(['webapp', 'app'], array_map(function ($node) { return $node->getAttribute('value'); }, iterator_to_array($checked)));
         }
         $insights = $this->get(route('admin.analytics.users.insights', $parameters))->assertOk();
-        $this->assertSame(['webapp.discover'], $insights->viewData('pages')->pluck('route_name')->all());
+        $this->assertArrayNotHasKey('pageViews', $insights->original->getData());
+        $insights->assertDontSee('Page views by hub')->assertSee('Website & hub traffic in Google Analytics', false);
         $profile = $this->get(route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits'] + $parameters))->assertOk();
         $this->assertSame(1, $profile->viewData('visits')->total());
         $this->assertSame(1, $profile->viewData('history')->total());
@@ -79,9 +80,9 @@ class UserAnalyticsPlatformFilterTest extends ReviewTestCase
 
     public function test_old_scalar_links_remain_valid_and_empty_unknown_or_malformed_selections_are_rejected()
     {
-        foreach (['all' => ['web', 'webapp', 'app'], 'web' => ['web'], 'webapp' => ['webapp'], 'app' => ['app']] as $old => $expected) {
+        foreach (['all' => ['webapp', 'app'], 'web' => ['webapp'], 'webapp' => ['webapp'], 'app' => ['app']] as $old => $expected) {
             $filters = new Filters(Request::create('/', 'GET', ['platform' => $old]));
-            $this->assertSame($old, $filters->values['platform']);
+            $this->assertSame($old === 'web' ? 'webapp' : $old, $filters->values['platform']);
             $this->assertSame($expected, $filters->platforms);
         }
         $this->actingAs(create(Admin::class), 'admin')->withExceptionHandling();

@@ -10,6 +10,14 @@ use Illuminate\Support\Str;
 
 class CampaignReportTest extends ReviewTestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+        // Exercise the retained historical report explicitly. New collection
+        // and the production admin entry point are retired by default.
+        config(['attribution.enabled' => true]);
+    }
+
     private function visit($source, array $extra = [], $user = null, $created = null, $landing = '')
     {
         $parameters = CampaignParameters::fromQuery(['utm_source' => $source] + $extra);
@@ -192,7 +200,8 @@ class CampaignReportTest extends ReviewTestCase
             [['(not specified)', 'future-source.example', '', '', 1, 0, 0, '']]
         )->assertExitCode(0);
         config(['attribution.enabled' => false]);
-        $this->get(route('admin.analytics.campaigns'))->assertOk()->assertSee('Campaign tracking is disabled')->assertSee('future-source.example');
+        $this->get(route('admin.analytics.campaigns'))->assertRedirect('https://analytics.google.com/analytics/web/#/a137232556p399721623/reports/reportinghub');
+        $this->assertDatabaseCount('campaign_visits', 1);
     }
 
     public function test_anonymous_arrival_migration_preserves_existing_visits_and_subscription_links()

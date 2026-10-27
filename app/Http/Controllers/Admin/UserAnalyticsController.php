@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Activity\{ExcludedAccounts, Filters, Insights, Journey, PageIdentity, People, Queries, VisitRemoval, VisitSort};
+use App\Activity\{ExcludedAccounts, Filters, Insights, Journey, People, Queries, VisitRemoval, VisitSort};
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Support\AdminPagination;
@@ -45,12 +45,8 @@ class UserAnalyticsController extends Controller
 
     public function insights(Request $request, Insights $insights)
     {
-        $request->validate(['page_hub' => 'nullable|in:all,'.implode(',', array_keys(PageIdentity::HUBS))]);
-        // Traffic reports include guests by default. Explicit audience filters
-        // and the account-focused defaults on other analytics screens remain.
-        if (!$request->has('audience')) $request->merge(['audience' => 'all']);
         $filters = new Filters($request);
-        return view('admin.pages.analytics.users.insights', array_merge($insights->get($filters, $request->input('page_hub') ?: 'all'), ['filters' => $filters]));
+        return view('admin.pages.analytics.users.insights', array_merge($insights->get($filters), ['filters' => $filters]));
     }
 
     public function profile(Request $request, User $user, People $people, $tab = 'overview')

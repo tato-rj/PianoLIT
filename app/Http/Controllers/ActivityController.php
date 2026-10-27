@@ -13,6 +13,9 @@ class ActivityController extends Controller
         abort_if(!config('activity.enabled') || auth('admin')->check() || $request->getHost() === 'admin.'.config('app.short_url'), 403);
         if (\App\Activity\ExcludedAccounts::request($request)) return response()->noContent();
         if (\App\Activity\TrafficFilter::ignores($request)) return response()->noContent();
+        // Old public tabs may still send queued batches after the macro reports
+        // moved to Google Analytics. Acknowledge without collecting them.
+        if ($recorder->platform($request) !== 'webapp') return response()->noContent();
         abort_if(strlen($request->getContent()) > 100000, 413);
         $rules = [
             'page_token' => 'required|string|max:4096',

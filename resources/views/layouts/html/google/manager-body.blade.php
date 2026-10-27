@@ -1,6 +1,4 @@
-@env('production')
-@unless(\App\Activity\ExcludedAccounts::request(request()))
+@if(\App\Analytics\WebsiteTracking::enabled(request()) && !\App\Analytics\WebsiteTracking::googleOnly(request()))
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KJW7XGP"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-@endunless
-@endenv
+@endif

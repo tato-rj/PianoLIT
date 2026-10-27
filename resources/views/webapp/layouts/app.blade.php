@@ -2,9 +2,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    @auth('web')
-        @include('layouts.html.google.manager-head')
-    @endauth
+    @include('layouts.html.google.manager-head')
     @include('layouts.html.google.fonts')
 
     <meta charset="utf-8">
@@ -44,9 +42,7 @@
 <body @if($feedbackEnabled) class="has-feedback-utility" @endif>
     @qrcode
 
-    @auth('web')
-        @include('layouts.html.google.manager-body')
-    @endauth
+    @include('layouts.html.google.manager-body')
 
     <div id="webapp" @if(request()->routeIs('webapp.playlists.show')) class="playlist-layout" @endif>
         @if(request()->routeIs('webapp.pieces.show'))

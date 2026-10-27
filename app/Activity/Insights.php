@@ -6,15 +6,13 @@ use Illuminate\Support\Facades\DB;
 
 class Insights
 {
-    public function get(Filters $filters, $pageHub = 'all')
+    public function get(Filters $filters)
     {
         $q = new Queries;
         $opens = $q->pieceOpens($q->events($filters));
         $pieces = (clone $opens)->join('pieces as p', 'p.id', '=', 'e.resource_id')->select('p.id', 'p.name')->selectRaw('COUNT(*) as total')->groupBy('p.id', 'p.name')->orderByDesc('total')->limit(10)->get();
         $composers = (clone $opens)->join('pieces as p', 'p.id', '=', 'e.resource_id')->join('composers as c', 'c.id', '=', 'p.composer_id')->select('c.id', 'c.name')->selectRaw('COUNT(*) as total')->groupBy('c.id', 'c.name')->orderByDesc('total')->limit(8)->get();
         $tags = (clone $opens)->join('piece_tag as pt', 'pt.piece_id', '=', 'e.resource_id')->join('tags as t', 't.id', '=', 'pt.tag_id')->whereIn('t.type', ['genre', 'level'])->select('t.name', 't.type')->selectRaw('COUNT(*) as total')->groupBy('t.id', 't.name', 't.type')->orderByDesc('total')->limit(12)->get();
-        $pageViews = (new PageViews)->get($filters, $pageHub);
-        $pages = $pageViews['pages'];
         $engagement = $q->events($filters)->whereIn('e.type', ['media_play', 'media_end', 'score_opened', 'annotation_saved', 'favorite_changed', 'folder_created', 'premium_restriction', 'registration_started', 'registration_completed', 'checkout_started', 'trial_started', 'subscription_activated', 'subscription_paid', 'subscription_canceled'])->select('e.type')->selectRaw('COUNT(*) as total')->groupBy('e.type')->get()->pluck('total', 'type');
         $coverage = $q->events($filters)->where('e.type', 'like', 'media_%')->whereNotNull('e.metadata->unique_watched_percent')->whereNotNull('e.metadata->playback_id');
         $engagement['meaningful_playback'] = (clone $coverage)->exists() ? $coverage->where('e.metadata->unique_watched_percent', '>=', 50)->distinct()->count('e.metadata->playback_id') : null;
@@ -28,7 +26,6 @@ class Insights
             ->select('e.resource_id')->selectRaw(Queries::identity().' as identity_key, COUNT(*) as total')
             ->groupBy('e.resource_id')->groupByRaw(Queries::identity())->havingRaw('COUNT(DISTINCT e.visit_id) > 1');
         $repeatPieces = DB::query()->fromSub($repeats, 'r')->join('pieces as p', 'p.id', '=', 'r.resource_id')->select('p.id', 'p.name')->selectRaw('COUNT(*) as returning_people, SUM(r.total) as total')->groupBy('p.id', 'p.name')->orderByDesc('returning_people')->limit(8)->get();
-        $cohorts = $q->visits($filters)->join('users as u', 'u.id', '=', DB::raw(Queries::account()))->selectRaw('SUBSTR(u.created_at, 1, 7) as cohort, COUNT(*) as visits, COUNT(DISTINCT u.id) as people')->groupBy('cohort')->orderByDesc('cohort')->limit(12)->get();
         // Confirmed outcomes remain account facts, not attribution claims. Same-
         // account ordered steps are correlated; no invented mobile/browser joins.
         $conversions = [];
@@ -43,6 +40,6 @@ class Insights
             })->selectRaw('COUNT(DISTINCT '.Queries::identity().') as total')->value('total');
             $conversions[] = ['from' => $pair[0], 'to' => $pair[1], 'started' => $started, 'completed' => $completed];
         }
-        return compact('pieces', 'composers', 'tags', 'pages', 'pageViews', 'engagement', 'finalPages', 'repeatPieces', 'cohorts', 'conversions');
+        return compact('pieces', 'composers', 'tags', 'engagement', 'finalPages', 'repeatPieces', 'conversions');
     }
 }

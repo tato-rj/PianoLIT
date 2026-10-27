@@ -9,7 +9,7 @@ use App\Support\AdminDateRanges;
 
 class Filters
 {
-    const PLATFORMS = ['web' => 'Website', 'webapp' => 'Webapp', 'app' => 'iOS'];
+    const PLATFORMS = ['webapp' => 'Web app', 'app' => 'iOS'];
 
     public $start;
     public $end;
@@ -29,6 +29,9 @@ class Filters
         // Accept existing scalar URLs and the checkbox menu's array (including
         // its empty sentinel so an unchecked menu cannot silently mean All).
         $selected = $this->values['platform'];
+        // Saved Website links now open the app-focused report. Historical rows
+        // are retained; public traffic belongs in Google Analytics.
+        if ($selected === 'web') $selected = $this->values['platform'] = 'webapp';
         $this->platforms = $selected === 'all' ? array_keys(self::PLATFORMS) : array_values(array_intersect(array_keys(self::PLATFORMS), (array) $selected));
         if (!$this->platforms) throw ValidationException::withMessages(['platform' => 'Choose at least one platform.']);
         if (is_array($selected)) $this->values['platform'] = $this->platforms;
@@ -56,7 +59,7 @@ class Filters
     {
         if ($this->start) $query->where($column, '>=', $this->start);
         $query->where($column, '<', $this->end);
-        if (count($this->platforms) < count(self::PLATFORMS)) $query->whereIn($platform, $this->platforms);
+        $query->whereIn($platform, $this->platforms);
         return $query;
     }
 

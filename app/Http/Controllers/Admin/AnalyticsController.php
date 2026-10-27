@@ -15,6 +15,7 @@ class AnalyticsController extends Controller
 {
     public function campaigns(Request $request, \App\Services\CampaignAttributionReport $report)
     {
+        if (!config('attribution.enabled')) return redirect()->away('https://analytics.google.com/analytics/web/#/a137232556p399721623/reports/reportinghub');
         return view('admin.pages.analytics.campaigns.index', $report->admin($request));
     }
 

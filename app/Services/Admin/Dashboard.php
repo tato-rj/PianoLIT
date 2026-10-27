@@ -19,7 +19,8 @@ class Dashboard
         $start = $end->copy()->subDays($days - 1)->startOfDay();
         $previousStart = $start->copy()->subDays($days);
         // Keep timer/visibility bookkeeping out of the activity totals.
-        $events = ExcludedAccounts::events(DB::table('activity_events'))->whereIn('platform', ['web', 'webapp', 'app'])
+        if ($platform === 'web') $platform = 'all';
+        $events = ExcludedAccounts::events(DB::table('activity_events'))->whereIn('platform', ['webapp', 'app'])
             ->whereNotIn('type', ['heartbeat', 'page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_leave', 'page_restore', 'media_progress'])
             ->where('occurred_at', '>=', $previousStart)->where('occurred_at', '<=', $end);
         if ($platform !== 'all') $events->where('platform', $platform);
@@ -39,7 +40,7 @@ class Dashboard
         // Only current session-attributed web events establish the ranking.
         // Legacy app/imported user IDs are analytics associations, not verified identity.
         $ranking = (clone $events)->where('occurred_at', '>=', $start)
-            ->whereIn('platform', ['web', 'webapp'])->whereIn('source', ['server', 'browser'])
+            ->where('platform', 'webapp')->whereIn('source', ['server', 'browser'])
             ->join('users', 'users.id', '=', 'activity_events.user_id');
         $activeUsers = (clone $ranking)->distinct()->count('users.id');
         $engagedUsers = (clone $ranking)
@@ -76,8 +77,7 @@ class Dashboard
         }
 
         return compact('days', 'platform', 'start', 'end', 'total', 'previous', 'trend', 'activeUsers', 'engagedUsers', 'metrics', 'library') + [
-            'userCountries' => app(UserCountries::class)->data(),
-            'platforms' => collect(['web' => 'Website', 'webapp' => 'Web app', 'app' => 'iOS app'])->map(function ($label, $key) use ($current, $total) {
+            'platforms' => collect(['webapp' => 'Web app', 'app' => 'iOS app'])->map(function ($label, $key) use ($current, $total) {
                 $count = (int) $current->where('platform', $key)->sum('total');
                 return ['label' => $label, 'total' => $count, 'share' => $total ? round($count / $total * 100) : 0];
             }),

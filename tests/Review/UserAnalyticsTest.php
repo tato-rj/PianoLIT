@@ -10,6 +10,12 @@ use Illuminate\Support\Str;
 
 class UserAnalyticsTest extends ReviewTestCase
 {
+    protected function prepareUrlForRequest($uri)
+    {
+        if (strpos($uri, '/review/journey') === 0 || $uri === '/activity/events') return 'http://my.'.config('app.short_url').$uri;
+        return parent::prepareUrlForRequest($uri);
+    }
+
     public function setUp(): void
     {
         parent::setUp();
@@ -64,7 +70,6 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->get(route('admin.analytics.users.people'))->assertOk();
         foreach (['admin.analytics.users', 'admin.analytics.users.insights'] as $route) {
             foreach ([null => 'registered', 'all' => 'all', 'anonymous' => 'anonymous'] as $audience => $expected) {
-                if (!$audience && $route === 'admin.analytics.users.insights') $expected = 'all';
                 $this->get(route($route, $audience ? ['audience' => $audience] : []))->assertOk()
                     ->assertViewHas('filters', function ($filters) use ($expected) { return $filters->values['audience'] === $expected; });
             }
@@ -103,14 +108,14 @@ class UserAnalyticsTest extends ReviewTestCase
         $default = $q->metrics($this->filters());
         $this->assertSame(2, (int) $default['Visits']);
         $this->assertSame(1, (int) $default['Unique visitors']);
-        $this->assertSame(4, (int) $q->metrics($this->filters(['audience' => 'all']))['Visits']);
-        $this->assertSame(2, (int) $q->metrics($this->filters(['audience' => 'anonymous']))['Visits']);
+        $this->assertSame(2, (int) $q->metrics($this->filters(['audience' => 'all']))['Visits']);
+        $this->assertSame(0, (int) $q->metrics($this->filters(['audience' => 'anonymous']))['Visits']);
         $metrics = $q->metrics($this->filters(['range' => 'today', 'platform' => 'webapp', 'audience' => 'registered']));
         $this->assertSame(1, (int) $metrics['Unique visitors']);
         $this->assertSame(1, (int) $metrics['Visits']);
         $this->assertSame(1, (int) $metrics['Returning visitors']);
-        $this->assertSame(1, $q->visits($this->filters(['range' => 'yesterday', 'audience' => 'all']))->count());
-        $this->assertSame(1, $q->visits($this->filters(['range' => 'today', 'audience' => 'anonymous']))->count());
+        $this->assertSame(0, $q->visits($this->filters(['range' => 'yesterday', 'audience' => 'all']))->count());
+        $this->assertSame(0, $q->visits($this->filters(['range' => 'today', 'audience' => 'anonymous']))->count());
     }
 
     public function test_journey_orders_actions_by_occurrence_not_receipt_and_does_not_invent_page_associations()

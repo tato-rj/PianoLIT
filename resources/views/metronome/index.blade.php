@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    @include('layouts.html.google.manager-head')
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="description" content="A simple metronome. Tap to play, swipe to find your tempo.">
@@ -14,6 +15,7 @@
     <script src="{{ mix('js/metronome.js') }}" defer></script>
 </head>
 <body class="public-site">
+    @include('layouts.html.google.manager-body')
     @include('components.layout.public.header', ['transparentHeader' => true, 'showAccount' => false])
     <main>
         <button

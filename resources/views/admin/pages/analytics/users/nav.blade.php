@@ -3,3 +3,4 @@
     <a href="{{ route($item[0]) }}" @if($active === $key) aria-current="page" @endif>{{ $item[1] }}</a>
     @endforeach
 </nav>
+<p class="ua-note">These reports focus on behavior inside the web app and iOS app. Page views across all hubs, acquisition and retention are in Google Analytics. @include('admin.pages.analytics.users.website-link')</p>

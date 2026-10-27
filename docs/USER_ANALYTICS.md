@@ -21,40 +21,25 @@ The old timestamp columns use the application timezone (`America/New_York`), inc
 
 ## Architecture and navigation
 
-### Browser pageviews by hub — 2026-10-27
+### Website metrics and app behavior — 2026-10-27
 
-Analytics → Users → Insights now opens with a browser-pageview report and defaults
-to Everyone, including anonymous visitors. Explicit audience/platform/date filters
-remain available; Activity and account reports retain their existing defaults.
-The report shows total pageviews, Quizzes (directory and individual quizzes),
-Chord Finder and Circle of Fifths, plus hub totals/shares and a paginated page
-ranking. Selecting a hub filters the page ranking; summary totals still describe
-all matching hubs. Pagination is twelve pages per screen and retains filters.
+Google Analytics now owns macro pageviews, hub comparisons, acquisition, geography,
+devices and retention. See [GOOGLE_ANALYTICS.md](GOOGLE_ANALYTICS.md) for the audited
+property, live Google changes, source coverage and deployment checks.
 
-`PageViews` reads server-confirmed `page_view` events on web/webapp only. Actions,
-AJAX/request events, native iOS requests, Redis imports and daily snapshots do not
-become pageviews. Existing `ExcludedAccounts` scopes apply to both events and
-visits, including confirmed identity links. Pageview dates use the opening event,
-including a visit begun before the selected period; other existing visit-based
-insights retain their documented period semantics. The first matching opening is
-displayed without claiming that earlier tracking is complete.
+The prior Browser pageviews/hub report and signup-month cohort panel have been
+retired from Insights. New public-hub SQL journey collection and internal campaign
+arrival attribution are disabled. Activity, Insights, People and account history
+scope detailed behavior to `webapp` and the separate legacy iOS request records.
+Website is removed from the platform controls; `platform=web` scalar links map to
+Web app (the dashboard maps its old Website selection to Both apps). Historical
+public SQL rows remain stored. `PageIdentity` still provides safe readable names
+for retained journeys; no stored data has been removed or sent to Google.
 
-`PageIdentity` resolves names from recorded routes and public paths, rather than
-treating missing URLs as `/`. It combines canonical and older tool/resource/blog
-URLs under the current content hub, including pre-subdomain Learn URLs. Query
-strings/fragments do not split a page, while individual quiz/article paths remain
-distinct. Current catalogue names are fetched in bounded scalar queries for the
-visible rows; deleted/missing content retains a readable path-based label. No
-historical title is invented. Account/reset/verification path parameters and query
-values are omitted from the ranking. Last-page summaries retain route, URL and
-platform so their names no longer collapse into Home.
-
-This is a read-only reporting change: no migrations, backfill, collector changes,
-new cookies, ads or mobile contract changes. Verify with `PageViewAnalyticsTest`,
-`UserAnalyticsTest`, `UserAnalyticsPlatformFilterTest`, `ActivityHistoryTest`,
-`ActivityTrafficFilterTest`, `ExcludedActivityTest` and
-`IosActivityAnalyticsTest` in the isolated review suite. Set
-`ANALYTICS_PREVIEW_DIR` to export synthetic rendered report HTML for visual QA.
+Piece exploration, repeated piece visits, media coverage, scores, annotations,
+favorites, folders and subscription steps remain internal. Insights again defaults
+to registered accounts, matching Activity. Legacy iOS records still cannot prove
+visits, verified identity or playback; the planned Swift work remains necessary.
 
 Admin\UserAnalyticsController serves /analytics/users (Activity), /analytics/users/people, /analytics/users/insights, /analytics/users/{user}/{overview|visits|music|account}, and /analytics/users/visits/{visit}. All require the existing admin guard and host. As of 2026-10-19, the old Users → Locations, Activity Logs and Memberships Logs pages and their dedicated endpoints/controllers/views are removed, including the old raw-activity pages, load-logs/log-data endpoints and /analytics/logs chart. There are no legacy page aliases. Collection services, SQL history, imports, mobile logging/location capture and membership records remain. Dashboard activity/person links lead into the current Analytics area; account management stays separate. New-account notifications open the account's Users profile.
 
@@ -84,7 +69,7 @@ New writes fill canonical UTC columns alongside local-time compatibility columns
 
 Activity/Insights filters select visits **started** in the local-date period, platform and effective audience. The audience defaults to Registered when no audience is supplied; explicitly choosing Everyone or Anonymous overrides that default. Event metrics additionally require occurrence within the period. Visits started earlier are not counted as new visits in the period. Undated imports cannot enter dated metrics.
 
-The Platform checkbox menu supports any nonempty combination of Website, Webapp and iOS on Activity, Insights and account visit history. It stays open for multiple choices and shows their names together (for example Webapp + iOS); Select all restores All platforms. Apply filters submits the selection, and dates, audience, sorting and independent pagination preserve it. Existing scalar `platform=all|web|webapp|app` links still work. Mixed selections use the same SQL scopes as individual platforms: Webapp + iOS excludes website visits/events, includes the separate iOS request series/card, and never turns legacy app requests into visits. Selecting iOS alone keeps its request-only view. Empty, duplicate and unrecognized selections are rejected; no mobile request contract changes.
+The Platform checkbox menu supports any nonempty combination of Web app and iOS on Activity, Insights and account visit history. It stays open for multiple choices and shows their names together (for example Web app + iOS); Select all restores All platforms. Apply filters submits the selection, and dates, audience, sorting and independent pagination preserve it. Existing scalar links remain valid; retired `platform=web` links now select Web app. Mixed selections use the same SQL scopes as individual platforms: Webapp + iOS excludes website visits/events, includes the separate iOS request series/card, and never turns legacy app requests into visits. Selecting iOS alone keeps its request-only view. Empty, duplicate and unrecognized selections are rejected; no mobile request contract changes.
 
 Activity, Insights and account visit history share the Custom range popover. It offers Today, Yesterday, Last 7 days, This month (month to date), Last month (the complete previous calendar month), All history and custom From/To dates, in that order. Both custom boundaries are inclusive in the application timezone; custom visit periods require both dates and have no maximum duration. All history includes all dated records through today, retaining the selected platform, audience, account scope and analytics exclusions. Its chart begins at the earliest matching daily series record, fills intervening zero days through today, and shows today as a zero day when empty. Undated imports remain outside dated reports. Saved Last 30 days URLs continue to resolve to their equivalent custom dates, but the preset is no longer offered. Presets are calculated on the server, including month/year and daylight-saving boundaries. Choose dates or a preset, press Apply inside the popover, then Apply filters to reload the report. Escape, an outside click or moving focus outside dismisses unapplied edits. Clear resets visit filters to Last 7 days. The People directory uses the same component for independent registration and activity ranges; those ranges retain optional/open-ended bounds with no duration cap. All history or Clear removes only that directory date pair. Existing platform, audience, account scope and sort values are preserved.
 
@@ -137,7 +122,7 @@ Piece-navigation titles show Selected followed by the existing medium piece name
 
 | Events | Source / metadata |
 | --- | --- |
-| page_view, request | Website/webapp server middleware; sanitized route/URL, method/status, bound resource, search/filter context, same-site referrer. Failed requests keep status without inventing an opened page. |
+| page_view, request | Web-app server middleware; sanitized route/URL, method/status, bound resource, search/filter context, same-site referrer. Failed requests keep status without inventing an opened page. |
 | page_ready/checkpoint/hidden/visible/leave/restore | Browser elapsed offset/sequence and cumulative visible_ms. A departure event can mean navigation, not necessarily browser closure. |
 | click, filter_change, filters_apply, search_submit, form_submit, section_open/close, tab_open | Significant browser navigation/controls, Explore/search/collections and observable Match choices; bounded labels/targets/filter values and known source pathname. No keystrokes or account form values. |
 | match_completed | Webapp Match result actually mounted; result piece ID. No inferred abandonment event. |
