@@ -6,7 +6,7 @@
 <header class="site-header{{ $transparentHeader ? ' site-header--overlay' : '' }} container pt-4 pt-md-5">
     <div class="row align-items-center justify-content-between mx-lg-4">
         <div class="col-auto">
-            <a href="{{ route('home') }}" class="d-inline-flex align-items-center gap-2 {{ $transparentHeader ? 'text-reset' : 'text-body' }} text-decoration-none" aria-label="PianoLIT home">
+            <a href="{{ route('home') }}" class="d-inline-flex align-items-center gap-2 {{ $transparentHeader ? 'text-reset opacity-6' : 'text-body' }} text-decoration-none" aria-label="PianoLIT home">
                 @brandIcon(['size' => 'clamp(48px, 7vw, 64px)', 'tilt' => ! request()->routeIs('home'), 'transparent' => $transparentHeader])
                 @if($showBrandName ?? false)<span class="site-header__name d-none d-md-inline">PianoLIT</span>@endif
             </a>
