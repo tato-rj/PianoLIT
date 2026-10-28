@@ -187,12 +187,15 @@ function recorderHarness({ saved = false, preferred = false, confirmDeletion = t
     const clock = { stop() {}, setVoiceBuffers(buffers) { this.buffers = buffers; } };
     const audioContext = { state: 'running', resume: async () => {}, decodeAudioData: async () => ({ duration: 0.2 }),
         createBufferSource: () => ({ connect() {}, disconnect() {}, start() {}, stop() {} }), currentTime: 0 };
+    Object.assign(clock, { getContext: () => audioContext, resumeAudio: () => audioContext.resume(),
+        suspendAudio() {}, releaseAudio: async () => {} });
     const scope = vm.createContext({ console, DOMException, Uint8Array, ArrayBuffer, atob, btoa,
         Option: function (text, value) { return element({ text, value }); },
         document: { createElement: tag => element({ tagName: tag.toUpperCase() }) },
-        voiceBase64: context.api.voiceBase64, voiceBytes: context.api.voiceBytes,
+        voiceBase64: context.api.voiceBase64, voiceBytes: context.api.voiceBytes, VOICE_RATE: 24000,
         localStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) },
         window: { AudioContext: function () { return audioContext; }, MediaRecorder: {}, isSecureContext: true,
+            OfflineAudioContext: function () { return { decodeAudioData: audioContext.decodeAudioData }; },
             confirm(message) { confirmations.push(message); return confirmDeletion; } },
         navigator: { mediaDevices: { getUserMedia() {} } }, setTimeout: fn => fn(),
         fetch: (url, options) => new Promise(resolve => requests.push({ url, options, resolve })),
@@ -205,7 +208,7 @@ function recorderHarness({ saved = false, preferred = false, confirmDeletion = t
     const detail = (id = 'first', name = 'Calm counting') => ({ id, name, revision: 'old', clips: ['YQ==', 'YQ==', 'YQ==', 'YQ=='] });
     const data = () => ({ recordings: saved ? [{ id: 'first', name: 'Calm counting', revision: 'old' }] : [], limit: 20 });
     const resolve = (request, body, status = 200) => request.resolve({ ok: status === 200, status, json: async () => body });
-    return { recorder, nodes, node, requests, sounds, confirmations, storage, resolve, data, detail, clock, dialog, soundInput, option, group: recorder.voiceGroup };
+    return { recorder, nodes, node, requests, sounds, confirmations, storage, resolve, data, detail, clock, dialog, soundInput, option, group: recorder.voiceGroup, scope, audioContext };
 }
 const settle = async () => { for (let i = 0; i < 25; i++) await Promise.resolve(); };
 const load = async page => {
@@ -213,6 +216,79 @@ const load = async page => {
     await settle();
     if (page.requests[1]) { page.resolve(page.requests[1], page.detail()); await settle(); }
 };
+
+test('recording closes old playback before capture and waits for the microphone to close before fresh shared playback', async () => {
+    const page = recorderHarness();
+    await load(page);
+    const outputs = [];
+    let finishPlaybackClose, finishCaptureClose;
+    let microphoneOpen = false;
+    page.scope.setInterval = () => 1;
+    page.scope.clearInterval = () => {};
+    page.scope.navigator.audioSession = { type: 'auto' };
+    vm.runInContext(['gesture', 'settings', 'clock'].map(read).join('\n') + '\nglobalThis.MetronomeClock = MetronomeClock;', page.scope);
+    const clock = new page.scope.MetronomeClock({ onStateChange() {}, onBeat() {}, onError(error) { throw error; },
+        createContext() {
+            assert.equal(microphoneOpen, false, 'Never reopen playback while microphone shutdown is pending');
+            const output = { ...page.audioContext, state: 'suspended', sources: [],
+                resume() { this.state = 'running'; return Promise.resolve(); },
+                suspend() { this.state = 'suspended'; return Promise.resolve(); },
+                close() {
+                    if (outputs.length === 1) return new Promise(resolve => {
+                        finishPlaybackClose = () => { this.state = 'closed'; resolve(); };
+                    });
+                    this.state = 'closed'; return Promise.resolve();
+                },
+                createBufferSource() { const source = page.audioContext.createBufferSource(); this.sources.push(source); return source; },
+            };
+            outputs.push(output);
+            return output;
+        },
+    });
+    page.recorder.clock = clock;
+    await clock.resumeAudio();
+    await page.recorder.preview([{ duration: 0.2 }]);
+    assert.equal(outputs.length, 1, 'Counting and preview share one playback device');
+    page.recorder.capture = {
+        async open() { assert.equal(outputs[0].state, 'closed'); microphoneOpen = true; },
+        async record() { return new ArrayBuffer(44); },
+        cancel() { return new Promise(resolve => {
+            finishCaptureClose = () => { microphoneOpen = false; resolve(); };
+        }); },
+    };
+    page.recorder.delay = async () => {};
+    const recording = page.recorder.record();
+    await settle();
+    assert.equal(microphoneOpen, false);
+    finishPlaybackClose();
+    for (let step = 0; step < 100 && !finishCaptureClose; step++) await Promise.resolve();
+    assert.equal(microphoneOpen, true);
+    assert.equal(outputs.length, 1, 'Decoding waits for capture shutdown');
+    finishCaptureClose();
+    await recording;
+    assert.equal(outputs.length, 1, 'Review decoding does not activate any playback device');
+    await page.recorder.preview(page.recorder.draftBuffers);
+    assert.equal(outputs.length, 2, 'The fresh device is also reused for preview');
+    assert.equal(outputs[1].sources.length, 4);
+    assert.equal(page.scope.navigator.audioSession.type, 'playback');
+    page.recorder.stopPreview();
+    assert.equal(outputs[1].state, 'suspended');
+    await clock.releaseAudio();
+});
+
+test('cancel while playback is closing prevents a late microphone request', async () => {
+    const page = recorderHarness();
+    await load(page);
+    let closed, opened = false;
+    page.clock.releaseAudio = () => new Promise(resolve => { closed = resolve; });
+    page.recorder.capture.open = async () => { opened = true; };
+    const recording = page.recorder.record();
+    page.recorder.cancel();
+    closed();
+    await recording;
+    assert.equal(opened, false);
+    assert.equal(page.recorder.draft.length, 0);
+});
 
 test('a late voice load cannot override a sound the user just chose', async () => {
     const page = recorderHarness({ saved: true, preferred: true });

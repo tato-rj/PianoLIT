@@ -1,4 +1,4 @@
-import { VoiceCapture, voiceBase64, voiceBytes } from './voice-audio';
+import { VoiceCapture, VOICE_RATE, voiceBase64, voiceBytes } from './voice-audio';
 
 const WORDS = ['one', 'two', 'three', 'four'];
 
@@ -63,11 +63,16 @@ export class VoiceRecorder {
     }
 
     context() {
-        if (!this.audio || this.audio.state === 'closed') {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.audio = new AudioContext({ latencyHint: 'interactive' });
-        }
-        return this.audio;
+        return this.clock.getContext();
+    }
+
+    decodeVoice(bytes) {
+        // Loading saved counts should not activate a second output device or
+        // carry a microphone-era playback context into the next practice run.
+        const OfflineContext = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        if (!OfflineContext) return this.context().decodeAudioData(bytes);
+        if (!this.decoder) this.decoder = new OfflineContext(1, 1, VOICE_RATE);
+        return this.decoder.decodeAudioData(bytes);
     }
 
     remember(sound) {
@@ -219,7 +224,7 @@ export class VoiceRecorder {
         this.ui('status').textContent = 'Loading recording…';
         try {
             const data = await this.request('GET', null, id);
-            const buffers = await Promise.all(data.clips.map(clip => this.context().decodeAudioData(voiceBytes(clip))));
+            const buffers = await Promise.all(data.clips.map(clip => this.decodeVoice(voiceBytes(clip))));
             if (version !== this.voiceVersion) return;
             this.library = this.library.map(voice => voice.id === id ? { id, name: data.name, revision: data.revision } : voice);
             this.revision = data.revision;
@@ -284,6 +289,10 @@ export class VoiceRecorder {
         this.ui('reload').hidden = true;
         this.ui('cancel').focus();
         try {
+            // Discard the playback device before the microphone changes its
+            // route/sample rate. Playback and previews share a fresh context.
+            await this.clock.releaseAudio();
+            if (flow !== this.flow) return;
             await this.capture.open();
             for (; this.nextIndex < this.endIndex; this.nextIndex++) {
                 const index = this.nextIndex;
@@ -301,8 +310,9 @@ export class VoiceRecorder {
                 this.cue('success', 'Got it!');
                 await this.delay(600, flow);
             }
-            this.capture.cancel();
-            const draftBuffers = await Promise.all(this.draft.map(bytes => this.context().decodeAudioData(bytes.slice(0))));
+            await this.capture.cancel();
+            if (flow !== this.flow) return;
+            const draftBuffers = await Promise.all(this.draft.map(bytes => this.decodeVoice(bytes.slice(0))));
             if (flow !== this.flow) return;
             this.draftBuffers = draftBuffers;
             this.ui('step').textContent = '4 of 4 recorded';
@@ -348,6 +358,7 @@ export class VoiceRecorder {
         this.previewGeneration = (this.previewGeneration || 0) + 1;
         this.previewSources.forEach(source => { source.stop(); source.disconnect(); });
         this.previewSources = [];
+        if (!this.clock.running) this.clock.suspendAudio();
         this.onUpdate(this);
     }
 
@@ -360,10 +371,10 @@ export class VoiceRecorder {
         this.previewingId = id;
         this.onUpdate(this);
         try {
-            await this.context().resume();
+            await this.clock.resumeAudio();
             if (version !== this.previewRequestVersion) return;
             const data = id === this.activeId && this.buffers.length === 4 ? null : await this.request('GET', null, id);
-            const buffers = data ? await Promise.all(data.clips.map(clip => this.context().decodeAudioData(voiceBytes(clip)))) : this.buffers;
+            const buffers = data ? await Promise.all(data.clips.map(clip => this.decodeVoice(voiceBytes(clip)))) : this.buffers;
             if (version !== this.previewRequestVersion) return;
             await this.preview(buffers.slice(0, this.getBeats()), id);
         } catch (error) {
@@ -381,9 +392,9 @@ export class VoiceRecorder {
         this.clock.stop();
         const generation = this.previewGeneration;
         try {
-            const audio = this.context();
-            await audio.resume();
+            await this.clock.resumeAudio();
             if (generation !== this.previewGeneration) return;
+            const audio = this.context();
             let time = audio.currentTime + 0.03;
             buffers.forEach(buffer => {
                 const source = audio.createBufferSource();
@@ -393,7 +404,7 @@ export class VoiceRecorder {
                     source.disconnect();
                     if (generation !== this.previewGeneration) return;
                     this.previewSources = this.previewSources.filter(item => item !== source);
-                    if (!this.previewSources.length) { this.previewingId = null; this.onUpdate(this); }
+                    if (!this.previewSources.length) this.stopPreview();
                 };
                 source.start(time);
                 this.previewSources.push(source);
@@ -414,7 +425,7 @@ export class VoiceRecorder {
         this.ui('status').textContent = 'Saving your voice…';
         try {
             // Unlock preview audio in the button gesture, before the network.
-            await this.context().resume();
+            await this.clock.resumeAudio();
             if (flow !== this.flow) return;
             const data = await this.request('PUT', { name, clips });
             if (flow !== this.flow) {
@@ -433,12 +444,13 @@ export class VoiceRecorder {
             this.remember('my-voice');
             this.cancel();
             this.ui('status').textContent = 'Saved to your account.';
-            this.preview(this.buffers.slice(0, this.getBeats()));
+            await this.preview(this.buffers.slice(0, this.getBeats()));
         } catch (error) {
             if (flow === this.flow) this.failure(error);
         } finally {
             this.saving = false;
             this.ui('save').disabled = false;
+            if (!this.previewSources.length && !this.clock.running) this.clock.suspendAudio();
             this.controls();
         }
     }

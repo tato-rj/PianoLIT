@@ -73,7 +73,6 @@ const clock = new MetronomeClock({
     },
     onBeat: beat => {
         if (settings.type === 'conductor') {
-            syncConductor();
             return;
         }
         if (reducedMotion.matches) return;
@@ -92,6 +91,7 @@ const clock = new MetronomeClock({
         ], { duration: 180, easing: 'ease-out' });
     },
     onReady: () => syncConductor(true),
+    onTick: () => { if (settings.type === 'conductor') syncConductor(); },
     onError: () => {
         message.textContent = 'Sound couldn’t start. Tap to try again.';
         message.hidden = false;
@@ -147,8 +147,11 @@ function syncConductor(force = false) {
     }
     const position = clock.getBeatPosition();
     if (reducedMotion.matches) position.progress = 0;
-    const animate = clock.ready && !settingsOpen && !navigationOpen && !document.hidden && !reducedMotion.matches;
-    conductor.sync(position, tempo, animate, force);
+    const animate = clock.ready && !position.waiting && !settingsOpen && !navigationOpen && !document.hidden && !reducedMotion.matches;
+    // After a scheduler stall, align to the next real click, not an imagined
+    // beat beyond the last sound that was actually scheduled.
+    if (animate && position.progress === 1 && !force) return;
+    conductor.sync(position, position.tempo, animate, force);
 }
 
 function applySettings(value, persist = true) {
@@ -364,7 +367,7 @@ window.addEventListener('pagehide', () => {
     soundMenu?.close();
     voiceRecorder?.cancel();
     stopEdgeRepeat();
-    clock.stop();
+    clock.releaseAudio();
 });
 applySettings(settings, false);
 setTempo(tempo);

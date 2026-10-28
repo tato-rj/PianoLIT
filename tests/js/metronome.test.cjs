@@ -30,6 +30,8 @@ function setup({ deferredResume = false, resumeError = false } = {}) {
         currentTime: 0,
         state: 'suspended',
         destination: {},
+        suspend() { this.state = 'suspended'; return Promise.resolve(); },
+        close() { this.state = 'closed'; return Promise.resolve(); },
         resume() {
             if (resumeError) return Promise.reject(new Error('Blocked'));
             if (deferredResume) return new Promise(resolve => {
@@ -145,7 +147,7 @@ test('clicks follow the audio clock at 120 BPM and stop cancels queued sound', a
     assert.equal(page.clock.beats.length, 0);
 });
 
-test('user-started metronome requests playback before opening audio and restores it on stop', async () => {
+test('stop/start keeps a stable playback session and suspends unused output until recording releases it', async () => {
     const page = setup();
     const session = { type: 'auto' };
     page.context.navigator = { audioSession: session };
@@ -158,16 +160,21 @@ test('user-started metronome requests playback before opening audio and restores
     assert.equal(session.type, 'playback');
     assert.equal(page.clock.ready, true);
     page.clock.stop();
-    assert.equal(session.type, 'auto', 'Stopping releases playback mode before recording or other audio');
+    assert.equal(session.type, 'playback', 'Stopping must not reconfigure the phone audio route');
+    assert.equal(page.audio.state, 'suspended', 'Unused output releases audio focus');
     await page.clock.start();
     assert.equal(session.type, 'playback', 'Reusing an audio context requests playback again');
     page.audio.state = 'interrupted';
     page.audio.onstatechange();
     assert.equal(page.clock.running, false);
-    assert.equal(session.type, 'auto', 'An interruption also releases playback mode');
+    assert.equal(session.type, 'playback');
+    await page.clock.releaseAudio();
+    assert.equal(session.type, 'auto', 'Recording releases the playback session');
+    assert.equal(page.audio.state, 'closed');
+    assert.equal(page.clock.context, null);
 });
 
-test('a failed or canceled audio start restores the previous session type', async () => {
+test('failed/canceled starts stay stopped and release their session when disposed', async () => {
     for (const options of [{ resumeError: true }, { deferredResume: true }]) {
         const page = setup(options);
         const session = { type: 'ambient' };
@@ -179,6 +186,7 @@ test('a failed or canceled audio start restores the previous session type', asyn
             page.resume();
         }
         await started;
+        await page.clock.releaseAudio();
         assert.equal(session.type, 'ambient');
         assert.equal(page.clock.ready, false);
         assert.equal(page.timers.size, 0);
@@ -221,6 +229,91 @@ test('a tempo change preserves beat progress and replaces queued clicks', async 
     page.advance(0.51);
     assert.ok(Math.abs(page.oscillators[2].startTime - 0.59) < 0.000001);
     assert.equal(page.beatCount, 1);
+});
+
+test('instrument and recorded-voice visuals follow delayed speaker output while sound keeps its exact tempo', async () => {
+    for (const sound of ['click', 'woodblock', 'beep', 'cowbell', 'my-voice']) {
+        const page = setup();
+        page.audio.outputLatency = 0.25;
+        page.clock.setBeats(4);
+        page.clock.setVoiceBuffers([1, 2, 3, 4].map(number => ({ number, duration: 0.3 })));
+        page.clock.setSound(sound);
+        await page.clock.start();
+        for (let tick = 1; tick <= 10; tick++) page.advance(tick * 0.025);
+        assert.equal(page.beatCount, 0, 'Buffered sound has not reached the speaker yet');
+        page.advance(0.27);
+        assert.deepEqual(page.beatIndices, [0]);
+        assert.ok(page.clock.getBeatPosition().progress < 1e-8);
+        for (let tick = 12; tick <= 30; tick++) page.advance(tick * 0.025);
+        assert.equal(page.clock.getBeatPosition().beat, 0, 'The next rendered count is still buffered');
+        page.advance(0.77);
+        assert.deepEqual(page.beatIndices, [0, 1]);
+        assert.ok(page.clock.getBeatPosition().progress < 1e-8);
+        const times = [...new Set(page.oscillators.map(note => note.startTime))];
+        assert.deepEqual(times, [0.02, 0.52], 'Visual compensation must never delay or retime sound');
+        page.clock.stop();
+    }
+});
+
+test('output timestamps interpolate device time and invalid timestamps fall back to reported latency', async () => {
+    const page = setup();
+    page.clock.setBeats(4);
+    await page.clock.start();
+    page.advance(0.45);
+    page.audio.outputLatency = 0.4;
+    page.context.performance = { now: () => 1020 };
+    page.audio.getOutputTimestamp = () => ({ contextTime: 0.5, performanceTime: 1000 });
+    page.advance(0.75);
+    assert.equal(page.clock.getBeatPosition().beat, 1);
+    assert.equal(page.clock.getBeatPosition().progress, 0);
+    for (const stamp of [{ contextTime: 0, performanceTime: 0 }, { contextTime: -1, performanceTime: 1000 },
+        { contextTime: NaN, performanceTime: 1000 }, { contextTime: 0.5, performanceTime: -1000 }]) {
+        page.audio.getOutputTimestamp = () => stamp;
+        assert.equal(page.clock.outputTime(), 0.35);
+    }
+    page.audio.getOutputTimestamp = () => { throw new Error('Unsupported'); };
+    assert.equal(page.clock.outputTime(), 0.35);
+    page.clock.stop();
+});
+
+test('tempo edits retain the audible beat until the buffered change reaches the speaker', async () => {
+    const page = setup();
+    page.audio.outputLatency = 0.2;
+    page.clock.setBeats(4);
+    await page.clock.start();
+    for (let tick = 1; tick <= 18; tick++) page.advance(tick * 0.025);
+    page.advance(0.47);
+    const oldClick = page.oscillators.at(-1);
+    const before = page.clock.getBeatPosition();
+    page.clock.setTempo(60);
+    assert.equal(oldClick.disconnected, true);
+    assert.equal(page.clock.getBeatPosition().progress, before.progress);
+    assert.equal(page.clock.getBeatPosition().tempo, 120);
+    for (let tick = 20; tick <= 26; tick++) page.advance(tick * 0.025);
+    page.advance(0.67);
+    assert.equal(page.clock.getBeatPosition().tempo, 60);
+    assert.ok(Math.abs(page.clock.getBeatPosition().progress - 0.9) < 1e-8);
+    page.advance(0.77);
+    assert.deepEqual(page.beatIndices, [0, 1]);
+    assert.ok(page.clock.getBeatPosition().progress < 1e-8);
+    assert.ok(Math.abs(page.oscillators.at(-1).startTime - 0.57) < 1e-8);
+    page.clock.stop();
+});
+
+test('a late context close cannot reset the session of a newer playback start', async () => {
+    const page = setup();
+    const session = { type: 'auto' };
+    page.context.navigator = { audioSession: session };
+    await page.clock.start();
+    let finishClose;
+    page.audio.close = () => new Promise(resolve => { finishClose = resolve; });
+    const closing = page.clock.releaseAudio();
+    await page.clock.start();
+    finishClose();
+    await closing;
+    assert.equal(session.type, 'playback');
+    assert.equal(page.clock.ready, true);
+    page.clock.stop();
 });
 
 test('stopping while audio unlocks cannot restart playback asynchronously', async () => {
@@ -967,6 +1060,24 @@ test('the conductor dot waits at the top and returns there when stopped', async 
         assert.equal(clock.getBeatPosition().preparing, true);
         assertBallNear(position(), conductorPreparationPoint(count, 0));
     }
+});
+
+test('the conductor, pulse and counting number reach the beat when delayed audio reaches the speaker', async () => {
+    const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
+    page.audio.outputLatency = 0.2;
+    page.click();
+    await new Promise(setImmediate);
+    assert.equal(page.conductorAnimations.length, 0, 'Wait for the output device before beginning the drop');
+    for (let tick = 1; tick <= 18; tick++) page.advance(tick * 0.025);
+    const clock = vm.runInContext('clock', page.context);
+    assert.ok(Math.abs(page.oscillators[0].startTime - 0.25) < 1e-8);
+    assert.equal(clock.getBeatPosition().beat, 0);
+    assertBallNear(animatedBallPoint(page), page.context.api.conductorPoint(4, 0, 0));
+    const pulse = page.animations.filter(animation => animation.target === page.pulseLayer && !animation.canceled).at(-1);
+    const number = page.animations.filter(animation => animation.target === page.number && !animation.canceled).at(-1);
+    assert.equal(pulse.startTime, page.conductorAnimations.at(-1).startTime);
+    assert.equal(number.startTime, pulse.startTime);
+    page.click();
 });
 
 

@@ -76,8 +76,10 @@ export class VoiceCapture {
     }
 
     async open() {
-        this.cancel();
+        const closing = this.cancel();
         const generation = this.generation;
+        await closing;
+        if (generation !== this.generation) throw new DOMException('Canceled', 'AbortError');
         this.context = this.createContext();
         await this.context.resume();
         if (generation !== this.generation) throw new DOMException('Canceled', 'AbortError');
@@ -155,7 +157,8 @@ export class VoiceCapture {
         this.source?.disconnect();
         this.analyser?.disconnect();
         this.source = this.analyser = null;
-        if (this.context && this.context.state !== 'closed') this.context.close().catch(() => {});
+        if (this.context && this.context.state !== 'closed') this.closing = this.context.close().catch(() => {});
         this.context = null;
+        return this.closing;
     }
 }

@@ -2,12 +2,13 @@ import { clampTempo, DEFAULT_TEMPO } from './gesture';
 import { SOUND_PROFILES } from './settings';
 
 export class MetronomeClock {
-    constructor({ createContext, onStateChange, onBeat, onError, onReady = () => {} }) {
+    constructor({ createContext, onStateChange, onBeat, onError, onReady = () => {}, onTick = () => {} }) {
         this.createContext = createContext;
         this.onStateChange = onStateChange;
         this.onBeat = onBeat;
         this.onError = onError;
         this.onReady = onReady;
+        this.onTick = onTick;
         this.tempo = DEFAULT_TEMPO;
         this.running = false;
         this.ready = false;
@@ -17,6 +18,8 @@ export class MetronomeClock {
         this.timer = null;
         this.notes = new Set();
         this.beats = [];
+        this.presentation = [];
+        this.presentedBeat = null;
         this.beatAnchor = null;
         this.beatSpan = 1;
         this.beatsPerBar = 1;
@@ -33,16 +36,12 @@ export class MetronomeClock {
         this.onStateChange(true);
 
         try {
-            this.requestPlaybackAudio();
-            if (!this.context || this.context.state === 'closed') {
-                this.context = this.createContext();
-                this.context.onstatechange = () => {
-                    if (this.ready && this.context.state !== 'running') this.stop();
-                };
-            }
-            await this.context.resume();
+            await this.resumeAudio();
             // A second tap can stop playback while the browser unlocks audio.
-            if (!this.running || generation !== this.generation) return;
+            if (!this.running || generation !== this.generation) {
+                if (!this.running) this.suspendAudio();
+                return;
+            }
             if (this.context.state !== 'running') throw new Error('Audio is unavailable.');
 
             this.ready = true;
@@ -50,8 +49,11 @@ export class MetronomeClock {
             this.beatAnchor = leadInBeats ? this.context.currentTime : null;
             this.nextBeatIndex = 0;
             this.lastBeatIndex = null;
+            this.presentation = [{ at: this.context.currentTime, anchor: this.beatAnchor,
+                index: null, beat: null, span: this.beatSpan, tempo: this.tempo }];
+            this.presentedBeat = null;
             this.nextBeatTime = this.context.currentTime + (leadInBeats ? leadInBeats * 60 / this.tempo : 0.02);
-            this.schedule();
+            this.schedule(false);
             this.timer = setInterval(() => this.schedule(), 25);
             this.onReady();
         } catch (error) {
@@ -69,17 +71,49 @@ export class MetronomeClock {
         this.timer = null;
         for (const note of this.notes) this.cancelNote(note);
         this.beats = [];
+        this.presentation = [];
+        this.presentedBeat = null;
         this.beatAnchor = null;
         this.lastBeatIndex = null;
-        this.restoreAudioSession();
+        this.suspendAudio();
         this.onStateChange(false);
+    }
+
+    getContext() {
+        if (!this.context || this.context.state === 'closed') {
+            const context = this.context = this.createContext();
+            context.onstatechange = () => {
+                if (this.ready && this.context === context && context.state !== 'running') this.stop();
+            };
+        }
+        return this.context;
+    }
+
+    resumeAudio() {
+        this.requestPlaybackAudio();
+        return this.getContext().resume();
+    }
+
+    suspendAudio() {
+        if (this.context?.state === 'running') this.context.suspend?.().catch(() => {});
+    }
+
+    async releaseAudio() {
+        this.stop();
+        const generation = this.generation;
+        const context = this.context;
+        this.context = null;
+        if (context) context.onstatechange = null;
+        if (context && context.state !== 'closed') await context.close().catch(() => {});
+        if (generation === this.generation && !this.context) this.restoreAudioSession();
     }
 
     requestPlaybackAudio() {
         try {
             const session = typeof navigator === 'undefined' ? null : navigator.audioSession;
             if (!session) return;
-            const previousType = session.type;
+            if (this.audioSession?.session === session && session.type === 'playback') return;
+            const previousType = this.audioSession?.previousType ?? session.type;
             // iPhone Web Audio defaults to ambient, which obeys Silent Mode.
             session.type = 'playback';
             this.audioSession = { session, previousType };
@@ -112,6 +146,7 @@ export class MetronomeClock {
             if (note.time > now) this.cancelNote(note);
         }
         this.beats = [];
+        this.presentation = this.presentation.filter(beat => beat.at <= now);
         this.nextBeatIndex = this.lastBeatIndex === null ? 0 : (this.lastBeatIndex + 1) % this.beatsPerBar;
 
         // Preserve the progress through this beat when tempo changes mid-swipe.
@@ -121,6 +156,9 @@ export class MetronomeClock {
             this.beatAnchor = now - progress * interval;
             this.nextBeatTime = now + (1 - progress) * interval;
         }
+        const previous = this.presentation[this.presentation.length - 1];
+        this.presentation.push({ at: now, anchor: this.beatAnchor, span: this.beatSpan,
+            index: this.lastBeatIndex, beat: previous?.beat ?? null, tempo });
         this.schedule();
     }
 
@@ -152,6 +190,7 @@ export class MetronomeClock {
             if (note.time > now) this.cancelNote(note);
         }
         this.beats = [];
+        this.presentation = this.presentation.filter(beat => beat.at <= now);
         this.nextBeatIndex = restartBar || this.lastBeatIndex === null
             ? 0 : (this.lastBeatIndex + 1) % this.beatsPerBar;
         if (restartBar) this.lastBeatIndex = null;
@@ -159,40 +198,67 @@ export class MetronomeClock {
     }
 
     getBeatPosition() {
-        const now = this.ready ? this.context.currentTime : 0;
-        let beat = this.lastBeatIndex;
-        let anchor = this.beatAnchor;
-        let span = this.beatSpan;
-        // A click can occur between scheduler ticks. Render from its actual audio
-        // time immediately instead of holding the dot at the end of the stroke.
-        for (const queued of this.beats) {
-            if (queued.time > now) break;
-            beat = queued.index;
-            anchor = queued.time;
-            span = 1;
-        }
+        const now = this.ready ? this.outputTime() : 0;
+        const state = this.presentationAt(now);
+        const beat = state?.index ?? null;
+        const anchor = state?.anchor ?? null;
+        const tempo = state?.tempo ?? this.tempo;
         return {
             beat: beat ?? this.beatsPerBar - 1,
             preparing: beat === null,
+            waiting: this.ready && (!state || now < state.at),
+            tempo,
             progress: this.ready && anchor !== null
-                ? Math.min(1, Math.max(0, (now - anchor) / (span * 60 / this.tempo)))
+                ? Math.min(1, Math.max(0, (now - anchor) / (state.span * 60 / tempo)))
                 : 0,
         };
     }
 
+    outputTime() {
+        const context = this.context;
+        // currentTime is the rendering head, ahead of the sound at the speaker.
+        // Map the device's timestamp to now, including after a route change.
+        try {
+            const stamp = context.getOutputTimestamp?.();
+            if (stamp && stamp.performanceTime > 0 && Number.isFinite(stamp.contextTime) && stamp.contextTime >= 0) {
+                const age = (performance.now() - stamp.performanceTime) / 1000;
+                if (age >= 0 && age < 1) return Math.min(context.currentTime, stamp.contextTime + age);
+            }
+        } catch (error) { /* Older browsers may not expose an output timestamp. */ }
+        const latency = context.outputLatency ?? context.baseLatency ?? 0;
+        return context.currentTime - (Number.isFinite(latency) && latency > 0 ? latency : 0);
+    }
+
+    presentationAt(now) {
+        let state = null;
+        for (const entry of this.presentation) {
+            if (entry.at > now) break;
+            state = entry;
+        }
+        return state;
+    }
+
+    updatePresentation(notify = true) {
+        const now = this.outputTime();
+        while (this.presentation.length > 1 && this.presentation[1].at <= now) this.presentation.shift();
+        const state = this.presentationAt(now);
+        if (state?.beat && state.beat !== this.presentedBeat) {
+            this.presentedBeat = state.beat;
+            this.onBeat(state.index);
+        }
+        if (notify) this.onTick();
+    }
+
     updateBeat(now) {
-        let played = false;
         while (this.beats.length && this.beats[0].time <= now) {
             const beat = this.beats.shift();
             this.beatAnchor = beat.time;
             this.beatSpan = 1;
             this.lastBeatIndex = beat.index;
-            played = true;
         }
-        if (played) this.onBeat(this.lastBeatIndex);
     }
 
-    schedule() {
+    schedule(notify = true) {
         if (!this.ready) return;
         const now = this.context.currentTime;
         this.updateBeat(now);
@@ -203,9 +269,12 @@ export class MetronomeClock {
         while (this.nextBeatTime < now + 0.1) {
             this.playClick(this.nextBeatTime, this.nextBeatIndex);
             this.beats.push({ time: this.nextBeatTime, index: this.nextBeatIndex });
+            this.presentation.push({ at: this.nextBeatTime, anchor: this.nextBeatTime,
+                index: this.nextBeatIndex, beat: {}, span: 1, tempo: this.tempo });
             this.nextBeatIndex = (this.nextBeatIndex + 1) % this.beatsPerBar;
             this.nextBeatTime += 60 / this.tempo;
         }
+        this.updatePresentation(notify);
     }
 
     playClick(time, beatIndex) {
