@@ -12,13 +12,13 @@ Configuration lives in `config/services.php`:
 - `PRINTFUL_API_TOKEN`: optional server environment secret
 - `PRINTFUL_API_TOKEN_FILE`: defaults to `storage/app/private/printful-api-token`
 
-Prefer a store-scoped private token with only **View store products** (`sync_products/read`) for this development phase. Keep the secret file outside version control with mode `0600`, readable by the application owner. `storage/app/` is already ignored. Do not put tokens in frontend JavaScript, views, URLs, chat, screenshots or tracked files. No `.env` edit is required. Production needs its own operational secret installation; code deployment alone does not copy this local file.
+Use a store-scoped private token with only **View store products** (`sync_products/read`) for this phase. Keep the secret file outside version control, readable by the application and scheduler identities. The local file is owner-only (`0600`); production uses a named PHP-worker read ACL with no group/other access. `storage/app/` is already ignored. Do not put tokens in frontend JavaScript, views, URLs, chat, screenshots or tracked files. No `.env` edit is required. Code deployment alone does not copy this secret file.
 
 Run `php artisan printful:check` to verify that the token includes the configured store and read its product count. This performs two GET requests and never creates or confirms an order. Redirects are disabled, timeouts are bounded, and errors omit raw upstream responses/credentials.
 
 The **PianoLIT Shop Development** token was created on **October 27, 2026**, scoped to this single store and `sync_products/read`, and expires **October 27, 2027**. Its secret is installed in the ignored private local file above. Replace it before expiration; private tokens cannot be refreshed automatically.
 
-Local verification on October 27, 2026: `printful:check` successfully retrieved store `18973423` and an empty product list (**0 products**). No orders, payments, files or webhook settings were changed. Production secret installation and deployment are still pending.
+Local verification on October 27, 2026: `printful:check` successfully retrieved store `18973423` and an empty product list (**0 products**). Production activation completed on October 28, 2026, as recorded below. No orders, payments or webhook settings were changed.
 
 ## Administration
 
@@ -42,9 +42,23 @@ Deleting a product in Printful automatically removes it from the active PianoLIT
 
 Removal soft-deletes the local product under its row lock and advances its revision; curated metadata, main-image choice and all image records/files remain intact. A confirmed product deletion never calls Printful's DELETE API or removes files. If the same Printful product ID becomes available again, explicit import restores the existing local record and its image choices after a successful provider read. This is separate from order cancellation or purchase-history cleanup; neither is implemented here.
 
-Deploy `2026_10_27_234500_add_deleted_at_to_merchandise_products.php` before this reconciliation code/schedule. It is applied locally only. Arthur's deleted **Piano rainbow T** (`486690181`) was reconciled locally on October 27, 2026: the active catalog is empty and its five image records/files remain retained.
+Deploy `2026_10_27_234500_add_deleted_at_to_merchandise_products.php` before this reconciliation code/schedule. It is installed locally and was verified installed in production on October 28, 2026. Arthur's deleted **Piano rainbow T** (`486690181`) was reconciled locally on October 27, 2026: the active catalog is empty and its five image records/files remain retained.
 
-Deploy `2026_10_27_230000_create_merchandise_catalog.php` before the admin feature. It creates only `merchandise_products` and `merchandise_images`; it is applied locally, including a successful local MySQL migration, and is not deployed to production. Ensure the public disk is writable and publicly served via the existing storage link. Original files are retained on normal gallery removal; database rollback does not replace an image with a partial upload. A full feature rollback must preserve/export these two tables and their files before dropping anything.
+Deploy `2026_10_27_230000_create_merchandise_catalog.php` before the admin feature. It creates only `merchandise_products` and `merchandise_images`; it is installed locally and was verified installed in production on October 28, 2026. Ensure the public disk is writable and publicly served via the existing storage link. Original files are retained on normal gallery removal; database rollback does not replace an image with a partial upload. A full feature rollback must preserve/export these two tables and their files before dropping anything.
+
+## Production activation — October 28, 2026
+
+Arthur authorized SSH setup of the token, permissions and scheduled checks. The deployed Printful source files and both migrations match the local implementation at revision `c31e861b`; no tracked server application file was replaced. Both migrations were already installed. The initial production configuration cache had no Printful settings, and the token file was missing, explaining the verification banner.
+
+Installed the existing local token at `/var/www/html/storage/app/private/printful-api-token` and verified an exact secure hash match without displaying its value. Owner `arthur` retains read/write access; a named `www-data` ACL grants read-only access. The private directory grants `www-data` traversal only, without listing/writing or altering other private files. Dedicated `storage/app/public/shop/merchandise` directory ACLs allow PHP-FPM writes and maintenance access. The existing `public/storage` link remains unchanged. Rebuilt the production configuration cache; no `.env` edit or new token scope.
+
+The visible `arthur` crontab has its general Laravel scheduler disabled, and root's full schedule remains unverified. Preserved the complete existing crontab and added one Printful-only entry every five minutes, protected by `flock`. It runs the private owner-only `storage/app/private/run-printful-catalog-sync.sh`: `printful:check`, then `printful:sync-catalog`, then a success heartbeat. Owner-only logs and the heartbeat are `printful-catalog-sync.log` and `printful-catalog-sync.last-success` in the same private directory. The first unattended successful run was observed at **00:00:04 America/New_York on October 28, 2026**. Existing Analytics cron and unrelated billing/email scheduling were preserved; the full Kernel scheduler was not enabled.
+
+A second unattended success was observed at **00:05:02** with the final permissions in place. The final audit confirms one Printful cron entry, unchanged deployed source hashes, no remaining temporary probe/image files and owner-only wrapper/log/heartbeat files.
+
+Verification succeeded from both CLI and the actual PHP-FPM `www-data` worker: the token is readable, store `18973423` is authorized, and the product list contains **0 products**. PHP-FPM wrote a temporary public image and its exact bytes were retrieved over HTTPS through Nginx. A temporary loopback-only health probe and image were removed immediately after verification. Admin login and Shop HTTPS requests return **200**. There were no synthetic products, live transactions, order submissions or emails in these checks.
+
+Private rollback/audit files are under server `storage/app/private/printful-setup-20261028-035817` and local `/Users/arthur/.codex/backups/pianolit/printful-server-setup-20261028`. They include the prior configuration cache, directory ACL and crontab. Preserve subsequent server changes when reverting; remove only the added Printful entry if disabling this scoped job. If a full Laravel scheduler is later confirmed/enabled, consolidate this entry with the Kernel schedule to avoid duplicate API checks. Token rotation is still required before October 27, 2027.
 
 ## Remaining shop work
 
