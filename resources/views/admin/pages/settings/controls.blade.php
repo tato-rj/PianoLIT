@@ -81,6 +81,7 @@
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'File upload', 'usage' => '.form-control [type=file]'])
       @include('components.forms.upload.file', ['id' => 'ds-upload', 'name' => 'ds_upload', 'label' => 'Choose a local file', 'designSystemPreview' => true])
+      @include('components.forms.upload.file', ['id' => 'ds-upload-multiple', 'name' => 'ds_upload_multiple[]', 'label' => 'Choose multiple local files', 'multiple' => true, 'accept' => 'image/jpeg,image/png,image/webp', 'designSystemPreview' => true])
       <small>Sample only. No file is uploaded.</small>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Checkboxes', 'usage' => '.form-check-input', 'properties' => 'width,height,border,border-radius,background-color'])

@@ -2,6 +2,12 @@
 
 return [
 
+    'printful' => [
+        'token' => env('PRINTFUL_API_TOKEN'),
+        'token_file' => env('PRINTFUL_API_TOKEN_FILE', storage_path('app/private/printful-api-token')),
+        'store_id' => env('PRINTFUL_STORE_ID', '18973423'),
+    ],
+
     'google_analytics' => [
         'measurement_id' => env('GA4_MEASUREMENT_ID', 'G-12WWWZZMJF'),
         'api_secret' => env('GA4_API_SECRET'),

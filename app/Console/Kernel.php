@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
             ->timezone('America/New_York')->withoutOverlapping();
 
         $schedule->command('games:cleanup-duels')->everyMinute()->withoutOverlapping();
+        $schedule->command('printful:sync-catalog')->everyFiveMinutes()->withoutOverlapping(5);
         $schedule->command('attribution:prune')->daily();
         $schedule->command('analytics:send-conversions')->everyMinute()->withoutOverlapping();
         $schedule->command('freepicks:sync-history')->everyMinute()->withoutOverlapping();

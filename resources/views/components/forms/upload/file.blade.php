@@ -2,6 +2,7 @@
 <div class="form-group {{ $grid ?? '' }}">
     @include('components.forms.label')
     <input type="file" class="form-control {{ validate($fileErrors, $name) }}" id="{{ $id }}" name="{{ $name }}"
+        @if($multiple ?? false) multiple @endif
         @if($required ?? false) required @endif @if($disabled ?? false) disabled @endif
         @isset($accept) accept="{{ $accept }}" @endisset
         @if($fileErrors->has($name)) aria-invalid="true" @endif
