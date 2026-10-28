@@ -1,4 +1,4 @@
-<div class="border-y bg-white p-2 text-center mb-3">
+<div class="{{ ($compact ?? false) ? 'text-muted' : 'border-y bg-white p-2 text-center mb-3' }}">
 	<div>
 			@icon('hourglass', ['color' => 'warning'])Your free download will be available in <strong>{{auth()->user()->membership->source->renews_at->diffForHumans()}}</strong>
 	</div>

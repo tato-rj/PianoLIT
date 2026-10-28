@@ -1,51 +1,46 @@
+@if($product->previews)
 @component('components.dialogs.modal', [
-  'id' => 'preview-product', 
-  'options' => ['size' => 'lg']
+    'id' => 'preview-product',
+    'header' => 'Look inside',
+    'options' => ['size' => 'xl'],
+    'descriptionId' => 'product-preview-description',
 ])
-  @slot('header')
-    @icon('book-open')Preview
-  @endslot
-
-  @slot('body')
-    <div id="product-loading">
-      <div class="d-flex flex-center" style="min-height: 300px">
-        <h5 class="text-grey m-0">loading...</h5>
-      </div>
-    </div>
-
-    <div id="flipbook-container" class="p-4">
-      <div id="flipbook-model" class="mx-auto" data-ratio="{{$product->aspectRatio()}}" style="display: none;">
-        @foreach($product->previews as $preview)
-        <div class="{{$loop->iteration > 2 && $loop->remaining > 2 ? null : 'hard'}}"><img src="{{storage($preview)}}" class="w-100"></div>
-        @endforeach
-      </div>
-    </div>
-
-    <div id="pages-container" class="position-relative" style="display: none;">
-      <div id="product-pages">
-        @foreach($product->previews as $preview)
-        <div class="mb-2 border" style="display: {{$loop->first ? 'block' : 'none'}};"><img src="{{storage($preview)}}" class="w-100"></div>
-        @endforeach
-      </div>
-      
-      <div class="position-absolute w-100 h-100 d-flex d-apart" style="left: 0; top: 0">
-        <div class="h-100 product-turn cursor-pointer" style="width: 25%" data-direction="previous"></div>
-        <div class="h-100 product-turn cursor-pointer" style="width: 25%" data-direction="next"></div>
-      </div>
-    </div>
-
-{{--     <div id="thumbnails-container" class="d-flex flex-center">
-      @foreach($product->previews as $preview)
-      <div class="m-1 border cursor-pointer {{$loop->first ? 'selected' : null}}" style="width: 30px"><img src="{{storage($preview)}}" class="w-100"></div>
-      @endforeach
-    </div> --}}
-  @endslot
-  
-  @slot('footer')
-    <div class="d-flex flex-center w-100">
-      <button class="btn-raw btn-lg px-3 py-1 product-turn" data-direction="previous">@icon('circle-arrow-left', ['color' => 'primary', 'size' => 'lg', 'mr' => 0])</button>
-      <div class="text-grey"><small>click or drag to flip pages</small></div>
-      <button class="btn-raw btn-lg px-3 py-1 product-turn" data-direction="next">@icon('circle-arrow-right', ['color' => 'primary', 'size' => 'lg', 'mr' => 0])</button>
-    </div>
-  @endslot
+    @slot('body')
+        <p id="product-preview-description" class="text-muted small mb-3">{{ $product->title }} · Selected preview pages</p>
+        <div class="product-preview" data-book-preview>
+            <div class="product-preview__stage" data-book-stage tabindex="0" role="group" aria-label="Book preview. Use the left and right arrow keys to turn pages" aria-busy="true">
+                <p class="text-muted mb-0" data-book-loading role="status">Opening your preview…</p>
+                <div data-book-host hidden>
+                    <div class="product-preview__book" data-book>
+                        @foreach($product->previews as $preview)
+                        <div class="product-preview__page">
+                            <img data-preview-src="{{ storage($preview) }}" alt="Preview page {{ $loop->iteration }} of {{ count($product->previews) }}" draggable="false">
+                            <span class="product-preview__missing small text-muted" hidden>This page couldn’t be loaded</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="product-preview__zoom" data-book-zoom hidden><img alt="" data-book-zoom-image></div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between gap-2 mt-3">
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-book-previous aria-label="Previous preview page" disabled>@icon('chevron-left', ['mr' => 0])</button>
+                    <span class="small text-muted text-nowrap" data-book-counter aria-live="polite" aria-atomic="true"></span>
+                    <button type="button" class="btn btn-secondary btn-sm" data-book-next aria-label="Next preview page" disabled>@icon('chevron-right', ['mr' => 0])</button>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" data-book-magnify aria-pressed="false" disabled>@icon('zoom-in')<span data-book-zoom-label>Zoom in</span></button>
+            </div>
+            <p class="small text-muted text-center mt-3 mb-2" data-book-hint>Drag a page corner or use the arrows to turn pages</p>
+            <div class="product-preview__thumbnails d-flex gap-2 justify-content-center" aria-label="Go to preview page">
+                @foreach($product->previews as $preview)
+                <button type="button" class="btn btn-secondary btn-sm" data-book-page="{{ $loop->iteration }}" aria-label="Go to preview page {{ $loop->iteration }}">{{ $loop->iteration }}</button>
+                @endforeach
+            </div>
+            <div class="small text-danger text-center mt-2" data-book-error role="status" hidden>
+                Some pages couldn’t load. <button type="button" class="btn btn-secondary btn-sm" data-book-retry>Try again</button>
+            </div>
+        </div>
+        <noscript><p class="mt-3">Enable JavaScript to turn pages, or open a sample below.</p>@foreach($product->previews as $preview)<a class="me-3" href="{{ storage($preview) }}" target="_blank" rel="noopener noreferrer">Preview page {{ $loop->iteration }}</a>@endforeach</noscript>
+    @endslot
 @endcomponent
+@endif

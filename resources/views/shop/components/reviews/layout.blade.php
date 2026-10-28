@@ -1,58 +1,45 @@
-@php($hasReviews = $product->publishedReviews()->withContent()->exists())
-
-<div id="reviews" class="border-top pt-5 mb-5 {{$hasReviews ? 'row' : null}}">
-	<div class="{{$hasReviews ? 'col-lg-4 col-md-6 col-12' : 'col-12'}} row mb-3">
-		<div class="{{$hasReviews ? null : 'col-lg-3 col-md-4'}} col-12 mb-4">
-			<h5>Overall rating</h5>
-			@if($hasReviews)
-			<p class="mb-2"><strong>{{$product->publishedReviews()->ratings()}}</strong> out of 5</p>
-			@else
-			<p>No ratings yet</p>
-			@endif
-			@include('shop.components.reviews.stars', ['complete' => true])
-		</div>
-
-		<div class="{{$hasReviews ? null : 'col-lg-4 col-md-8'}} col-12 mb-4">
-			@for($i=5; $i>=1; $i--)
-			@include('shop.components.reviews.bar')
-			@endfor
-		</div>
-
-		<div class="{{$hasReviews ? null : 'col-lg-5'}} col-12 mb-4"> 
-			<div class="text-center">
-				@if(auth()->check() && $review = auth()->user()->reviewFor($product))
-				@if($review->isPublished())
-				@include('shop.components.reviews.actions.delete')
-				@else
-				@include('shop.components.reviews.actions.pending')
-				@endif
-				@else
-				@include('shop.components.reviews.actions.new')
-				@endif
-			</div>
-		</div>
-	</div>
-
-	@if($hasReviews)
-	<div class="col-lg-8 col-md-6 col-12 mb-3"> 
-		@foreach($product->publishedReviews()->withContent()->get() as $review)
-			@include('shop.components.reviews.review')
-		@endforeach
-	</div>
-	@endif
-</div>
-
-@component('components.dialogs.modal', ['id' => 'review-modal', 'header' => 'My review'])
-@slot('body')
-<form method="POST" action="{{$product->reviewRoute()}}">
-	@csrf
-	<p class="text-center px-3">How would you rate <strong>{{$product->title}}</strong>?</p>
-	@include('shop.components.reviews.stars', ['editable' => true, 'rating' => 0])
-	<input type="hidden" name="rating" required>
-	@input(['bag' => 'default', 'name' => 'title', 'placeholder' => 'Title (optional)', 'limit' => 50, 'required' => false])
-	@textarea(['bag' => 'default', 'name' => 'content', 'placeholder' => 'Review (optional)', 'limit' => 220, 'rows' => 3, 'required' => false])
-	@input(['bag' => 'default', 'name' => 'reviewer', 'placeholder' => 'Your name (leave blank to review anonymously)', 'limit' => 50, 'required' => false])
-	@submit(['label' => 'Submit my review', 'block' => true])
-</form>
-@endslot
-@endcomponent
+<section id="reviews" class="border-top pt-4 mb-5" aria-labelledby="product-reviews-title">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <h2 class="h5 mb-0" id="product-reviews-title">Customer reviews <span class="text-muted">({{ $reviewCount }})</span></h2>
+        @if(! $ownedReview)
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#review-modal">@icon('square-pen')Write a review</button>
+        @endif
+    </div>
+    <div class="row g-4 g-lg-5">
+        <div class="col-md-4">
+            @if($reviewCount)
+            <div class="d-flex align-items-baseline gap-2 mb-2"><span class="h2 mb-0">{{ $averageRating }}</span><span class="text-muted">out of 5</span></div>
+            @include('shop.components.reviews.stars', ['rating' => $averageRating])
+            <p class="small text-muted mb-3">Based on {{ $reviewCount }} {{ str_plural('review', $reviewCount) }}</p>
+            @for($i = 5; $i >= 1; $i--)
+                @php($count = $reviews->where('rating', $i)->count())
+                <div class="d-flex align-items-center gap-2 mb-2 small">
+                    <span class="text-nowrap">{{ $i }} @icon('star', ['mr' => 0, 'color' => 'warning'])</span>
+                    <div class="product-detail__rating-bar flex-grow-1" aria-hidden="true"><span style="width: {{ $reviewCount ? $count / $reviewCount * 100 : 0 }}%"></span></div>
+                    <span class="text-muted">{{ $count }}</span>
+                </div>
+            @endfor
+            @else
+            <p class="mb-1">No reviews yet</p>
+            <p class="small text-muted">Share your experience with other pianists.</p>
+            @endif
+            @if($ownedReview)
+                <div class="mt-4">
+                @if($ownedReview->isPublished())
+                    @include('shop.components.reviews.actions.delete', ['review' => $ownedReview])
+                @else
+                    @include('shop.components.reviews.actions.pending', ['review' => $ownedReview])
+                @endif
+                </div>
+            @endif
+        </div>
+        <div class="col-md-8">
+            @forelse($reviews->filter(function ($review) { return $review->hasContent(); }) as $review)
+                @include('shop.components.reviews.review')
+            @empty
+                @if($reviewCount)<p class="text-muted">Readers have left ratings for this {{ $productKind }}, with no written reviews yet.</p>@endif
+            @endforelse
+        </div>
+    </div>
+</section>
+@include('shop.components.reviews.form')

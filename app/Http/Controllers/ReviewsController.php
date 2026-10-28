@@ -28,7 +28,7 @@ class ReviewsController extends Controller
 
         Admin::notifyAll(new ReviewSubmittedNotification($review));
 
-        return back()->with('status', 'Your review has been successfully submited.');
+        return back()->with('status', 'Thanks for your review. It will appear after moderation.');
     }
 
     /**

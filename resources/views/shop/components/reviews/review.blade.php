@@ -1,13 +1,9 @@
-<div class="mb-4">
-	<div class="text-muted d-flex d-apart mb-2">
-		<small>{{$review->created_at->diffForHumans()}}</small>
-		<small>{!! $review->isAnonymous() ? 'by ' . $review->reviewer : '<i>Anonymous</i>' !!}</small>
-	</div>
-	@include('shop.components.reviews.stars', ['rating' => $review->rating])
-	@if($review->title)
-	<h6 class="mb-1">{{$review->title}}</h6>
-	@endif
-	@if($review->content)
-	<p class="mb-1">{{$review->content}}</p>
-	@endif
-</div>
+<article class="border-bottom pb-4 mb-4">
+    <div class="d-flex justify-content-between flex-wrap gap-2 mb-2">
+        <span class="small">{{ $review->reviewer ?: 'Anonymous' }}</span>
+        <time class="small text-muted" datetime="{{ $review->created_at->toDateString() }}">{{ $review->created_at->toFormattedDateString() }}</time>
+    </div>
+    @include('shop.components.reviews.stars', ['rating' => $review->rating])
+    @if($review->title)<h3 class="h6 mb-2">{{ rtrim($review->title, '. ') }}</h3>@endif
+    @if($review->content)<p class="mb-0">{{ $review->content }}</p>@endif
+</article>

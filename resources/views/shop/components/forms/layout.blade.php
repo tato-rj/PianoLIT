@@ -1,7 +1,8 @@
-<div class="mb-4 p-2">
-	<div class="p-5 shadow-light border-top border-primary border-2x">
-		<h4 class="mb-3">@icon('lock', ['size' => 'sm'])Payment details</h4>
-		<p>All transactions are secure and encrypted</p>
-		{{$slot}}
-	</div>
-</div>
+<section aria-labelledby="shop-payment-title">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <h2 class="h5 mb-0" id="shop-payment-title">Payment</h2>
+        <span class="text-muted small">@icon('lock')Secured by Stripe</span>
+    </div>
+    {{ $slot }}
+    <p class="small text-muted mt-3 mb-0">By placing your order, you agree to our <a href="{{ route('terms') }}" target="_blank" rel="noopener noreferrer">Terms of Service</a>.</p>
+</section>

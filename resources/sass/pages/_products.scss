@@ -1,3 +1,164 @@
 .product-buttons {
     max-width: 260px;
 }
+
+.product-detail {
+    &__hero { margin-top: 0.5rem; }
+
+    &__artwork {
+        display: grid;
+        place-items: center;
+        min-height: 370px;
+        padding: 2rem;
+        background: var(--color-surface-subtle);
+        border-radius: var(--radius-sm);
+        perspective: 1100px;
+    }
+
+    &__cover {
+        display: block;
+        max-width: 100%;
+        transform: rotateY(-8deg) rotateZ(-2deg);
+        transition: transform 250ms ease;
+
+        img {
+            display: block;
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            max-height: 340px;
+            box-shadow: 12px 18px 25px rgba(0, 0, 0, 0.14);
+        }
+
+        &:is(:hover, :focus-visible) { transform: rotateY(0) rotateZ(0); }
+    }
+
+    &__rating { color: var(--color-text); }
+    &__purchase { max-width: 440px; }
+    &__membership { max-width: 440px; font-size: var(--font-size-small, 0.875rem); }
+
+    &__description {
+        overflow-wrap: anywhere;
+        img, video, iframe { max-width: 100%; }
+        img { height: auto; }
+        h1, h2, h3 { font-size: var(--font-size-h5); }
+        > :last-child { margin-bottom: 0; }
+    }
+
+    &__facts {
+        > div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--color-border); }
+        dt { color: var(--color-text-muted); font-weight: normal; }
+        dd { margin: 0; text-align: right; }
+    }
+
+    &__rating-bar {
+        height: 6px;
+        overflow: hidden;
+        background: var(--color-surface-subtle);
+        border-radius: var(--radius-pill);
+        span { display: block; height: 100%; background: var(--color-warning); }
+    }
+}
+
+#preview-product .modal-dialog { max-width: 1120px; }
+
+.product-preview {
+    &__stage {
+        position: relative;
+        display: grid;
+        place-items: center;
+        height: clamp(240px, calc(100dvh - 19rem), 650px);
+        background: var(--color-surface-subtle);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+    }
+
+    &__book {
+        user-select: none;
+        touch-action: pan-y;
+        filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.12));
+    }
+
+    &__page {
+        background: var(--color-surface);
+        overflow: hidden;
+        img { width: 100%; height: 100%; object-fit: contain; }
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.08), transparent 8%, transparent 94%, rgba(0, 0, 0, 0.04));
+        }
+    }
+
+    &__missing { position: absolute; top: 45%; left: 10%; right: 10%; text-align: center; }
+    &__book--fallback &__page { position: relative; width: 100%; height: 100%; }
+    &__zoom {
+        position: absolute;
+        inset: 0;
+        overflow: auto;
+        overscroll-behavior: contain;
+        img { display: block; width: max(100%, 850px); max-width: none; height: auto; margin: auto; }
+    }
+    &__thumbnails { overflow-x: auto; padding: 0.25rem; }
+}
+
+@media (max-width: 767.98px) {
+    .product-detail__artwork { min-height: 270px; padding: 1.5rem; }
+    .product-detail__cover img { max-height: 250px; }
+    .product-detail__purchase, .product-detail__membership { max-width: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .product-detail__cover { transform: none; transition: none; }
+}
+
+.shop-checkout {
+    // Hosted card details inherit the same field surface as standard inputs.
+    #card-element {
+        min-height: var(--field-min-height);
+        &.StripeElement--focus { border-color: var(--field-muted); }
+        &.StripeElement--invalid { border-color: var(--color-danger); }
+    }
+}
+
+.shop-order-item {
+    min-width: 0;
+    h3, p { overflow-wrap: anywhere; }
+
+    &__cover {
+        flex-shrink: 0;
+        width: 76px;
+        height: auto;
+        max-height: 108px;
+        object-fit: contain;
+        object-position: top;
+    }
+}
+
+.shop-order-summary {
+    background: var(--color-surface-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+
+    [data-order-discount-row]:not([hidden]) {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    &__totals {
+        font-size: var(--font-size-sm);
+        dd { text-align: right; }
+    }
+}
+
+@media (max-width: 399.98px) {
+    .shop-download-file {
+        align-items: flex-start !important;
+        flex-direction: column;
+        > a { width: 100%; }
+    }
+}

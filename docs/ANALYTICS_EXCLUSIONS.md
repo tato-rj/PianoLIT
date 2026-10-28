@@ -38,3 +38,32 @@ The earlier local `mysql / 127.0.0.1 / pianolit` preview on 2026-10-13 used Arth
 Identity-free historical totals (for example old scalar page-view counters), unattributed anonymous history, backups and external infrastructure/provider logs cannot be selectively removed by this command. The changes suppress website analytics tags for recognized requests and local email-event records; they do not retroactively purge Google/Meta/Mailgun data or disable operational security logging.
 
 Isolated Review tests cover both normalized emails, browser/login/logout behavior, submitted-ID independence, linked history, report exclusion before cleanup, unchanged mobile JSON and full media access, exact Redis key deletion, SQL rollback/idempotence, shared email counter reconstruction and preservation of other members and saved/billing data. SQLite and mocked integrations do not establish production MySQL concurrency or provider behavior. No asset build is required for this PHP/Blade-only change.
+
+## Google Analytics verification — 2026-10-27
+
+Production already applies the required Arthur/Elena exclusions to both Google
+installation paths: GTM and the direct GA4 tag used by focused games, Metronome
+and anonymous web-app pages. The website recognizes the normalized PianoLIT
+account email before rendering the tag; it does not send that email to GA as a
+filter. The shared browser opt-out flag preserves the exclusion after logout.
+A new/incognito browser cannot be recognized before PianoLIT sign-in; already-open
+pages that loaded Google before recognition should be reloaded.
+
+A read-only production audit on revision `9b6ad50b` found one matching account for
+each requested email. In-memory guard checks suppress Google on main/www, My,
+Learn, Blog, Shop, Games and Metronome for both accounts, while an ordinary account
+retains Google measurement. All relevant deployed PHP/middleware hashes match the
+reviewed source, and neither excluded account has a conversion outbox row. The
+server-event sender rechecks the same exclusion before dispatch. No real account
+login, session write, data purge or live GA test event was performed.
+
+Expanded existing Google installation coverage for both normalized account emails
+across every host and actual focused layouts. The isolated exclusion, website/GA
+split and conversion checks pass 40 tests / 507 assertions. No production code
+change or deployment is necessary for these existing exclusions.
+
+No historical Google data was deleted by this verification. The current
+integration sends neither account email nor internal User-ID to GA, so old
+anonymous visits cannot reliably be mapped back to those emails. Google's
+[user deletion controls](https://support.google.com/analytics/answer/6004245)
+require a corresponding collected identifier and do not remove aggregate data.

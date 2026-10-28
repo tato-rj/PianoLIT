@@ -7,8 +7,76 @@ const root = path.join(__dirname, '../../resources/js/metronome');
 const read = name => fs.readFileSync(path.join(root, name + '.js'), 'utf8').replace(/^import .*;\n/gm, '').replace(/^export /gm, '');
 const context = vm.createContext({ Float32Array, Uint8Array, ArrayBuffer, DataView, DOMException, Blob,
     btoa, atob, setInterval, clearInterval, setTimeout });
-vm.runInContext(read('voice-audio') + '\nglobalThis.api = { prepareVoiceClip, encodeVoiceWav, VoiceCapture, voiceBase64, voiceBytes };', context);
-const { prepareVoiceClip, VoiceCapture } = context.api;
+vm.runInContext(read('voice-audio') + read('voice-stretch') + '\nglobalThis.api = { prepareVoiceClip, encodeVoiceWav, VoiceCapture, voiceBase64, voiceBytes, compressVoice };', context);
+const { prepareVoiceClip, VoiceCapture, compressVoice } = context.api;
+
+function pcmBuffer(channels, length, rate) {
+    const data = Array.from({ length: channels }, () => new Float32Array(length));
+    return { numberOfChannels: channels, length, sampleRate: rate, duration: length / rate,
+        getChannelData: channel => data[channel] };
+}
+
+function toneBuffer(frequency, duration, rate = 24000) {
+    const buffer = pcmBuffer(1, Math.round(duration * rate), rate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+        const envelope = Math.min(1, i / (rate * 0.01), (data.length - 1 - i) / (rate * 0.01));
+        data[i] = 0.7 * envelope * Math.sin(2 * Math.PI * frequency * i / rate);
+    }
+    return buffer;
+}
+
+function energyAt(buffer, frequency) {
+    const samples = buffer.getChannelData(0);
+    const coefficient = 2 * Math.cos(2 * Math.PI * frequency / buffer.sampleRate);
+    let a = 0, b = 0;
+    for (let i = 0; i < samples.length; i++) {
+        const window = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (samples.length - 1));
+        const next = samples[i] * window + coefficient * a - b;
+        b = a; a = next;
+    }
+    return a * a + b * b - coefficient * a * b;
+}
+
+test('normal-tempo voices use the original buffer byte-for-byte without processing', () => {
+    for (const duration of [0.06, 0.25, 0.47]) {
+        const original = toneBuffer(180, duration);
+        const before = original.getChannelData(0).slice();
+        const unchanged = compressVoice(original, 0.47, () => assert.fail('No processing is needed'));
+        assert.equal(unchanged, original);
+        assert.deepEqual(original.getChannelData(0), before);
+    }
+});
+
+test('fast counts get shorter while retaining low and high voice pitches', () => {
+    for (const frequency of [90, 150, 240, 330]) {
+        for (const duration of [0.24, 0.5, 1, 2]) {
+            const original = toneBuffer(frequency, duration);
+            const before = original.getChannelData(0).slice();
+            const shortened = compressVoice(original, 60 / 300 * 0.94, pcmBuffer);
+            assert.ok(shortened.duration <= 0.188);
+            let peak = { frequency: 0, energy: -1 };
+            for (let candidate = frequency - 15; candidate <= frequency + 15; candidate += 0.5) {
+                const energy = energyAt(shortened, candidate);
+                if (energy > peak.energy) peak = { frequency: candidate, energy };
+            }
+            assert.ok(Math.abs(peak.frequency - frequency) <= 2, `${frequency} Hz became ${peak.frequency} Hz at ${duration} seconds`);
+            assert.ok(energyAt(shortened, frequency) > energyAt(shortened, frequency * duration / shortened.duration) * 10,
+                'The raised playback-rate pitch must not replace the original pitch');
+            assert.deepEqual(original.getChannelData(0), before, 'Saved samples are never modified');
+            assert.ok(shortened.getChannelData(0).every(sample => Number.isFinite(sample) && Math.abs(sample) <= 0.701));
+        }
+    }
+});
+
+test('compression retains the word onset and ending and keeps silent samples finite and silent', () => {
+    const original = toneBuffer(170, 0.6);
+    const shortened = compressVoice(original, 0.188, pcmBuffer);
+    assert.deepEqual(shortened.getChannelData(0).slice(0, 240), original.getChannelData(0).slice(0, 240));
+    assert.deepEqual(shortened.getChannelData(0).slice(-240), original.getChannelData(0).slice(-240));
+    const silence = compressVoice(pcmBuffer(1, 48000, 24000), 0.188, pcmBuffer);
+    assert.ok(silence.getChannelData(0).every(sample => sample === 0));
+});
 
 function audio({ seconds = 1, speechStart = 0.3, speechEnd = 0.6, rate = 48000, gain = 0.2, noise = 0 } = {}) {
     const samples = Float32Array.from({ length: Math.round(seconds * rate) }, (_, i) => Math.sin(i * 0.71) * noise
@@ -226,7 +294,7 @@ test('recording closes old playback before capture and waits for the microphone 
     page.scope.setInterval = () => 1;
     page.scope.clearInterval = () => {};
     page.scope.navigator.audioSession = { type: 'auto' };
-    vm.runInContext(['gesture', 'settings', 'clock'].map(read).join('\n') + '\nglobalThis.MetronomeClock = MetronomeClock;', page.scope);
+    vm.runInContext(['gesture', 'settings', 'voice-stretch', 'clock'].map(read).join('\n') + '\nglobalThis.MetronomeClock = MetronomeClock;', page.scope);
     const clock = new page.scope.MetronomeClock({ onStateChange() {}, onBeat() {}, onError(error) { throw error; },
         createContext() {
             assert.equal(microphoneOpen, false, 'Never reopen playback while microphone shutdown is pending');

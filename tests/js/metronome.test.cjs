@@ -8,7 +8,14 @@ const root = path.join(__dirname, '../../resources/js');
 const read = name => fs.readFileSync(path.join(root, name), 'utf8')
     .replace(/^import .*;\n/gm, '')
     .replace(/^export /gm, '');
-const source = ['gesture', 'settings', 'conductor', 'clock'].map(name => read(`metronome/${name}.js`)).join('\n');
+const source = ['gesture', 'settings', 'conductor', 'voice-stretch', 'clock'].map(name => read(`metronome/${name}.js`)).join('\n');
+
+function voiceBuffer(seconds, frequency = 180, rate = 24000) {
+    const data = Float32Array.from({ length: Math.round(seconds * rate) }, (_, i) =>
+        0.5 * Math.sin(2 * Math.PI * frequency * i / rate));
+    return { length: data.length, sampleRate: rate, numberOfChannels: 1,
+        duration: data.length / rate, getChannelData: () => data };
+}
 
 function setup({ deferredResume = false, resumeError = false } = {}) {
     const timers = new Map();
@@ -58,6 +65,11 @@ function setup({ deferredResume = false, resumeError = false } = {}) {
             const source = this.createOscillator();
             source.playbackRate = audioParam();
             return source;
+        },
+        createBuffer(channels, length, rate) {
+            const data = Array.from({ length: channels }, () => new Float32Array(length));
+            return { length, sampleRate: rate, numberOfChannels: channels, duration: length / rate,
+                getChannelData: channel => data[channel] };
         },
     };
     const context = vm.createContext({
@@ -364,17 +376,37 @@ test('personal voice counts wrap at the chosen beat count and preserve audio-clo
 
 test('fast personal counting fits each beat and deleting a voice restores an instrument', async () => {
     const page = setup();
-    page.clock.setVoiceBuffers([1, 2, 3, 4].map(number => ({ number, duration: 0.5 })));
+    page.clock.setVoiceBuffers([1, 2, 3, 4].map(number => voiceBuffer(0.5, 100 + number * 40)));
     page.clock.setSound('my-voice');
     page.clock.setTempo(300);
     await page.clock.start();
     page.advance(0.15);
     assert.ok(page.oscillators[0].stopTime < page.oscillators[1].startTime);
-    assert.ok(page.oscillators[0].playbackRate.value > 1);
+    assert.equal(page.oscillators[0].playbackRate.value, 1);
+    assert.ok(page.oscillators[0].buffer.duration <= 60 / 300 * 0.94);
     page.clock.setVoiceBuffers(null);
     assert.equal(page.clock.sound, 'click');
     page.clock.setSound('my-voice');
     assert.equal(page.clock.sound, 'click');
+});
+
+test('voice compression is reused between beats and slower tempos restore the exact original recording', async () => {
+    const page = setup();
+    const original = [1, 2, 3, 4].map(number => voiceBuffer(0.5, 100 + number * 40));
+    page.clock.setVoiceBuffers(original);
+    page.clock.setSound('my-voice');
+    page.clock.setTempo(300);
+    await page.clock.start();
+    const compressed = page.oscillators[0].buffer;
+    page.audio.createBuffer = () => { throw new Error('Compression must not run in the beat scheduler'); };
+    for (let tick = 1; tick <= 30; tick++) page.advance(tick * 0.025);
+    assert.equal(page.oscillators.at(-1).buffer, compressed);
+    assert.ok(page.oscillators.every(source => source.playbackRate.value === 1));
+    page.clock.setTempo(60);
+    page.advance(1.6);
+    assert.equal(page.oscillators.at(-1).buffer, original[0]);
+    assert.equal(page.oscillators.at(-1).playbackRate.value, 1);
+    page.clock.stop();
 });
 
 function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = null } = {}) {

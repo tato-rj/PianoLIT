@@ -36,6 +36,8 @@ function element(value = '') {
 }
 
 async function main() {
+    await require('./shop-product.test.cjs')();
+    await require('./shop-checkout.test.cjs')();
     await require('./quizzes.test.cjs')();
     require('./section-navigation.test.cjs')();
     await require('./profile.test.cjs')();

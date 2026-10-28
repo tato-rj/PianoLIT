@@ -1,9 +1,12 @@
-<div class="form-group">
-	<div class="position-relative">
-		<input type="text" name="coupon" placeholder="Have a coupon code?" class="form-control" maxlength="20">
-		<div class="h-100 p-2 load-validation position-absolute" style="top: 0; right: 0; display: none;">
-			<div class="rounded d-flex flex-center alert-yellow px-2 h-100" style="font-size: 80%">@icon('hourglass')Validating...</div>
-		</div>
-	</div>
-	<div id="coupon-feedback" data-url="{{route('shop.validate-coupon')}}" class="d-block coupon-feedback"></div>
+<div class="mt-4 pt-3 border-top" data-shop-coupon data-url="{{ route('shop.validate-coupon') }}">
+    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#shop-promo-code" aria-expanded="false" aria-controls="shop-promo-code">Have a promo code?</button>
+    <div class="collapse mt-3" id="shop-promo-code">
+        @input(['bag' => 'default', 'id' => 'checkout-coupon', 'name' => 'coupon', 'label' => 'Promo code', 'placeholder' => 'Enter your code', 'limit' => 20, 'required' => false, 'autocomplete' => 'off'])
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-secondary btn-sm" data-coupon-apply>Apply code</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-coupon-remove hidden>Remove</button>
+            <span class="small text-muted" data-coupon-loading role="status" hidden>Checking code…</span>
+        </div>
+    </div>
+    <p class="small mt-2 mb-0" data-coupon-feedback role="status" aria-live="polite"></p>
 </div>

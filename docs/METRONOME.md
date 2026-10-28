@@ -41,7 +41,7 @@ Mix produces/version-hashes `public/js/metronome.js`, `public/css/metronome.css`
 
 Run `node --test tests/js/metronome.test.cjs tests/js/metronome-voice.test.cjs` for the original behavior and voice regressions. The regular JavaScript runner includes these tests too. `MetronomeVoiceTest` checks private ownership, PCM validation, stale revisions, CSRF, account deletion and the sign-in return. `PublicProjectPagesTest` covers host routing and guest markup; `MetronomePreferencesTest` checks the separate web-app preference contract. Use `phpunit-review.xml`, never live storage or accounts, for these PHP checks. Browser QA uses synthetic speech in an isolated fixture, not a real microphone. Physical iOS/Android microphone, permission and background behavior remains a release check.
 
-For the Silent Mode/timing changes, verify on a physical iPhone with media volume above zero: start each instrument and a saved counting voice with Silent Mode both on and off, switch Silent Mode during playback, stop/restart, then record and preview a voice. Compare the sound with Classic pulses and Conductor bottom hits/counts before and after recording, including tempo edits. The 99 audio/gesture/voice regressions include simulated speaker delay, output-timestamp fallback, buffered tempo changes, stable sessions, and cancellation/closure during capture transitions. Four delayed-output checks fail against the previous implementation and pass after this correction. These checks cannot establish real-device audibility or actual phone-call behavior.
+For the Silent Mode/timing changes, verify on a physical iPhone with media volume above zero: start each instrument and a saved counting voice with Silent Mode both on and off, switch Silent Mode during playback, stop/restart, then record and preview a voice. Compare the sound with Classic pulses and Conductor bottom hits/counts before and after recording, including tempo edits. The 103 audio/gesture/voice regressions include simulated speaker delay, output-timestamp fallback, buffered tempo changes, stable sessions, pitch preservation and cancellation/closure during capture transitions. Four delayed-output checks fail against the previous implementation and pass after this correction. These checks cannot establish real-device audibility or actual phone-call behavior.
 
 ## Personal counting voice
 
@@ -110,9 +110,22 @@ recording also removes that legacy copy. Rolling back the library migration drop
 new recordings, so export/preserve those before any rollback after writes resume.
 
 The existing audio clock schedules samples by beat index and wraps at the
-selected 1–4 count. At fast tempos it speeds up a syllable to fit the beat and
-prevents overlapping counts after tempo changes. Ordinary instrument settings,
-web-app score metronome preferences and mobile contracts are independent.
+selected 1–4 count. A recording that already fits within 94% of the beat plays
+from its exact original buffer with the existing gain envelope. Arthur explicitly
+retained that normal-tempo sound. Only longer counts are time-compressed with
+waveform-similar overlap/add in `voice-stretch.js`, then played at rate 1 so faster
+tempos do not raise the voice pitch. Preparation runs once before starting or
+rescheduling, retaining only the current tempo's four buffers; beat scheduling
+does not perform compression. Original recordings and review previews are unchanged,
+and slowing down restores the original buffer. The onset/ending and existing
+overlap cancellation remain intact. See the [time-scaling explanation](https://www.surina.net/article/time-and-pitch-scaling.html).
+
+Pitch regressions check 90–330 Hz signals shortened from 0.24–2 seconds to the
+300 BPM beat window, original-buffer identity at ordinary speeds, source sample
+immutability and reuse across beats. Very large compression still changes speech
+articulation; real recording quality at 240–300 BPM remains a listening check on
+iPhone. Ordinary instrument settings, web-app score metronome preferences and
+mobile contracts are independent.
 
 Microphone capture needs a secure browser context. Production should serve
 HTTPS. Locally, run `valet secure metronome.pianolit` in Terminal (Mac

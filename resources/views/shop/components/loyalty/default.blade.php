@@ -1,4 +1,4 @@
-<div class="border-y bg-white p-2 text-center mb-3">
+<div class="{{ ($compact ?? false) ? 'text-muted' : 'border-y bg-white p-2 text-center mb-3' }}">
 	<div>
 
 			@icon('gift', ['color' => 'red'])<a href="{{route('webapp.membership.pricing')}}">Become a member</a> and download this item for <strong class="text-green">FREE</strong>!

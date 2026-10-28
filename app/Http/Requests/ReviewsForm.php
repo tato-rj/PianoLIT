@@ -6,6 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ReviewsForm extends FormRequest
 {
+    protected $errorBag = 'review';
+
+    public $product;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,9 +17,11 @@ class ReviewsForm extends FormRequest
      */
     public function authorize()
     {
-        $this->product = $this->model::find($this->id);
+        $model = $this->route('model');
+        abort_unless(in_array($model, [\App\Shop\eBook::class, \App\Shop\eScore::class, \App\Infograph\Infograph::class], true), 404);
+        $this->product = $model::findOrFail($this->route('id'));
 
-        return ! auth()->user()->reviewed($this->product);
+        return auth()->check() && ! auth()->user()->reviewed($this->product);
     }
 
     /**
@@ -26,7 +32,10 @@ class ReviewsForm extends FormRequest
     public function rules()
     {
         return [
-            'rating' => 'required|integer'
+            'rating' => 'required|integer|between:1,5',
+            'title' => 'nullable|string|max:50',
+            'content' => 'nullable|string|max:220',
+            'reviewer' => 'nullable|string|max:50'
         ];
     }
 }

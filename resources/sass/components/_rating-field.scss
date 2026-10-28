@@ -1,0 +1,30 @@
+.rating-field {
+    min-width: 0;
+
+    &__star {
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        color: var(--color-warning);
+        border-radius: var(--radius-button);
+        cursor: pointer;
+        font-size: 1.75rem;
+    }
+
+    input:checked + label .app-icon > svg,
+    &__star:has(~ input:checked) .app-icon > svg,
+    &__choices:hover label:hover .app-icon > svg,
+    &__choices:hover label:has(~ label:hover) .app-icon > svg {
+        fill: currentColor;
+    }
+
+    &__choices:hover label:hover ~ label .app-icon > svg {
+        fill: none;
+    }
+
+    input:focus-visible + label {
+        background: var(--color-surface-subtle);
+        box-shadow: inset 0 0 0 2px var(--color-primary);
+    }
+}

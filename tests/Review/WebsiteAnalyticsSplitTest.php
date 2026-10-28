@@ -65,6 +65,22 @@ class WebsiteAnalyticsSplitTest extends GamesTestCase
         $this->get('http://my.localhost/review/analytics-split')->assertOk()->assertDontSee('GTM-KJW7XGP')->assertDontSee('pianoActivityConfig');
     }
 
+    public function test_both_required_accounts_load_no_google_tag_across_hubs_or_focused_layouts()
+    {
+        app()->instance('env', 'production');
+        foreach ([' ArthurVillar@Gmail.Com ', ' Elena.Dare@Gmail.Com '] as $email) {
+            $this->actingAs(\Illuminate\Database\Eloquent\Model::withoutEvents(function () use ($email) { return create(User::class, ['email' => $email]); }), 'web');
+            foreach (['', 'www.', 'my.', 'learn.', 'blog.', 'shop.', 'games.', 'metronome.'] as $prefix) {
+                $this->get('http://'.$prefix.'localhost/review/analytics-split')->assertOk()
+                    ->assertDontSee('GTM-KJW7XGP')->assertDontSee('gtag/js?id=G-12WWWZZMJF', false)->assertDontSee('pianoActivityConfig');
+            }
+            foreach (['games.note-nest.play', 'metronome.home'] as $route) {
+                $this->get(route($route))->assertOk()->assertDontSee('GTM-KJW7XGP')->assertDontSee('gtag/js?id=G-12WWWZZMJF', false);
+            }
+        }
+        $this->assertDatabaseCount('activity_events', 0);
+    }
+
     public function test_old_public_browser_batches_are_acknowledged_without_creating_activity()
     {
         $this->postJson('http://localhost/activity/events', ['page_token' => 'old-public-token', 'events' => []])->assertNoContent();

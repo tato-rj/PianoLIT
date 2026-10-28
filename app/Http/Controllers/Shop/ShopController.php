@@ -15,13 +15,13 @@ class ShopController extends Controller
     public function validateCoupon(Request $request)
     {
         try {
-            $coupon = (new StripeFactory)->getCoupon(strtoupper($request->coupon));
+            $coupon = app(StripeFactory::class)->getCoupon(strtoupper($request->coupon));
         } catch (\Exception $e) {
             return response()->json(['isValid' => false, 'message' => 'Sorry, this coupon was not found.']);
         }
 
-        $response = $coupon->valid ? 
-                    ['isValid' => true, 'message' => 'The coupon is valid, you\'re good to go! You\'ll get a discount of ' . $coupon->name . '.'] : 
+        $response = $coupon->valid ?
+                    ['isValid' => true, 'message' => 'The coupon is valid, you\'re good to go! You\'ll get a discount of ' . $coupon->name . '.', 'percentOff' => $coupon->percent_off] :
                     ['isValid' => false, 'message' => 'Sorry, this coupon is no longer valid.'];
 
         return response()->json($response);
@@ -39,8 +39,10 @@ class ShopController extends Controller
 
     public function download(Request $request, Purchase $purchase)
     {
+        abort_unless((int) $purchase->user_id === (int) auth()->id(), 403);
+
         try {
-            return $purchase->download(decrypt($request->path));   
+            return $purchase->download(decrypt($request->path));
         } catch (\Exception $e) {
             return back()->with('error', 'Your file could not be downloaded at this time. If this problem persists, please let us know at contact@pianolit.com');
         }
@@ -62,7 +64,7 @@ class ShopController extends Controller
                 return back()->with('error', $e->getMessage());
             }
         }
-        
+
         $purchase = auth()->user()->purchase($form->product, $chargeId);
 
         if (! $isFree && $isEligible)
@@ -73,8 +75,7 @@ class ShopController extends Controller
 
     public function success(Purchase $purchase)
     {
-        if (! auth()->user()->purchasesOf($purchase->item)->exists())
-            return redirect($purchase->item->checkoutRoute());
+        abort_unless((int) $purchase->user_id === (int) auth()->id(), 403);
 
         return view('shop.success.index', compact('purchase'));
     }

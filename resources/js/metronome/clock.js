@@ -1,5 +1,6 @@
 import { clampTempo, DEFAULT_TEMPO } from './gesture';
 import { SOUND_PROFILES } from './settings';
+import { compressVoice } from './voice-stretch';
 
 export class MetronomeClock {
     constructor({ createContext, onStateChange, onBeat, onError, onReady = () => {}, onTick = () => {} }) {
@@ -25,6 +26,8 @@ export class MetronomeClock {
         this.beatsPerBar = 1;
         this.sound = 'click';
         this.voiceBuffers = null;
+        this.preparedVoices = null;
+        this.preparedVoiceTempo = null;
         this.nextBeatIndex = 0;
         this.lastBeatIndex = null;
     }
@@ -44,6 +47,7 @@ export class MetronomeClock {
             }
             if (this.context.state !== 'running') throw new Error('Audio is unavailable.');
 
+            this.prepareVoices();
             this.ready = true;
             this.beatSpan = leadInBeats || 1;
             this.beatAnchor = leadInBeats ? this.context.currentTime : null;
@@ -139,6 +143,7 @@ export class MetronomeClock {
         this.tempo = tempo;
         if (!this.ready) return;
 
+        this.prepareVoices();
         const now = this.context.currentTime;
         this.updateBeat(now);
         if (this.beatAnchor === null && this.beats.length) this.nextBeatTime = this.beats[0].time;
@@ -176,6 +181,7 @@ export class MetronomeClock {
     }
 
     setVoiceBuffers(buffers) {
+        if (buffers !== this.voiceBuffers) this.preparedVoices = null;
         this.voiceBuffers = buffers?.length === 4 ? buffers : null;
         if (!this.voiceBuffers && this.sound === 'my-voice') this.setSound('click');
         else if (this.sound === 'my-voice') this.reschedulePending();
@@ -183,6 +189,7 @@ export class MetronomeClock {
 
     reschedulePending(restartBar = false) {
         if (!this.ready) return;
+        this.prepareVoices();
         const now = this.context.currentTime;
         this.updateBeat(now);
         if (this.beats.length) this.nextBeatTime = this.beats[0].time;
@@ -317,9 +324,20 @@ export class MetronomeClock {
         });
     }
 
+    prepareVoices() {
+        if (this.sound !== 'my-voice' || !this.voiceBuffers) return;
+        if (this.preparedVoices && this.preparedVoiceTempo === this.tempo) return;
+        // Prepare once before starting/rescheduling, never inside the beat
+        // scheduler. Keep only this tempo's four clips to bound memory usage.
+        const duration = 60 / this.tempo * 0.94;
+        this.preparedVoices = this.voiceBuffers.map(buffer => compressVoice(buffer, duration,
+            (channels, length, rate) => this.context.createBuffer(channels, length, rate)));
+        this.preparedVoiceTempo = this.tempo;
+    }
+
     playVoice(time, beatIndex) {
-        const buffer = this.voiceBuffers[beatIndex];
-        const duration = Math.min(buffer.duration, 60 / this.tempo * 0.94);
+        const buffer = this.preparedVoices[beatIndex];
+        const duration = buffer.duration;
         // Finish an already playing syllable before the next beat after a tempo
         // change; a stale long clip must never overlap the new count.
         for (const note of this.notes) {
@@ -327,7 +345,7 @@ export class MetronomeClock {
         }
         const source = this.context.createBufferSource();
         source.buffer = buffer;
-        source.playbackRate.setValueAtTime(buffer.duration / duration, time);
+        source.playbackRate.setValueAtTime(1, time);
         const gain = this.context.createGain();
         gain.gain.setValueAtTime(0, time);
         gain.gain.linearRampToValueAtTime(1, time + 0.003);

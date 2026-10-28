@@ -1,13 +1,12 @@
 @php($infographicDownload = isset($purchase) && $purchase->item instanceof \App\Infograph\Infograph)
-@extends('layouts.app', ['title' => $infographicDownload ? 'Your infographic download | PianoLIT Learn' : 'Thank you for your purchase!', 'bodyClass' => $infographicDownload ? 'learn-home' : null])
-
-@push('header')
-<style type="text/css">
-</style>
-@endpush
+@php($digitalDownload = isset($purchase) && ($purchase->item instanceof \App\Shop\eBook || $purchase->item instanceof \App\Shop\eScore))
+@extends('layouts.app', ['title' => $infographicDownload ? 'Your infographic download | PianoLIT Learn' : 'Your download is ready | PianoLIT Shop', 'bodyClass' => $infographicDownload ? 'learn-home' : null])
 
 @section('content')
 
+@if($digitalDownload)
+    @include('shop.success.digital')
+@else
 <section class="container mb-5 {{ $infographicDownload ? 'py-4' : '' }}">
 	@if($infographicDownload)
 		@include('components.navigation.breadcrumb', ['items' => [
@@ -28,10 +27,12 @@
 		<h6><a href="mailto:{{config('app.emails.general')}}?subject=My feedback for the PianoLIT team" target="_blank">Give your feedback</a> on what we can improve, we'll love to hear from you.</h6>
 	</div>
 </section>
+@endif
 
 @endsection
 
 @push('scripts')
+@if(! $digitalDownload)
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/downloadjs/1.4.8/download.min.js"></script>
 <script type="text/javascript">
 let $countdown = $('#countdown-seconds');
@@ -50,4 +51,5 @@ if ($countdown.length) {
 	}, 1000);
 }
 </script>
+@endif
 @endpush

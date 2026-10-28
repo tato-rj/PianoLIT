@@ -6,7 +6,7 @@
 		'theme' => 'red'
 		],
 	'classes' => 'rounded',
-	'data' => ['toggle' => 'modal', 'target' => '#delete-review-modal']])
+	'data' => ['bs-toggle' => 'modal', 'bs-target' => '#delete-review-modal']])
 
 @component('components.dialogs.modal', ['id' => 'delete-review-modal', 'header' => 'Delete my review'])
 @slot('body')
