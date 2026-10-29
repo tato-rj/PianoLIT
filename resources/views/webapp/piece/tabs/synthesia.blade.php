@@ -14,7 +14,7 @@
 	@else
 
 	<div class="text-center">
-		<img src="{{ asset('images/webapp/synthesia-empty.png') }}" alt="" width="960" height="575" class="d-block mx-auto mb-4" style="width: 360px; max-width: 100%; height: auto;">
+		<div class="mb-4">@include('webapp.piece.components.synthesia-empty')</div>
 		<p class="text-muted">Would you like to watch a synthesia of this piece?<br>Tap below to make your request.</p>
 		@auth('web')
 		<button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#synthesia-request-modal">Send my request</button>

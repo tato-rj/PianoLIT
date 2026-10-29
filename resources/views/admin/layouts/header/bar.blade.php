@@ -8,4 +8,3 @@
   </div>
   <nav aria-label="Admin menu">@include('admin.layouts.header.menu')</nav>
 </aside>
-@include('admin.components.notifications.panel')

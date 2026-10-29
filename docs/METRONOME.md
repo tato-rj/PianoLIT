@@ -8,7 +8,7 @@ The original source was copied from `/Users/arthur/Desktop/Websites/ArthurVillar
 
 - 20–300 BPM; tap the center or press Space/Enter to start/stop.
 - Tap/hold either edge for one-BPM changes; vertical swipes retain the original speed-sensitive adjustment. Arrow keys adjust tempo; Escape stops playback.
-- One to four beats; Classic click, Woodblock, Beep and Cowbell sounds. Signed-in accounts select named recordings in the same Sound dropdown, under Recorded voices. The generic My voice entry appears only without saved recordings and opens the recorder.
+- One to four beats; Click, Woodblock, Beep and Cowbell sounds. Signed-in accounts select named recordings in the same Sound dropdown, under Recorded voices. The generic My voice entry appears only without saved recordings and opens the recorder.
 - Classic pulse and Conductor modes, with Dot/Hand indicators and an optional path.
 - Tempo numerals pulse to 135% size in both modes. Conductor mode also counts the selected 1–4 beats in large, bold background numerals at 12% peak opacity, fading completely over each beat. Counts share the conductor animation timeline, including tempo edits, the silent opening drop and resumed playback; stopping, hidden pages, settings and reduced motion cancel the animated count.
 - Number font: Nunito (rounded default), Outfit (geometric sans serif), Playfair Display (classic serif), Pattaya (handwritten) and Sail (stylized). The custom dropdown shows each name, style and current BPM preview; selection applies immediately in both modes and persists in host-local settings. Older or invalid preferences fall back to Nunito. Only the digits and selected weights load from Google Fonts; settings keep the standard PianoLIT typography.
@@ -18,6 +18,8 @@ The original source was copied from `/Users/arthur/Desktop/Websites/ArthurVillar
 - Browser-local settings and a five-second settled-tempo save. Instruments work without an account. Private named voice recordings require a web session; using a recording and its selected identity are remembered separately per account on this browser. Storage failure leaves controls usable for the current visit.
 
 Default/reset color is `#0055fe`; the canvas CSS references `--color-primary`. The tempo numeral defaults to Nunito at weight 300. The settings use PianoLIT typography, segmented controls, `@select`, `@toggle`, the shared native color field and standard buttons/shadows. The full-screen layout intentionally has no public header/footer. Settings use the same Bootstrap bottom offcanvas as the web-app Save to panel: shared close handle, heading, backdrop, focus trap and viewport height cap. Metronome content is centered at a maximum of 560px, shrinking to the available phone width. Bootstrap handles transitions, Escape/backdrop/Done dismissal and reduced motion. Closing immediately cancels capture and previews; keyboard/tempo controls stay isolated until the panel is hidden, then focus returns to Settings. There is no separate dialog animation.
+
+Settings opt into the shared `BottomSheetDrag` controller through `dragToClose` on both panel and header. The 44px handle strip spans the whole viewport width, outside the centered content. Downward pulls track the pointer; a sufficient pull or quick downward flick calls the same Bootstrap `hide()` action. Short, upward, sideways and interrupted drags reset without dismissal; taps and keyboard activation still close. The controller takes over the handle's click after initialization so Bootstrap's delegated capture listener cannot mistake a short drag for a tap. Tall settings reserve at least 80px (or 12% of the viewport, including safe-area clearance) above the sheet for outside dismissal; content scrolls below the fixed handle/header. Other bottom sheets retain their existing dimensions unless explicitly opted in.
 
 The shared `components.layout.public.header` overlays the canvas with the same Bootstrap grid, logo position, responsive size, shadow and hover tilt as the public hubs. It omits the account control. Its transparent `@brandIcon` reuses `icon-white.svg` as a current-color mask; both the logo and shared hub-menu button switch between white and black using the selected background’s relative luminance. Header controls respect phone safe areas and stay above tempo edge controls; Bootstrap panels/backdrops remain above the header. Keyboard navigation and edge holds are isolated while the hub menu is open, and links/buttons retain native Enter/Space activation. There is no public footer.
 
@@ -39,7 +41,7 @@ The shared `components.layout.public.header` overlays the canvas with the same B
 
 Mix produces/version-hashes `public/js/metronome.js`, `public/css/metronome.css` and the homepage WebP. Shared recorder styles also rebuild app/admin/shared CSS. Commit matching source, outputs and manifest entries. Deploy `2026_10_22_190000_create_metronome_voices_table.php` and `2026_10_22_210000_create_metronome_voice_recordings_table.php` before the voice library. No new dependency is required. Production needs metronome DNS/vhost/TLS pointed at this Laravel deployment.
 
-Run `node --test tests/js/metronome.test.cjs tests/js/metronome-voice.test.cjs` for the original behavior and voice regressions. The regular JavaScript runner includes these tests too. `MetronomeVoiceTest` checks private ownership, PCM validation, stale revisions, CSRF, account deletion and the sign-in return. `PublicProjectPagesTest` covers host routing and guest markup; `MetronomePreferencesTest` checks the separate web-app preference contract. Use `phpunit-review.xml`, never live storage or accounts, for these PHP checks. Browser QA uses synthetic speech in an isolated fixture, not a real microphone. Physical iOS/Android microphone, permission and background behavior remains a release check.
+Run `node --test tests/js/bottom-sheet-drag.test.cjs tests/js/metronome.test.cjs tests/js/metronome-voice.test.cjs tests/js/metronome-effects.test.cjs` for the original behavior and voice regressions. The regular JavaScript runner includes these tests too. `MetronomeVoiceTest` checks private ownership, PCM validation, stale revisions, CSRF, account deletion and the sign-in return. `PublicProjectPagesTest` covers host routing and guest markup; `MetronomePreferencesTest` checks the separate web-app preference contract. Use `phpunit-review.xml`, never live storage or accounts, for these PHP checks. Browser QA uses synthetic speech in an isolated fixture, not a real microphone. Physical iOS/Android microphone, permission and background behavior remains a release check.
 
 For the Silent Mode/timing changes, verify on a physical iPhone with media volume above zero: start each instrument and a saved counting voice with Silent Mode both on and off, switch Silent Mode during playback, stop/restart, then record and preview a voice. Compare the sound with Classic pulses and Conductor bottom hits/counts before and after recording, including tempo edits. The 103 audio/gesture/voice regressions include simulated speaker delay, output-timestamp fallback, buffered tempo changes, stable sessions, pitch preservation and cancellation/closure during capture transitions. Four delayed-output checks fail against the previous implementation and pass after this correction. These checks cannot establish real-device audibility or actual phone-call behavior.
 
@@ -143,3 +145,20 @@ local hubs. Recovery materials and proof are in
 See [Apple's TLS certificate requirements](https://support.apple.com/en-us/103769).
 Reference: [browser microphone requirements](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#privacy_and_security)
 and [recording format negotiation](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/isTypeSupported_static).
+
+## Focused settings and temporary effects (October 29)
+
+Settings now opens with Sound, Rhythm and Appearance summaries; each opens a
+focused page in the same shared bottom panel. Rhythm contains beats and motion;
+Appearance contains background and number font. Sound keeps the shared sound
+menu/private recorder and opens a nested six-choice Voice effect picker when a
+counting voice is selected. Back restores the parent choice's focus; Done and the
+close handle retain Bootstrap dismissal and immediate recording/preview cleanup.
+
+Voice effects are session-only, generated locally on demand in a short-lived
+worker. Classic on every refresh means the original voice is unchanged. The
+selected effect remains while changing tempo/settings, without regeneration per
+beat or persisted effect files. The optional public original voice is unavailable
+until Arthur supplies four recordings. See [METRONOME_VOICES.md](METRONOME_VOICES.md)
+for source recording instructions, the offline original-sample preparation
+command, effect configuration, timing/caching details and verification limits.

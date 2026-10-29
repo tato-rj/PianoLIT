@@ -798,3 +798,31 @@ test('canceling the native delete confirmation preserves every voice and sends n
     assert.equal(page.soundInput.value, 'voice:first');
     assert.equal(page.clock.buffers, buffers);
 });
+
+test('deleting the last private recording preserves an unrelated public counting voice', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    page.recorder.syncSound('spoken:classic');
+    let stopped = 0;
+    page.clock.stop = () => stopped++;
+    const removal = page.recorder.remove('first');
+    page.resolve(page.requests[2], {});
+    await removal;
+    assert.equal(stopped, 0);
+    assert.equal(page.recorder.sound, 'spoken:classic');
+    assert.equal(page.soundInput.value, 'spoken:classic');
+    assert.equal(page.recorder.library.length, 0);
+});
+
+test('expired private access does not stop public counting or change its selection', async () => {
+    const page = recorderHarness({ saved: true });
+    await load(page);
+    page.recorder.syncSound('spoken:classic');
+    let stopped = 0;
+    page.clock.stop = () => stopped++;
+    page.recorder.invalidateSession({ status: 401, message: 'Sign in again.' });
+    assert.equal(stopped, 0);
+    assert.equal(page.soundInput.value, 'spoken:classic');
+    assert.equal(page.clock.buffers, null);
+    assert.equal(page.node('signin').hidden, false);
+});

@@ -3,7 +3,7 @@
   <div class="design-system__grid design-system__grid--wide">
     @component('admin.pages.settings.sample', ['label' => 'Share a page', 'usage' => 'components.media.link-share · direct sharing and copy link', 'properties' => 'padding,color,border-radius'])
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="modal" data-bs-target="#ds-link-share">@icon('share')Open share dialog</button>
-      @include('components.media.link-share', ['id' => 'ds-link-share', 'url' => 'https://my.pianolit.com/pieces/0', 'title' => 'Prelude in E minor — Frédéric Chopin'])
+      @include('components.media.link-share', ['id' => 'ds-link-share', 'url' => 'https://my.pianolit.com/pieces/0', 'title' => 'Prelude in E minor by Frédéric Chopin'])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Shop storefront', 'usage' => 'shop.storefront.components · white, outlined cards and controls without offset shadows', 'properties' => 'font-size,color,border,box-shadow'])
       <div class="shop-storefront p-2" data-ds-preview>
@@ -84,12 +84,18 @@
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Bottom panel', 'usage' => 'components.dialogs.bottom-sheet.panel · components.dialogs.bottom-sheet.header', 'properties' => 'padding,color'])
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="offcanvas" data-bs-target="#ds-bottom-sheet" aria-controls="ds-bottom-sheet">Open bottom panel</button>
-      @component('components.dialogs.bottom-sheet.panel', ['id' => 'ds-bottom-sheet', 'titleId' => 'ds-bottom-sheet-title'])
+      @component('components.dialogs.bottom-sheet.panel', ['id' => 'ds-bottom-sheet', 'titleId' => 'ds-bottom-sheet-title', 'closeLabel' => 'Close bottom panel', 'dragToClose' => true])
         <div class="bottom-sheet__panel">
-          @include('components.dialogs.bottom-sheet.header', ['titleId' => 'ds-bottom-sheet-title', 'title' => 'Bottom panel', 'description' => 'Shared by Save to and metronome settings.', 'closeLabel' => 'Close bottom panel'])
+          @include('components.dialogs.bottom-sheet.header', ['titleId' => 'ds-bottom-sheet-title', 'title' => 'Bottom panel', 'description' => 'Shared by Save to and metronome settings.', 'closeLabel' => 'Close bottom panel', 'dragToClose' => true])
           <div class="p-4"><button type="button" class="btn btn-primary" data-bs-dismiss="offcanvas">Done</button></div>
         </div>
       @endcomponent
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Voice effects', 'usage' => 'components.forms.choice-buttons', 'properties' => 'padding,color'])
+      @include('components.forms.choice-buttons', ['preview' => true, 'name' => 'ds-voice-effect', 'label' => 'Voice effect', 'value' => 'classic', 'options' => json_decode(file_get_contents(resource_path('data/metronome-voice-effects.json')), true)])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Settings navigation', 'usage' => 'components.navigation.settings-link', 'properties' => 'padding,color'])
+      @include('components.navigation.settings-link', ['preview' => true, 'target' => 'sample-sound', 'icon' => 'volume-2', 'label' => 'Sound', 'summary' => 'Click'])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Voice recorder', 'usage' => 'metronome.components.voice-recorder', 'properties' => 'font-size,color,padding'])
       @include('metronome.components.voice-recorder', ['preview' => true])
@@ -276,13 +282,16 @@
 </section>
 
 <section class="design-system__section" aria-labelledby="ds-account-libraries-title">
-  <header class="design-system__section-heading"><h2 id="ds-account-libraries-title">Account libraries</h2><p>Paired empty states for downloads and merchandise orders, using the same layout and editable SVG artwork.</p><code>users.components.empty-library · users.components.illustrations</code></header>
+  <header class="design-system__section-heading"><h2 id="ds-account-libraries-title">Empty states</h2><p>Downloads, orders and missing Synthesia videos share one palette, illustration scale and editable SVG style.</p><code>users.components.empty-library · users.components.illustrations · webapp.piece.components.synthesia-empty</code></header>
   <div class="design-system__grid design-system__grid--wide">
     @component('admin.pages.settings.sample', ['label' => 'Empty downloads', 'usage' => 'users.purchases.empty', 'properties' => 'font-size,color,gap'])
       <div data-ds-preview>@include('users.purchases.empty')</div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Empty orders', 'usage' => 'users.orders.empty', 'properties' => 'font-size,color,gap'])
       <div data-ds-preview>@include('users.orders.empty')</div>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Missing Synthesia video', 'usage' => 'webapp.piece.components.synthesia-empty', 'properties' => 'width,height'])
+      <div class="py-4 py-md-5" data-ds-preview>@include('webapp.piece.components.synthesia-empty')</div>
     @endcomponent
   </div>
 </section>

@@ -11,7 +11,7 @@
         @if($accountImage)<img class="account-circle__image" src="{{ $accountImage }}" alt="" referrerpolicy="no-referrer" data-account-avatar>@endif
     </span>
 @else
-    <button type="button" class="{{ $accountClasses }}" @if(! ($designSystemPreview ?? false) || isset($menuId)) id="{{ $menuId ?? 'navbarDropdown' }}" @endif
+    <button type="button" class="shadow {{ $accountClasses }}" @if(! ($designSystemPreview ?? false) || isset($menuId)) id="{{ $menuId ?? 'navbarDropdown' }}" @endif
             aria-label="{{ $accountName === '' ? 'Account menu' : 'Account menu for '.$accountName }}"
             title="{{ $accountName === '' ? 'Account' : $accountName }}"
             @if($designSystemPreview ?? false) data-ds-preview @else data-bs-toggle="offcanvas" data-bs-target="#public-hub-menu" data-account-navigation-toggle aria-controls="public-hub-menu" aria-haspopup="dialog" aria-expanded="false" @endif>

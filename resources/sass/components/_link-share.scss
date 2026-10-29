@@ -4,17 +4,20 @@
     &__targets {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 24px 12px;
-        margin: 8px 0 28px;
+        gap: 16px 12px;
+        max-width: 360px;
+        margin: 4px auto 20px;
     }
 
     &__target {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 6px;
         min-width: 0;
         color: var(--color-text);
+        font-size: 14px;
+        line-height: 1.4;
         text-decoration: none;
     }
 
@@ -22,17 +25,27 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 64px;
-        height: 64px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
-        background: var(--color-surface-subtle);
-        font-size: 26px;
+        color: var(--share-color);
+        background: var(--share-background);
+        font-size: 22px;
         transition: background-color .15s ease, color .15s ease;
     }
 
+    @each $service, $color in ('mail': #0055fe, 'message-circle': #34c759, 'whatsapp': #25d366, 'facebook-f': #0866ff, 'reddit': #ff4500, 'telegram': #229ed9) {
+        &__target--#{$service} {
+            --share-color: #{$color};
+            --share-background: #{rgba($color, .1)};
+            --share-hover-background: #{rgba($color, .2)};
+        }
+    }
+
     &__target:hover, &__target:focus-visible {
-        color: var(--color-primary);
         text-decoration: none;
+
+        .link-share__icon { background: var(--share-hover-background); }
     }
 
     &__copy {

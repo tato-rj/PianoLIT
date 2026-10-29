@@ -51,7 +51,7 @@ export class SoundMenu {
 
     render(recorder) {
         const options = [...this.input.options];
-        this.label.textContent = options.find(option => option.value === this.input.value)?.text || 'Classic click';
+        this.label.textContent = options.find(option => option.value === this.input.value)?.text || 'Click';
         const voices = options.filter(option => option.value.startsWith('voice:'));
         if (this.list) {
             const ids = new Set(voices.map(option => option.value.slice(6)));

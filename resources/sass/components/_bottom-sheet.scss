@@ -1,8 +1,8 @@
 .bottom-sheet.offcanvas.offcanvas-bottom {
     // Share the favorites panel dimensions, including room for tall content.
     height: auto !important;
-    max-height: calc(100vh - 24px) !important;
-    max-height: calc(100dvh - 24px) !important;
+    max-height: calc(100vh - var(--bottom-sheet-top-gap, 24px)) !important;
+    max-height: calc(100dvh - var(--bottom-sheet-top-gap, 24px)) !important;
     box-shadow: 0 -12px 40px rgba(20, 29, 44, 0.12);
     .offcanvas-body {
         display: flex;
@@ -71,5 +71,34 @@
         height: 5px;
         border-radius: 999px;
         background: var(--color-border);
+    }
+}
+
+
+// Opt-in drag strip spans the entire sheet, outside the centered content column.
+.bottom-sheet[data-sheet-draggable] {
+    --bottom-sheet-top-gap: max(80px, 12vh, calc(env(safe-area-inset-top) + 56px));
+
+    @supports (height: 100dvh) {
+        --bottom-sheet-top-gap: max(80px, 12dvh, calc(env(safe-area-inset-top) + 56px));
+    }
+
+    .bottom-sheet-handle[data-sheet-drag-handle] {
+        width: 100%;
+        border-radius: 0;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    &.show:not(.hiding) {
+        transform: translateY(var(--bottom-sheet-drag-y, 0px));
+    }
+
+    &.is-sheet-dragging {
+        transition: none;
+        .bottom-sheet-handle { cursor: grabbing; }
     }
 }

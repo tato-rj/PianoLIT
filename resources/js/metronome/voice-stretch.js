@@ -3,9 +3,14 @@
 // changes. Work on a new buffer so saved recordings and previews stay intact.
 export function compressVoice(buffer, maxDuration, createBuffer) {
     if (buffer.duration <= maxDuration) return buffer;
+    return stretchVoice(buffer, maxDuration, createBuffer);
+}
+
+// Also used off the audio thread for pitch changes whose duration stays intact.
+export function stretchVoice(buffer, duration, createBuffer) {
     const rate = buffer.sampleRate;
-    const length = Math.max(1, Math.floor(maxDuration * rate));
-    const frame = Math.min(Math.round(rate * 0.04), Math.floor(length / 2));
+    const length = Math.max(1, Math.floor(duration * rate));
+    const frame = Math.min(Math.round(rate * 0.04), Math.floor(Math.min(length, buffer.length) / 2));
     const hop = Math.max(1, Math.floor(frame / 2));
     const radius = Math.round(rate * 0.012);
     const lastInput = buffer.length - frame;

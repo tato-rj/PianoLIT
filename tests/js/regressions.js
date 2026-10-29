@@ -2,6 +2,8 @@ require('./project-deck')();
 require('./home-scroll-hint')();
 require('./metronome.test.cjs');
 require('./metronome-voice.test.cjs');
+require('./metronome-effects.test.cjs');
+require('./bottom-sheet-drag.test.cjs');
 require('./chord-finder')();
 require('./timeline-events-admin');
 require('./admin-freepick-schedule')();

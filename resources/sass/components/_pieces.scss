@@ -14,35 +14,88 @@
     font-size: 240%;
 }
 
+.piece-heading {
+    --piece-title-size: var(--font-size-h3);
+    --piece-header-indent: 0px;
+}
+
 .piece-header {
     text-align: center;
-    padding-inline: 144px;
+}
+
+.piece-header-level {
+    display: inline-block;
+    margin-bottom: 8px;
+    margin-inline-start: var(--piece-header-indent);
+}
+
+.piece-header-row {
+    display: grid;
+    grid-template-columns: 144px minmax(0, 1fr) 144px;
+    align-items: start;
+}
+
+.piece-header-title {
+    min-width: 0;
+    margin-top: 0;
+    font-size: var(--piece-title-size);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.piece-header-back,
+.piece-header-actions {
+    // Center the icons on the first title line, retaining their 44px height.
+    margin-top: calc((var(--piece-title-size) * 1.2 - 44px) / 2);
+}
+
+.piece-header-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 44px;
+    font-size: 1.44rem;
 }
 
 .piece-header-actions {
-    position: absolute;
-    right: 0;
-    bottom: 50%;
-    transform: translateY(50%);
-    gap: 4px;
+    justify-self: end;
+    gap: 0;
 }
 
 .piece-header-action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 44px;
+    flex: 0 0 40px;
+    width: 40px;
+    min-width: 40px;
     min-height: 44px;
     font-size: 1.2rem;
+
+    // The narrow dots need less visual space than the full-width heart/share.
+    .icon-ellipsis-vertical { transform: translateX(-.375em); }
 }
 
 @media (max-width: 767.98px) {
-    .piece-header { padding-inline: 0; }
-    .piece-header-actions {
-        position: static;
-        transform: none;
-        justify-content: flex-end;
-        margin-top: 8px;
+    .piece-heading {
+        --piece-title-size: 1.3rem;
+        --piece-header-indent: 24px;
+    }
+    .piece-header {
+        margin-left: 0 !important;
+    }
+    .piece-header-row {
+        grid-template-columns: 24px minmax(0, 1fr) auto;
+        column-gap: 0;
+    }
+    .piece-header-action {
+        flex-basis: 32px;
+        width: 32px;
+        min-width: 32px;
+    }
+    .piece-header-composer {
+        margin-inline-start: var(--piece-header-indent);
     }
 }
 

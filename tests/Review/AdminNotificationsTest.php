@@ -57,7 +57,7 @@ class AdminNotificationsTest extends ReviewTestCase
 
         $response = $this->get(route('admin.notifications.index'))->assertOk();
         $response->assertSee('Notifications (1 unread)')->assertSee('admin-notification-dot')
-            ->assertDontSee('Jamie')->assertSee('Loading notifications');
+            ->assertSee('Jamie')->assertSee('1 unread notification')->assertDontSee('Loading notifications');
         $panel = $this->getJson(route('admin.notifications.panel'))->assertOk()->assertJsonPath('unreadCount', 1);
         $this->assertStringContainsString('Jamie', $panel->json('html'));
         $history = $this->getJson(route('admin.notifications.index'), ['X-Requested-With' => 'XMLHttpRequest'])->assertOk();
@@ -104,19 +104,27 @@ class AdminNotificationsTest extends ReviewTestCase
         })->values();
     }
 
-    public function test_admin_pages_only_count_alerts_and_the_panel_reads_at_most_twelve_rows()
+    public function test_admin_pages_preload_only_the_current_admins_latest_twelve_unread_alerts()
     {
         $admin = create(Admin::class);
         $this->alerts($admin, 250);
         $this->alerts($admin, 30, true);
-        $this->alerts(create(Admin::class), 10);
+        $other = create(Admin::class);
+        $other->notify(new NewUser($this->user()));
         $this->actingAs($admin, 'admin');
 
         DB::enableQueryLog(); DB::flushQueryLog();
-        $this->get(route('admin.notifications.index'))->assertOk()->assertSee('Notifications (250 unread)');
+        $page = $this->get(route('admin.notifications.index'))->assertOk()
+            ->assertSee('Notifications (250 unread)')->assertSee('250 unread notifications · Showing latest 12')
+            ->assertDontSee('Loading notifications')->assertDontSee('Jamie');
         $queries = $this->notificationQueries();
-        $this->assertCount(1, $queries);
+        $this->assertCount(2, $queries);
         $this->assertStringContainsString('count(*)', $queries[0]['query']);
+        $this->assertStringContainsString('limit 12', $queries[1]['query']);
+        $this->assertSame(12, substr_count($page->getContent(), 'class="notification-item '));
+        $this->assertSame(1, substr_count($page->getContent(), 'id="notifications-panel"'));
+        $this->assertStringContainsString('Alert 249', $page->getContent());
+        $this->assertStringNotContainsString('Alert 237<', $page->getContent());
 
         DB::flushQueryLog();
         $response = $this->getJson(route('admin.notifications.panel'))->assertOk()->assertJsonPath('unreadCount', 250);
@@ -126,6 +134,22 @@ class AdminNotificationsTest extends ReviewTestCase
         $this->assertSame(12, substr_count($response->json('html'), 'class="notification-item '));
         $this->assertStringContainsString('Alert 249', $response->json('html'));
         $this->assertStringNotContainsString('Alert 237<', $response->json('html'));
+    }
+
+    public function test_empty_admin_pages_preload_the_empty_panel_without_hydrating_notifications()
+    {
+        $admin = create(Admin::class);
+        $this->alerts($admin, 1, true);
+        $this->actingAs($admin, 'admin');
+
+        DB::enableQueryLog(); DB::flushQueryLog();
+        $page = $this->get(route('admin.notifications.index'))->assertOk()
+            ->assertSee('Notifications (0 unread)')->assertSee("You're all caught up", false)
+            ->assertSee('No new notifications')->assertDontSee('Loading notifications');
+        $queries = $this->notificationQueries(); DB::disableQueryLog();
+        $this->assertCount(1, $queries);
+        $this->assertStringContainsString('count(*)', $queries[0]['query']);
+        $this->assertMatchesRegularExpression('/<form[^>]*data-notification-read-all\s+hidden\b/', $page->getContent());
     }
 
     public function test_mark_all_is_one_scoped_update_without_a_dashboard_reload_or_rewriting_read_timestamps()

@@ -26,6 +26,8 @@
       @yield('content')
     </main>
 
+    @stack('admin-notifications')
+
     <button class="admin-back-to-top" type="button" data-admin-back-to-top aria-label="Back to top" title="Back to top" hidden>
       @icon('arrow-up', ['mr' => 0])
     </button>

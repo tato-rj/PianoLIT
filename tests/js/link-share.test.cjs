@@ -7,13 +7,13 @@ const source = fs.readFileSync(path.join(__dirname, '../../resources/js/componen
 module.exports = async function () {
     function fixture(navigator = {}, legacyCopy = true) {
         const parts = {};
-        for (const selector of ['.modal', 'input', '[data-share-copy]', '[data-share-native]', '[data-share-status]', '[data-share-error]', '[data-share-sms]', '[data-share-error-message]']) {
+        for (const selector of ['.modal', 'input', '[data-share-copy]', '[data-share-status]', '[data-share-error]', '[data-share-sms]', '[data-share-error-message]']) {
             parts[selector] = {hidden: true, events: {}, attrs: {}, value: 'https://my.pianolit.com/pieces/42',
                 addEventListener(name, handler) { this.events[name] = handler; },
                 setAttribute(name, value) { this.attrs[name] = value; },
                 focus() { this.focused = true; }, select() { this.selected = true; }, setSelectionRange() { this.selected = true; }};
         }
-        const root = {dataset: {shareTitle: 'A & B', shareUrl: 'https://my.pianolit.com/pieces/42', shareMessage: 'A & B\nhttps://my.pianolit.com/pieces/42'}, querySelector(selector) { return parts[selector]; }};
+        const root = {dataset: {shareTitle: 'A & B by Frédéric Chopin', shareUrl: 'https://my.pianolit.com/pieces/42', shareMessage: 'Hi!\n\nI found A & B by Frédéric Chopin on PianoLIT and thought you might enjoy it.\n\nhttps://my.pianolit.com/pieces/42'}, querySelector(selector) { return parts[selector]; }};
         const doc = {readyState: 'complete', querySelectorAll() { return [root]; }, execCommand(command) { assert.equal(command, 'copy'); return legacyCopy; }};
         const timers = new Map();
         let timerId = 0;
@@ -59,25 +59,9 @@ module.exports = async function () {
     assert.equal(f.parts['[data-share-error]'].hidden, false);
     assert.equal(f.parts.input.selected, true);
 
-    let shared;
-    f = fixture({async share(data) { shared = data; }, canShare() { return true; }});
-    assert.equal(f.parts['[data-share-native]'].hidden, false);
-    await f.click('[data-share-native]');
-    assert.equal(shared.url, 'https://my.pianolit.com/pieces/42');
-    assert.equal(shared.title, 'A & B');
-    f = fixture({async share() { throw {name: 'AbortError'}; }});
-    await f.click('[data-share-native]');
-    assert.equal(f.parts['[data-share-error]'].hidden, true, 'Canceling the OS sheet is silent.');
-    f = fixture({async share() { throw new Error('Unavailable'); }});
-    await f.click('[data-share-native]');
-    assert.equal(f.parts['[data-share-error]'].hidden, false);
-    f = fixture({share() {}, canShare() { return false; }});
-    assert.equal(f.parts['[data-share-native]'].hidden, true);
-    f = fixture({});
-    assert.equal(f.parts['[data-share-native]'].hidden, true);
-
     f = fixture({userAgent: 'iPhone', clipboard: {async writeText() {}}});
-    assert.equal(f.parts['[data-share-sms]'].attrs.href, 'sms:&body=A%20%26%20B%0Ahttps%3A%2F%2Fmy.pianolit.com%2Fpieces%2F42');
+    assert.equal(f.parts['[data-share-sms]'].attrs.href, 'sms:&body=' + encodeURIComponent(f.root.dataset.shareMessage));
+    assert.equal(decodeURIComponent(f.parts['[data-share-sms]'].attrs.href.split('body=')[1]), 'Hi!\n\nI found A & B by Frédéric Chopin on PianoLIT and thought you might enjoy it.\n\nhttps://my.pianolit.com/pieces/42');
     f = fixture({platform: 'MacIntel', maxTouchPoints: 5});
     assert.ok(f.parts['[data-share-sms]'].attrs.href.startsWith('sms:&body='));
 
@@ -86,5 +70,5 @@ module.exports = async function () {
     const pending = f.click('[data-share-copy]');
     f.close(); finish(); await pending;
     assert.equal(f.parts['[data-share-status]'].textContent, '', 'A closed dialog cannot receive stale copy feedback.');
-    console.log('Passed: field/icon copy, timed tooltip, permission fallback, failure selection, native sharing/cancellation, SMS variants and stale dialog feedback.');
+    console.log('Passed: field/icon copy, timed tooltip, permission fallback, failure selection, SMS variants and stale dialog feedback.');
 };

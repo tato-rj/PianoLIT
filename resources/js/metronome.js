@@ -6,6 +6,11 @@ import { colorPalette, DEFAULT_SETTINGS, loadSettings, loadTempo, normalizeSetti
 import { conductorPreparationBeats, ConductorView } from './metronome/conductor';
 import { VoiceRecorder } from './metronome/voice-recorder';
 import { SoundMenu } from './metronome/sound-menu';
+import { VoiceEffectSelection, processVoiceInWorker } from './metronome/voice-effect-selection';
+import effects from '../data/metronome-voice-effects.json';
+import { SettingsPages } from './metronome/settings-pages';
+import { SpokenCounting, SpokenVoiceLibrary, fetchSpokenAudio } from './metronome/spoken-voices';
+import { BottomSheetDrag } from './controls/bottom-sheet-drag';
 import { FontSelect } from './controls/font-select';
 import initializeLogoTilt from './components/logo-tilt';
 
@@ -20,6 +25,9 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const settingsButton = document.querySelector('[data-settings-open]');
 const settingsPanel = document.querySelector('[data-settings-panel]');
 const settingsOffcanvas = new Offcanvas(settingsPanel);
+if (settingsPanel.querySelector('[data-sheet-drag-handle]')) {
+    new BottomSheetDrag(settingsPanel, () => settingsOffcanvas.hide());
+}
 const hubMenu = document.querySelector('#public-hub-menu');
 const beatInputs = document.querySelectorAll('[name="metronome-beats"]');
 const typeInputs = document.querySelectorAll('[name="metronome-type"]');
@@ -50,6 +58,11 @@ let navigationOpen = false;
 let settings = { ...DEFAULT_SETTINGS };
 let voiceRecorder = null;
 let soundMenu = null;
+let settingsPages = null;
+let spokenCounting = null;
+let spokenId = null;
+let voiceEffects = null;
+let restoreSpoken = null;
 try {
     settings = loadSettings(window.localStorage);
     tempo = loadTempo(window.localStorage);
@@ -136,6 +149,7 @@ function setTempo(value) {
 function toggle() {
     if (settingsOpen || navigationOpen) return;
     message.hidden = true;
+    restoreSpoken?.();
     if (clock.running) clock.stop();
     else clock.start({ leadInBeats: settings.type === 'conductor' ? conductorPreparationBeats(settings.beats) : 0 });
 }
@@ -158,6 +172,7 @@ function applySettings(value, persist = true) {
     const previous = settings;
     settings = normalizeSettings(value);
     if (settings.sound === 'my-voice' && !clock.voiceBuffers) settings.sound = 'click';
+    if (settings.sound.startsWith('spoken:') && settings.sound !== `spoken:${spokenId}`) settings.sound = 'click';
     palette = colorPalette(settings.color);
     if (previous.type !== settings.type) {
         if (pulse) pulse.cancel();
@@ -176,7 +191,7 @@ function applySettings(value, persist = true) {
     fontInput.value = settings.font;
     fontMenu?.render();
     clock.setBeats(settings.beats);
-    clock.setSound(settings.sound);
+    clock.setSound(settings.sound.startsWith('spoken:') ? 'spoken' : settings.sound);
     if (conductor.beats !== settings.beats) conductor.setBeats(settings.beats);
     beatInputs.forEach(input => { input.checked = Number(input.value) === settings.beats; });
     typeInputs.forEach(input => { input.checked = input.value === settings.type; });
@@ -187,7 +202,11 @@ function applySettings(value, persist = true) {
     if (voiceRecorder) voiceRecorder.syncSound(settings.sound);
     else soundInput.value = settings.sound;
     soundMenu?.render(voiceRecorder);
+    syncVoiceEffects();
     pathInput.checked = settings.showPath;
+    settingsPages?.summary('sound', soundInput.selectedOptions?.[0]?.text || 'Click');
+    settingsPages?.summary('rhythm', `${settings.beats} ${settings.beats === 1 ? 'beat' : 'beats'} · ${settings.type === 'conductor' ? 'Conductor' : 'Pulse'}`);
+    settingsPages?.summary('appearance', fontInput.selectedOptions?.[0]?.text || 'Color & numbers');
     syncConductor();
     if (persist) {
         try {
@@ -205,6 +224,7 @@ settingsButton.addEventListener('click', () => {
 });
 settingsPanel.addEventListener('show.bs.offcanvas', () => {
     settingsOpen = true;
+    restoreSpoken?.();
     stopEdgeRepeat();
     gesture = null;
     pointerId = null;
@@ -214,6 +234,8 @@ settingsPanel.addEventListener('show.bs.offcanvas', () => {
     syncConductor();
 });
 settingsPanel.addEventListener('hide.bs.offcanvas', () => {
+    spokenCounting?.cancel();
+    applySettings(settings, false);
     soundMenu?.close();
     voiceRecorder?.cancel();
 });
@@ -248,6 +270,14 @@ colorInput.addEventListener('input', () => applySettings({ ...settings, color: c
 fontInput.addEventListener('change', () => applySettings({ ...settings, font: fontInput.value }));
 colorReset.addEventListener('click', () => applySettings({ ...settings, color: DEFAULT_SETTINGS.color }));
 soundInput.addEventListener('change', () => {
+    restoreSpoken = null;
+    spokenCounting?.cancel();
+    document.querySelector('[data-spoken-feedback]')?.setAttribute('hidden', '');
+    if (soundInput.value.startsWith('spoken:')) {
+        voiceRecorder?.remember('spoken');
+        spokenCounting?.select(soundInput.value.slice(7));
+        return;
+    }
     if (voiceRecorder?.selectSound(soundInput.value)) return;
     applySettings({ ...settings, sound: soundInput.value });
     voiceRecorder?.remember(settings.sound);
@@ -358,21 +388,54 @@ document.addEventListener('keydown', event => {
 
 window.addEventListener('blur', stopEdgeRepeat);
 document.addEventListener('visibilitychange', () => {
+    if (document.hidden) spokenCounting?.cancel();
     if (document.hidden) soundMenu?.close();
     if (document.hidden) voiceRecorder?.cancel();
     if (document.hidden) stopEdgeRepeat();
     syncConductor();
 });
 window.addEventListener('pagehide', () => {
+    voiceEffects?.dispose();
+    spokenCounting?.cancel();
     soundMenu?.close();
     voiceRecorder?.cancel();
     stopEdgeRepeat();
     clock.releaseAudio();
 });
+const preferredSpoken = settings.sound.startsWith('spoken:') ? settings.sound.slice(7) : null;
 applySettings(settings, false);
 setTempo(tempo);
 const soundMenuRoot = document.querySelector('[data-sound-menu]');
 if (soundMenuRoot) {
+    const voices = JSON.parse(soundMenuRoot.dataset.spokenVoices || '[]');
+    let decoder;
+    const library = new SpokenVoiceLibrary({ voices, fetchAudio: fetchSpokenAudio, decode: bytes => {
+        const OfflineContext = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        if (!OfflineContext) return clock.getContext().decodeAudioData(bytes);
+        if (!decoder) decoder = new OfflineContext(1, 1, 24000);
+        return decoder.decodeAudioData(bytes);
+    } });
+    spokenCounting = new SpokenCounting({ library,
+        onLoading: loading => { document.querySelector('[data-spoken-loading]').hidden = !loading; },
+        onUse: (id, buffers) => {
+            spokenId = id;
+            clock.setSpokenBuffers(buffers);
+            voiceRecorder?.remember('spoken');
+            applySettings({ ...settings, sound: `spoken:${id}` });
+        },
+        onError: id => {
+            const option = [...soundInput.options].find(option => option.value === `spoken:${id}`);
+            if (option) option.disabled = true;
+            const button = soundMenuRoot.querySelector(`[data-sound-value="spoken:${id}"]`);
+            if (button) button.disabled = true;
+            document.querySelector('[data-spoken-error]').textContent = 'Voice unavailable. Using Click.';
+            document.querySelector('[data-spoken-feedback]').hidden = false;
+            applySettings({ ...settings, sound: 'click' });
+        } });
+    if (preferredSpoken && library.voices.has(preferredSpoken)) {
+        restoreSpoken = () => { restoreSpoken = null; spokenCounting.select(preferredSpoken); };
+    }
+
     soundMenu = new SoundMenu({ root: soundMenuRoot, input: soundInput,
         onSelect: value => { soundInput.value = value; soundInput.dispatchEvent(new Event('change', { bubbles: true })); },
         onPlay: id => voiceRecorder?.previewRecording(id),
@@ -386,7 +449,70 @@ const voiceRoot = document.querySelector('[data-voice-recorder]');
 if (voiceRoot) {
     voiceRecorder = new VoiceRecorder({ root: voiceRoot, dialog: settingsPanel, clock, soundInput,
         getBeats: () => settings.beats,
-        onUpdate: recorder => soundMenu?.render(recorder),
-        useSound: (sound, persist = true) => applySettings({ ...settings, sound }, persist) });
-    if (new URLSearchParams(window.location.search).get('record-voice') === '1') settingsButton.click();
+        onUpdate: recorder => { soundMenu?.render(recorder); syncVoiceEffects(); },
+        useSound: (sound, persist = true) => {
+            spokenCounting?.cancel();
+            restoreSpoken = null;
+            applySettings({ ...settings, sound }, persist);
+        } });
+}
+
+if (settingsPanel.querySelector('[data-settings-page]')) {
+    settingsPages = new SettingsPages(settingsPanel, () => {
+        soundMenu?.close();
+        voiceRecorder?.cancel();
+    });
+    settingsPanel.addEventListener('click', event => {
+        if (event.target.closest('[data-voice-start], [data-sound-empty]')) {
+            spokenCounting?.cancel();
+            restoreSpoken = null;
+        }
+    }, true);
+    applySettings(settings, false);
+    if (voiceRoot && new URLSearchParams(window.location.search).get('record-voice') === '1') {
+        settingsPages.show('sound', false);
+        settingsButton.click();
+    }
+}
+
+function syncVoiceEffects() {
+    if (!voiceEffects) return;
+    const source = settings.sound === 'my-voice' ? clock.voiceBuffers
+        : settings.sound.startsWith('spoken:') ? clock.spokenBuffers : null;
+    voiceEffects.setSource(source);
+}
+
+if (soundMenuRoot && settingsPages) {
+    let effectContext;
+    voiceEffects = new VoiceEffectSelection({
+        process: (buffers, effect) => processVoiceInWorker(buffers, effect, soundMenuRoot.dataset.voiceWorker,
+            (channels, length, rate) => {
+                const OfflineContext = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+                if (!effectContext && OfflineContext) effectContext = new OfflineContext(channels, 1, rate);
+                return (effectContext || clock.getContext()).createBuffer(channels, length, rate);
+            }),
+        useBuffers: buffers => clock.setVoiceEffectBuffers(buffers),
+        onChange: (effect, loading, available) => {
+            document.querySelector('[data-effect-entry]').hidden = !available;
+            document.querySelector('[data-effect-loading]').hidden = !loading;
+            settingsPages.summary('effects', effects[effect].label);
+            document.querySelectorAll('[data-choice-buttons="voice-effect"] [data-choice]').forEach(button => {
+                const selected = button.dataset.choice === effect;
+                button.setAttribute('aria-pressed', String(selected));
+                button.classList.toggle('btn-primary', selected);
+                button.classList.toggle('btn-secondary', !selected);
+            });
+        },
+        onError: () => {
+            document.querySelector('[data-effect-feedback]').hidden = false;
+            document.querySelector('[data-effect-error]').textContent = 'Effect unavailable. Using your regular voice.';
+        }
+    });
+    document.querySelectorAll('[data-choice-buttons="voice-effect"] [data-choice]').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelector('[data-effect-feedback]').hidden = true;
+            voiceEffects.select(button.dataset.choice);
+        });
+    });
+    syncVoiceEffects();
 }

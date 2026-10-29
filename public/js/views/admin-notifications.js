@@ -8,7 +8,6 @@
     const body = panel.querySelector('[data-notification-body]');
     const summary = panel.querySelector('[data-notification-summary]');
     const error = panel.querySelector('[data-notification-error]');
-    const retry = panel.querySelector('[data-notification-retry]');
     let pending = false;
 
     function render(result) {
@@ -26,17 +25,16 @@
         });
     }
 
-    async function send(url, method, button) {
+    async function send(url, button) {
         if (pending) return;
         pending = true;
         submit.disabled = true;
         if (button) button.disabled = true;
         panel.setAttribute('aria-busy', 'true');
         error.hidden = true;
-        retry.hidden = true;
         try {
             const response = await fetch(url, {
-                method, credentials: 'same-origin', cache: 'no-store',
+                method: 'POST', credentials: 'same-origin', cache: 'no-store',
                 headers: {'Accept': 'application/json', 'X-CSRF-TOKEN': form.querySelector('[name="_token"]').value},
             });
             if (!response.ok) throw new Error(response.status === 419 || response.status === 401
@@ -47,22 +45,19 @@
             }
             if (!panel.isConnected) return;
             render(result);
-            if (method === 'POST') {
-                // Keep the visible history rows in sync without refetching the table.
-                document.querySelectorAll('#notifications-table button.mark-notification').forEach(action => {
-                    if (button && action.closest('tr') !== button.closest('tr')) return;
-                    const read = new URL(action.dataset.url, window.location.href).pathname.endsWith('/read');
-                    const isRead = !button || new URL(button.dataset.url, window.location.href).pathname.endsWith('/read');
-                    action.style.display = read === isRead ? 'none' : 'inline-block';
-                    action.closest('tr').classList.toggle('opacity-4', isRead);
-                });
-                if (form.hidden && !button && panel.classList.contains('show')) window.bootstrap.Offcanvas.getOrCreateInstance(panel).hide();
-            }
+            // Keep the visible history rows in sync without refetching the table.
+            document.querySelectorAll('#notifications-table button.mark-notification').forEach(action => {
+                if (button && action.closest('tr') !== button.closest('tr')) return;
+                const read = new URL(action.dataset.url, window.location.href).pathname.endsWith('/read');
+                const isRead = !button || new URL(button.dataset.url, window.location.href).pathname.endsWith('/read');
+                action.style.display = read === isRead ? 'none' : 'inline-block';
+                action.closest('tr').classList.toggle('opacity-4', isRead);
+            });
+            if (form.hidden && !button && panel.classList.contains('show')) window.bootstrap.Offcanvas.getOrCreateInstance(panel).hide();
         } catch (failure) {
             if (!panel.isConnected) return;
             error.textContent = failure.message || 'Unable to update notifications. Please try again.';
             error.hidden = false;
-            retry.hidden = method !== 'GET';
             // History actions must surface errors even while the drawer is closed.
             if (button) window.alert(error.textContent);
         } finally {
@@ -73,16 +68,14 @@
         }
     }
 
-    panel.addEventListener('show.bs.offcanvas', () => send(panel.dataset.panelUrl, 'GET'));
-    retry.addEventListener('click', () => send(panel.dataset.panelUrl, 'GET'));
     form.addEventListener('submit', event => {
         event.preventDefault();
-        send(form.action, 'POST');
+        send(form.action);
     });
     document.addEventListener('click', event => {
         const button = event.target.closest('button.mark-notification');
         if (!button) return;
         event.preventDefault();
-        send(button.dataset.url, 'POST', button);
+        send(button.dataset.url, button);
     });
 }());

@@ -29,7 +29,7 @@ export function normalizeSettings(value) {
         beats: [1, 2, 3, 4].includes(Number(input.beats)) ? Number(input.beats) : DEFAULT_SETTINGS.beats,
         color: typeof input.color === 'string' && /^#[0-9a-f]{6}$/i.test(input.color)
             ? input.color.toLowerCase() : DEFAULT_SETTINGS.color,
-        sound: input.sound === 'my-voice' || Object.prototype.hasOwnProperty.call(SOUND_PROFILES, input.sound) ? input.sound : DEFAULT_SETTINGS.sound,
+        sound: input.sound === 'my-voice' || input.sound === 'spoken:classic' || Object.prototype.hasOwnProperty.call(SOUND_PROFILES, input.sound) ? input.sound : DEFAULT_SETTINGS.sound,
         type: input.type === 'conductor' ? 'conductor' : 'classic',
         showPath: typeof input.showPath === 'boolean' ? input.showPath : DEFAULT_SETTINGS.showPath,
         conductorMarker: input.conductorMarker === 'hand' ? 'hand' : 'dot',

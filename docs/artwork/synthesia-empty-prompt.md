@@ -1,6 +1,20 @@
 # Missing Synthesia illustration
 
-Generated with the built-in imagegen tool on 2026-10-11, with a transparent background.
+## Current artwork — 2026-10-29
+
+The web piece page uses the editable native SVG in
+`resources/views/webapp/piece/components/synthesia-empty.blade.php`, previewed
+alongside Downloads and Orders in Settings → Design System → Empty states.
+It shares their 320 × 224 canvas, lavender backdrop, pale ground shadow, mint
+objects, yellow accent and PianoLIT-blue badge. The video player, dashed play
+symbol, music book and clock convey a video that is not available yet. The shared
+`.account-library-illustration` sizing keeps all three at 300px on desktop and
+250px on phones, shrinking further when necessary. The SVG is decorative; the
+existing adjacent text and request/sign-in actions remain unchanged.
+
+## Previous raster artwork
+
+Generated with the built-in imagegen tool on 2026-10-11, with a transparent background; retained as a historical asset but no longer rendered in the Synthesia tab.
 Source asset: `resources/images/webapp/synthesia-empty.png`.
 Published asset copy: `public/images/webapp/synthesia-empty.png`.
 

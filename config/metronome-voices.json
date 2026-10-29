@@ -1,0 +1,9 @@
+{
+  "beats": 4,
+  "voices": [
+    {
+      "id": "classic",
+      "label": "Classic voice"
+    }
+  ]
+}

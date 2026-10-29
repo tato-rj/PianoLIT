@@ -302,3 +302,16 @@ body {
 .metronome-settings[data-recording] [data-settings-field] {
     display: none !important;
 }
+
+// Layout only: fields, navigation rows and buttons keep their shared finish.
+.metronome-settings [data-settings-page] {
+    min-height: 220px;
+}
+
+.metronome-settings [data-settings-page][hidden] {
+    display: none !important;
+}
+
+.metronome-settings[data-recording] [data-settings-back] {
+    display: none;
+}

@@ -32,6 +32,7 @@ function setup({ deferredResume = false, resumeError = false } = {}) {
         setValueAtTime(value, time) { this.value = value; this.time = time; },
         linearRampToValueAtTime() {},
         exponentialRampToValueAtTime() {},
+        cancelScheduledValues() {},
     });
     const audio = {
         currentTime: 0,
@@ -471,7 +472,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
         matches: reducedMotion,
         addEventListener(name, handler) { this.onchange = handler; },
     };
-    const settingsDialog = element({ open: false });
+    const settingsDialog = element({ open: false, querySelector: () => null });
     const hubMenu = element();
     page.context.initializeLogoTilt = () => {};
     // Bootstrap owns transitions and dismissal; expose its public lifecycle here.
@@ -1485,4 +1486,32 @@ test('tempo edits, recovered stalls, and reopened settings keep all conductor ef
     assert.equal(live(page.pulseLayer), undefined);
     assert.equal(live(page.number), undefined);
     assert.ok(page.beatNumbers.every(digit => !live(digit)));
+});
+
+test('public counting and temporary effects share the beat clock without private-library interference', async () => {
+    const { clock, oscillators } = setup();
+    const publicVoice = [1, 2, 3, 4].map(() => voiceBuffer(0.15));
+    const effects = [1, 2, 3, 4].map(() => voiceBuffer(0.14, 260));
+    clock.setSpokenBuffers(publicVoice);
+    clock.setSound('spoken'); clock.setBeats(4);
+    await clock.start();
+    const prepared = clock.preparedVoices;
+    clock.setVoiceBuffers([1, 2, 3, 4].map(() => voiceBuffer(0.3))); // An unrelated private library may finish loading.
+    assert.equal(clock.sound, 'spoken');
+    assert.equal(clock.preparedVoices, prepared);
+    clock.playClick(0.52, 1);
+    assert.equal(oscillators.at(-1).buffer, publicVoice[1]);
+    clock.setVoiceEffectBuffers(effects);
+    assert.equal(clock.running, true);
+    assert.equal(clock.voiceSamples(), effects);
+    clock.setTempo(300);
+    assert.equal(clock.voiceSamples(), effects);
+    clock.setBeats(3);
+    assert.equal(clock.voiceSamples(), effects);
+    clock.stop();
+    await clock.start();
+    assert.equal(oscillators.at(-1).buffer, effects[0]);
+    clock.setSound('click');
+    assert.equal(clock.effectBuffers, null);
+    clock.stop();
 });

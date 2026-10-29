@@ -1,0 +1,44 @@
+{
+  "classic": {
+    "label": "Classic",
+    "icon": "mic",
+    "pitch": 1
+  },
+  "cartoon": {
+    "label": "Cartoon",
+    "icon": "sparkles",
+    "pitch": 1.3,
+    "highpass": 130,
+    "brightness": 0.3
+  },
+  "deep-space": {
+    "label": "Deep Space",
+    "icon": "moon",
+    "pitch": 0.68,
+    "lowpass": 4600,
+    "echo": 0.12
+  },
+  "robot": {
+    "label": "Robot",
+    "icon": "settings",
+    "pitch": 1,
+    "highpass": 200,
+    "lowpass": 4200,
+    "robot": true
+  },
+  "ghost": {
+    "label": "Ghost",
+    "icon": "ghost",
+    "pitch": 1.08,
+    "highpass": 420,
+    "echo": 0.23
+  },
+  "chipmunk": {
+    "label": "Chipmunk",
+    "icon": "zap",
+    "pitch": 1.75,
+    "tempo": 1.1,
+    "highpass": 240,
+    "brightness": 0.2
+  }
+}

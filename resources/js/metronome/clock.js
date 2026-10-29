@@ -26,6 +26,8 @@ export class MetronomeClock {
         this.beatsPerBar = 1;
         this.sound = 'click';
         this.voiceBuffers = null;
+        this.spokenBuffers = null;
+        this.effectBuffers = null;
         this.preparedVoices = null;
         this.preparedVoiceTempo = null;
         this.nextBeatIndex = 0;
@@ -174,17 +176,40 @@ export class MetronomeClock {
     }
 
     setSound(value) {
-        if (!(value === 'my-voice' && this.voiceBuffers) && !Object.prototype.hasOwnProperty.call(SOUND_PROFILES, value)) return;
+        if (!(value === 'my-voice' && this.voiceBuffers) && !(value === 'spoken' && this.spokenBuffers) && !Object.prototype.hasOwnProperty.call(SOUND_PROFILES, value)) return;
         if (value === this.sound) return;
         this.sound = value;
+        this.effectBuffers = null;
         this.reschedulePending();
     }
 
     setVoiceBuffers(buffers) {
-        if (buffers !== this.voiceBuffers) this.preparedVoices = null;
+        if (buffers !== this.voiceBuffers && this.sound === 'my-voice') {
+            this.preparedVoices = null;
+            this.effectBuffers = null;
+        }
         this.voiceBuffers = buffers?.length === 4 ? buffers : null;
         if (!this.voiceBuffers && this.sound === 'my-voice') this.setSound('click');
         else if (this.sound === 'my-voice') this.reschedulePending();
+    }
+
+    setSpokenBuffers(buffers) {
+        if (buffers === this.spokenBuffers) return;
+        if (this.sound === 'spoken') this.effectBuffers = null;
+        this.spokenBuffers = buffers?.length === 4 ? buffers : null;
+        if (!this.spokenBuffers && this.sound === 'spoken') this.setSound('click');
+        else if (this.sound === 'spoken') this.reschedulePending();
+    }
+
+    setVoiceEffectBuffers(buffers) {
+        if (buffers === this.effectBuffers) return;
+        this.effectBuffers = buffers?.length === 4 ? buffers : null;
+        this.reschedulePending();
+    }
+
+    voiceSamples() {
+        if (['spoken', 'my-voice'].includes(this.sound) && this.effectBuffers) return this.effectBuffers;
+        return this.sound === 'spoken' ? this.spokenBuffers : this.sound === 'my-voice' ? this.voiceBuffers : null;
     }
 
     reschedulePending(restartBar = false) {
@@ -285,7 +310,7 @@ export class MetronomeClock {
     }
 
     playClick(time, beatIndex) {
-        if (this.sound === 'my-voice' && this.voiceBuffers) return this.playVoice(time, beatIndex);
+        if (this.voiceSamples()) return this.playVoice(time, beatIndex);
         const profile = SOUND_PROFILES[this.sound];
         const pitch = beatIndex === 0 ? 1 : 0.82;
         const gain = this.context.createGain();
@@ -325,12 +350,14 @@ export class MetronomeClock {
     }
 
     prepareVoices() {
-        if (this.sound !== 'my-voice' || !this.voiceBuffers) return;
-        if (this.preparedVoices && this.preparedVoiceTempo === this.tempo) return;
+        const buffers = this.voiceSamples();
+        if (!buffers) return;
+        if (this.preparedVoices && this.preparedVoiceSource === buffers && this.preparedVoiceTempo === this.tempo) return;
         // Prepare once before starting/rescheduling, never inside the beat
         // scheduler. Keep only this tempo's four clips to bound memory usage.
         const duration = 60 / this.tempo * 0.94;
-        this.preparedVoices = this.voiceBuffers.map(buffer => compressVoice(buffer, duration,
+        this.preparedVoiceSource = buffers;
+        this.preparedVoices = buffers.map(buffer => compressVoice(buffer, duration,
             (channels, length, rate) => this.context.createBuffer(channels, length, rate)));
         this.preparedVoiceTempo = this.tempo;
     }
@@ -341,7 +368,13 @@ export class MetronomeClock {
         // Finish an already playing syllable before the next beat after a tempo
         // change; a stale long clip must never overlap the new count.
         for (const note of this.notes) {
-            if (note.voiceEnd > time) note.oscillators.forEach(source => source.stop(time));
+            if (note.voiceEnd > time) {
+                note.gain.gain.cancelScheduledValues(Math.max(note.time, time - 0.005));
+                note.gain.gain.setValueAtTime(1, Math.max(note.time + 0.003, time - 0.005));
+                note.gain.gain.linearRampToValueAtTime(0, time);
+                note.oscillators.forEach(source => source.stop(time));
+                note.voiceEnd = time;
+            }
         }
         const source = this.context.createBufferSource();
         source.buffer = buffer;

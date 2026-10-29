@@ -7,12 +7,9 @@
         const modal = root.querySelector('.modal');
         const input = root.querySelector('input');
         const copy = root.querySelector('[data-share-copy]');
-        const native = root.querySelector('[data-share-native]');
         const status = root.querySelector('[data-share-status]');
         const error = root.querySelector('[data-share-error]');
-        const data = {title: root.dataset.shareTitle, text: root.dataset.shareTitle, url: root.dataset.shareUrl};
         let copying = false;
-        let sharing = false;
         let generation = 0;
         let tooltip;
         let feedbackTimer;
@@ -55,11 +52,6 @@
         const sms = root.querySelector('[data-share-sms]');
         if (ios && sms) sms.setAttribute('href', 'sms:&body=' + encodeURIComponent(root.dataset.shareMessage));
 
-        try {
-            native.hidden = typeof win.navigator.share !== 'function'
-                || (typeof win.navigator.canShare === 'function' && !win.navigator.canShare(data));
-        } catch (_) { native.hidden = true; }
-
         async function copyLink() {
             if (copying) return;
             copying = true;
@@ -92,17 +84,6 @@
             }
         });
 
-        native.addEventListener('click', async function () {
-            if (sharing || native.hidden) return;
-            sharing = true;
-            const started = generation;
-            reset();
-            try {
-                await win.navigator.share(data);
-            } catch (problem) {
-                if (started === generation && (!problem || problem.name !== 'AbortError')) fail('Sharing could not open. Copy the page link instead.');
-            } finally { sharing = false; }
-        });
         modal.addEventListener('hide.bs.modal', function () { generation++; reset(); });
         modal.addEventListener('hidden.bs.modal', function () {
             if (tooltip) { tooltip.dispose(); tooltip = null; }

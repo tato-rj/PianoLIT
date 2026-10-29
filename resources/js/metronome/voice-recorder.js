@@ -214,7 +214,7 @@ export class VoiceRecorder {
         const version = ++this.voiceVersion;
         const selection = this.selection;
         this.stopPreview();
-        this.clock.stop();
+        if (activate) this.clock.stop();
         this.activeId = id;
         this.loadingVoice = true;
         this.buffers = this.saved = [];
@@ -501,7 +501,7 @@ export class VoiceRecorder {
         this.saving = true;
         this.controls();
         this.stopPreview();
-        if (active) this.clock.stop();
+        if (active && this.sound === 'my-voice') this.clock.stop();
         try {
             await this.request('DELETE', { revision }, id);
             if (flow !== this.flow) {
@@ -514,7 +514,7 @@ export class VoiceRecorder {
             if (active) this.clearVoice();
             this.cancel();
             if (active && this.library.length) await this.choose(this.library[0].id, { activate });
-            else if (!this.library.length) this.remember('click');
+            else if (!this.library.length) this.remember(activate ? 'click' : this.sound);
         } catch (error) { if (flow === this.flow) this.failure(error); }
         finally { this.saving = false; this.controls(); }
     }
@@ -532,7 +532,7 @@ export class VoiceRecorder {
         this.loadVersion++;
         this.capture.cancel();
         this.stopPreview();
-        this.clock.stop();
+        if (this.sound === 'my-voice') this.clock.stop();
         this.clock.setVoiceBuffers(null);
         this.ready = false;
         this.buffers = this.saved = [];

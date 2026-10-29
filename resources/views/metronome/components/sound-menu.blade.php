@@ -2,25 +2,36 @@
     $soundId = $id ?? 'metronome-sound';
     $soundRecordings = $recordings ?? [];
     $soundCanRecord = $canRecord ?? auth('web')->check();
-    $soundChoices = ['click' => 'Classic click', 'woodblock' => 'Woodblock', 'beep' => 'Beep', 'cowbell' => 'Cowbell'];
+    $soundChoices = ['click' => 'Click', 'woodblock' => 'Woodblock', 'beep' => 'Beep', 'cowbell' => 'Cowbell'];
     if (! count($soundRecordings) && $soundCanRecord) $soundChoices['my-voice'] = 'My voice';
+    $spokenVoices = $spokenVoices ?? app(\App\Services\Metronome\SpokenVoices::class)->available();
+    $spokenChoices = [];
+    foreach ($spokenVoices as $voice) $spokenChoices['spoken:'.$voice['id']] = $voice['label'];
     $recordedChoices = [];
     foreach ($soundRecordings as $recording) $recordedChoices['voice:'.$recording['id']] = $recording['name'];
 @endphp
-<div class="metronome-sound dropdown" data-sound-menu data-settings-field>
-    <label class="h6 mb-2" id="{{ $soundId }}-label" for="{{ $soundId }}-toggle">Sound</label>
+<div class="metronome-sound dropdown" data-sound-menu data-spoken-voices='@json($spokenVoices)' data-voice-worker="{{ mix('js/metronome-voice-worker.js') }}" data-settings-field>
+    <label class="{{ ($hideSoundLabel ?? false) ? 'visually-hidden' : 'h6 mb-2' }}" id="{{ $soundId }}-label" for="{{ $soundId }}-toggle">Sound</label>
     <div hidden>
-        @select(['bag' => 'default', 'id' => $soundId, 'name' => $soundId, 'label' => null, 'grid' => 'mb-0', 'choices' => $soundChoices, 'choiceGroups' => $recordedChoices ? ['Recorded voices' => $recordedChoices] : [], 'value' => $value ?? 'click', 'required' => false])
+        @select(['bag' => 'default', 'id' => $soundId, 'name' => $soundId, 'label' => null, 'grid' => 'mb-0', 'choices' => $soundChoices, 'choiceGroups' => array_filter(['Spoken counting' => $spokenChoices, 'Recorded voices' => $recordedChoices]), 'value' => $value ?? 'click', 'required' => false])
     </div>
     <button type="button" class="form-control form-control-select-trigger text-start" id="{{ $soundId }}-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-sound-toggle aria-haspopup="dialog" aria-expanded="false" aria-controls="{{ $soundId }}-menu" aria-labelledby="{{ $soundId }}-label {{ $soundId }}-value">
-        <span class="d-block text-truncate" id="{{ $soundId }}-value" data-sound-label>{{ $recordedChoices[$value ?? ''] ?? $soundChoices[$value ?? 'click'] ?? 'Classic click' }}</span>
+        <span class="d-block text-truncate" id="{{ $soundId }}-value" data-sound-label>{{ $spokenChoices[$value ?? ''] ?? $recordedChoices[$value ?? ''] ?? $soundChoices[$value ?? 'click'] ?? 'Click' }}</span>
     </button>
     <div class="dropdown-menu w-100 p-2" id="{{ $soundId }}-menu" data-sound-popup role="dialog" aria-label="Choose a sound">
         <div class="metronome-sound__options" data-sound-options>
             <div role="group" aria-label="Instruments">
-                @foreach(['click' => 'Classic click', 'woodblock' => 'Woodblock', 'beep' => 'Beep', 'cowbell' => 'Cowbell'] as $soundValue => $soundLabel)
+                @foreach(['click' => 'Click', 'woodblock' => 'Woodblock', 'beep' => 'Beep', 'cowbell' => 'Cowbell'] as $soundValue => $soundLabel)
                     <button type="button" class="dropdown-item" data-sound-value="{{ $soundValue }}" aria-pressed="{{ ($value ?? 'click') === $soundValue ? 'true' : 'false' }}">{{ $soundLabel }}</button>
                 @endforeach
+            </div>
+            <div class="dropdown-header mt-2" id="{{ $soundId }}-spoken-label">Spoken counting</div>
+            <div role="group" aria-labelledby="{{ $soundId }}-spoken-label">
+                @forelse($spokenChoices as $soundValue => $soundLabel)
+                    <button type="button" class="dropdown-item" data-sound-value="{{ $soundValue }}" aria-pressed="false">{{ $soundLabel }}</button>
+                @empty
+                    <span class="dropdown-item disabled" aria-disabled="true">Voices coming soon</span>
+                @endforelse
             </div>
             @if($soundCanRecord)
                 <div class="dropdown-header mt-2" id="{{ $soundId }}-voices-label">Recorded voices</div>

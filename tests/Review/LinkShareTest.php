@@ -12,16 +12,22 @@ class LinkShareTest extends ReviewTestCase
     public function test_destination_links_preserve_unicode_titles_and_encode_complete_urls()
     {
         $url = 'https://my.pianolit.com/pieces/12?part=a&edition=1';
-        $share = LinkShare::forPage($url, "Prélude & Fugue\r\nChopin");
+        $share = LinkShare::forPage($url, "Prélude & Fugue\r\nby Frédéric Chopin");
+        $title = 'Prélude & Fugue  by Frédéric Chopin';
+        $note = "Hi!\n\nI found {$title} on PianoLIT and thought you might enjoy it.";
+        $this->assertSame($note."\n\n".$url, $share['message']);
         $links = collect($share['destinations'])->keyBy('label');
         $this->assertSame(['Email', 'Text', 'WhatsApp', 'Facebook', 'Reddit', 'Telegram'], $links->keys()->all());
         foreach ($links as $label => $link) {
             parse_str(parse_url($link['url'], PHP_URL_QUERY), $query);
             if ($label === 'Email') {
-                $this->assertSame('Prélude & Fugue  Chopin', $query['subject']);
-                $this->assertSame($share['message'], $query['body']);
+                $this->assertSame('Shared piece from PianoLIT', $query['subject']);
+                $this->assertSame(str_replace("\n", "\r\n", $share['message']), $query['body']);
             } elseif (in_array($label, ['Facebook', 'Reddit', 'Telegram'])) {
                 $this->assertSame($url, $query[$label === 'Facebook' ? 'u' : 'url']);
+                if ($label === 'Telegram') $this->assertSame($note, $query['text']);
+                if ($label === 'Reddit') $this->assertSame('A piece I found on PianoLIT: '.$title, $query['title']);
+                if ($label === 'Facebook') $this->assertSame(['u' => $url], $query);
             } else {
                 $this->assertSame($share['message'], $query[$label === 'Text' ? 'body' : 'text']);
             }
@@ -52,7 +58,12 @@ class LinkShareTest extends ReviewTestCase
             $field = $xpath->query('//*[@id="piece-share-modal"]//input[@readonly]')->item(0);
             $this->assertSame(route('webapp.pieces.show', $piece), $field->getAttribute('value'));
             $this->assertCount(6, $xpath->query('//*[@id="piece-share-modal"]//a[starts-with(@aria-label,"Share via ")]'));
+            $this->assertCount(0, $xpath->query('//*[@id="piece-share-modal"]//*[@data-share-native]'));
             $this->assertCount(0, $xpath->query('//*[@id="piece-share-modal"]//form | //*[@name="recipient_email"]'));
+            $email = $xpath->query('//*[@id="piece-share-modal"]//a[starts-with(@href,"mailto:")]')->item(0);
+            parse_str(parse_url($email->getAttribute('href'), PHP_URL_QUERY), $emailQuery);
+            $this->assertSame('Shared piece from PianoLIT', $emailQuery['subject']);
+            $this->assertSame("Hi!\r\n\r\nI found {$piece->medium_name} by {$piece->composer->name} on PianoLIT and thought you might enjoy it.\r\n\r\n".route('webapp.pieces.show', $piece), $emailQuery['body']);
             foreach ($xpath->query('//*[@id="piece-share-modal"]//a[@target="_blank"]') as $link) {
                 $this->assertSame('noopener noreferrer', $link->getAttribute('rel'));
             }

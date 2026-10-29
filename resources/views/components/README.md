@@ -12,13 +12,13 @@ This folder contains components shared across the website, hubs, web app and adm
 | Resource cards, promotional cards and related-content suggestions | [cards/](cards/) |
 | Standard modals, fullscreen dialogs and bottom sheets | [dialogs/](dialogs/) |
 | Alerts, error messages, loading animation and reading progress | [feedback/](feedback/) |
-| Inputs, selects, switches, buttons, uploads and segmented controls | [forms/](forms/) |
+| Inputs, selects, switches, buttons, choice grids, uploads and segmented controls | [forms/](forms/) |
 | Country flags and Font Awesome brand icons | [icons/](icons/) |
 | Public header/footer, editorial/catalog layouts, headings and accordions | [layout/](layout/) |
 | Shared privacy policy and terms text | [legal/](legal/) |
 | Video player, YouTube invitation, social sharing script and link-sharing dialog | [media/](media/) |
 | Piano keyboard and composer labels | [music/](music/) |
-| Breadcrumbs, hub menu, tabs, section/topic menus, tags and pagination | [navigation/](navigation/) |
+| Breadcrumbs, hub menu, tabs, settings links, section/topic menus, tags and pagination | [navigation/](navigation/) |
 | PianoLIT News invitation, subscribe button and signup form | [newsletter/](newsletter/) |
 | Editorial ads, app download links, download offers and promotional popups | [promotions/](promotions/) |
 | Free Pick signup form and shared subscription hidden fields | [subscriptions/](subscriptions/) |
