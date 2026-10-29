@@ -29,15 +29,22 @@ module.exports = async function () {
                 insertBefore(child, before) { if (child.parentNode) child.parentNode.removeChild(child); this.children.splice(this.children.indexOf(before), 0, child); child.parentNode = this; },
                 replaceChild(child, previous) { if (child.parentNode) child.parentNode.removeChild(child); this.children[this.children.indexOf(previous)] = child; previous.parentNode = null; child.parentNode = this; },
                 remove() { if (this.parentNode) this.parentNode.removeChild(this); },
-                getBoundingClientRect() { const rect = page.getBoundingClientRect(); return {left: rect.left + rect.width - 60, top: 48, width: 44, height: 44}; }
+                getBoundingClientRect() { const rect = page.getBoundingClientRect(), scale = rect.width / page.offsetWidth; return {left: rect.left + (page.offsetWidth - 60) * scale, top: rect.top + 48 * scale, width: 44 * scale, height: 44 * scale}; }
             };
         }
         const sticky = {style: style(), getClientRects() { return [1]; }, getBoundingClientRect() {
             return {top: (this.style.getPropertyValue('position') === 'relative' ? -120 : 20) + parseFloat(this.style.getPropertyValue('top') || 0), left: 30};
         }};
         const content = {querySelectorAll() { return [sticky]; }};
-        const page = {style: style(), classList: classes(), inert: false, offsetWidth: 1264,
-            getBoundingClientRect() { return {width: parseFloat(this.style.getPropertyValue('width')) || 1264, left: this.classList.contains('account-page--revealed') ? -parseFloat(this.style.getPropertyValue('--account-reveal-offset')) : 0}; }, querySelector() { return content; }};
+        const page = {style: style(), classList: classes(), inert: false,
+            get offsetWidth() { return parseFloat(this.style.getPropertyValue('width')) || 1264; },
+            get offsetHeight() { return win.innerHeight; },
+            getBoundingClientRect() {
+                const revealed = this.classList.contains('account-page--revealed');
+                const scale = revealed && win.innerWidth < 768 ? 0.94 : 1;
+                return {width: this.offsetWidth * scale, top: this.offsetHeight * (1 - scale) / 2,
+                    left: revealed ? this.offsetWidth * (1 - scale) - parseFloat(this.style.getPropertyValue('--account-reveal-offset')) : 0};
+            }, querySelector() { return content; }};
         const body = Object.assign(node(), {style: style({'min-height': '100vh'}), scrollHeight: 1800, clientWidth: 1264});
         const backdrops = [];
         const panel = Object.assign(node(), {matches(selector) { return selector === '[data-account-reveal]'; },
@@ -55,7 +62,11 @@ module.exports = async function () {
             addEventListener(name, handler, capture) { handlers[name] = handler; if (name === 'hidden.bs.offcanvas') assert.strictEqual(capture, true); }};
         const win = {document: doc, scrollX: 0, scrollY: 480, innerWidth: 1280, innerHeight: 720,
             matchMedia() { return {matches: reduced}; },
-            getComputedStyle(element) { return element === body ? {paddingLeft: '0px', paddingRight: '0px'} : {position: 'sticky'}; },
+            getComputedStyle(element) {
+                if (element === body) return {paddingLeft: '0px', paddingRight: '0px'};
+                if (element === page) return {getPropertyValue() { return win.innerWidth < 768 ? '0.94' : '1'; }};
+                return {position: 'sticky'};
+            },
             scrollTo(x, y) { this.restored = [x, y]; },
             requestAnimationFrame(callback) { frames.set(++frameId, callback); return frameId; },
             cancelAnimationFrame(id) { frames.delete(id); }, addEventListener(name, handler) { handlers[name] = handler; }};
@@ -154,8 +165,13 @@ module.exports = async function () {
     key('Tab', true); assert.strictEqual(outside.doc.activeElement, outside.opener);
     key('Tab', true); assert.strictEqual(outside.doc.activeElement, last);
     key('Tab'); assert.strictEqual(outside.doc.activeElement, outside.opener);
-    outside.win.innerWidth = 320; outside.body.clientWidth = 320; outside.handlers.resize();
+    outside.win.innerWidth = 320; outside.win.innerHeight = 568; outside.body.clientWidth = 320; outside.handlers.resize();
     assert.strictEqual(parseFloat(host.style.getPropertyValue('left')) + parseFloat(host.style.getPropertyValue('--account-toggle-offset')), 2, 'The outside close circle stays fully visible in a narrow page strip');
+    assert(Math.abs(parseFloat(host.style.getPropertyValue('top')) + parseFloat(host.style.getPropertyValue('--account-toggle-offset-y')) - 33.04) < 0.001, 'The close control follows the mobile page inset while keeping its full hit area');
+    assert.strictEqual(host.style.getPropertyValue('top'), '48px', 'Resizing a scaled page retains the original button position for the return animation');
+    outside.win.innerWidth = 1280; outside.win.innerHeight = 720; outside.body.clientWidth = 1264; outside.handlers.resize();
+    assert.strictEqual(host.style.getPropertyValue('left'), '1204px', 'Returning to desktop removes mobile scale without coordinate drift');
+    assert.strictEqual(parseFloat(host.style.getPropertyValue('top')) + parseFloat(host.style.getPropertyValue('--account-toggle-offset-y')), 16);
     key('Escape'); assert.strictEqual(outside.opener.clicks, 1);
     outside.handlers['hide.bs.offcanvas'](outside.event());
     assert(!host.classList.contains('account-reveal-toggle--revealed'), 'Closing animates the same control back before restoring it to the header');

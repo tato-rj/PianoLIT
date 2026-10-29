@@ -59,9 +59,11 @@ account, and Settings for a full-access account without a billing record. These
 checks do not call billing/Printful or load relationships into shared user JSON.
 
 Only this universal menu reveals underneath the page: the shared
-`components.account.page` frame moves left without changing the content width,
-adds 20px right corners, a soft edge shadow and an 80% white veil. The menu stays
-clear. Its original header circle becomes the close X and moves continuously to
+`components.account.page` frame moves left without reflowing its content,
+adds 20px right corners, a soft edge shadow and an 80% white veil. Below 768px,
+the page scales to 94% around its right center, leaving 3% of the viewport height
+above and below for the shadow; its right edge stays aligned with the menu.
+The menu stays clear. Its original header circle becomes the close X and moves continuously to
 the shifted page's top-right corner (16px inset, constrained to fit narrow strips),
 then travels back and restores its photo/initial on dismissal. Keep this same
 button, rather than hiding it and creating a second close control.

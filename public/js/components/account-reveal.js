@@ -56,12 +56,16 @@
     function positionControl(state) {
         var placeholder = state.control.placeholder.getBoundingClientRect();
         var page = state.page.getBoundingClientRect();
+        var layoutWidth = state.page.offsetWidth;
+        var scale = page.width / layoutWidth;
+        var destinationScale = parseFloat(win.getComputedStyle(state.page).getPropertyValue('--account-reveal-scale')) || 1;
         var width = state.control.width;
-        var left = placeholder.left - page.left;
-        var strip = Math.max(width + 4, page.width - state.distance);
+        var left = (placeholder.left - page.left) / scale;
+        var strip = Math.max(width + 4, layoutWidth - state.distance);
         var destination = Math.max(2, strip - width - 16);
-        var top = placeholder.top;
-        var destinationTop = Math.max(2, Math.min(16, win.innerHeight - state.control.height - 2));
+        var top = (placeholder.top - page.top) / scale;
+        var inset = state.page.offsetHeight * (1 - destinationScale) / 2;
+        var destinationTop = Math.max(2, Math.min(inset + 16, win.innerHeight - state.control.height - 2));
         state.control.host.style.setProperty('left', left + 'px');
         state.control.host.style.setProperty('top', top + 'px');
         state.control.host.style.setProperty('--account-toggle-offset', (destination - left) + 'px');

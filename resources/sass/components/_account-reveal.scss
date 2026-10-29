@@ -37,6 +37,7 @@
 .account-reveal-toggle-placeholder { display: inline-block; flex-shrink: 0; }
 
 .account-page--prepared {
+    --account-reveal-scale: 1;
     position: fixed;
     top: 0;
     left: 0;
@@ -46,6 +47,7 @@
     overflow: hidden;
     background: var(--color-page, var(--color-surface));
     transform: translate3d(0, 0, 0);
+    transform-origin: right center;
     transition: transform 240ms cubic-bezier(0.2, 0.7, 0.2, 1), border-radius 240ms ease, box-shadow 240ms ease;
     pointer-events: none;
 
@@ -67,7 +69,7 @@
     }
 
     &.account-page--revealed {
-        transform: translate3d(calc(-1 * var(--account-reveal-offset)), 0, 0);
+        transform: translate3d(calc(-1 * var(--account-reveal-offset)), 0, 0) scale(var(--account-reveal-scale));
         border-radius: 0 20px 20px 0;
         box-shadow: 12px 0 32px rgba(0, 0, 0, 0.12);
 
@@ -76,6 +78,10 @@
 }
 
 .account-page--metronome.account-page--prepared { background: var(--metronome-color); }
+
+@media (max-width: 767.98px) {
+    .account-page--prepared { --account-reveal-scale: 0.94; }
+}
 
 // Keep Bootstrap's own backdrop dismissal, without dimming the page card.
 .account-reveal-backdrop { background: transparent; opacity: 0 !important; }
