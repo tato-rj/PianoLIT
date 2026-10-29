@@ -1,11 +1,29 @@
 .quiz-page {
+    [hidden] { display: none !important; }
     .quiz-cover {
         aspect-ratio: 2.2;
         object-fit: cover;
         border-radius: var(--radius-sm);
     }
-    .quiz-progress { height: 6px; }
+    .quiz-progress {
+        height: 10px;
+        border-radius: 10px;
+        .progress-bar {
+            background: linear-gradient(90deg, #0055fe, #a56de2, #e784ad);
+            transition: width .4s ease;
+        }
+    }
+    .quiz-streak { color: var(--color-text); white-space: nowrap; }
     .quiz-question-image { max-width: 100%; max-height: 380px; object-fit: contain; }
+    .quiz-item {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f1edff, #fff 55%);
+        border-top: 5px solid #b39ae8 !important;
+        &[data-quiz-outcome="correct"] { background: linear-gradient(135deg, #dcf9e9, #fff 65%); border-top-color: #2ab27b !important; }
+        &[data-quiz-outcome="incorrect"] { background: linear-gradient(135deg, #fff0dc, #fff 65%); border-top-color: #edaa49 !important; }
+    }
     .quiz-item h2 { line-height: 1.65; scroll-margin-top: 24px; }
     .quiz-answer {
         display: flex;
@@ -17,18 +35,50 @@
         letter-spacing: normal;
 
         &:disabled { opacity: 1; cursor: default; }
-        &.is-correct { border-color: var(--color-success); }
-        &.is-incorrect { border-color: var(--color-danger); }
+        &.is-correct { border-color: var(--color-success); background: #d0f4df; color: #12462d; }
+        &.is-incorrect { border-color: var(--color-danger); background: #ffe0e2; color: #742632; }
     }
-    .quiz-answer-letter { flex: 0 0 26px; font-weight: 600; }
+    .quiz-answer-letter {
+        flex: 0 0 30px;
+        line-height: 30px;
+        text-align: center;
+        border-radius: 50%;
+        font-weight: 600;
+        background: #e6ddff;
+        color: #39225c;
+    }
+    .quiz-answer:nth-child(2n) .quiz-answer-letter { background: #d7f5ed; color: #164b3d; }
+    .quiz-answer:nth-child(3n) .quiz-answer-letter { background: #fff0ba; color: #5d4610; }
+    .quiz-answer:nth-child(4n) .quiz-answer-letter { background: #ffdfe9; color: #68263c; }
     .quiz-answer-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
     .quiz-answer-outcome { flex: 0 0 auto; font-weight: 600; }
-    .quiz-results { scroll-margin-top: 24px; }
+    .quiz-reaction { font-weight: 600; }
+    .quiz-results {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        scroll-margin-top: 24px;
+        background: #eee7ff;
+        text-align: center;
+        &[data-quiz-tier="perfect"] { background: #fff0ba; }
+        &[data-quiz-tier="great"] { background: #d7f5ed; }
+        &[data-quiz-tier="oops"] { background: #ffe5dc; }
+    }
+    .quiz-score-number { font-size: var(--font-size-h1, 44px); font-weight: 700; line-height: 1.2; }
+    .quiz-score-total { font-size: 24px; font-weight: 400; }
+    .quiz-gif-frame { position: relative; max-width: 480px; aspect-ratio: 16 / 9; border-radius: var(--radius-sm); overflow: hidden; background: rgba(255, 255, 255, .6); }
+    .quiz-gif-fallback { position: absolute; inset: 0; display: grid; place-items: center; font-size: 80px; }
+    .quiz-gif { position: relative; display: block; width: 100%; height: 100%; object-fit: contain; background: #171717; }
+    .quiz-particle { position: absolute; z-index: 3; font-size: 22px; line-height: 1; pointer-events: none; user-select: none; }
     [data-quiz-question-feedback]:empty { display: none; }
 
     @media (max-width: 575.98px) {
         .quiz-answer { flex-wrap: wrap; }
-        .quiz-answer-copy { flex-basis: calc(100% - 38px); }
-        .quiz-answer-outcome { padding-left: 38px; }
+        .quiz-answer-copy { flex-basis: calc(100% - 42px); }
+        .quiz-answer-outcome { padding-left: 42px; }
+        .quiz-item, .quiz-results { padding: 20px !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .quiz-progress .progress-bar { transition: none; }
     }
 }

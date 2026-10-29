@@ -1,5 +1,5 @@
 @foreach($quiz->questions() as $question)
-<section class="quiz-item bg-white border rounded-sm p-4 mb-4" data-quiz-question aria-labelledby="quiz-question-{{ $loop->iteration }}">
+<section class="quiz-item border rounded-sm p-4 mb-3" data-quiz-question aria-labelledby="quiz-question-{{ $loop->iteration }}" {{ $loop->first ? '' : 'hidden' }}>
     <p class="small text-muted mb-2">Question {{ $loop->iteration }} of {{ $loop->count }}</p>
     <h2 class="h5 mb-4" id="quiz-question-{{ $loop->iteration }}" tabindex="-1">{{ rtrim($question['Q'], '. ') }}</h2>
     @if($question['audio'])
@@ -17,6 +17,6 @@
             </button>
         @endforeach
     </div>
-    <p class="small mb-0 mt-3" data-quiz-question-feedback role="status" aria-live="polite"></p>
+    <p class="quiz-reaction mb-0 mt-3" data-quiz-question-feedback role="status" aria-live="polite" aria-atomic="true"></p>
 </section>
 @endforeach

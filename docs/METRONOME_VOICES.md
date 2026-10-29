@@ -19,6 +19,20 @@ result. During playback, choices apply without an extra sample or restarting the
 clock. A newer click, leaving the settings page, dismissal or hiding the page
 cancels pending/playing previews. Other setting changes never trigger a sample.
 
+Starting playback immediately cancels every active or pending preview. Delayed
+audio resumes, recording downloads and effect results cannot interrupt a newer
+run; a canceled start also cannot suspend output claimed by a newer preview.
+Beat, tempo and sound changes cancel previews too. Changing beats restarts
+at One on the next scheduled beat; the conductor's number and pattern change at
+that same audible boundary, including speaker latency. Further tempo/effect
+edits preserve that pending One. Counts share one audio lane, with a short fade
+ending the previous sound before the next starts, including voice-to-instrument
+changes. While a new effect processes, playback keeps the last completed effect
+for that recording and switches when the result is ready. Selecting another
+recording clears the previous recording's effect immediately.
+The conductor also corrects output/compositor drift greater than 25ms after
+resume, while ignoring ordinary frame rounding and keeping its continuous motion.
+
 Arthur's October 29 follow-up supersedes the initial request to save six generated
 voice libraries: effects are generated on demand, only in browser memory. They
 are never saved to an account, localStorage, IndexedDB, audio files or the server.
@@ -87,7 +101,8 @@ To replace the voice, replace the four source files and rerun the same command.
   thread. Transferred copies leave source buffers intact. Only the current result
   is retained; the worker terminates after each job. Another choice cancels it.
 - `voice-effect-selection.js`: page-session selection, source identity checks,
-  cancellation, stale-result protection and Normal fallback. BPM/appearance edits
+  cancellation, stale-result protection, ready-result switching and Normal fallback
+  on failure. BPM/appearance edits
   do not regenerate effects. Effects are compressed for fast tempos by the existing
   clock's once-per-tempo preparation, never inside beat scheduling.
 - `spoken-voices.js` and `Services/Metronome/SpokenVoices`: optional public original

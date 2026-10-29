@@ -368,17 +368,18 @@ export class VoiceRecorder {
         this.stopPreview();
         const version = this.previewRequestVersion;
         this.clock.stop();
+        const clockGeneration = this.clock.generation;
         this.previewingId = id;
         this.onUpdate(this);
         try {
             await this.clock.resumeAudio();
-            if (version !== this.previewRequestVersion) return;
+            if (version !== this.previewRequestVersion || this.clock.running || clockGeneration !== this.clock.generation) return;
             const data = id === this.activeId && this.buffers.length === 4 ? null : await this.request('GET', null, id);
             const buffers = data ? await Promise.all(data.clips.map(clip => this.decodeVoice(voiceBytes(clip)))) : this.buffers;
-            if (version !== this.previewRequestVersion) return;
+            if (version !== this.previewRequestVersion || this.clock.running || clockGeneration !== this.clock.generation) return;
             await this.preview(buffers.slice(0, this.getBeats()), id);
         } catch (error) {
-            if (version !== this.previewRequestVersion) return;
+            if (version !== this.previewRequestVersion || clockGeneration !== this.clock.generation) return;
             this.stopPreview();
             this.failure(error);
         }
@@ -400,7 +401,7 @@ export class VoiceRecorder {
             if (!buffers?.[0]) { this.stopPreview(); return; }
             await this.preview([buffers[0]], null, { onlyWhenStopped: true });
         } catch (error) {
-            if (version !== this.previewRequestVersion) return;
+            if (version !== this.previewRequestVersion || clockGeneration !== this.clock.generation) return;
             this.stopPreview();
             this.ui('status').textContent = 'Sound couldn’t start. Tap an effect to try again.';
         }
@@ -418,7 +419,7 @@ export class VoiceRecorder {
         try {
             await this.clock.resumeAudio();
             if (generation !== this.previewGeneration) return;
-            if (onlyWhenStopped && (this.clock.running || clockGeneration !== this.clock.generation)) return;
+            if (this.clock.running || clockGeneration !== this.clock.generation) return;
             const audio = this.context();
             let time = audio.currentTime + 0.03;
             buffers.forEach(buffer => {
@@ -435,7 +436,11 @@ export class VoiceRecorder {
                 this.previewSources.push(source);
                 time += Math.max(0.65, buffer.duration + 0.12);
             });
-        } catch (error) { this.stopPreview(); this.ui('status').textContent = 'Sound couldn’t start. Tap Play to try again.'; }
+        } catch (error) {
+            if (generation !== this.previewGeneration || clockGeneration !== this.clock.generation) return;
+            this.stopPreview();
+            this.ui('status').textContent = 'Sound couldn’t start. Tap Play to try again.';
+        }
     }
 
     async save() {

@@ -14,6 +14,7 @@ export class MetronomeClock {
         this.running = false;
         this.ready = false;
         this.generation = 0;
+        this.audioRequest = 0;
         this.context = null;
         this.audioSession = null;
         this.timer = null;
@@ -41,10 +42,12 @@ export class MetronomeClock {
         this.onStateChange(true);
 
         try {
-            await this.resumeAudio();
+            const resumed = this.resumeAudio();
+            const audioRequest = this.audioRequest;
+            await resumed;
             // A second tap can stop playback while the browser unlocks audio.
             if (!this.running || generation !== this.generation) {
-                if (!this.running) this.suspendAudio();
+                if (!this.running && audioRequest === this.audioRequest) this.suspendAudio();
                 return;
             }
             if (this.context.state !== 'running') throw new Error('Audio is unavailable.');
@@ -56,7 +59,7 @@ export class MetronomeClock {
             this.nextBeatIndex = 0;
             this.lastBeatIndex = null;
             this.presentation = [{ at: this.context.currentTime, anchor: this.beatAnchor,
-                index: null, beat: null, span: this.beatSpan, tempo: this.tempo }];
+                index: null, beat: null, span: this.beatSpan, tempo: this.tempo, beatsPerBar: this.beatsPerBar }];
             this.presentedBeat = null;
             this.nextBeatTime = this.context.currentTime + (leadInBeats ? leadInBeats * 60 / this.tempo : 0.02);
             this.schedule(false);
@@ -96,6 +99,7 @@ export class MetronomeClock {
     }
 
     resumeAudio() {
+        this.audioRequest++;
         this.requestPlaybackAudio();
         return this.getContext().resume();
     }
@@ -148,13 +152,14 @@ export class MetronomeClock {
         this.prepareVoices();
         const now = this.context.currentTime;
         this.updateBeat(now);
+        const nextIndex = this.beats[0]?.index ?? this.nextBeatIndex;
         if (this.beatAnchor === null && this.beats.length) this.nextBeatTime = this.beats[0].time;
         for (const note of this.notes) {
             if (note.time > now) this.cancelNote(note);
         }
         this.beats = [];
         this.presentation = this.presentation.filter(beat => beat.at <= now);
-        this.nextBeatIndex = this.lastBeatIndex === null ? 0 : (this.lastBeatIndex + 1) % this.beatsPerBar;
+        this.nextBeatIndex = nextIndex;
 
         // Preserve the progress through this beat when tempo changes mid-swipe.
         if (this.beatAnchor !== null) {
@@ -165,7 +170,8 @@ export class MetronomeClock {
         }
         const previous = this.presentation[this.presentation.length - 1];
         this.presentation.push({ at: now, anchor: this.beatAnchor, span: this.beatSpan,
-            index: this.lastBeatIndex, beat: previous?.beat ?? null, tempo });
+            index: this.lastBeatIndex, beat: previous?.beat ?? null, tempo,
+            beatsPerBar: previous?.beatsPerBar ?? this.beatsPerBar });
         this.schedule();
     }
 
@@ -184,6 +190,7 @@ export class MetronomeClock {
     }
 
     setVoiceBuffers(buffers) {
+        if (buffers === this.voiceBuffers) return;
         if (buffers !== this.voiceBuffers && this.sound === 'my-voice') {
             this.preparedVoices = null;
             this.effectBuffers = null;
@@ -217,15 +224,16 @@ export class MetronomeClock {
         this.prepareVoices();
         const now = this.context.currentTime;
         this.updateBeat(now);
+        const nextIndex = this.beats[0]?.index ?? this.nextBeatIndex;
         if (this.beats.length) this.nextBeatTime = this.beats[0].time;
         for (const note of this.notes) {
             if (note.time > now) this.cancelNote(note);
         }
         this.beats = [];
         this.presentation = this.presentation.filter(beat => beat.at <= now);
-        this.nextBeatIndex = restartBar || this.lastBeatIndex === null
-            ? 0 : (this.lastBeatIndex + 1) % this.beatsPerBar;
-        if (restartBar) this.lastBeatIndex = null;
+        // Preserve an already requested downbeat through further sound/effect
+        // or tempo edits. The old audible beat remains valid until that boundary.
+        this.nextBeatIndex = restartBar ? 0 : nextIndex;
         this.schedule();
     }
 
@@ -235,8 +243,10 @@ export class MetronomeClock {
         const beat = state?.index ?? null;
         const anchor = state?.anchor ?? null;
         const tempo = state?.tempo ?? this.tempo;
+        const beatsPerBar = state?.beatsPerBar ?? this.beatsPerBar;
         return {
-            beat: beat ?? this.beatsPerBar - 1,
+            beat: beat ?? beatsPerBar - 1,
+            beatsPerBar,
             preparing: beat === null,
             waiting: this.ready && (!state || now < state.at),
             tempo,
@@ -302,7 +312,7 @@ export class MetronomeClock {
             this.playClick(this.nextBeatTime, this.nextBeatIndex);
             this.beats.push({ time: this.nextBeatTime, index: this.nextBeatIndex });
             this.presentation.push({ at: this.nextBeatTime, anchor: this.nextBeatTime,
-                index: this.nextBeatIndex, beat: {}, span: 1, tempo: this.tempo });
+                index: this.nextBeatIndex, beat: {}, span: 1, tempo: this.tempo, beatsPerBar: this.beatsPerBar });
             this.nextBeatIndex = (this.nextBeatIndex + 1) % this.beatsPerBar;
             this.nextBeatTime += 60 / this.tempo;
         }
@@ -310,6 +320,17 @@ export class MetronomeClock {
     }
 
     playClick(time, beatIndex) {
+        // All count sounds share one lane, including a voice-to-instrument
+        // change or a faster tempo that overtakes the current syllable.
+        for (const note of this.notes) {
+            if (note.endTime > time) {
+                note.gain.gain.cancelScheduledValues(Math.max(note.time, time - 0.005));
+                note.gain.gain.setValueAtTime(1, Math.max(note.time + 0.003, time - 0.005));
+                note.gain.gain.linearRampToValueAtTime(0, time);
+                note.oscillators.forEach(source => source.stop(time));
+                note.endTime = time;
+            }
+        }
         if (this.voiceSamples()) return this.playVoice(time, beatIndex);
         const profile = SOUND_PROFILES[this.sound];
         const pitch = beatIndex === 0 ? 1 : 0.82;
@@ -333,7 +354,7 @@ export class MetronomeClock {
             oscillator.connect(gain);
             return oscillator;
         });
-        const note = { oscillators, gain, time };
+        const note = { oscillators, gain, time, endTime: time + profile.duration };
         this.notes.add(note);
         let remaining = oscillators.length;
         oscillators.forEach(oscillator => {
@@ -365,17 +386,6 @@ export class MetronomeClock {
     playVoice(time, beatIndex) {
         const buffer = this.preparedVoices[beatIndex];
         const duration = buffer.duration;
-        // Finish an already playing syllable before the next beat after a tempo
-        // change; a stale long clip must never overlap the new count.
-        for (const note of this.notes) {
-            if (note.voiceEnd > time) {
-                note.gain.gain.cancelScheduledValues(Math.max(note.time, time - 0.005));
-                note.gain.gain.setValueAtTime(1, Math.max(note.time + 0.003, time - 0.005));
-                note.gain.gain.linearRampToValueAtTime(0, time);
-                note.oscillators.forEach(source => source.stop(time));
-                note.voiceEnd = time;
-            }
-        }
         const source = this.context.createBufferSource();
         source.buffer = buffer;
         source.playbackRate.setValueAtTime(1, time);
@@ -386,7 +396,7 @@ export class MetronomeClock {
         gain.gain.linearRampToValueAtTime(0, time + duration);
         source.connect(gain);
         gain.connect(this.context.destination);
-        const note = { oscillators: [source], gain, time, voiceEnd: time + duration };
+        const note = { oscillators: [source], gain, time, endTime: time + duration };
         this.notes.add(note);
         source.onended = () => { source.disconnect(); gain.disconnect(); this.notes.delete(note); };
         source.start(time);

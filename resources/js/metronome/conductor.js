@@ -356,8 +356,10 @@ export class ConductorView {
         const drift = Math.min(difference, duration - difference);
         // Ignore normal audio-block/frame rounding. Seeking on every click
         // would put the scheduler's jitter back into the otherwise smooth motion.
-        // A real stall or a tempo edit still re-aligns with the audio clock.
-        if (retime || drift > 80) this.animation.currentTime = elapsed;
+        // A resumed output device can settle tens of milliseconds later. Correct
+        // that offset within one scheduler tick instead of allowing the next
+        // digit to appear noticeably before its spoken count.
+        if (retime || drift > 25) this.animation.currentTime = elapsed;
         this.syncPulses(duration, position.preparing);
     }
 }

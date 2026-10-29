@@ -74,7 +74,7 @@ class QuizPagesTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//form[@action="http://learn.localhost/quizzes"]//option[@value="beginner" and @selected]'));
         $this->assertCount(1, $xpath->query('//form//input[@name="topics[]" and @value="theory"]'));
         $this->assertCount(1, $xpath->query('//a[contains(@href,"page=2") and contains(@href,"topics=theory") and contains(@href,"level=beginner") and normalize-space(.)="2"]'));
-        $response->assertDontSee('class="grid row', false)->assertSee('Subscribe');
+        $response->assertDontSee('class="grid row', false);
         $this->get('http://learn.localhost/quizzes?topics=theory&level=beginner&page=2')->assertOk()->assertSee('Theory challenge 13');
         $this->get('http://learn.localhost/quizzes?topics=theory&level=')->assertOk()->assertSee('Advanced theory');
         $this->get('http://learn.localhost/quizzes?level=missing')->assertOk()->assertSee('No quizzes match these filters');
@@ -89,7 +89,7 @@ class QuizPagesTest extends ReviewTestCase
             ['Q' => 'Name this note [storage/quiz/images/note.png]', 'A' => ['C', 'D[x]']],
         ])]);
         $response = $this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk()
-            ->assertSee('Discover the piano')->assertSee('Start quiz')->assertSee('Your progress')->assertSee('Review my answers')
+            ->assertSee('Discover the piano')->assertSee('Start quiz')->assertSee('Your progress')->assertSee('Review answers')
             ->assertSee('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback', false)
             ->assertDontSee('game-results')->assertDontSee('pinterest.com')->assertDontSee('DISCLAIMER');
         $xpath = $this->xpath($response);
@@ -114,11 +114,35 @@ class QuizPagesTest extends ReviewTestCase
         $this->actingAs($user, 'web');
         foreach (['http://learn.localhost', 'http://localhost'] as $origin) {
             $response = $this->get($origin.'/quizzes/'.$quiz->slug.'/feedback?answers[]=0&answers[]=0&user_id='.$other->id)
-                ->assertOk()->assertSee('1 out of 2')->assertSee('data-quiz-score', false)->assertDontSee('giphy');
+                ->assertOk()->assertSee('1 out of 2')->assertSee('data-quiz-score', false)->assertSee('https://media.giphy.com/media/', false)->assertSee('data-quiz-gif-toggle', false);
             $this->preview($response, 'feedback');
         }
         $this->assertSame(2, DB::table('quiz_results')->where('quiz_id', $quiz->id)->where('user_id', $user->id)->where('score', 1)->count());
         $this->assertSame(0, DB::table('quiz_results')->where('user_id', $other->id)->count());
+    }
+
+    public function test_endings_restore_the_original_gifs_for_each_score_band_with_short_copy()
+    {
+        $quiz = $this->quiz('Can you outsmart a piano?');
+        $this->preview($this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk(), 'playable');
+        foreach ([0 => 'oops', 25 => 'oops', 50 => 'good', 75 => 'great', 100 => 'perfect'] as $percentage => $tier) {
+            $original = $quiz->getFeedback($percentage, 100);
+            $response = $this->responseForView('games.quizzes.feedback', ['feedback' => [
+                'score' => $percentage / 25, 'questions_count' => 4, 'percentage' => $percentage, 'gif' => $original['gif'],
+            ]]);
+            $xpath = $this->xpath($response);
+            $this->assertCount(1, $xpath->query('//div[@data-quiz-tier="'.$tier.'"]'));
+            $this->assertCount(1, $xpath->query('//img[@data-quiz-gif and @data-animated-src="'.$original['gif'].'" and @referrerpolicy="no-referrer"]'));
+            $this->assertCount(1, $xpath->query('//img[contains(@src,"/giphy_s.gif")]'));
+            $this->assertCount(1, $xpath->query('//button[@data-quiz-gif-toggle]'));
+            $this->assertLessThan(12, str_word_count($xpath->query('//h2')->item(0)->textContent));
+            $this->preview($response, 'feedback-'.$tier);
+        }
+    }
+
+    private function responseForView($view, $data)
+    {
+        return new \Illuminate\Http\Response(view($view, $data)->render());
     }
 
     public function test_drafts_stay_private_and_empty_quizzes_and_directories_remain_usable()

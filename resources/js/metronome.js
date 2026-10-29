@@ -78,6 +78,8 @@ const clock = new MetronomeClock({
         return new AudioContext({ latencyHint: 'interactive' });
     },
     onStateChange: running => {
+        // Starting the transport owns all audio and invalidates pending previews.
+        if (running) voiceRecorder?.stopPreview();
         surface.setAttribute('aria-pressed', String(running));
         updateLabel();
         if (!running && pulse) pulse.cancel();
@@ -129,6 +131,7 @@ function setTempo(value) {
         backgroundPulse.updatePlaybackRate(tempo / backgroundPulseTempo);
     }
     clock.setTempo(tempo);
+    if (tempo !== previousTempo) voiceRecorder?.stopPreview();
     if (tempo !== previousTempo) syncConductor(true);
     updateLabel();
     if (tempo !== previousTempo) {
@@ -160,6 +163,8 @@ function syncConductor(force = false) {
         return;
     }
     const position = clock.getBeatPosition();
+    // Rhythm belongs to the audible timeline, not the newly clicked radio.
+    if (conductor.beats !== position.beatsPerBar) conductor.setBeats(position.beatsPerBar);
     if (reducedMotion.matches) position.progress = 0;
     const animate = clock.ready && !position.waiting && !settingsOpen && !navigationOpen && !document.hidden && !reducedMotion.matches;
     // After a scheduler stall, align to the next real click, not an imagined
@@ -173,6 +178,7 @@ function applySettings(value, persist = true) {
     settings = normalizeSettings(value);
     if (settings.sound === 'my-voice' && !clock.voiceBuffers) settings.sound = 'click';
     if (settings.sound.startsWith('spoken:') && settings.sound !== `spoken:${spokenId}`) settings.sound = 'click';
+    if (previous.beats !== settings.beats || previous.sound !== settings.sound) voiceRecorder?.stopPreview();
     palette = colorPalette(settings.color);
     if (previous.type !== settings.type) {
         if (pulse) pulse.cancel();
@@ -192,7 +198,6 @@ function applySettings(value, persist = true) {
     fontMenu?.render();
     clock.setBeats(settings.beats);
     clock.setSound(settings.sound.startsWith('spoken:') ? 'spoken' : settings.sound);
-    if (conductor.beats !== settings.beats) conductor.setBeats(settings.beats);
     beatInputs.forEach(input => { input.checked = Number(input.value) === settings.beats; });
     typeInputs.forEach(input => { input.checked = input.value === settings.type; });
     markerInputs.forEach(input => { input.checked = input.value === settings.conductorMarker; });

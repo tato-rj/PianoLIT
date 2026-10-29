@@ -41,7 +41,7 @@
             <section class="quiz-start bg-white border rounded-sm p-4 mb-4" data-quiz-introduction aria-labelledby="quiz-start-title">
                 <h2 class="h5 mb-2" id="quiz-start-title">{{ count($quiz->questions) ? 'Ready to give it a try?' : 'This quiz is being prepared' }}</h2>
                 @if(count($quiz->questions))
-                    <p class="text-muted mb-3">Choose one answer for each question. You’ll see the correct answer as you go.</p>
+                    <p class="text-muted mb-3">Trust your brain. Or your lucky finger.</p>
                     @if($quiz->results_count > 2)<p class="small text-muted mb-3">Average score: <strong>{{ $quiz->average_score }} out of {{ count($quiz->questions) }}</strong> · {{ number_format($quiz->results_count) }} attempts</p>@endif
                     <button class="btn btn-primary" type="button" id="start-quiz" data-quiz-start>Start quiz @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>
                     <noscript><p class="small text-muted mt-3 mb-0">Enable JavaScript to answer this quiz.</p></noscript>
@@ -52,17 +52,18 @@
 
             <div id="quiz-content" hidden data-quiz-content>
                 <div class="mb-4" data-quiz-progress>
-                    <div class="d-flex justify-content-between gap-3 small mb-2"><span>Your progress</span><span data-quiz-progress-label aria-live="polite">0 of {{ count($quiz->questions) }} answered</span></div>
+                    <div class="d-flex justify-content-between gap-3 small mb-2"><span>Your progress <strong class="quiz-streak ml-2" data-quiz-streak hidden></strong></span><span data-quiz-progress-label>0 / {{ count($quiz->questions) }}</span></div>
                     <div class="progress quiz-progress" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="{{ count($quiz->questions) }}" aria-valuenow="0"><div class="progress-bar" style="width: 0%"></div></div>
                 </div>
                 @include('games.quizzes.questions')
-                <section class="quiz-results bg-white border rounded-sm p-4 mb-4" data-quiz-results hidden tabindex="-1" aria-label="Quiz result" aria-busy="false">
+                <div class="d-flex justify-content-end mb-4"><button type="button" class="btn btn-primary" data-quiz-next hidden>Next →</button></div>
+                <section class="quiz-results rounded-sm p-4 mb-4" data-quiz-results hidden tabindex="-1" aria-label="Quiz result" aria-busy="false">
                     <div data-quiz-result-status role="status" aria-live="polite"></div>
-                    <div id="game-feedback" data-quiz-feedback></div>
-                    <button type="button" class="btn btn-primary mt-3" data-quiz-retry hidden>Try loading my result again</button>
-                    <div class="mt-4" data-quiz-result-actions hidden><div class="d-flex flex-wrap gap-2">
-                        <button type="button" class="btn btn-primary" data-quiz-review>Review my answers</button>
-                        <button type="button" class="btn btn-secondary" data-quiz-reset>@icon('rotate-ccw')Try again</button>
+                    <div id="game-feedback" data-quiz-feedback aria-live="polite" aria-atomic="true"></div>
+                    <button type="button" class="btn btn-primary mt-3" data-quiz-retry hidden>Retry</button>
+                    <div class="mt-4" data-quiz-result-actions hidden><div class="d-flex justify-content-center flex-wrap gap-2">
+                        <button type="button" class="btn btn-primary" data-quiz-reset>@icon('rotate-ccw')Play again</button>
+                        <button type="button" class="btn btn-secondary" data-quiz-review>Review answers</button>
                         <a class="btn btn-secondary" href="{{ route('quizzes.index') }}">More quizzes @icon('arrow-right', ['mr' => 0, 'ml' => 2])</a>
                     </div></div>
                 </section>

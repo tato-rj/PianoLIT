@@ -1269,6 +1269,31 @@ test('browser motion follows every pattern without per-frame JavaScript or beat 
     }
 });
 
+test('conductor corrects a settled output offset after restart without seeking for ordinary frame rounding', async () => {
+    const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
+    page.click();
+    await new Promise(setImmediate);
+    page.advance(0.3);
+    page.click();
+    page.click();
+    await new Promise(setImmediate);
+    for (let tick = 1; tick <= 20; tick++) page.advance(0.3 + tick * 0.025);
+    const animation = page.conductorAnimations.at(-1);
+    const clock = vm.runInContext('clock', page.context);
+    // Model the compositor being ahead when the resumed device's timestamp
+    // settles. The previous 80ms tolerance left this offset indefinitely.
+    animation.startTime -= 55;
+    page.advance(0.825);
+    const position = clock.getBeatPosition();
+    assertBallNear(animatedBallPoint(page), page.context.api.conductorPoint(4, position.beat, position.progress));
+    const seeks = animation.seeks;
+    animation.startTime -= 10;
+    page.advance(0.85);
+    assert.equal(animation.seeks, seeks, 'Normal audio-block/frame rounding must not force repeated seeks');
+    assert.ok(page.animations.filter(item => !item.canceled).every(item => item.startTime === animation.startTime));
+    page.click();
+});
+
 test('tempo changes retime the opening drop and repeating animation without moving the ball', async () => {
     const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
     const clock = vm.runInContext('clock', page.context);
@@ -1514,4 +1539,145 @@ test('public counting and temporary effects share the beat clock without private
     clock.setSound('click');
     assert.equal(clock.effectBuffers, null);
     clock.stop();
+});
+
+test('rhythm changes keep the audible pattern until the new downbeat, including delayed speakers', async () => {
+    const page = setupPage(JSON.stringify({ beats: 2, type: 'conductor' }), { savedTempo: '37' });
+    const clock = vm.runInContext('clock', page.context);
+    page.audio.outputLatency = 0.15;
+    const voices = [1, 2, 3, 4].map(count => Object.assign(voiceBuffer(0.2), { count }));
+    page.context.testVoices = voices;
+    vm.runInContext("clock.setVoiceBuffers(testVoices); applySettings({ ...settings, sound: 'my-voice' });", page.context);
+    page.click(); await new Promise(setImmediate);
+    for (let t = 0.025; t <= 2.7; t += 0.025) page.advance(t);
+    assert.equal(clock.getBeatPosition().beat, 1);
+    page.beatInputs[3].checked = true; page.beatInputs[3].listeners.change();
+    assert.equal(clock.beatsPerBar, 4, 'the new setting is accepted immediately');
+    assert.equal(vm.runInContext('conductor.beats', page.context), 2, 'the audible old count still owns its pattern');
+    const boundary = clock.nextBeatTime;
+    for (let t = page.audio.currentTime + 0.025; t < boundary + 0.14; t += 0.025) page.advance(t);
+    assert.equal(vm.runInContext('conductor.beats', page.context), 2);
+    page.advance(boundary + 0.151);
+    assert.equal(vm.runInContext('conductor.beats', page.context), 4);
+    assert.equal(clock.getBeatPosition().beat, 0);
+    const voiced = page.oscillators.find(source => source.startTime === boundary && !source.disconnected);
+    assert.equal(voiced.buffer.count, 1);
+    const visible = page.animations.filter(animation => !animation.canceled && page.beatNumbers.includes(animation.target) && countOpacity(animation) > 0);
+    assert.equal(visible.length, 1);
+    assert.equal(visible[0].target.textContent, '1');
+});
+
+test('a pending bar restart survives tempo and effect changes without replaying the previous count', async () => {
+    const page = setup();
+    const clips = [1, 2, 3, 4].map(count => Object.assign(voiceBuffer(0.1), { count }));
+    page.clock.setVoiceBuffers(clips); page.clock.setSound('my-voice'); page.clock.setBeats(4);
+    await page.clock.start();
+    for (let t = 0.025; t < 1.15; t += 0.025) page.advance(t);
+    assert.equal(page.clock.lastBeatIndex, 2);
+    page.clock.setBeats(2);
+    assert.equal(page.clock.getBeatPosition().beat, 2, 'do not reset the old audible count early');
+    page.clock.setVoiceEffectBuffers(clips.map(clip => ({ ...clip, effect: true })));
+    page.clock.setTempo(90);
+    const due = page.clock.nextBeatTime;
+    page.advance(due - 0.05);
+    assert.equal(page.oscillators.at(-1).buffer.count, 1);
+    assert.equal(page.oscillators.at(-1).buffer.effect, true);
+    page.advance(due + 0.001);
+    assert.equal(page.clock.getBeatPosition().beatsPerBar, 2);
+    assert.equal(page.clock.getBeatPosition().beat, 0);
+});
+
+test('switching from a long voice to an instrument cannot overlap the next count after a tempo increase', async () => {
+    const page = setup();
+    page.clock.setTempo(60);
+    page.clock.setVoiceBuffers([1, 2, 3, 4].map(() => voiceBuffer(0.8)));
+    page.clock.setSound('my-voice'); await page.clock.start();
+    const spoken = page.oscillators[0];
+    page.advance(0.1);
+    page.clock.setSound('beep'); page.clock.setTempo(300);
+    page.advance(page.clock.nextBeatTime - 0.05);
+    assert.ok(spoken.stopTime <= page.oscillators.at(-1).startTime);
+});
+
+function attachPreviewRecorder(page) {
+    vm.runInContext(read('metronome/voice-recorder.js') + `
+        voiceRecorder = Object.create(VoiceRecorder.prototype);
+        Object.assign(voiceRecorder, { clock, previewSources: [], ui: () => ({}), onUpdate() {} });
+    `, page.context);
+    return vm.runInContext('voiceRecorder', page.context);
+}
+
+test('starting the real page transport cancels every preview source and pending sample', async () => {
+    const page = setupPage();
+    const recorder = attachPreviewRecorder(page);
+    const clips = [voiceBuffer(0.5), voiceBuffer(0.5)];
+    await recorder.preview(clips);
+    const old = recorder.previewSources.slice();
+    page.click(); await new Promise(setImmediate);
+    assert.ok(old.every(source => source.disconnected && source.stopTime === 0));
+    assert.equal(recorder.previewSources.length, 0);
+    assert.equal(page.attributes['aria-pressed'], 'true');
+    page.click();
+    let finish;
+    const pending = recorder.previewEffect(() => new Promise(resolve => { finish = resolve; }));
+    page.click(); await new Promise(setImmediate);
+    finish(clips); await pending;
+    assert.equal(recorder.previewSources.length, 0);
+    assert.equal(page.attributes['aria-pressed'], 'true');
+    assert.equal(page.timers.size, 1);
+});
+
+test('a canceled start that resumes late cannot suspend a newer voice preview', async () => {
+    const page = setupPage();
+    const recorder = attachPreviewRecorder(page);
+    let finishStart;
+    let calls = 0;
+    page.audio.resume = function () {
+        if (++calls === 1) return new Promise(resolve => {
+            finishStart = () => { this.state = 'running'; resolve(); };
+        });
+        this.state = 'running';
+        return Promise.resolve();
+    };
+    page.click();
+    await recorder.preview([voiceBuffer(0.5)]);
+    assert.equal(recorder.previewSources.length, 1);
+    finishStart(); await new Promise(setImmediate);
+    assert.equal(page.audio.state, 'running', 'The newer preview owns the shared output device');
+    assert.equal(page.attributes['aria-pressed'], 'false');
+    assert.equal(page.timers.size, 0);
+    recorder.stopPreview();
+});
+
+test('seeded rapid edits keep one scheduler, disjoint sounds and matching scheduled count numbers', async () => {
+    const page = setup();
+    const clips = [1, 2, 3, 4].map(count => Object.assign(voiceBuffer(0.08), { count }));
+    const effects = clips.map(clip => ({ ...clip, effect: true }));
+    page.clock.setVoiceBuffers(clips); page.clock.setSound('my-voice');
+    await page.clock.start();
+    let seed = 12345;
+    const random = n => { seed = (1664525 * seed + 1013904223) >>> 0; return seed % n; };
+    for (let step = 0; step < 400; step++) {
+        page.advance(page.audio.currentTime + (step % 31 === 0 ? 0.7 : 0.017));
+        switch (random(6)) {
+        case 0: page.clock.setBeats(1 + random(4)); break;
+        case 1: page.clock.setTempo(20 + random(281)); break;
+        case 2: page.clock.setVoiceEffectBuffers(random(2) ? effects : null); break;
+        case 3: page.clock.setSound(random(2) ? 'my-voice' : 'beep'); break;
+        case 4: page.clock.stop(); await page.clock.start(); break;
+        default: await page.clock.start();
+        }
+        assert.equal(page.timers.size, 1);
+        const notes = [...page.clock.notes].filter(note => note.endTime > page.audio.currentTime).sort((a, b) => a.time - b.time);
+        for (let i = 1; i < notes.length; i++) assert.ok(notes[i - 1].endTime <= notes[i].time, `overlap at edit ${step}`);
+        for (const note of notes) {
+            const state = page.clock.presentation.find(beat => beat.at === note.time);
+            const buffer = note.oscillators[0].buffer;
+            if (state && buffer) assert.equal(buffer.count, state.index + 1);
+            if (state) assert.ok(state.index >= 0 && state.index < state.beatsPerBar);
+        }
+        const audible = page.clock.getBeatPosition();
+        assert.ok(audible.beat >= 0 && audible.beat < audible.beatsPerBar);
+    }
+    page.clock.stop(); assert.equal(page.timers.size, 0); assert.equal(page.clock.notes.size, 0);
 });

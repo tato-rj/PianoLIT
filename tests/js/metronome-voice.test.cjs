@@ -892,3 +892,28 @@ test('a clock start during audio resume prevents an effect sample without stoppi
     assert.equal(page.recorder.previewSources.length, 0);
     assert.equal(page.clock.running, true);
 });
+
+test('a late preview unlock failure cannot stop a newer preview', async () => {
+    const page = recorderHarness(); await load(page);
+    const pending = [];
+    page.clock.resumeAudio = () => new Promise((resolve, reject) => pending.push({ resolve, reject }));
+    const old = page.recorder.preview([{ duration: 0.2, id: 'old' }]);
+    const current = page.recorder.preview([{ duration: 0.2, id: 'current' }]);
+    pending[1].resolve(); await current;
+    const source = page.recorder.previewSources[0];
+    pending[0].reject(new Error('Old context interrupted')); await old;
+    assert.equal(page.recorder.previewSources.length, 1);
+    assert.equal(page.recorder.previewSources[0], source);
+    assert.equal(source.buffer.id, 'current');
+});
+
+test('a recorded-row download finishing after playback starts cannot stop or overlap the count', async () => {
+    const page = recorderHarness({ saved: true }); await load(page);
+    page.recorder.library.push({ id: 'second', name: 'Second', revision: 'second' });
+    const pending = page.recorder.previewRecording('second'); await settle();
+    page.clock.running = true;
+    page.clock.generation = 1;
+    page.resolve(page.requests[2], page.detail('second')); await pending;
+    assert.equal(page.recorder.previewSources.length, 0);
+    assert.equal(page.clock.running, true);
+});

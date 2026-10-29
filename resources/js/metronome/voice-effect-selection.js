@@ -12,6 +12,8 @@ export class VoiceEffectSelection {
 
     setSource(source) {
         if (source === this.source) return;
+        // A result from another recording is never a valid fallback.
+        this.useBuffers(null);
         this.source = source;
         this.pending = this.render();
     }
@@ -31,10 +33,12 @@ export class VoiceEffectSelection {
         this.job?.cancel();
         this.job = null;
         this.buffers = null;
-        this.useBuffers(null);
         const processing = !!this.source && this.effect !== 'classic';
         this.onChange(this.effect, processing, !!this.source);
-        if (!processing) return this.buffers = this.source;
+        if (!processing) {
+            this.useBuffers(null);
+            return this.buffers = this.source;
+        }
         try {
             this.job = this.process(this.source, this.effect);
             const result = await this.job.promise;
@@ -45,6 +49,7 @@ export class VoiceEffectSelection {
             return this.buffers = result;
         } catch (error) {
             if (generation !== this.generation) return;
+            this.useBuffers(null);
             this.effect = 'classic';
             this.onChange(this.effect, false, true);
             this.onError(error);

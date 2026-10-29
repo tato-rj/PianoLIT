@@ -2,8 +2,8 @@
 
 Public quiz pages live on Learn at `/quizzes` and `/quizzes/{slug}`. The directory
 and individual quizzes use the shared public shell, breadcrumbs, editorial layout,
-resource cards and existing card promotions. The directory uses the hub-header
-newsletter action; detail pages use the shared newsletter invitation.
+resource cards and existing card promotions. The directory uses the shared hub header; detail pages retain the contextual
+newsletter invitation.
 
 ## Editing
 
@@ -25,15 +25,34 @@ relations used by cards. Quizzes with no questions show a preparation state.
 
 ## Quiz behavior
 
-Start reveals the existing ordered questions. Each answer locks that question,
-marks the chosen answer and the correct answer with visible text, and advances
-the answered-question count. Audio inside the quiz stops when answering/restarting.
-After the final answer, the same GET feedback endpoint receives the same ordered
-`answers[]` indexes. The existing model evaluates and records the result; only its
-HTML presentation is replaced. The result appears inline, with review/restart and
-More quizzes actions. Failed requests retain answers and expose a retry; requests
-cannot overlap, and late responses from an earlier attempt cannot overwrite a
-reset quiz. Review/reset moves keyboard focus, respecting reduced motion.
+As of October 29, Arthur explicitly requested colorful, funny quizzes with the
+original Giphy endings, very little copy and more animated play. Start reveals one
+question at a time, retaining the original question and answer indexes. An answer
+locks that question, reveals the correct answer, and animates the choice: a pop for
+a correct answer, a wobble for a mistake. Short reaction lines avoid immediate
+repeats; consecutive correct answers build a visible streak. Scoped musical bursts,
+colored states and a gradient progress bar add motion without changing shared
+button styling elsewhere. Next advances only after answering; The big reveal lets
+the last reaction finish before requesting the result. Audio stops between steps.
+
+The same GET feedback endpoint receives the same ordered `answers[]` indexes. The
+existing model still evaluates and records the result. The finale shows a large
+score, one randomized short joke and a randomly chosen GIF from the original
+score-specific collection. The 404 entry `GCvktC0KFy9l6` was removed; the other 24
+original animated URLs responded successfully during verification. A colored
+entrance and larger burst accompany the reveal. Play again is the primary action;
+Review answers displays every locked question, and More quizzes retains its route.
+
+GIFs start as still images and animate only when motion is allowed. Play/Pause GIF
+is explicit; reduced-motion changes, review, replay, hidden pages and page exit stop
+animation/audio. Missing GIFs leave a native emoji, readable score and joke; no
+Giphy API request or key is introduced. Image requests omit the page referrer.
+Animations are bounded and cancelled between questions and on reset. Results have
+an accessible live region; answer corrections have text as well as color.
+
+Failed requests retain answers and expose Retry; requests cannot overlap, and late
+responses from an earlier attempt cannot overwrite a reset quiz. Review/reset moves
+keyboard focus, respecting reduced motion.
 
 `quizzes.*` names, legacy feedback URLs, guest access, admin draft previews, the
 serialized questions/answer order, scoring method and session-owned result user ID
@@ -56,8 +75,9 @@ git diff --check
 filters/pagination, draft-only topic exclusion, shared components, question/media
 markup, accessible and unique targets, empty states, recommendations, versioned
 assets, and identical scoring/account ownership on canonical and legacy feedback
-URLs. Its optional `QUIZ_PREVIEW_DIR` writes fictional rendered directory, detail
-and feedback HTML for browser review. The JavaScript regression also covers
+URLs. Its optional `QUIZ_PREVIEW_DIR` writes fictional rendered directory, detail,
+playable quiz and feedback HTML for browser review. The JavaScript regression also covers
+question pacing, streaks, motion cancellation, GIF play/pause/failure,
 pending-request guards, failure/retry, reset and stale responses.
 
 The local database had no published quizzes during this redesign. Browser review
@@ -66,3 +86,10 @@ responses: desktop and 390px phone layouts, no horizontal overflow, loaded image
 start/answer/progress, error/retry, review and restart. SQL scoring/persistence was
 verified separately in the isolated PHP tests. No real quiz completions, accounts
 or email deliveries were created as verification.
+
+October 29 follow-up verification used the isolated rendered fixtures and a local
+preview server, with no writes to the normal database. Desktop (1440px) and phone
+(390px) playthroughs verified correct/incorrect states, loaded animated/still GIFs,
+perfect/poor endings, pause, review and replay with no horizontal overflow. The
+focused PHP suite, JavaScript regression, isolated Node 24 production/CSS build
+and final workspace asset checks pass. Production has not been deployed.

@@ -217,3 +217,22 @@ test('focused settings pages show one view and return focus to the parent choice
     back.click(); assert.equal(flow.current, 'sound'); assert.equal(links[3].focused, true);
     back.click(); assert.equal(flow.current, 'home'); assert.equal(links[0].focused, true);
 });
+
+test('an effect change keeps the last complete sound until a replacement is ready', async () => {
+    const jobs = [], used = [];
+    const selection = new VoiceEffectSelection({ process: () => {
+        const job = { cancel() {} }; job.promise = new Promise(resolve => { job.finish = resolve; }); jobs.push(job); return job;
+    }, useBuffers: buffers => used.push(buffers) });
+    const source = [tone(), tone(), tone(), tone()];
+    selection.setSource(source);
+    const robot = selection.select('robot'); jobs[0].finish(['robot']); await robot;
+    const ghost = selection.select('ghost');
+    assert.deepEqual(used.at(-1), ['robot'], 'processing must not switch counting back to Normal');
+    const cartoon = selection.select('cartoon'); jobs[1].finish(['stale ghost']); await ghost;
+    assert.deepEqual(used.at(-1), ['robot']);
+    jobs[2].finish(['cartoon']); await cartoon;
+    assert.deepEqual(used.at(-1), ['cartoon']);
+    selection.setSource([tone(), tone(), tone(), tone()]);
+    assert.equal(used.at(-1), null, 'an old recording must never stand in for a newly selected source');
+    selection.dispose();
+});
