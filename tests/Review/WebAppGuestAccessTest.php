@@ -2,7 +2,7 @@
 
 namespace Tests\Review;
 
-use App\{Favorite, FavoriteFolder, Performance, Piece, Playlist, Tag, Tutorial, User};
+use App\{Favorite, FavoriteFolder, Piece, Playlist, Tag, Tutorial, User};
 use App\Api\Search;
 use App\Blog\Post;
 use Illuminate\Database\Eloquent\Model;
@@ -119,7 +119,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
         $this->actingAs(Model::withoutEvents(function () { return create(User::class)->setAppends(['full_name']); }), 'web');
         $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
-            ->assertSee('data-bs-toggle="modal" data-bs-target="#share-modal"', false)
+            ->assertSee('data-bs-toggle="modal" data-bs-target="#piece-share-modal"', false)
             ->assertSee('data-bs-toggle="offcanvas" data-bs-target="#save-to-offcanvas"', false)
             ->assertSee('Manage favorites')
             ->assertDontSee('data-dismiss="fixed-panel"', false);
@@ -199,12 +199,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
             ['GET', 'users.favorites.folders.show', [1]],
             ['GET', 'users.favorites.folders.pdf', [1]],
             ['GET', 'pieces.save-to', [$this->piece]],
-            ['POST', 'pieces.share', [$this->piece]],
-            ['GET', 'users.performances.upload-url', [$this->piece]],
-            ['POST', 'users.performances.store', [$this->piece]],
-            ['DELETE', 'users.performances.destroy', [1]],
-            ['POST', 'users.performances.clap', [1]],
-            ['POST', 'users.tutorial-requests.store', [$this->piece]],
+            ['POST', 'users.synthesia-requests.store', [$this->piece]],
             ['POST', 'membership.purchase', [1]],
             ['POST', 'membership.update.plan', []],
             ['GET', 'membership.edit', []],
@@ -216,8 +211,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->assertGuest('web');
         $this->assertDatabaseCount('favorites', 0);
         $this->assertDatabaseCount('favorite_folders', 0);
-        $this->assertDatabaseCount('tutorial_requests', 0);
-        $this->assertDatabaseCount('performances', 0);
+        $this->assertDatabaseCount('synthesia_requests', 0);
     }
 
     public function test_registered_nonpaying_users_still_have_save_controls_and_personal_suggestions()
@@ -325,11 +319,11 @@ class WebAppGuestAccessTest extends ReviewTestCase
             ->assertDontSee('data-folder-search=', false);
     }
 
-    public function test_folder_ordering_and_claps_use_the_signed_in_account()
+    public function test_folder_ordering_uses_the_signed_in_account()
     {
         $this->withExceptionHandling();
         $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
-        [$user, $other, $folder, $foreignFolder, $first, $second, $foreignFavorite, $performance] = Model::withoutEvents(function () {
+        [$user, $other, $folder, $foreignFolder, $first, $second, $foreignFavorite] = Model::withoutEvents(function () {
             $user = create(User::class)->setAppends(['full_name']);
             $other = create(User::class);
             $folder = create(FavoriteFolder::class, ['user_id' => $user->id]);
@@ -337,8 +331,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
             $first = Favorite::create(['user_id' => $user->id, 'piece_id' => $this->piece->id, 'favorite_folder_id' => $folder->id, 'order' => 0]);
             $second = Favorite::create(['user_id' => $user->id, 'piece_id' => $this->freePiece->id, 'favorite_folder_id' => $folder->id, 'order' => 1]);
             $foreignFavorite = Favorite::create(['user_id' => $other->id, 'piece_id' => $this->piece->id, 'favorite_folder_id' => $foreignFolder->id]);
-            $performance = Performance::create(['user_id' => $other->id, 'piece_id' => $this->piece->id, 'approved_at' => now()]);
-            return [$user, $other, $folder, $foreignFolder, $first, $second, $foreignFavorite, $performance];
+            return [$user, $other, $folder, $foreignFolder, $first, $second, $foreignFavorite];
         });
         $this->actingAs($user, 'web');
         $this->get(route('webapp.users.favorites.folders.show', $folder))->assertOk();
@@ -347,9 +340,6 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->patchJson(route('webapp.users.favorites.folders.reorder', $folder), ['ids' => [$foreignFavorite->id]])->assertUnprocessable();
         $this->patchJson(route('webapp.users.favorites.folders.reorder', $folder), ['ids' => [$second->id, $first->id], 'user_id' => $other->id])->assertOk();
         $this->assertSame([$second->id, $first->id], $folder->favorites()->pluck('id')->all());
-        $this->postJson(route('webapp.users.performances.clap', $performance), ['user_id' => $other->id])->assertOk()->assertJson(['claps_sum' => 1]);
-        $this->assertDatabaseHas('claps', ['performance_id' => $performance->id, 'user_id' => $user->id, 'count' => 1]);
-        $this->actingAs($other->setAppends(['full_name']), 'web');
-        $this->postJson(route('webapp.users.performances.clap', $performance))->assertForbidden();
+
     }
 }

@@ -2,14 +2,12 @@
 
 namespace App\Services\Admin;
 
-use App\{Composer, Piece, TutorialRequest, User};
-use App\Mail\Performances\{PerformanceApprovedEmail, PerformanceSubmittedEmail};
+use App\{Composer, Piece, SynthesiaRequest, User};
 use App\Mail\Shop\ConfirmPurchase;
 use App\Mail\Memberships\MembershipConfirmed;
-use App\Mail\SharePieceEmail;
 use App\Mail\{AccountWelcome, IosAccountWelcome, WebsiteAccountWelcome};
 use App\Mail\Admin\AdminReport;
-use App\Mail\Tutorials\{NewRequestEmail, RequestPublishedEmail};
+use App\Mail\SynthesiaRequests\{NewRequestEmail, RequestPublishedEmail};
 use App\Notifications\User\ConfirmGoogleAccount;
 use Illuminate\Auth\Notifications\{ResetPassword, VerifyEmail};
 use Illuminate\Http\Request;
@@ -38,11 +36,8 @@ class AutomaticEmails
             'merchandise-shipped' => ['name' => 'Merchandise shipped', 'category' => 'Shop', 'trigger' => 'After a verified Printful shipment update, once per package. Includes carrier and tracking details.'],
             'merchandise-delivered' => ['name' => 'Merchandise delivered', 'category' => 'Shop', 'trigger' => 'When all packages are reported delivered, once per order. Subject: Your order arrived!'],
             'membership-confirmation' => ['name' => 'Membership confirmation', 'category' => 'Membership', 'trigger' => 'After a web membership checkout is successfully completed, including a free trial.'],
-            'tutorial-request' => ['name' => 'Tutorial request received', 'category' => 'Tutorials', 'trigger' => 'After a tutorial request is submitted.'],
-            'tutorial-published' => ['name' => 'Requested tutorial ready', 'category' => 'Tutorials', 'trigger' => 'When a requested tutorial is published.'],
-            'performance-submitted' => ['name' => 'Performance submitted', 'category' => 'Performances', 'trigger' => 'After a performance is submitted for review.'],
-            'performance-approved' => ['name' => 'Performance approved', 'category' => 'Performances', 'trigger' => 'When a submitted performance is approved.'],
-            'piece-shared' => ['name' => 'A piece shared with you', 'category' => 'Sharing', 'trigger' => 'When someone sends a piece to an email address.'],
+            'synthesia-request' => ['name' => 'Synthesia request received', 'category' => 'Synthesia Requests', 'trigger' => 'After a Synthesia request is submitted.'],
+            'synthesia-published' => ['name' => 'Requested Synthesia ready', 'category' => 'Synthesia Requests', 'trigger' => 'When a requested Synthesia video is published.'],
             'admin-weekly-snapshot' => ['name' => 'Weekly admin snapshot', 'category' => 'Administration', 'trigger' => 'Sundays at 10:30 PM New York time, sent to admin managers.'],
         ]);
     }
@@ -54,9 +49,7 @@ class AutomaticEmails
             'Account' => ['title' => 'Account & sign-in', 'description' => 'Verify email addresses, recover passwords and confirm Google or Apple sign-in changes. Disabling these messages can prevent people from completing those actions.'],
             'Shop' => ['title' => 'Purchases & delivery', 'description' => 'Confirm digital and merchandise purchases, then keep customers updated on shipping and delivery.'],
             'Membership' => ['title' => 'Memberships', 'description' => 'Confirm a web membership or the start of a free trial.'],
-            'Tutorials' => ['title' => 'Tutorial requests', 'description' => 'Acknowledge a request and let the requester know when their tutorial is ready.'],
-            'Performances' => ['title' => 'Performances', 'description' => 'Keep performers informed when their submission is received and approved.'],
-            'Sharing' => ['title' => 'Piece sharing', 'description' => 'Deliver a piece that someone has chosen to share by email.'],
+            'Synthesia Requests' => ['title' => 'Synthesia requests', 'description' => 'Acknowledge a request and let the requester know when their Synthesia video is ready.'],
             'Administration' => ['title' => 'Admin reports', 'description' => 'Send PianoLIT managers a weekly summary of activity and results.'],
         ];
 
@@ -118,7 +111,7 @@ class AutomaticEmails
         $piece = new Piece(['id' => 0, 'name' => 'Prelude', 'key' => 'E minor', 'catalogue_name' => 'Op.', 'catalogue_number' => '28', 'collection_number' => 4]);
         $piece->setRelation('composer', new Composer(['name' => 'Frédéric Chopin']));
         $piece->setRelation('tags', collect());
-        $request = (new TutorialRequest)->setRelation('user', $user)->setRelation('piece', $piece);
+        $request = (new SynthesiaRequest)->setRelation('user', $user)->setRelation('piece', $piece);
 
         switch ($key) {
             case 'account-welcome': return $this->welcomeSample(new AccountWelcome('Jamie'));
@@ -170,15 +163,8 @@ class AutomaticEmails
                     return new \App\Mail\Shop\MerchandiseOrderDelivered($order, '#email-preview');
                 }
                 return new \App\Mail\Shop\MerchandiseOrderShipped($order, $shipment, '#email-preview');
-            case 'tutorial-request': return new NewRequestEmail($request);
-            case 'tutorial-published': return new RequestPublishedEmail($request);
-            case 'performance-submitted': return new PerformanceSubmittedEmail($piece);
-            case 'performance-approved': return new PerformanceApprovedEmail($piece);
-            case 'piece-shared':
-                $mail = new SharePieceEmail($piece, $user);
-                // A fictional piece must never resolve to an unrelated catalogue record.
-                $mail->url = '#email-preview';
-                return $mail;
+            case 'synthesia-request': return new NewRequestEmail($request);
+            case 'synthesia-published': return new RequestPublishedEmail($request);
         }
 
         $message = $notification->toMail($user);

@@ -6,9 +6,7 @@ use Tests\AppTest;
 use Tests\Traits\ManageDatabase;
 use App\{User, Subscription, EmailList};
 use App\Notifications\User\AccountDeleted;
-use App\Notifications\PieceSharedNotification;
 use App\Rules\Recaptcha;
-use App\Mail\SharePieceEmail;
 
 class UserTest extends AppTest
 {
@@ -131,32 +129,6 @@ class UserTest extends AppTest
             'last_name' => $this->user->last_name,
             'email' => $this->user->email,
         ]);
-    }
-
-    /** @test */
-    public function users_can_share_a_piece_from_the_webapp()
-    {
-        \Mail::fake();
-
-        $this->signIn($this->user);
-
-        $this->post(route('webapp.pieces.share', ['piece' => $this->piece, 'recipient_email' => 'test@email.com']));
-
-        \Mail::assertQueued(SharePieceEmail::class);
-    }
-
-    /** @test */
-    public function admins_are_notified_when_users_share_a_piece()
-    {
-        \Notification::fake();
-
-        $this->signIn($this->user);
-
-        $this->post(route('webapp.pieces.share', ['piece' => $this->piece, 'recipient_email' => 'test@email.com']));
-
-        \Notification::assertSentTo(
-            [$this->admin], PieceSharedNotification::class
-        );
     }
 
     /** @test */

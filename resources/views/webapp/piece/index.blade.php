@@ -15,13 +15,6 @@ video::-webkit-media-controls-enclosure {
      visibility: visible;
 }
 
-.clap-shadow {
-	position: absolute;
-	left: 0;
-	bottom: 2px;
-	animation-duration: .5s !important;
-}
-
 #nav-border {
 	position: absolute;
 	bottom: 0;
@@ -35,16 +28,6 @@ video::-webkit-media-controls-enclosure {
 	width: 100%;
 	height: 1px;
 	background-color: transparent;
-}
-
-.screen-lock-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  background: rgba(0,0,0,0.7);
-  z-index: 10000;
-  width: 100%;
-  height: 100vh;
 }
 
 .nav-tabs .active {
@@ -68,15 +51,15 @@ video::-webkit-media-controls-enclosure {
 </section>
 
 @include('webapp.piece.components.panel')
+@include('webapp.piece.share')
 @if($piece->hasAudio())
 @include('webapp.piece.components.audio-band')
 @endif
 
-{{-- @include('webapp.piece.performances.overlay') --}}
 @endsection
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
+<script src="{{ mix('js/components/link-share.js') }}"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script src="{{ mix('js/views/piece-access.js') }}"></script>
 <script src="{{ mix('js/views/video-moments.js') }}"></script>
@@ -126,210 +109,7 @@ if (scorePreview) PieceAccess.renderScorePreview(scorePreview, pdfjsLib);
 </script>
 @endif
 
-{{-- START OF PERFORMANCE SCRIPTS --}}
 
-@auth('web')
-<script type="text/javascript">
-let $progressBar = $('.progress-bar');
-let $uploadOverlay = $('#upload-overlay');
-let $chooseButton = $('#choose-video');
-let $confirmModal = $('#confirm-performance-modal');
-let $confirmButton = $('#confirm-performance-button');
-let $progress = $('.progress');
-let $loadingText = $('#loading-text');
-let resumable;
-
-function startRequest()
-{
-	axios.get('{{ route('webapp.users.performances.upload-url', $piece) }}')
-			 .then(function(response) {
-				launchResumable(response.data);
-			 })
-			 .catch(function(error) {
-				console.log(error);
-			 });
-}
-
-startRequest();
-
-function launchResumable(data)
-{
-	resumable = new Resumable({
-	    target: data.url,
-	    query:{
-	        _token:'{{ csrf_token() }}',
-	        secret: data.secret,
-	        origin: 'webapp',
-	        user_id: data.user.id,
-	        piece_id: data.piece.id,
-	        email: data.user.email,
-	        notes: ''
-	    },
-	    fileType: ['mp4', 'MOV', 'mov', 'wmv'],
-	    maxFileSize: 500000000,
-		maxFiles: 1,
-	    headers: {
-	        'Accept' : 'application/json'
-	    },
-	    testChunks: false,
-	    throttleProgressCallbacks: 1,
-	});
-
-	resumable.assignBrowse($chooseButton[0]);
-
-	$confirmButton.on('click', function() {
-	    if (resumable.files.length) {
-	        $(this).prop('disabled', true);
-	        resumable.upload();
-	        $uploadOverlay.show();
-	    }
-	});
-
-	resumable.on('fileAdded', function (file) {
-	    showProgress();
-	    showPreview(file);
-	    showModal();
-	});
-
-	resumable.on('fileProgress', function (file) {
-	    let percentage = Math.floor(file.progress() * 100);
-
-	    updateProgress(percentage);
-	    nextLoadingText(percentage);
-	});
-
-	resumable.on('fileSuccess', function (file, response) {
-	    setTimeout(function() {
-	        completeProgress();
-
-	        setTimeout(function() {
-	            $('#create-performance-form').submit();
-	        }, 2000);
-	    }, 1000);
-	});
-
-	resumable.on('fileError', function (file, response) {
-		let error = JSON.parse(response);
-		let message = Object.values(error)[0];
-
-	    alert(message);
-	    reset();
-	});
-}
-
-$confirmModal.on('hidden.bs.modal', function() {
-	resumable.cancel();
-});
-
-function showPreview(instance) {
-	let $preview = $('#preview-performance source');
-
-	  $preview[0].src = URL.createObjectURL(instance.file);
-	  $preview.parent()[0].load();
-}
-
-function showModal() {
-	$confirmModal.modal('show');
-}
-
-function showProgress() {
-    $progress.find('.progress-bar').css('width', '0%');
-    $progress.find('.progress-bar').html('0%');
-    $progress.find('.progress-bar').removeClass('bg-success');
-    $progress.show();
-}
-
-function updateProgress(value) {
-    $progress.find('.progress-bar').css('width', `${value}%`);
-    $progress.find('.progress-bar').html(`${value}%`);
-}
-
-function hideProgress() {
-    $progress.hide();
-}
-
-let startTime;
-let canChangeSentence = true;
-
-function nextLoadingText(percentage) {
-    if (! canChangeSentence)
-        return null;
-
-    let array = $loadingText.data('sentences');
-    let index = Math.floor(percentage/Math.floor(100 / array.length));
-
-    if (percentage > 90) {
-        $loadingText.text(array.pop());
-
-        canChangeSentence = false;
-    } else {
-        if (moment().diff(startTime, 'seconds') % 4 === 0) {
-            $loadingText.text(array[index]);
-        }
-    }
-}
-
-function completeProgress() {
-    $progressBar.removeClass('progress-bar-striped progress-bar-animated')
-                .addClass('bg-green')
-                .html('<i class="app-icon icon-check icon-size-xl"></i>')
-                .parent()
-                .addClass('rubberBand');
-
-    $loadingText.text('Done!');
-}
-
-function reset() {
-    showProgress();
-    hideProgress();
-    $uploadOverlay.fadeOut('fast');
-    $confirmModal.modal('hide');
-    $confirmButton.prop('disabled', false);
-}
-
-$('#confirm-performance-modal').on('hide.bs.modal', function() {
-    $('#preview-performance').get(0).pause();
-    $('#preview-performance').get(0).currentTime = 0;
-});
-</script>
-<script type="text/javascript">
-function clap($hands) {
-	$hands.removeClass('text-grey').addClass('text-orange');
-
-	let $clone = $hands.clone();
-
-	$clone.addClass('clap-shadow animated text-orange fadeOutUp').appendTo($hands.parent());
-
-	setTimeout(function() {
-	  $clone.remove();
-	}, 500);
-}
-
-function isClapping() {
-	return $('i.clap-shadow').length;
-}
-
-$('.clap').on('click', function() {
-	let $hands = $(this).find('i');
-	let $counter = $(this).siblings('.claps-count');
-
-	if (! isClapping()) {
-		$counter.removeClass('heartBeat');
-
-		axios.post($(this).data('url'))
-				 .then(function(response) {
-					$counter.text(response.data['claps_sum']);
-					$counter.addClass('heartBeat');
-
-					clap($hands);
-				 });
-	}
-});
-</script>
-
-
-{{-- END OF PERFORMANCE SCRIPTS --}}
-@endauth
 
 <script type="text/javascript">
 // LIMIT COMPOSER BIO ON THE ABOUT SECTION TO 4 LINES
@@ -438,20 +218,7 @@ function stopVideo(reset = true) {
 }
 </script>
 
-<script type="text/javascript">
-$('form#tutorial-request-form').on('submit', function(e) {
-	let $form = $(this);
-	let checked = $form.find("input[type=checkbox]:checked").length;
 
-	if(!checked) {
-		e.preventDefault();
-		$('#tutorial-alert').show();
-	} else {
-		$('#tutorial-alert').hide();
-		$form.find('button[type="submit"]').disable();
-	}
-});
-</script>
 
 <script type="text/javascript">
 var hidden, visibilityChange;

@@ -884,7 +884,8 @@ class StripeMembershipBillingTest extends ReviewTestCase
     private function renderConfirmation(MembershipConfirmed $mail): string
     {
         $mail->build();
-        return (string) app(\Illuminate\Mail\Markdown::class)->render($mail->markdown, $mail->buildViewData());
+        $markdown = clone app(\Illuminate\Mail\Markdown::class);
+        return (string) $markdown->theme($mail->theme)->render($mail->markdown, $mail->buildViewData());
     }
 
     public function test_completed_checkout_redirects_home_with_a_one_time_confirmation_and_one_email()
@@ -933,7 +934,7 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->get(route('webapp.discover'))->assertOk()->assertSee('Yearly Premium');
         Mail::assertQueued(MembershipConfirmed::class, function ($mail) {
             $html = $this->renderConfirmation($mail);
-            $this->assertStringContainsString('Your next renewal is', $html);
+            $this->assertStringContainsString('Next renewal', $html);
             $this->assertStringContainsString($this->source()->renews_at->toFormattedDateString(), $html);
             $this->assertStringContainsString(route('webapp.discover'), $html);
             $this->assertStringContainsString(route('webapp.membership.edit'), $html);
@@ -945,7 +946,7 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $trial = $this->renderConfirmation(new MembershipConfirmed('Jamie', 'monthly', true, 'Oct 22, 2026'));
         $this->assertStringContainsString('No payment was due today.', $trial);
         $this->assertStringContainsString('Oct 22, 2026', $trial);
-        $this->assertStringContainsString('Cancel before then', $trial);
+        $this->assertStringNotContainsString('Cancel before then', $trial);
     }
 
     public function test_returning_confirmation_uses_the_new_purchase_date_and_paid_renewal_without_trial_rows()

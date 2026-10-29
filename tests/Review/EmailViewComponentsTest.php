@@ -27,15 +27,16 @@ class EmailViewComponentsTest extends ReviewTestCase
                     $sample = app(AutomaticEmails::class)->render($key);
                     $this->assertStringContainsString('Welcome, Jamie', $sample['html']);
                     $this->assertStringContainsString('Welcome, Jamie', $sample['text']);
-                    $this->assertStringContainsString('width: 130px', $sample['html']);
+                    $this->assertStringContainsString('editorial-logo-plain', $sample['html']);
+                    $this->assertStringNotContainsString('floating-logo.png', $sample['html']);
                     $this->assertStringNotContainsString('<table', $sample['text']);
 
                     app(AutomaticEmailSettings::class)->setEnabled($key, true, null);
                     (new $class('Jamie'))->to('jamie@example.com')->send($mailer);
                     $this->assertStringContainsString('Welcome, Jamie', $transport->messages()->last()->getBody());
                 }
-                $legacy = app(AutomaticEmails::class)->render('membership-confirmation');
-                $this->assertStringContainsString('You’re all set!', $legacy['html']);
+                $legacy = app(AutomaticEmails::class)->render('verify-email');
+                $this->assertStringContainsString('Verify Email Address', $legacy['html']);
                 $this->assertStringNotContainsString('welcome-wrapper', $legacy['html']);
             }
             $this->assertCount(6, $transport->messages());
@@ -53,9 +54,9 @@ class EmailViewComponentsTest extends ReviewTestCase
         config(['mail.markdown.paths' => [$directory]]);
         $this->app->forgetInstance(Markdown::class);
         try {
-            $sample = app(AutomaticEmails::class)->render('membership-confirmation');
+            $sample = app(AutomaticEmails::class)->render('verify-email');
             $this->assertStringContainsString('Custom email branding', $sample['html']);
-            $this->assertStringContainsString('You’re all set!', $sample['text']);
+            $this->assertStringContainsString('Verify Email Address', $sample['text']);
             $this->assertStringNotContainsString('welcome-wrapper', $sample['html']);
         } finally {
             unlink($file); rmdir($directory.'/html'); rmdir($directory);

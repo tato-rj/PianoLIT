@@ -60,7 +60,7 @@ class PieceRecommendationsTest extends ReviewTestCase
         foreach ($rows as $row) {
             $this->assertNotContains($this->piece->id, $row['pieces']->pluck('id'));
             foreach ($row['pieces'] as $card) {
-                $this->assertArrayHasKey('webapp_has_performances', $card->getAttributes());
+                $this->assertArrayNotHasKey('webapp_has_performances', $card->getAttributes());
                 $this->assertArrayHasKey('webapp_has_synthesia', $card->getAttributes());
             }
         }

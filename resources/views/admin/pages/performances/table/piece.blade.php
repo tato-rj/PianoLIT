@@ -1,1 +1,0 @@
-{{$item->piece->long_name}}

@@ -36,10 +36,10 @@ class AdminRetiredDirectoriesTest extends ReviewTestCase
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
         $links = (new \DOMXPath($dom))->query('//*[@id="users"]//a');
-        $this->assertSame(['Profiles', 'Tutorial Requests', 'Feedback'], array_map(function ($link) {
+        $this->assertSame(['Profiles', 'Synthesia Requests', 'Feedback'], array_map(function ($link) {
             return trim($link->textContent);
         }, iterator_to_array($links)));
-        foreach (['admin.users.index', 'admin.tutorial-requests.index', 'admin.feedback.index'] as $i => $name) {
+        foreach (['admin.users.index', 'admin.synthesia-requests.index', 'admin.feedback.index'] as $i => $name) {
             $this->assertSame(route($name), $links[$i]->getAttribute('href'));
         }
         $notification = (new \App\Notifications\NewUser($user))->toArray($admin);

@@ -19,3 +19,33 @@ $button-primary-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
     background-color: $background;
     box-shadow: $button-primary-shadow;
 }
+
+@mixin secondary-button-surface {
+    color: #172033 !important;
+    background-color: #fff;
+    border-color: #e4eaf3;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+}
+
+@mixin secondary-button-states {
+    &:hover,
+    &:focus,
+    &.focus {
+        color: #172033 !important;
+        background-color: #f6f8fc;
+        border-color: #e4eaf3;
+    }
+
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active,
+    &.dropdown-toggle[aria-expanded='true'] {
+        background-color: #eaf0ff;
+        border-color: #d4e1ff;
+    }
+
+    &:disabled,
+    &.disabled {
+        background-color: #fff;
+        border-color: #e4eaf3;
+    }
+}

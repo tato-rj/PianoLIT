@@ -10,12 +10,12 @@
         @unless($analyticsExcluded)<a class="up-text-link" href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'music']) }}">View collections & score details @icon('arrow-up-right', ['mr' => 0])</a>@endunless
     </section>
     <section class="up-card" id="up-requests" aria-labelledby="up-requests-title">
-        <div class="up-section-title"><span class="up-icon up-icon--lavender">@icon('video', ['mr' => 0])</span><div><h2 id="up-requests-title">Tutorial requests <span class="up-count">{{ number_format($requests->total()) }}</span></h2><p>Current requests and publication status.</p></div></div>
+        <div class="up-section-title"><span class="up-icon up-icon--lavender">@icon('video', ['mr' => 0])</span><div><h2 id="up-requests-title">Synthesia requests <span class="up-count">{{ number_format($requests->total()) }}</span></h2><p>Current requests and publication status.</p></div></div>
         <ul class="up-piece-list">
-            @forelse($requests as $tutorialRequest)
-            <li><span class="up-piece-icon">@icon('video', ['mr' => 0])</span><div>@if($tutorialRequest->name)<a href="{{ route('webapp.pieces.show', $tutorialRequest->piece_id) }}" target="_blank" rel="noopener noreferrer">{{ $tutorialRequest->name }}</a>@else<strong>Piece unavailable</strong>@endif<small>{{ $tutorialRequest->composer ?: 'Composer not recorded' }} · {{ $tutorialRequest->created_at ? carbon($tutorialRequest->created_at)->format('M j, Y') : 'Date not recorded' }}</small></div><span class="up-pill {{ $tutorialRequest->published_at ? 'up-pill--green' : '' }}">{{ $tutorialRequest->published_at ? 'Published' : 'Pending' }}</span></li>
-            @empty<li class="up-empty">@icon('video', ['mr' => 0])<p>No tutorial requests.</p></li>@endforelse
+            @forelse($requests as $synthesiaRequest)
+            <li><span class="up-piece-icon">@icon('video', ['mr' => 0])</span><div>@if($synthesiaRequest->name)<a href="{{ route('webapp.pieces.show', $synthesiaRequest->piece_id) }}" target="_blank" rel="noopener noreferrer">{{ $synthesiaRequest->name }}</a>@else<strong>Piece unavailable</strong>@endif<small>{{ $synthesiaRequest->composer ?: 'Composer not recorded' }} · {{ $synthesiaRequest->created_at ? carbon($synthesiaRequest->created_at)->format('M j, Y') : 'Date not recorded' }}</small></div><span class="up-pill {{ $synthesiaRequest->published_at ? 'up-pill--green' : '' }}">{{ $synthesiaRequest->published_at ? 'Published' : 'Pending' }}</span></li>
+            @empty<li class="up-empty">@icon('video', ['mr' => 0])<p>No Synthesia requests.</p></li>@endforelse
         </ul>
-        @include('admin.components.pagination', ['paginator' => $requests->fragment('up-requests'), 'label' => 'Tutorial requests'])
+        @include('admin.components.pagination', ['paginator' => $requests->fragment('up-requests'), 'label' => 'Synthesia requests'])
     </section>
 </div>

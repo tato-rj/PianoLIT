@@ -71,7 +71,7 @@ class MerchandiseController extends Controller
             return response()->json(['count' => $contents['count'], 'message' => 'Added to your bag',
                 'item' => ['product_id' => $line['product']['id'], 'variant_id' => $line['variant']['id'], 'quantity' => $line['quantity']]]);
         }
-        return redirect()->route('shop.bag')->with('shop_status', 'Added to your bag');
+        return redirect()->route('shop.bag')->with('status', 'Added to your bag');
     }
 
     public function update(Request $request, int $merchandise, int $variant, MerchandiseBag $bag)
@@ -87,6 +87,6 @@ class MerchandiseController extends Controller
         $saved = $request->session()->get(MerchandiseBag::SESSION_KEY, []);
         unset($saved[$merchandise.':'.$variant]);
         $request->session()->put(MerchandiseBag::SESSION_KEY, $saved);
-        return redirect()->route('shop.bag')->with('shop_status', 'Removed from your bag');
+        return redirect()->route('shop.bag')->with('status', 'Removed from your bag');
     }
 }

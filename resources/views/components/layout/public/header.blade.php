@@ -1,7 +1,7 @@
 @php
     $transparentHeader = $transparentHeader ?? false;
     $showAccount = $showAccount ?? true;
-    $showHeaderNewsletter = $__env->hasSection('public-header-newsletter');
+    $showYouTube = request()->routeIs('home') || in_array(request()->getHost(), ['learn.'.config('app.short_url'), 'blog.'.config('app.short_url')], true);
 @endphp
 <header class="site-header{{ $transparentHeader ? ' site-header--overlay' : '' }} container pt-4 pt-md-5">
     <div class="row align-items-center justify-content-between mx-lg-4">
@@ -11,16 +11,11 @@
                 @if($showBrandName ?? false)<span class="site-header__name d-none d-md-inline">PianoLIT</span>@endif
             </a>
         </div>
-        <nav class="col-auto ms-auto" aria-label="{{ ! $showAccount ? 'Site navigation' : (request()->routeIs('home') ? 'Account and YouTube' : ($showHeaderNewsletter ? 'Account, newsletter and site navigation' : 'Account and site navigation')) }}">
+        <nav class="col-auto ms-auto" aria-label="{{ ! $showAccount ? 'Site navigation' : ($showYouTube ? 'Account and YouTube' : 'Account and site navigation') }}">
             <ul class="d-flex align-items-center gap-3 list-unstyled mb-0">
-                @if(request()->routeIs('home'))
+                @if($showYouTube)
                     <li class="nav-item d-flex align-items-center">
                         @include('components.navigation.youtube-button')
-                    </li>
-                @endif
-                @if($showHeaderNewsletter && ! request()->routeIs('home'))
-                    <li class="nav-item d-flex align-items-center">
-                        @include('components.newsletter.subscribe-button', ['label' => 'Subscribe', 'preview' => false])
                     </li>
                 @endif
                 @if($showAccount)

@@ -49,7 +49,7 @@ class AdminUserProfileTest extends ReviewTestCase
         $pieces = Model::withoutEvents(function () { return create(Piece::class, [], 25); });
         foreach ($pieces as $piece) {
             DB::table('favorites')->insert(['user_id' => $user->id, 'piece_id' => $piece->id, 'created_at' => now()]);
-            DB::table('tutorial_requests')->insert(['user_id' => $user->id, 'piece_id' => $piece->id, 'created_at' => now()]);
+            DB::table('synthesia_requests')->insert(['user_id' => $user->id, 'piece_id' => $piece->id, 'created_at' => now()]);
         }
         DB::table('favorites')->insert(['user_id' => $user->id, 'piece_id' => $pieces[24]->id, 'created_at' => now()]);
         $this->actingAs(create(Admin::class), 'admin');
@@ -87,7 +87,7 @@ class AdminUserProfileTest extends ReviewTestCase
     {
         $user = $this->user();
         $this->actingAs(create(Admin::class), 'admin')->get(route('admin.users.show', $user))->assertOk()
-            ->assertSee('No subscription')->assertSee('No location saved.')->assertSee('No saved pieces yet.')->assertSee('No tutorial requests.');
+            ->assertSee('No subscription')->assertSee('No location saved.')->assertSee('No saved pieces yet.')->assertSee('No Synthesia requests.');
         $this->withExceptionHandling()->from(route('admin.users.show', $user))->delete(route('admin.users.purge', $user), ['confirmation_email' => 'wrong@example.test'])
             ->assertRedirect(route('admin.users.show', $user))->assertSessionHasErrors('confirmation_email', null, 'purgeAccount');
         $this->get(route('admin.users.show', $user))->assertOk()->assertSee('data-open-on-load', false)->assertSee('wrong@example.test');
@@ -98,7 +98,7 @@ class AdminUserProfileTest extends ReviewTestCase
         $user = $this->user();
         $id = DB::table('apple_memberships')->insertGetId(['plan' => null, 'latest_receipt' => 'unused', 'password' => 'unused', 'created_at' => null, 'renews_at' => null]);
         $user->membership()->create(['source_type' => Apple::class, 'source_id' => $id]);
-        DB::table('tutorial_requests')->insert(['user_id' => $user->id, 'piece_id' => 999999, 'created_at' => null]);
+        DB::table('synthesia_requests')->insert(['user_id' => $user->id, 'piece_id' => 999999, 'created_at' => null]);
         $this->actingAs(create(Admin::class), 'admin')->get(route('admin.users.show', $user))->assertOk()
             ->assertSee('Apple App Store')->assertSee('Not provided')->assertSee('end date is unknown')->assertDontSee('On trial')->assertSee('Date not recorded');
     }

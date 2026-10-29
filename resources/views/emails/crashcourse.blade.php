@@ -1,4 +1,4 @@
-@component('mail::raw')
+@component('mail::raw', ['footerReason' => 'You’re receiving this lesson because you signed up for a PianoLIT crash course.', 'unsubscribeUrl' => 'mailto:contact@pianolit.com', 'unsubscribeLabel' => 'Cancel this course'])
 
 {!! $lesson->dynamic('body', $subscription) !!}
 

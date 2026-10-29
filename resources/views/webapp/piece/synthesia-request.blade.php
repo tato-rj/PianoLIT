@@ -1,20 +1,16 @@
-@component('components.dialogs.modal', ['id' => 'synthesia-request-modal'])
+@component('components.dialogs.modal', ['id' => 'synthesia-request-modal', 'centered' => true, 'options' => ['size' => 'sm'], 'descriptionId' => 'synthesia-request-description'])
 @slot('header')
-Synthesia tutorial
+Request Synthesia?
 @endslot
 
 @slot('body')
-<form id="synthesia-request-form" method="POST" action="{{route('webapp.users.tutorial-requests.store', $piece)}}">
+<form id="synthesia-request-form" method="POST" action="{{route('webapp.users.synthesia-requests.store', $piece)}}">
 	@csrf
-	<div class="mb-4">
-		<p class="m-0">Confirm your request?</p>
-		<input name="video_types[]" type="checkbox" hidden value="Synthesia" checked>
-		<p class="text-muted m-0"><small>These are custom made videos and it will take just a few days to make.</small></p>
-	</div>
+	<p class="text-muted mb-3" id="synthesia-request-description">Ready in a few days.</p>
 
-	<div class="d-flex flex-center w-100">
-		<button type="button" class="btn rounded-pill btn-wide mx-2 btn-sm btn-outline-secondary" data-bs-dismiss="modal" data-activity-label="Canceled Synthesia request">Cancel</button>
-		<button type="submit" class="btn rounded-pill btn-wide mx-2 btn-sm btn-default">Submit my request</button>
+	<div class="d-flex justify-content-end gap-2">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-activity-label="Canceled Synthesia request">Cancel</button>
+		<button type="submit" class="btn btn-primary">Send request</button>
 	</div>
 </form>
 @endslot

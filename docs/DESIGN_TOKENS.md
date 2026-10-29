@@ -14,6 +14,34 @@ Edit `resources/sass/shared/_tokens.scss`, then run `npm run production`.
 It contains the existing Sass palette and the CSS custom properties used by the
 public website, web app and admin. Commit the rebuilt CSS and Mix manifest together.
 
+## Email buttons
+
+Email primary actions share one rule in `resources/sass/emails/_branding.scss`
+for both `.welcome-button` and Laravel `.button` markup: regular 14.4px shared
+body-family text, 0.4px letter spacing, white on PianoLIT `#0055fe`, 46px height
+(11px × 21px padding, 22px line height, 1px borders) and 4px corners. This combines
+the web-app action's typography/color with the verification action's radius.
+It applies to welcome, transactional, Free Pick and admin snapshot emails.
+Keep primary/secondary surfaces on the shared button foundation mixins, retain
+explicit small secondary actions and the native App Store badge, and avoid
+per-email font overrides. `npm run emails:styles` compiles both email themes;
+web buttons retain their separate radius.
+
+## Alerts
+
+Success, error, warning and action-result feedback always uses
+`components.feedback.alert` (`@alert`), the same component returned by existing
+controllers. Do not show these notices as plain inline text or custom toasts.
+Redirects flash `status` or `error` for the public layout's standard floating
+green/red alerts. Named validation bags retain their context and render through
+the same component. Contextual warnings use its yellow variant.
+
+Shop AJAX actions clone the server-rendered templates in
+`shop.storefront.components.alerts`, inserting response messages with
+`textContent`. Successful additions keep their seven-second lifetime; errors stay
+dismissible until replaced or closed. No response HTML is interpolated. The
+Design System alert examples render the same shared component.
+
 ## Account menu
 
 `components.account.account-circle` opens `components.account.menu`, a shared
@@ -563,7 +591,8 @@ administrator changes availability after a page was loaded.
 The standard public header is `components.layout.public.header`, with shared layout in
 `resources/sass/components/_public-header.scss`. Reuse it for public pages:
 brand icon left and the circular account control right. The YouTube button is
-shown only on the main homepage (`home` route).
+shown on the main homepage (`home` route) and public Learn/Blog pages. These
+headers have no generic newsletter Subscribe button.
 It reuses `components.navigation.youtube-button`: a black pill with a white
 YouTube mark, the label “Youtube” and a white diagonal arrow, using the shared dark button, pill radius
 and Bootstrap sizing/alignment. The Design System uses this same component.
@@ -791,8 +820,8 @@ the public article; mobile embeds retain their existing typography and media.
 Stored article HTML, cover credits and references are preserved.
 
 `components.newsletter.subscribe-button` supplies the shared brand-blue Subscribe
-pill with a white mail icon, used in the Blog and Learn site headers and newsletter
-invitations. It matches the homepage YouTube button's compact size, semibold type,
+pill with a white mail icon for contextual newsletter invitations, outside the
+site header. It matches the homepage YouTube button's compact size, semibold type,
 pill radius and shadow-free finish through shared button tokens and Bootstrap utilities.
 Its modal URL stays on the request host; `label` changes the caption and
 `preview: true` makes a Design System sample inert.
@@ -805,18 +834,19 @@ responsive 32–48px size, line height and letter spacing; the description uses
 the shared 16px body token and muted text. The shared styles live in
 `components/_hub-header.scss`, including the Design System specimen.
 The shared header uses Bootstrap `mb-5` (48px) to separate it from page content.
-The component opts into `public-header-newsletter`, placing Subscribe in
-`components.layout.public.header` immediately before the account circle, in the
-same position as the homepage's YouTube button. It no longer renders an action
-beside or below the introduction. `showNewsletter: false` suppresses this opt-in;
-Design System previews do not opt in. Reuse this component as other public hub roots are
-redesigned. Do not add a newsletter invitation card at the bottom of any hub root;
-use the shared header action. Its Design System specimen uses `preview: true`.
+The component renders only its heading and description, with no newsletter
+action or header opt-in. Learn and Blog use the existing shared YouTube button
+before the account circle. Reuse this component as other public hub roots are
+redesigned. Do not add a newsletter invitation card at the bottom of a hub root
+as a replacement for the removed header action. Its Design System specimen uses
+`preview: true`.
 
 `components.newsletter.invitation` provides the reusable pastel newsletter panel
 for article and tool detail pages, with the same blue Subscribe pill and existing
-same-host subscription modal. These pages also opt into the top-header action;
-their contextual newsletter invitation remains available within the content.
+same-host subscription modal. Contextual invitations stay within page content
+and never add an action to the global header. Arthur prefers future signup
+invitations that offer something useful rather than a generic request to subscribe;
+existing offers and subscription/consent behavior remain available.
 Pass a unique `headingId`; `preview: true` renders an inert Design System sample.
 The article explicitly passes `preview: false` so editorial previews also retain
 the subscription action. Related stories reuse `blog.components.story-card` in
@@ -847,14 +877,14 @@ pigments are local to the artwork; shared brand/surface/type tokens remain in us
 They contain no screenshots, invented content totals or external image requests.
 The introduction leads with the plain PianoLIT Learn title and names concrete
 activities in its description. It uses the same `components.layout.hub-header`, title
-and description styles and newsletter placement as Blog.
+and description styles and YouTube header button as Blog.
 Learn retains the public header/footer, breadcrumb and `components.layout.editorial`.
 Its sidebar ads always use `components.promotions.ads` with `variant: cards`, which
 renders the same `components.cards.promotion` as Blog, including the existing pastel
 surfaces, category tags, spacing and buttons. Do not add a hub-specific ads design,
 appearance variant or introductory heading. This reusable ads area stays consistent
 across public hubs. Learn has no bottom newsletter invitation card. Its introduction
-uses the shared newsletter action on the Learn host.
+contains no newsletter action; the public header retains YouTube on the Learn host.
 The Circle of Fifths and Chord Finder also use this shell; other deep resource and tool layouts
 remain for later work. Keep their routes, calculations, signup/download/quiz
 requests and mobile contracts intact.
@@ -906,7 +936,7 @@ when notes change. The standalone Chord Finder script also uses versioned `mix()
 
 ### Section navigation
 
-`components.navigation.section-navigation` renders the shared Support center and My profile menus. Pass a unique `id`, an accessible `label`, and ordered `items` with `target` (section ID), `label`, and optional `icon`; optional `heading` adds the muted introduction. The single `_section-navigation.scss` in `shared.scss` owns wrapping mobile links, sticky desktop placement, and the primary-color/semibold current link. Neither page defines its own menu markup or finish.
+`components.navigation.section-navigation` renders the shared Support center and My profile menus. Pass a unique `id`, an accessible `label`, and ordered `items` with `target` (section ID), `label`, and `icon`. Omit visible menu headings such as On this page; the accessible navigation label remains. Both pages and the Design System use the component's shared icon renderer. The single `_section-navigation.scss` in `shared.scss` owns wrapping mobile links, sticky desktop placement, and the primary-color/semibold current link. Neither page defines its own menu markup or finish.
 
 The component includes the versioned `components/section-navigation.js` once. It highlights the visible section on initial load, manual scrolling, resizing, page restoration and FAQ expansion/collapse, with a bottom-of-page fallback for short final sections. Exactly one valid link per menu receives `aria-current="location"`; ordinary fragment links and keyboard navigation remain native. Keep scroll behavior here rather than in page scripts. The Design System renders this same component with `preview: true`, which shows a static current item without attaching scroll listeners.
 
@@ -994,7 +1024,7 @@ See `PIANISTS.md` for controls, data states and the editing map.
 
 ## Shop storefront exception
 
-Digital catalog cards inset existing eScore/eBook covers and mockups within the square artwork area, leaving space on every side. Use mixed-case 600-weight body-family titles, regular muted subtitles from the existing product record when available (at most two visible lines), and compact yellow outlined price labels aligned at the bottom of the copy. Keep full titles readable and omit redundant category labels. The shared `shop.storefront.components.card` and its Digital cards Design System specimen own this treatment.
+Every Shop product card uses the same artwork inset, mixed-case 600-weight body-family title, copy spacing and compact yellow outlined price label aligned at the bottom. This applies to T-shirts, stickers, eBooks, eScores and other merchandise in catalog rows, category grids and related products. Keep full titles readable, omit redundant category labels and show existing digital subtitles in muted regular text with at most two visible lines. The shared `shop.storefront.components.card` and its Product cards Design System specimen own this treatment; do not add product-type style variants.
 
 Color options include a 22px square swatch beside the readable name. The swatch uses saved Printful catalog hex codes, including a diagonal split for two-tone variants, and keeps its color through button hover/selection. The button retains ordinary contrast and keyboard feedback; missing or conflicting provider color metadata stays text-only. Never add named-color CSS mappings for products.
 
@@ -1003,4 +1033,4 @@ Arthur’s October 28 video reference explicitly gives Shop its own component fi
 Shop’s header uses the standard responsive PianoLIT logo size (`clamp(48px, 7vw, 64px)`) beside plain Shop text, without a highlighted label or an extra PianoLIT wordmark. Its header row uses `mx-lg-4`, and all storefront pages use `components.layout.public.content` plus the usual inner container, matching the other hubs’ content edges. The right side contains Bag and the shared account circle/menu. All, T-shirts, Stickers, eBooks and eScores are outlined category links to the root or `/t-shirts`, `/stickers`, `/ebooks` and `/escores`; published downloads share its product cards rather than separate header links. All Products groups T-shirts across the first two desktop columns and Stickers across the next two, followed by full-width eScores and eBooks sections. Small 16px category headings with right arrows link to the same category destinations as the top navigation, preserving the search query; category-filtered pages omit group headings and redundant card category labels. Each section has one horizontal row with 44px previous/next controls at the heading’s right edge, using `shop.storefront.components.category-row` (also shown in the Design System). Physical sections show two cards, full-width digital sections four. On phones sections stack with two cards visible. Controls disable at scroll boundaries; native touch/keyboard scrolling and reduced-motion preferences are retained. Selected category pages show the complete matching product grid without row arrows or pagination. Merchandise, eBook and eScore details all render `shop.storefront.show` through the web-only `Shop\ProductPage` service, sharing the gallery, price tag, title and open, unboxed Details section. Product-specific partials add options or purchase/download actions; digital editions add their full description, topics, preview/audio, reviews and related cards. Preserve paid/free/member/owned actions and existing digital checkout/download behavior. Paid digital editions use the shared full-screen checkout shell and remain separate from the merchandise bag; free/member/owned actions retain their existing behavior. The Design System uses the actual shared gallery and price partials.
 
 
-Customer merchandise tracking reuses the shared account shell, `profile-panel`, standard headings/buttons and eight-item pagination at `/profile/orders`. Keep My downloads separate and cross-link the two pages. All account menus reuse `components.account.menu`, whose Track your orders entry always links to main. The private Shop order view reuses the storefront shell and `shop.storefront.components.order-tracking` for carrier details, package items, safe external tracking links, delivery estimates and recent carrier events, without a second tracking app design. Receipt and email links lead to that same view; external carrier links open safely in a new tab.
+Customer merchandise tracking reuses the shared account shell, `profile-panel`, standard headings/buttons and eight-item pagination at `/profile/orders`. Keep My downloads separate, with no cross-links between the two pages. Both remain available as permanent icon buttons in the profile header; the downloads empty state offers only Explore infographics. All account menus reuse `components.account.menu`, whose Track your orders entry always links to main. The private Shop order view reuses the storefront shell and `shop.storefront.components.order-tracking` for carrier details, package items, safe external tracking links, delivery estimates and recent carrier events, without a second tracking app design. Receipt and email links lead to that same view; external carrier links open safely in a new tab.

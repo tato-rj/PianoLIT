@@ -19,14 +19,14 @@
 
     <div class="row g-4 g-lg-5">
         <aside class="col-lg-3">
-            @include('components.navigation.section-navigation', ['id' => 'support-navigation', 'label' => 'Support topics', 'heading' => 'On this page', 'items' => [
-                ['target' => 'start-here', 'label' => 'Start here'],
-                ['target' => 'explore', 'label' => 'Explore PianoLIT'],
-                ['target' => 'memberships', 'label' => 'Memberships & billing'],
-                ['target' => 'account', 'label' => 'Account & sign-in'],
-                ['target' => 'using-pianolit', 'label' => 'Using PianoLIT'],
-                ['target' => 'purchases', 'label' => 'Shop purchases'],
-                ['target' => 'contact-support', 'label' => 'Contact support'],
+            @include('components.navigation.section-navigation', ['id' => 'support-navigation', 'label' => 'Support topics', 'items' => [
+                ['target' => 'start-here', 'label' => 'Start here', 'icon' => 'flag'],
+                ['target' => 'explore', 'label' => 'Explore PianoLIT', 'icon' => 'compass'],
+                ['target' => 'memberships', 'label' => 'Memberships & billing', 'icon' => 'credit-card'],
+                ['target' => 'account', 'label' => 'Account & sign-in', 'icon' => 'user-round'],
+                ['target' => 'using-pianolit', 'label' => 'Using PianoLIT', 'icon' => 'circle-help'],
+                ['target' => 'purchases', 'label' => 'Shop purchases', 'icon' => 'shopping-bag'],
+                ['target' => 'contact-support', 'label' => 'Contact support', 'icon' => 'mail'],
             ]])
         </aside>
         <div class="col-lg-9">

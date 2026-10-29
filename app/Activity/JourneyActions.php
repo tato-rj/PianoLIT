@@ -17,7 +17,7 @@ class JourneyActions
         $outcomes = [];
         foreach ($events as $event) {
             $m = Presentation::metadata($event);
-            if (($event->source ?? '') === 'server' && in_array($event->type, ['tutorial_request_created', 'tutorial_request_rejected'], true)
+            if (($event->source ?? '') === 'server' && in_array($event->type, ['synthesia_request_created', 'synthesia_request_rejected', 'tutorial_request_created', 'tutorial_request_rejected'], true)
                 && !empty($m['attempt_id']) && !empty($m['control'])) $outcomes[$m['control'].':'.$m['attempt_id']] = $event;
         }
         $display = [];

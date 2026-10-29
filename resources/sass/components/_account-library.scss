@@ -1,0 +1,12 @@
+// Shared by account library pages and their Design System specimens.
+.account-library-empty { max-width: 36rem; }
+
+.account-library-illustration {
+    display: block;
+    width: 300px;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+
+    @media (max-width: 575.98px) { width: 250px; }
+}

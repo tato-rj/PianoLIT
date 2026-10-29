@@ -20,7 +20,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Admin' => 'App\Policies\AdminPolicy',
         'App\Payments\Membership' => 'App\Policies\MembershipPolicy',
         'App\User' => 'App\Policies\UserPolicy',
-        'App\TutorialRequest' => 'App\Policies\TutorialRequestPolicy',
+        'App\SynthesiaRequest' => 'App\Policies\SynthesiaRequestPolicy',
         'App\Review' => 'App\Policies\ReviewPolicy',
     ];
 

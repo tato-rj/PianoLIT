@@ -9,8 +9,7 @@
 <form method="POST" action="{{ route($provider.'.link.password') }}" disable-on-submit>
   @csrf
   <input type="hidden" name="challenge_id" value="{{ $challenge->id }}">
-  <label class="form-label" for="existing-password">PianoLIT password</label>
-  <input id="existing-password" class="form-control input-light mb-3" type="password" name="password" autocomplete="current-password" required>
+  @input(['id' => 'existing-password', 'type' => 'password', 'name' => 'password', 'label' => 'PianoLIT password', 'placeholder' => 'Password', 'autocomplete' => 'current-password'])
   <button class="btn btn-primary w-100" type="submit">{{ $linking ? 'Connect '.$providerName : 'Confirm my account' }}</button>
 </form>
 <div class="text-center text-muted my-3">or</div>

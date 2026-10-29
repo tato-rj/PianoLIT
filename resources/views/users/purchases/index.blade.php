@@ -2,12 +2,9 @@
 
 @section('content')
 <div class="container download-library py-4 py-md-5" data-download-library>
-    <div class="row">
-        <div class="col-12">
-            <header class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 mb-md-5">
-                <h1 class="h2 mb-0">My downloads</h1>
-                <a href="{{ route('users.orders') }}">Track your orders @icon('arrow-right')</a>
-            </header>
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            @include('users.components.library-header', ['heading' => 'My downloads', 'icon' => 'download'])
             @if($purchases->total() || $filters['q'] !== '' || $filters['type'] !== '')
                 @include('users.purchases.toolbar')
                 @if($purchases->isNotEmpty())

@@ -1,10 +1,7 @@
-@use 'sass:math';
 @import '../shared/bootstrap-theme';
 @import '../shared/tokens';
 @import '../shared/button-foundations';
 
-$email-button-font-size: math.div($font-size-base, 1rem) * 16px * $button-font-scale;
-$email-button-height: $button-line-height + 2 * $button-padding-y + 2 * $button-border-width;
 // Resolved for inboxes that cannot use the web app's --color-surface-subtle.
 $email-background: #f8f9fa;
 
@@ -18,19 +15,17 @@ a { color: $brand-primary; text-decoration: none; }
 p { margin: 0; font-size: 16px; line-height: 1.65; }
 h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; font-weight: 600; text-align: center; }
 .welcome-wrapper { width: 100%; background: $email-background; }
-.welcome-container { width: 600px; max-width: 600px; }
-.welcome-padding { padding-left: 48px; padding-right: 48px; }
 .welcome-preheader { display: none !important; visibility: hidden; mso-hide: all; font-size: 1px; line-height: 1px; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; }
 .welcome-hero { padding-top: 28px; padding-bottom: 40px; text-align: center; }
-.editorial-logo { display: block; height: auto; }
-.welcome-logo { width: 130px; margin: 0 auto 14px; }
-.editorial-logo-plain { width: 48px; height: 48px; margin: 0 auto; }
+.welcome-hero .editorial-logo { margin: 0 auto 18px; }
 .welcome-hero h1 { margin: 0 0 18px; font-size: 36px; line-height: 1.25; letter-spacing: -1px; overflow-wrap: break-word; word-break: break-word; }
 .welcome-introduction p, .welcome-description p { text-align: center; color: #6c757d; }
 .welcome-section { padding-bottom: 40px; text-align: center; }
 .welcome-rule { height: 1px; background: #e9ecef; font-size: 1px; line-height: 1px; }
 .welcome-section h2 { font-size: 25px; line-height: 1.35; letter-spacing: -.5px; margin: 36px 0 14px; }
 .welcome-description { margin: 0 auto 24px; }
+.welcome-section-note { margin: 0 auto 24px; }
+.welcome-section-note p { color: #6c757d; font-size: 14px; line-height: 1.6; text-align: center; }
 .welcome-mockup { display: block; width: 504px; height: auto; margin: 0 auto 20px; }
 .welcome-hubs { padding-top: 40px; padding-bottom: 40px; background-color: mix(white, map-get($pastel-palette, 'lavender'), 65%); }
 .welcome-hubs h2 { margin-top: 0; }
@@ -44,12 +39,17 @@ h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; fo
 .welcome-hub-copy .welcome-hub-status { margin: 0 0 7px; font-size: 11px; line-height: 1.4; color: #6c757d; }
 .welcome-hub-image { width: 30%; }
 .welcome-hub-image img { display: block; width: 128px; max-width: 100%; height: auto; border-radius: 7px; }
-.welcome-benefits { padding-top: 40px; }
-.welcome-benefits h2 { margin-top: 0; margin-bottom: 32px; }
-.welcome-benefit { padding-bottom: 28px; text-align: center; }
-.welcome-benefit-icon { display: block; width: 40px; height: 40px; margin: 0 auto 12px; }
-.welcome-benefit h3 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; font-size: 20px; font-weight: 600; line-height: 1.3; margin: 0 0 7px; text-align: center; }
-.welcome-benefit p { color: #6c757d; font-size: 14px; line-height: 1.6; text-align: center; }
+.welcome-benefits { padding-top: 32px; padding-bottom: 32px; }
+.welcome-benefits h2 { margin-top: 0; margin-bottom: 24px; }
+.welcome-benefit { padding-bottom: 16px; text-align: left; }
+.welcome-benefit-symbol { width: 24px; padding-top: 1px; }
+.welcome-benefit-icon { display: block; width: 24px; height: 24px; margin: 0; }
+.welcome-benefit-preview { width: 156px; }
+.welcome-benefit-mockup { display: block; width: 156px; height: 208px; margin: 0; }
+.welcome-benefit-with-mockup .welcome-benefit-copy { padding-left: 20px; }
+.welcome-benefit-copy { padding-left: 12px; }
+.welcome-benefit h3 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; font-size: 16px; font-weight: 600; line-height: 1.3; margin: 0 0 4px; text-align: left; }
+.welcome-benefit p { color: #6c757d; font-size: 14px; line-height: 1.5; text-align: left; }
 .welcome-pieces h2 { margin-top: 12px; }
 .welcome-piece-list { width: 100%; table-layout: fixed; margin-bottom: 28px; }
 .welcome-piece { padding: 0 6px; overflow-wrap: break-word; word-break: break-word; }
@@ -58,49 +58,10 @@ h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; fo
 .welcome-piece p { color: #6c757d; font-size: 12px; line-height: 1.5; margin-top: 4px; text-align: left; }
 .welcome-actions { margin: 0 auto; }
 .welcome-actions td { padding: 0 5px; }
-.welcome-button {
-    display: inline-block;
-    box-sizing: border-box;
-    vertical-align: middle;
-    @include default-button-size($email-button-font-size);
-    @include primary-button-surface($brand-primary);
-    border: $button-border-width solid $primary;
-    border-radius: $button-radius;
-    font-weight: 400;
-    letter-spacing: .4px;
-    text-align: center;
-    text-decoration: none;
-    mso-padding-alt: $button-padding-y $button-padding-x;
-}
-.welcome-button.welcome-app-store {
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    padding: 0;
-    box-shadow: none;
-    font-size: 0;
-    line-height: 0;
-    height: $email-button-height;
-    mso-padding-alt: 0;
-}
-.welcome-app-store img { display: block; width: auto; height: $email-button-height; }
-.welcome-footer { padding-top: 8px; padding-bottom: 36px; text-align: left; }
-.welcome-footer p { margin-bottom: 18px; color: #6c757d; font-size: 16px; text-align: left; }
-.editorial-footer-social { margin-bottom: 28px; }
-.editorial-footer-youtube img { display: block; width: 32px; height: 23px; opacity: .55; }
-.editorial-footer-details { width: 100%; table-layout: fixed; }
-.editorial-footer-copy { overflow-wrap: break-word; word-break: break-word; }
-.editorial-footer-brand { width: 72px; padding-left: 24px; }
-.editorial-footer-brand .editorial-logo { margin: 0 0 2px auto; }
-.welcome-footer .editorial-footer-note { font-size: 14px; line-height: 1.6; }
-.welcome-footer .editorial-footer-links { font-size: 14px; line-height: 1.8; }
-.editorial-footer-links a { color: #6c757d; text-decoration: underline; }
-.editorial-footer-links span { color: #adb5bd; }
-.welcome-footer .welcome-copyright { margin: 22px 0 0; font-size: 12px; }
+@import './branding';
 
 // Freepick shares the welcome family's outer shell, buttons and footer.
-.freepick-email .welcome-button { font-size: 16px; }
-.freepick-header { padding: 24px; text-align: center; }
+.freepick-header { padding-top: 24px; padding-bottom: 24px; text-align: center; }
 .freepick-header .editorial-logo { margin-bottom: 12px; }
 .freepick-panel { width: 100%; background: white; border-collapse: separate; border-spacing: 0; border-radius: 24px 24px 0 0; }
 .freepick-panel-with-cover { border-radius: 0; }
@@ -218,7 +179,6 @@ h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; fo
 .snapshot-piece-copy .snapshot-note { margin-top: 5px; }
 .snapshot-piece-count { font-size: 22px; font-weight: 600; }
 .snapshot-closing { padding-bottom: 26px; }
-.snapshot-closing .welcome-button { font-size: 16px; }
 .snapshot-method { margin-top: 22px; }
 .snapshot-method p { font-size: 12px; line-height: 1.6; color: #6c757d; text-align: left; }
 .snapshot-email .welcome-footer { padding-top: 0; padding-bottom: 28px; }

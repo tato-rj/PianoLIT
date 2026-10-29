@@ -270,7 +270,12 @@ class ShopOrderTrackingTest extends ReviewTestCase
         $page = $this->get(route('users.orders').'?user_id=999')->assertOk()->assertSee($this->order->id)->assertDontSee($other->id);
         $page->assertDontSee('googletagmanager.com');
         $this->assertStringContainsString('Track your orders', $page->getContent());
-        $this->get(route('users.purchases'))->assertOk()->assertSee(route('users.orders'));
+        $downloads = $this->get(route('users.purchases'))->assertOk();
+        foreach ([[$page, route('users.purchases')], [$downloads, route('users.orders')]] as [$response, $otherUrl]) {
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($response->getContent());
+            $this->assertCount(0, (new \DOMXPath($dom))->query('//main//a[@href="'.$otherUrl.'"]'));
+        }
         auth('web')->logout();
         $this->get('http://shop.localhost/profile/orders?filter=a%2Fb')->assertStatus(301)->assertRedirect('http://localhost/profile/orders?filter=a%2Fb');
         $this->get(route('users.orders'))->assertRedirect();

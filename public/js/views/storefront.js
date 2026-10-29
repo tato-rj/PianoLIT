@@ -3,6 +3,18 @@
     var root = document.querySelector('[data-storefront]');
     if (!root) return;
 
+    function notify(type, message) {
+        var output = root.querySelector('[data-feedback-output]');
+        var template = root.querySelector('[data-feedback-template="' + type + '"]');
+        var content = template.content.cloneNode(true);
+        content.querySelector('[data-feedback-message]').textContent = message;
+        clearTimeout(root.shopNoticeTimer);
+        output.replaceChildren(content);
+        if (type === 'success') {
+            root.shopNoticeTimer = setTimeout(function () { output.replaceChildren(); }, 7000);
+        }
+    }
+
     root.querySelectorAll('[data-shop-category]').forEach(function (section) {
         var track = section.querySelector('[data-category-track]');
         var controls = section.querySelector('[data-category-controls]');
@@ -139,12 +151,10 @@
             if (root.dataset.pending === 'true') return;
             if (!form.reportValidity()) return;
             var button = form.querySelector('[type="submit"]');
-            var error = form.querySelector('.shop-form-error');
             root.dataset.pending = 'true';
             var submitters = root.querySelectorAll('[data-add-to-bag] [type="submit"]');
             submitters.forEach(function (submitter) { submitter.disabled = true; });
             button.setAttribute('aria-busy', 'true');
-            error.hidden = true;
             try {
                 var response = await fetch(form.action, {method: 'POST', credentials: 'same-origin', body: new FormData(form), headers: {'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest'}});
                 var payload = await response.json().catch(function () { return {}; });
@@ -162,14 +172,9 @@
                         renderBagButton(productForm);
                     });
                 }
-                var notice = root.querySelector('[data-shop-notice]');
-                notice.querySelector('[data-shop-notice-text]').textContent = payload.message;
-                notice.hidden = false;
-                clearTimeout(root.shopNoticeTimer);
-                root.shopNoticeTimer = setTimeout(function () { notice.hidden = true; }, 7000);
+                notify('success', payload.message || 'Added to your bag');
             } catch (failure) {
-                error.textContent = failure.message || 'Your bag could not be updated. Please try again.';
-                error.hidden = false;
+                notify('error', failure.message || 'Your bag could not be updated. Please try again.');
             } finally {
                 root.dataset.pending = 'false';
                 submitters.forEach(function (submitter) { submitter.disabled = false; });

@@ -6,23 +6,14 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 
 	Route::prefix('users')->middleware('auth:web')->group(function() {
 
-		Route::prefix('tutorial-requests')->name('tutorial-requests.')->group(function() {
+		Route::prefix('synthesia-requests')->name('synthesia-requests.')->group(function() {
 
-			Route::post('{piece}', 'TutorialRequestsController@store')->name('store');
-
-		});
-
-		Route::prefix('performances')->name('performances.')->group(function() {
-
-            Route::post('{performance}/clap', 'PerformancesController@clap')->name('clap');
-
-			Route::get('{piece}/upload-url', 'PerformancesController@uploadUrl')->withoutMiddleware(['log.webapp'])->name('upload-url');
-
-			Route::post('{piece}', 'PerformancesController@store')->name('store');
-
-			Route::delete('{performance}', 'PerformancesController@destroy')->name('destroy');
+			Route::post('{piece}', 'SynthesiaRequestsController@store')->name('store');
 
 		});
+
+        // Accept already-open browser forms on their original same-origin URL.
+        Route::post('tutorial-requests/{piece}', 'SynthesiaRequestsController@store')->name('tutorial-requests.store');
 
 		Route::prefix('favorites')->name('favorites.')->group(function() {
 

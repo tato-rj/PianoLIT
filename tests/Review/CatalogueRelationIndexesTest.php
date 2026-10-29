@@ -20,8 +20,6 @@ class CatalogueRelationIndexesTest extends ReviewTestCase
             'piece' => Piece::query()->setEagerLoads([])->orderBy('pieces.id'),
             'composer' => Composer::query()->setEagerLoads([])->orderBy('composers.id'),
             'tag' => Tag::query()->withCount('pieces')->orderBy('tags.id'),
-            'performance' => Piece::query()->select('pieces.id')->setEagerLoads([])
-                ->withExists(['performances' => function ($query) { $query->approved(); }])->orderBy('pieces.id'),
         ];
     }
 
@@ -40,7 +38,7 @@ class CatalogueRelationIndexesTest extends ReviewTestCase
         $before = $this->plans();
         $relations = [
             'piece_views' => 'piece', 'favorites' => 'piece', 'tutorials' => 'piece',
-            'pieces' => 'composer', 'piece_tag' => 'tag', 'performances' => 'performance',
+            'pieces' => 'composer', 'piece_tag' => 'tag',
         ];
         foreach ($relations as $table => $query) {
             $this->assertStringContainsString('SCAN '.$table, $before[$query]);
@@ -70,9 +68,6 @@ class CatalogueRelationIndexesTest extends ReviewTestCase
                 DB::table('tutorials')->insert([
                     'piece_id' => $pieces[0]->id, 'type' => 'Performance', 'category' => 'performance', 'filename' => 'example',
                 ]);
-                DB::table('performances')->insert([
-                    'piece_id' => $pieces[0]->id, 'user_id' => $userId, 'approved_at' => now(),
-                ]);
             }
         });
 
@@ -87,11 +82,10 @@ class CatalogueRelationIndexesTest extends ReviewTestCase
         }
         $this->assertSame([2], array_column($indexed['composer'], 'pieces_count'));
         $this->assertSame([2], array_column($indexed['tag'], 'pieces_count'));
-        $this->assertSame([1, 0], array_column($indexed['performance'], 'performances_exists'));
 
         $indexes = [
             'piece_views' => ['piece_id'], 'favorites' => ['piece_id'],
-            'tutorials' => ['piece_id'], 'performances' => ['piece_id'],
+            'tutorials' => ['piece_id'],
             'pieces' => ['composer_id'], 'piece_tag' => ['tag_id', 'piece_id'],
         ];
         $assertIndexes = function ($present) use ($indexes) {

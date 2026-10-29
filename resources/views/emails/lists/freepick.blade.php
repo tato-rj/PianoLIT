@@ -64,7 +64,7 @@ Some of our latest additions. Explore the full library with Premium.
 @endcomponent
 @endif
 
-@component('mail::freepick.premium', ['title' => 'Keep the inspiration going', 'image' => $websiteUrl.mix('images/emails/welcome/app-devices.jpg'), 'url' => $campaignLinks->url($premiumUrl, 'go_premium'), 'button' => 'Go Premium'])
+@component('mail::freepick.premium', ['title' => 'Keep the inspiration going', 'image' => $websiteUrl.mix('images/emails/welcome/app-devices.png'), 'url' => $campaignLinks->url($premiumUrl, 'go_premium'), 'button' => 'Go Premium'])
 This week is just the beginning. With PianoLIT Premium, keep exploring the full library of pieces, available videos and recordings, and public-domain scores.
 
 Save your markings, build a repertoire you love, and download or print public-domain scores for your piano. The same account works on the web and in the iOS app.

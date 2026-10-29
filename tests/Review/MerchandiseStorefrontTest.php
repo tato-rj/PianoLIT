@@ -204,13 +204,16 @@ class MerchandiseStorefrontTest extends ReviewTestCase
     {
         $product = $this->product();
         $data = ['product_id' => $product->id, 'variant_id' => 91, 'quantity' => 1];
-        $this->post(route('shop.bag.add'), $data)->assertRedirect(route('shop.bag'));
+        $this->post(route('shop.bag.add'), $data)->assertRedirect(route('shop.bag'))->assertSessionHas('status', 'Added to your bag');
         $this->postJson(route('shop.bag.add'), $data)->assertJson(['count' => 2]);
         $params = ['merchandise' => $product->id, 'variant' => 91];
         $this->patch(route('shop.bag.update', $params), ['quantity' => 3])->assertRedirect(route('shop.bag'));
         $this->get(route('shop.bag'))->assertSee('$85.50 USD');
-        $this->delete(route('shop.bag.remove', $params))->assertRedirect(route('shop.bag'));
-        $this->get(route('shop.bag'))->assertSee('Your bag is waiting');
+        $this->delete(route('shop.bag.remove', $params))->assertRedirect(route('shop.bag'))->assertSessionHas('status', 'Removed from your bag');
+        $removed = $this->get(route('shop.bag'))->assertSee('Your bag is waiting')->assertSee('Removed from your bag')->assertDontSee('shop-toast');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($removed->getContent());
+        $this->assertCount(1, (new \DOMXPath($dom))->query('//div[@role="alert" and contains(@class,"alert-green") and contains(.,"Removed from your bag") and not(ancestor::template)]'));
     }
 
     public function test_product_button_reports_only_this_sessions_quantity_for_each_exact_option()
@@ -255,6 +258,12 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $other = $this->product(['variants' => [$this->variant(['currency' => 'EUR'])]]);
         $this->postJson(route('shop.bag.add'), array_merge($data, ['product_id' => $other->id]))->assertStatus(422);
         $this->assertSame(1, session(MerchandiseBag::SESSION_KEY)[$product->id.':91']['quantity']);
+        $this->from(route('shop.bag'))->post(route('shop.bag.add'), array_merge($data, ['quantity' => 0]))
+            ->assertRedirect(route('shop.bag'))->assertSessionHasErrors(['quantity'], null, 'storefront');
+        $invalid = $this->get(route('shop.bag'))->assertOk()->assertDontSee('shop-form-error');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($invalid->getContent());
+        $this->assertCount(1, (new \DOMXPath($dom))->query('//div[@role="alert" and contains(@class,"alert-red") and not(ancestor::template)]'));
     }
 
     public function test_retired_products_and_unavailable_variants_cannot_be_added_or_counted()
@@ -263,7 +272,10 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $data = ['product_id' => $product->id, 'variant_id' => 91, 'quantity' => 1];
         $this->postJson(route('shop.bag.add'), $data)->assertOk();
         $product->update(['variants' => [$this->variant(['out_of_stock' => true])]]);
-        $this->get(route('shop.bag'))->assertSee('Some items are no longer available')->assertDontSee('$28.50 USD');
+        $unavailable = $this->get(route('shop.bag'))->assertSee('Some items are no longer available')->assertDontSee('$28.50 USD');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($unavailable->getContent());
+        $this->assertCount(1, (new \DOMXPath($dom))->query('//div[@role="alert" and contains(@class,"alert-yellow") and contains(.,"Some items are no longer available")]'));
         $this->withExceptionHandling()->postJson(route('shop.bag.add'), $data)->assertStatus(422);
         $product->delete();
         $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertNotFound();

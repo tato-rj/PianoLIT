@@ -2,13 +2,12 @@
 
 namespace Tests\Review;
 
-use App\{Admin, Composer, Performance, Piece, TutorialRequest, User};
-use App\Mail\{AccountWelcome, AutomaticEmailSettings, IosAccountWelcome, SharePieceEmail, WebsiteAccountWelcome};
+use App\{Admin, Composer, Piece, SynthesiaRequest, User};
+use App\Mail\{AccountWelcome, AutomaticEmailSettings, IosAccountWelcome, WebsiteAccountWelcome};
 use App\Mail\Admin\EmailPreview;
 use App\Mail\Memberships\MembershipConfirmed;
-use App\Mail\Performances\{PerformanceApprovedEmail, PerformanceSubmittedEmail};
 use App\Mail\Shop\ConfirmPurchase;
-use App\Mail\Tutorials\{NewRequestEmail, RequestPublishedEmail};
+use App\Mail\SynthesiaRequests\{NewRequestEmail, RequestPublishedEmail};
 use App\Notifications\User\ConfirmGoogleAccount;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Notifications\{ResetPassword, VerifyEmail};
@@ -39,7 +38,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $user = new User(['id' => 0, 'first_name' => 'Jamie', 'last_name' => 'Parker', 'email' => 'jamie@example.com']);
         $piece = new Piece(['id' => 0, 'name' => 'Prelude', 'key' => 'E minor']);
         $piece->setRelation('composer', new Composer(['name' => 'Frédéric Chopin']))->setRelation('tags', collect());
-        $request = (new TutorialRequest)->setRelation('user', $user)->setRelation('piece', $piece);
+        $request = (new SynthesiaRequest)->setRelation('user', $user)->setRelation('piece', $piece);
         return [$user, $piece, $request];
     }
 
@@ -64,7 +63,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $dom = new \DOMDocument; @$dom->loadHTML($page->getContent());
         $xpath = new \DOMXPath($dom);
         $this->assertCount(1, $xpath->query('//input[@role="switch" and @aria-label="Automatic sending: Reset password" and not(@checked)]'));
-        $this->assertCount(21, $xpath->query('//input[@role="switch"]/ancestor::form/input[@name="_token"]'));
+        $this->assertCount(18, $xpath->query('//input[@role="switch"]/ancestor::form/input[@name="_token"]'));
         Mail::assertNothingSent(); Mail::assertNothingQueued();
     }
 
@@ -93,9 +92,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
             'admin-weekly-snapshot' => new \App\Mail\Admin\AdminReport((new \App\Services\Admin\WeeklySnapshotPreview)->data(), new Admin(['name' => 'Preview Admin'])),
             'account-welcome-website' => new WebsiteAccountWelcome('Jamie'), 'account-welcome' => new AccountWelcome('Jamie'), 'account-welcome-ios' => new IosAccountWelcome('Jamie'), 'purchase-confirmation' => $purchase,
             'membership-confirmation' => new MembershipConfirmed('Jamie', 'monthly', true, null),
-            'tutorial-request' => new NewRequestEmail($request), 'tutorial-published' => new RequestPublishedEmail($request),
-            'performance-submitted' => new PerformanceSubmittedEmail($piece), 'performance-approved' => new PerformanceApprovedEmail($piece),
-            'piece-shared' => new SharePieceEmail($piece, $user),
+            'synthesia-request' => new NewRequestEmail($request), 'synthesia-published' => new RequestPublishedEmail($request),
         ];
         foreach ($mails as $key => $mail) {
             $mail->to('recipient@example.com');
@@ -176,14 +173,10 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         [$user, $piece, $request] = $this->fixtures();
         $this->actingAs($user, 'web');
         $admin = create(Admin::class); Notification::fake();
-        $performance = (new Performance)->setRelation('piece', $piece);
         $purchase = (new \App\Merchandise\Purchase)->setRelation('item', new \App\Shop\eBook(['price' => 10, 'title' => 'Practice Companion']));
         $sources = [
-            'tutorial-request' => [new \App\Listeners\Tutorials\NewRequestListener, new \App\Events\Tutorials\NewRequest($request)],
-            'tutorial-published' => [new \App\Listeners\Tutorials\RequestPublishedListener, new \App\Events\Tutorials\RequestPublished($request)],
-            'performance-submitted' => [new \App\Listeners\Performances\PerformanceSubmittedListener, new \App\Events\Performances\PerformanceSubmitted($performance)],
-            'performance-approved' => [new \App\Listeners\Performances\PerformanceApprovedListener, new \App\Events\Performances\PerformanceApproved($performance)],
-            'piece-shared' => [new \App\Listeners\PieceSharedListener, new \App\Events\PieceShared($piece, 'recipient@example.com')],
+            'synthesia-request' => [new \App\Listeners\SynthesiaRequests\NewRequestListener, new \App\Events\SynthesiaRequests\NewRequest($request)],
+            'synthesia-published' => [new \App\Listeners\SynthesiaRequests\RequestPublishedListener, new \App\Events\SynthesiaRequests\RequestPublished($request)],
             'purchase-confirmation' => [new \App\Listeners\NewPurchaseListener, new \App\Events\PurchaseMade($purchase)],
         ];
         foreach ($sources as $key => [$listener, $event]) {
@@ -191,9 +184,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
             $listener->handle($event);
         }
         Mail::assertNothingSent(); Mail::assertNothingQueued();
-        Notification::assertSentTo($admin, \App\Notifications\Tutorials\NewRequestNotification::class);
-        Notification::assertSentTo($admin, \App\Notifications\Performances\PerformanceSubmittedNotification::class);
-        Notification::assertSentTo($admin, \App\Notifications\PieceSharedNotification::class);
+        Notification::assertSentTo($admin, \App\Notifications\SynthesiaRequests\NewRequestNotification::class);
     }
 
     public function test_standalone_welcome_starts_off_and_can_be_enabled_without_joining_a_newsletter()
@@ -219,7 +210,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
             $dom = new \DOMDocument; @$dom->loadHTML($sample['html']);
             $xpath = new \DOMXPath($dom);
             $this->assertCount(4, $xpath->query('//h2'));
-            $this->assertCount($key === 'account-welcome-ios' ? 16 : 17, $xpath->query('//img[@alt and @width]'));
+            $this->assertCount($key === 'account-welcome-website' ? 17 : 16, $xpath->query('//img[@alt and @width]'));
             $buttons = $xpath->query('//a[contains(concat(" ", normalize-space(@class), " "), " welcome-button ") and not(ancestor::td[contains(@class,"welcome-footer")])]');
             $this->assertCount($buttonCount, $buttons);
             $this->assertSame(route('webapp.explore'), $buttons[$buttonCount - 1]->getAttribute('href'));
@@ -295,7 +286,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
                 $sample = app(\App\Services\Admin\AutomaticEmails::class)->render($key);
                 $dom = new \DOMDocument; @$dom->loadHTML($sample['html']);
                 $images = (new \DOMXPath($dom))->query('//img');
-                $this->assertCount($key === 'account-welcome-ios' ? 16 : 17, $images);
+                $this->assertCount($key === 'account-welcome-website' ? 17 : 16, $images);
                 foreach ($images as $image) {
                     $url = $image->getAttribute('src');
                     $this->assertStringStartsWith($scheme.'://pianolit.test/images/emails/', $url);
@@ -326,10 +317,13 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
     {
         [$mailer] = $this->mailer();
         $this->app->instance('mailer', $mailer);
-        $ordinary = new MembershipConfirmed('Jamie', 'monthly', false, null);
+        $ordinary = new \App\Mail\ProfileEmailChange('#email-preview');
         $before = $ordinary->render();
         (new WebsiteAccountWelcome('Jamie'))->render();
-        $this->assertSame($before, (new MembershipConfirmed('Jamie', 'monthly', false, null))->render());
+        $this->assertSame($before, (new \App\Mail\ProfileEmailChange('#email-preview'))->render());
+        $membership = (new MembershipConfirmed('Jamie', 'monthly', false, null))->render();
+        $this->assertStringContainsString('welcome-wrapper', $membership);
+        $this->assertSame($before, (new \App\Mail\ProfileEmailChange('#email-preview'))->render());
     }
 
     public function test_welcome_routing_uses_signup_origin_and_each_sending_switch_independently()

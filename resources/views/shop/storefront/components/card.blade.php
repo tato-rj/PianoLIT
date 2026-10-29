@@ -1,4 +1,4 @@
-<article class="shop-card {{ $product['digital'] ? 'shop-card--digital' : '' }} h-100">
+<article class="shop-card h-100">
     <div class="shop-card__art">
         <a href="{{ $product['url'] }}" tabindex="-1" aria-hidden="true">
             @if($product['imageUrl'])
@@ -16,7 +16,6 @@
                 <input type="hidden" name="variant_id" value="{{ $product['variants'][0]['id'] }}">
                 <input type="hidden" name="quantity" value="1">
                 <button class="shop-button shop-button--dark w-100" type="submit" aria-label="Quick add {{ $product['name'] }}">Quick add @icon('plus')</button>
-                <p class="shop-form-error" role="alert" hidden></p>
             </form>
         @elseif(count($product['variants']) > 1)
             <a class="shop-card__quick shop-button shop-button--dark" href="{{ $product['url'] }}">Choose options @icon('arrow-up-right')</a>

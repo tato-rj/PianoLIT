@@ -7,12 +7,7 @@
 @section('content')
 <div class="content-wrapper"><div class="container-fluid user-profile" data-user-profile>
     @component('admin.components.page.title', ['breadcrumbs' => [['label' => 'Users', 'url' => route('admin.users.index')]], 'title' => 'User details', 'subtitle' => 'Profile, membership and saved music.'])
-    <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-stretch align-items-sm-center gap-2 w-100">
-        <div class="d-flex flex-column flex-sm-row gap-2">
-            @unless($analyticsExcluded)<a class="btn btn-secondary text-nowrap" href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">@icon('chart-line')Logs & analytics</a>@endunless
-            <a class="btn btn-secondary text-nowrap" href="{{ route('impersonate', $user) }}" target="_blank" rel="noopener noreferrer">@icon('contact-round')Impersonate</a>
-        </div>
-    </div>
+    @unless($analyticsExcluded)<a class="btn btn-secondary text-nowrap" href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">@icon('chart-line')Logs & analytics</a>@endunless
     @endcomponent
 
     @include('admin.pages.users.show.profile')
@@ -64,6 +59,9 @@
     </div>
     @include('admin.pages.users.show.library')
     @include('admin.pages.users.show.manage')
+    <div class="mt-4">
+        <a class="btn btn-secondary text-nowrap" href="{{ route('impersonate', $user) }}" target="_blank" rel="noopener noreferrer">@icon('contact-round')Impersonate</a>
+    </div>
 </div></div>
 @endsection
 

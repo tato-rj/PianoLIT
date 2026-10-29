@@ -60,7 +60,8 @@ class DiscoverResponse
             'subtitle' => $piece->attribution.$piece->composer->short_name, 'catalogue' => $piece->catalogue,
             'composer' => $this->composer($piece->composer), 'artwork_url' => $piece->discover_artwork_url ?? $piece->web_image_background,
             'difficulty' => $piece->extended_level_name, 'is_new' => (bool) $piece->is_new, 'is_free_pick' => (bool) $piece->is_free,
-            'media' => ['performance' => (bool) $piece->webapp_has_performances, 'synthesia' => (bool) $piece->webapp_has_synthesia,
+            // Keep the v2 compatibility key for retired community submissions.
+            'media' => ['performance' => false, 'synthesia' => (bool) $piece->webapp_has_synthesia,
                 'tutorial' => (bool) $piece->webapp_has_video, 'audio' => (bool) $piece->hasAudio(), 'score' => (bool) $piece->hasScore(true)],
             'target' => $this->target('piece', route('webapp.pieces.show', $piece), (string) $piece->id),
         ];

@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\WebApp;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\{Piece, Tutorial};
 use App\Services\Timeline\WebTimeline;
-use App\Events\PieceShared;
 use App\Services\RecentlyViewedPieces;
 use App\Services\WebApp\PieceCards;
 use App\Services\WebApp\PieceRecommendations;
@@ -91,15 +89,6 @@ class PiecesController extends Controller
         }])->lastUpdated()->get();
         
         return view('webapp.piece.components.saveto.index', compact(['piece', 'folders']))->render();        
-    }
-
-    public function share(Request $request, Piece $piece)
-    {
-        $email = $request->recipient_email;
-
-        event(new PieceShared($piece, $email));
-
-        return back()->with('status', 'Your email is on the way!');
     }
 
     public function score(Piece $piece)

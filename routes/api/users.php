@@ -5,12 +5,6 @@ Route::prefix('users')->name('users.')->group(function() {
 	Route::get('ios-review/check', 'Api\UsersController@shouldReview')->name('should-review');
 	Route::post('ios-review/check', 'Api\UsersController@saveReview')->name('save-review');
 
-	Route::prefix('performances')->name('performances.')->group(function() {
-
-		Route::post('{performance}/clap', 'Api\PerformancesController@clap')->name('clap');
-
-	});
-
 	Route::get('suggestions', 'Api\UsersController@suggestions')->name('suggestions');
 
 	Route::prefix('favorites')->name('favorites.')->group(function() {
@@ -42,9 +36,9 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::prefix('tutorial-requests')->name('tutorial-requests.')->group(function() {
 
-		Route::get('', 'Api\TutorialRequestsController@show')->name('show'); // CHANGE TUTORIAL REQUESTS TO THIS
+		Route::get('', 'Api\Legacy\SynthesiaRequestsController@show')->name('show'); // Permanent legacy-app compatibility endpoint.
 
-		Route::post('', 'TutorialRequestsController@store')->name('store');
+		Route::post('', 'Api\Legacy\SynthesiaRequestsController@store')->name('store');
 
 	});
 

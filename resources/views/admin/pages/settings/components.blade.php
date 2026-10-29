@@ -1,6 +1,10 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Share a page', 'usage' => 'components.media.link-share · direct sharing and copy link', 'properties' => 'padding,color,border-radius'])
+      <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="modal" data-bs-target="#ds-link-share">@icon('share')Open share dialog</button>
+      @include('components.media.link-share', ['id' => 'ds-link-share', 'url' => 'https://my.pianolit.com/pieces/0', 'title' => 'Prelude in E minor — Frédéric Chopin'])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Shop storefront', 'usage' => 'shop.storefront.components · white, outlined cards and controls without offset shadows', 'properties' => 'font-size,color,border,box-shadow'])
       <div class="shop-storefront p-2" data-ds-preview>
         <div class="d-flex flex-wrap gap-3 mb-4">
@@ -45,14 +49,16 @@
         </div>
       </div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Shop digital cards', 'usage' => 'shop.storefront.components.card · inset covers, readable titles, subtitles and price labels', 'properties' => 'font-size,font-weight,padding,color'])
+    @component('admin.pages.settings.sample', ['label' => 'Shop product cards', 'usage' => 'shop.storefront.components.card · one artwork, title and price treatment for every product type', 'properties' => 'font-size,font-weight,padding,color'])
       <div class="shop-storefront" data-ds-preview>
         <div class="row g-3">
           @foreach([
+            ['name' => 'Piano rainbow T-shirt · Mint', 'digital' => false, 'price' => '$28.00 USD', 'imageUrl' => asset('images/shop/demo/shirt-mint.png')],
+            ['name' => 'Piano sticker', 'digital' => false, 'price' => '$5.00 USD', 'imageUrl' => asset('images/shop/demo/piano-sticker.svg')],
             ['name' => 'Piano solos', 'subtitle' => 'A collection of pieces for your next practice', 'price' => '$12.00 USD', 'imageUrl' => asset('images/misc/score1.png')],
             ['name' => 'A guide to piano practice', 'subtitle' => 'Build a thoughtful daily routine', 'price' => 'Free', 'imageUrl' => asset('images/mockup/crashcourse.png')],
-          ] as $digitalCard)
-            <div class="col-6">@include('shop.storefront.components.card', ['product' => $digitalCard + ['url' => '#ds-components', 'digital' => true, 'variants' => [], 'priceVaries' => false]])</div>
+          ] as $cardPreview)
+            <div class="col-6">@include('shop.storefront.components.card', ['product' => $cardPreview + ['url' => '#ds-components', 'digital' => true, 'variants' => [], 'priceVaries' => false]])</div>
           @endforeach
         </div>
       </div>
@@ -68,9 +74,9 @@
       @endcomponent
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Section navigation', 'usage' => 'components.navigation.section-navigation · profile and support menus', 'properties' => 'font-size,color,padding'])
-      @include('components.navigation.section-navigation', ['id' => 'ds-section-navigation', 'label' => 'Section navigation preview', 'heading' => 'On this page', 'preview' => true, 'items' => [
-        ['target' => 'ds-components-title', 'label' => 'Current section'],
-        ['target' => 'ds-components', 'label' => 'Another section'],
+      @include('components.navigation.section-navigation', ['id' => 'ds-section-navigation', 'label' => 'Section navigation preview', 'preview' => true, 'items' => [
+        ['target' => 'ds-components-title', 'label' => 'Current section', 'icon' => 'compass'],
+        ['target' => 'ds-components', 'label' => 'Another section', 'icon' => 'circle-help'],
       ]])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Side menu header', 'usage' => 'components.layout.side-menu-header · hub and piece menus', 'properties' => 'font-size,padding,color'])
@@ -198,7 +204,7 @@
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Public hub header', 'usage' => 'components.layout.hub-header · introduction', 'properties' => 'padding,font-size,color'])
       @component('components.layout.hub-header', ['heading' => 'PianoLIT Learn', 'preview' => true])
-        A shared introduction for public hubs. Subscribe appears in the top site header.
+        A shared introduction for public hubs. Learn and Blog keep YouTube in the top site header.
       @endcomponent
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Newsletter invitation', 'usage' => 'components.newsletter.invitation · pastel-card', 'properties' => 'padding,color,background-color,border,border-radius'])
@@ -238,8 +244,11 @@
     @component('admin.pages.settings.sample', ['label' => 'Status badges', 'usage' => '.badge .rounded-pill .alert-{color}', 'properties' => 'font-size,padding,color,background-color,border-radius'])
       <div class="design-system__row"><span class="badge rounded-pill alert-green" data-ds-preview>Active</span><span class="badge rounded-pill alert-blue">Trial</span><span class="badge rounded-pill alert-orange">Pending</span><span class="badge rounded-pill alert-red">Ended</span></div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Inline feedback', 'usage' => '.alert .alert-green .rounded', 'properties' => 'padding,color,background-color,border-radius'])
-      <div class="alert alert-green rounded" data-ds-preview>@icon('circle-check')Your changes have been saved.</div><div class="alert alert-red rounded mb-0">@icon('circle-alert')Please check the highlighted fields.</div>
+    @component('admin.pages.settings.sample', ['label' => 'Alerts', 'usage' => 'components.feedback.alert · shared with controller and AJAX responses', 'properties' => 'padding,color,background-color,border-radius'])
+      <div data-ds-preview>
+        @alert(['color' => 'green', 'message' => 'Your changes have been saved.', 'dismissible' => true])
+        @alert(['color' => 'red', 'message' => 'Please check the highlighted fields.', 'dismissible' => true])
+      </div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Tabs', 'usage' => '.nav .nav-tabs + .tab-content', 'properties' => 'font-size,padding,color,border'])
       <ul class="nav nav-tabs" role="tablist" aria-label="Sample piece tabs">
@@ -262,6 +271,18 @@
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Links', 'usage' => 'a + .text-muted', 'properties' => 'font-size,color,text-decoration'])
       <p><a href="#ds-typography" data-ds-preview>Explore typography @icon('arrow-right', ['mr' => 0])</a></p><p class="text-muted mb-0">Supporting text gives the primary action room to breathe.</p>
+    @endcomponent
+  </div>
+</section>
+
+<section class="design-system__section" aria-labelledby="ds-account-libraries-title">
+  <header class="design-system__section-heading"><h2 id="ds-account-libraries-title">Account libraries</h2><p>Paired empty states for downloads and merchandise orders, using the same layout and editable SVG artwork.</p><code>users.components.empty-library · users.components.illustrations</code></header>
+  <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Empty downloads', 'usage' => 'users.purchases.empty', 'properties' => 'font-size,color,gap'])
+      <div data-ds-preview>@include('users.purchases.empty')</div>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Empty orders', 'usage' => 'users.orders.empty', 'properties' => 'font-size,color,gap'])
+      <div data-ds-preview>@include('users.orders.empty')</div>
     @endcomponent
   </div>
 </section>
@@ -296,6 +317,7 @@
       <div class="d-flex flex-wrap align-items-center gap-2" data-ds-preview>
         @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit']])
         @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete']])
+        @include('admin.components.table-action', ['tableAction' => ['label' => 'Publish', 'icon' => 'check', 'tone' => 'green']])
         @include('admin.components.table-action', ['tableAction' => ['label' => 'Other action', 'icon' => 'hat-glasses', 'iconOnly' => true]])
       </div>
     @endcomponent
@@ -356,3 +378,7 @@
     'description' => 'Make room for more music. Enter your email and we’ll send you this free poster to download and print.',
     'giftUrl' => '#', 'actionLabel' => 'Email me the poster',
 ])
+
+@push('scripts')
+<script src="{{ mix('js/components/link-share.js') }}"></script>
+@endpush

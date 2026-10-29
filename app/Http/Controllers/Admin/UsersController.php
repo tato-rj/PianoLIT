@@ -36,11 +36,11 @@ class UsersController extends Controller
         return view('admin.pages.users.show.favorites.rows', ['pieces' => $pieces])->render();
     }
 
-    public function loadRequests(User $user, Request $request)
+    public function loadSynthesiaRequests(User $user, Request $request)
     {
-        $requests = $user->tutorialRequests->slice($request->start_at)->take(5);
+        $requests = $user->synthesiaRequests->slice($request->start_at)->take(5);
 
-        return view('admin.pages.users.show.requests.rows', ['requests' => $requests])->render();
+        return view('admin.pages.users.show.synthesia-requests.rows', ['requests' => $requests])->render();
     }
 
     public function destroyMany(Request $request)

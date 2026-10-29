@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\{Admin, Composer, Country, Tag, Playlist, Piece, PieceView, TutorialRequest, Tutorial, Performance};
+use App\{Admin, Composer, Country, Tag, Playlist, Piece, PieceView, SynthesiaRequest, Tutorial};
 use Tests\Traits\ManageDatabase;
 use Tests\AppTest;
 use Illuminate\Http\UploadedFile;
@@ -35,14 +35,6 @@ class PieceTest extends AppTest
         $this->assertInstanceOf(Tutorial::class, $this->piece->tutorials()->first());
     }
 
-    /** @test */
-    public function it_has_many_performances()
-    {
-        create(Performance::class, ['piece_id' => $this->piece->id]);
-
-        $this->assertInstanceOf(Performance::class, $this->piece->performances->first());
-    }
-
 	/** @test */
 	public function it_has_many_tags()
 	{
@@ -62,11 +54,11 @@ class PieceTest extends AppTest
 	}
 
     /** @test */
-    public function it_has_many_tutorial_requests()
+    public function it_has_many_synthesia_requests()
     {
-        create(TutorialRequest::class, ['piece_id' => $this->piece->id]);
+        create(SynthesiaRequest::class, ['piece_id' => $this->piece->id]);
 
-        $this->assertInstanceOf(TutorialRequest::class, $this->piece->tutorialRequests->first());         
+        $this->assertInstanceOf(SynthesiaRequest::class, $this->piece->synthesiaRequests->first());
     }
 
 	/** @test */

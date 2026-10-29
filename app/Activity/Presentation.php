@@ -62,8 +62,8 @@ class Presentation
     {
         $m = self::metadata($event);
         $requestKind = ($m['control'] ?? '') === 'synthesia-request-form' ? 'Synthesia' : 'tutorial';
-        if (($event->source ?? '') === 'server' && $event->type === 'tutorial_request_created') return 'Received '.$requestKind.' request';
-        if (($event->source ?? '') === 'server' && $event->type === 'tutorial_request_rejected') {
+        if (($event->source ?? '') === 'server' && in_array($event->type, ['synthesia_request_created', 'tutorial_request_created'], true)) return 'Received '.$requestKind.' request';
+        if (($event->source ?? '') === 'server' && in_array($event->type, ['synthesia_request_rejected', 'tutorial_request_rejected'], true)) {
             $reasons = ['pending_request' => 'another request is pending', 'already_requested' => 'this piece was already requested', 'membership_required' => 'membership required'];
             return ucfirst($requestKind).' request not accepted: '.($reasons[$m['reason'] ?? ''] ?? 'request requirements were not met');
         }

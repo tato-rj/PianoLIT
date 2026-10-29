@@ -3,9 +3,8 @@
 namespace App\Mail;
 
 use App\Mail\Memberships\MembershipConfirmed;
-use App\Mail\Performances\{PerformanceApprovedEmail, PerformanceSubmittedEmail};
 use App\Mail\Shop\ConfirmPurchase;
-use App\Mail\Tutorials\{NewRequestEmail, RequestPublishedEmail};
+use App\Mail\SynthesiaRequests\{NewRequestEmail, RequestPublishedEmail};
 use App\Notifications\User\ConfirmGoogleAccount;
 use App\Services\Admin\AutomaticEmails;
 use Illuminate\Auth\Notifications\{ResetPassword, VerifyEmail};
@@ -24,11 +23,8 @@ class AutomaticEmailSettings
         Shop\MerchandiseOrderShipped::class => 'merchandise-shipped',
         Shop\MerchandiseOrderDelivered::class => 'merchandise-delivered',
         MembershipConfirmed::class => 'membership-confirmation',
-        NewRequestEmail::class => 'tutorial-request',
-        RequestPublishedEmail::class => 'tutorial-published',
-        PerformanceSubmittedEmail::class => 'performance-submitted',
-        PerformanceApprovedEmail::class => 'performance-approved',
-        SharePieceEmail::class => 'piece-shared',
+        NewRequestEmail::class => 'synthesia-request',
+        RequestPublishedEmail::class => 'synthesia-published',
     ];
 
     public function states()

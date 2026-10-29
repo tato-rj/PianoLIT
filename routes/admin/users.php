@@ -6,21 +6,12 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::get('', 'Admin\UsersController@index')->name('index');
 
-	Route::prefix('performances')->name('performances.')->group(function() {
-
-		Route::patch('{performance}', 'Admin\PerformancesController@update')->name('update');
-
-		Route::patch('{performance}/status', 'Admin\PerformancesController@approve')->name('approve');
-
-		Route::delete('{performance}', 'Admin\PerformancesController@destroy')->name('destroy');
-
-	});
-
 	Route::get('{user}', 'Admin\UsersController@show')->whereNumber('user')->name('show');
 
 	Route::get('{user}/load-favorites', 'Admin\UsersController@loadFavorites')->name('load-favorites');
 
-	Route::get('{user}/load-requests', 'Admin\UsersController@loadRequests')->name('load-requests');
+	Route::get('{user}/load-synthesia-requests', 'Admin\UsersController@loadSynthesiaRequests')->name('load-synthesia-requests');
+	Route::get('{user}/load-requests', 'Admin\UsersController@loadSynthesiaRequests')->name('load-requests');
 
 	Route::delete('destroy-many', 'Admin\UsersController@destroyMany')->name('destroy-many');
 

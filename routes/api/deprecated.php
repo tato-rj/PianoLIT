@@ -1,6 +1,6 @@
 <?php
 
-Route::get('tutorial-requests', 'Api\TutorialRequestsController@show')->name('tutorial-requests'); // REMOVE THIS. CHANGE TUTORIAL REQUESTS TO FULL PATH
+Route::get('tutorial-requests', 'Api\Legacy\SynthesiaRequestsController@show')->name('tutorial-requests'); // Permanent legacy-app compatibility endpoint.
 
 Route::prefix('memberships')->name('memberships.')->group(function() {
 

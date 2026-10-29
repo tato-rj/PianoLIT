@@ -1,7 +1,7 @@
 <?php
 
 use App\Payments\Membership;
-use App\{User, Admin, Subscription, TutorialRequest, Piece, Location, Rating};
+use App\{User, Admin, Subscription, SynthesiaRequest, Piece, Location, Rating};
 use App\CrashCourse\{CrashCourse, CrashCourseLesson, CrashCourseSubscription, CrashCourseTopic};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -46,7 +46,7 @@ $factory->define(Subscription::class, function (Faker $faker) {
     ];
 });
 
-$factory->define(TutorialRequest::class, function (Faker $faker) {
+$factory->define(SynthesiaRequest::class, function (Faker $faker) {
     return [
         'user_id' => function() {
             return create(User::class)->id;

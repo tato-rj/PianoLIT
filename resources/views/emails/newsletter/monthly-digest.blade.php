@@ -1,4 +1,4 @@
-@component('mail::message')
+@component('mail::message', ['subscription' => $subscription ?? null, 'list' => $list ?? null, 'unsubscribeUrl' => $unsubscribeUrl, 'footerReason' => 'You’re receiving this monthly email because you subscribed to PianoLIT news.', 'unsubscribeLabel' => $unsubscribeUrl ? 'Unsubscribe from the newsletter' : 'Unsubscribe / email preferences'])
 # What’s new at PianoLIT
 
 {{ $monthLabel }}
@@ -22,7 +22,4 @@ New releases will appear here in the next newsletter. Months without new content
 Happy exploring,<br>
 The PianoLIT team
 
-@if($unsubscribeUrl)
-You’re receiving this monthly email because you subscribed to PianoLIT news. [Unsubscribe from the newsletter]({{ $unsubscribeUrl }}).
-@endif
 @endcomponent

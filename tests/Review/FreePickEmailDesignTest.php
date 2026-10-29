@@ -3,7 +3,7 @@
 namespace Tests\Review;
 
 use App\{Composer, EmailList, Piece, Subscription, Tag, Tutorial};
-use App\Mail\{FreePickEmail, Memberships\MembershipConfirmed};
+use App\Mail\FreePickEmail;
 use App\Services\Admin\AutomaticEmails;
 use App\Services\FreePickCampaignLinks;
 use Illuminate\Database\Eloquent\Model;
@@ -148,11 +148,11 @@ class FreePickEmailDesignTest extends ReviewTestCase
         $mailer = new Mailer('freepick-theme-test', $this->app['view'], new \Swift_Mailer($transport), $this->app['events']);
         $mailer->alwaysFrom('preview@example.com', 'PianoLIT');
         $this->app->instance('mailer', $mailer);
-        $ordinary = (new MembershipConfirmed('Jamie', 'monthly', false, null))->render();
+        $ordinary = (new \App\Mail\ProfileEmailChange('#email-preview'))->render();
         EmailList::create(['name' => EmailList::FREE_PICK, 'description' => 'Free weekly picks']);
         (new FreePickEmail('preview', null, $this->piece()))->to('reader@example.com')->send($mailer);
         $this->assertStringContainsString('freepick-heading', $transport->messages()->last()->getBody());
-        $this->assertSame($ordinary, (new MembershipConfirmed('Jamie', 'monthly', false, null))->render());
+        $this->assertSame($ordinary, (new \App\Mail\ProfileEmailChange('#email-preview'))->render());
     }
 
     public function test_latest_cards_are_ordered_distinct_and_exclude_the_featured_or_incomplete_pieces()

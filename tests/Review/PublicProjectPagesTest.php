@@ -155,7 +155,7 @@ class PublicProjectPagesTest extends ReviewTestCase
         $xpath = $this->xpath($response->getContent());
         $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header")]')->length);
         $this->assertSame($website, $xpath->query('//header//a[@aria-label="PianoLIT home"]')->item(0)->getAttribute('href'));
-        $this->assertSame(0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
+        $this->assertSame($hub === 'learn' ? 1 : 0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
         $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//a[@href="'.$origin.'/login"]')->length);
         $this->assertSame(1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu" and contains(@class, "btn-raw")]')->length);
         $this->assertSame(1, $xpath->query('//header//button[contains(@class, "account-circle")]')->length);
@@ -226,7 +226,7 @@ class PublicProjectPagesTest extends ReviewTestCase
                 ->assertSee('header@example.test')->assertSee('account-menu__identity', false);
             $xpath = $this->xpath($response->getContent());
             $this->assertSame(0, $xpath->query('//header//a[@href="'.$origin.'/login"]')->length);
-            $this->assertSame($prefix === '' ? 1 : 0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
+            $this->assertSame(in_array($prefix, ['', 'learn.', 'blog.'], true) ? 1 : 0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
             $this->assertSame(1, $xpath->query('//header//button[@id="navbarDropdown" and @data-bs-toggle="offcanvas" and contains(@class, "account-circle")]')->length);
             $this->assertSame('H', trim($xpath->query('//header//button//span[contains(@class, "account-circle__initial")]')->item(0)->textContent));
             $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//a[@href="http://localhost/profile"]')->length);

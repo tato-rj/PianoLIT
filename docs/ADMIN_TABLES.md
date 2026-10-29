@@ -205,13 +205,13 @@ mobile tag serialization and the separate `order` field remain unchanged.
 Use `admin.components.table-action` for row actions and destructive confirmation
 buttons. The Users directory is the visual reference: `kind: edit` renders the
 shared small yellow button with the square-pen icon and Edit label; `kind: delete`
-renders a red trash button; all other actions use the black button. Icon-only
+renders a red trash button; other actions default to the black button. Icon-only
 buttons keep a descriptive accessible name and title. Delete buttons default to
 icon-only; set `iconOnly: false` for a visible label or confirmation. Place the
 Pieces Delete control immediately after Edit, before its other actions.
 
 Pass one `tableAction` array: optional `kind`, `url` for a link, `type` for a
-button (default button), `label`, `icon`, `iconOnly`, `class`, and trusted
+button (default button), `label`, `icon`, `iconOnly`, `class`, optional `tone` for an explicitly chosen shared button variant, and trusted
 `attributes`. Attribute values are escaped, true renders a boolean attribute,
 and false/null omit it. Preserve each action's form association, method, CSRF,
 modal target, data attributes, disabled state, route and permissions. Keep
@@ -222,7 +222,8 @@ New-tab links retain `rel="noopener noreferrer"`. The legacy
 legacy tables keep their existing loaders and scripts.
 
 The Design System's Table actions specimen uses the component in inert button
-form. Use existing Bootstrap/PianoLIT button tokens; no per-table color, sizing
+form, including the green Publish variant (`tone: green`). Keep the action
+column last, after Status when present. Use existing Bootstrap/PianoLIT button tokens; no per-table color, sizing
 or radius overrides. This action standard does not restyle status controls,
 filters, pagination or native details/disclosure controls.
 

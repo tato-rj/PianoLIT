@@ -29,7 +29,7 @@ class RemoveUser
             // These older account-owned tables have no cascading foreign keys.
             // Delete by user, avoiding folder hooks that can traverse other owners.
             DB::table('favorite_folders')->where('user_id', $user->id)->delete();
-            DB::table('tutorial_requests')->where('user_id', $user->id)->delete();
+            DB::table('synthesia_requests')->where('user_id', $user->id)->delete();
             // Existing model hooks remove newsletter/location/favorites/piece views.
             // Database cascades remove private markings, recent pieces and auth links.
             // Billing/payment records remain; deleting an account does not cancel billing.

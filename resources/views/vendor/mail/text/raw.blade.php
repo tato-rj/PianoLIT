@@ -1,7 +1,3 @@
-@component('mail::layout-simple')
-@slot('header')
-@endslot
+@component('mail::message', \App\Support\EmailLayout::footer(get_defined_vars()))
 {{ $slot }}
-@slot('footer')
-@endslot
 @endcomponent

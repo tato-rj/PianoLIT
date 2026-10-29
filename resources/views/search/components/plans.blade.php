@@ -27,7 +27,7 @@
 					'Advanced filters',
 					'Get the score',
 					'Watch videos',
-					'Request video tutorials',
+					'Request Synthesia videos',
 					'Save and organize your favorites',
 					'Speed up/slow down audio',
 					'Separate hands recordings',

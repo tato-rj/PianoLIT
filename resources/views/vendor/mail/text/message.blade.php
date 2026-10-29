@@ -1,7 +1,7 @@
 @component('mail::layout')
     {{-- Header --}}
     @slot('header')
-        @component('mail::header', ['url' => config('app.url')])
+        @component('mail::header', ['url' => \App\Support\EmailLayout::websiteUrl()])
             {{ config('app.name') }}
         @endcomponent
     @endslot
@@ -20,8 +20,7 @@
 
     {{-- Footer --}}
     @slot('footer')
-        @component('mail::footer')
-            © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+        @component('mail::editorial.customer-footer', \App\Support\EmailLayout::footer(get_defined_vars()))
         @endcomponent
     @endslot
 @endcomponent

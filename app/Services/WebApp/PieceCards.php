@@ -14,7 +14,6 @@ class PieceCards
 
         $pieces->loadMissing(['tags', 'composer']);
         $relations = [
-            'performances as webapp_has_performances' => function ($query) { $query->approved(); },
             'tutorials as webapp_has_synthesia' => function ($query) { $query->where('category', 'synthesia'); },
             'tutorials as webapp_has_video' => function ($query) {
                 $query->where(function ($query) { $query->where('category', '!=', 'synthesia')->orWhereNull('category'); });

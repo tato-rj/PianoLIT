@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Listeners\SynthesiaRequests;
+
+use App\Events\SynthesiaRequests\RequestPublished;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Notifications\SynthesiaRequests\RequestPublishedNotification;
+use App\Mail\SynthesiaRequests\RequestPublishedEmail;
+use App\Admin;
+
+class RequestPublishedListener
+{
+    /**
+     * Handle the event.
+     *
+     * @param  RequestPublished  $event
+     * @return void
+     */
+    public function handle(RequestPublished $event)
+    {
+        if (app(\App\Mail\AutomaticEmailSettings::class)->enabled('synthesia-published')) {
+            \Mail::to($event->request->user->email)->send(new RequestPublishedEmail($event->request));
+        }
+
+        Admin::notifyAll(new RequestPublishedNotification($event->request));
+    }
+}

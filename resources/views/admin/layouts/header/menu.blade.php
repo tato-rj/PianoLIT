@@ -29,7 +29,7 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
         'dropdown' => [
           ['name' => 'Profiles', 'route' => route('admin.users.index')],
-          ['name' => 'Tutorial Requests', 'route' => route('admin.tutorial-requests.index')],
+          ['name' => 'Synthesia Requests', 'route' => route('admin.synthesia-requests.index')],
           ['name' => 'Feedback', 'route' => route('admin.feedback.index')],
         ]])
 
@@ -46,7 +46,6 @@
         'dropdown' => [
           ['route' => route('admin.pieces.index'), 'name' => 'Pieces'],
           ['route' => route('admin.timeline-events.index'), 'name' => 'Timeline events'],
-          // ['route' => route('admin.stage.index'), 'name' => 'Stage'],
           ['route' => route('admin.playlists.index'), 'name' => 'Playlists'],
           ['route' => route('admin.composers.index'), 'name' => 'Composers'],
           ['route' => route('admin.pianists.index'), 'name' => 'Pianists'],

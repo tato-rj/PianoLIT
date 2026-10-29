@@ -16,10 +16,6 @@
             <div class="dropdown-divider"></div>
 
             <div class="py-2 list-group">
-                <button type="button" class="btn-raw text-start share-piece link-none mb-2 px-3" data-bs-toggle="modal" data-bs-target="#share-modal">
-                    @icon('share') Share this piece
-                </button>
-
                 @php($isFavorited = ($piece->webapp_is_favorited ?? $piece->favorites()->where('user_id', auth('web')->id())->whereNotNull('favorite_folder_id')->exists()) > 0)
                 <button type="button" class="btn-raw text-start link-none mb-2 px-3 d-block d-md-none" data-favorite-piece="{{ $piece->id }}" data-favorited="{{ $isFavorited ? 'true' : 'false' }}" aria-pressed="{{ $isFavorited ? 'true' : 'false' }}" data-bs-toggle="offcanvas" data-bs-target="#save-to-offcanvas" aria-controls="save-to-offcanvas" data-manage="save-to" data-url="{{route('webapp.pieces.save-to', $piece)}}">
                     @icon('heart', ['color' => 'red', 'filled' => $isFavorited]) Manage favorites

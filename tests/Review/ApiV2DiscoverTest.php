@@ -120,6 +120,8 @@ class ApiV2DiscoverTest extends ReviewTestCase
         $card = $sections['latest_pieces']['items'][0];
         $this->assertSame($rows->firstWhere('title', 'Latest pieces')['content']->first()->discover_artwork_url, $card['artwork_url']);
         $this->assertSame('piece', $card['target']['kind']);
+        $this->assertArrayHasKey('performance', $card['media']);
+        $this->assertFalse($card['media']['performance'], 'The compatibility field cannot advertise retired user submissions.');
         foreach (['source', 'user_id', 'score', 'audio', 'password', 'favorites', 'webapp_has_synthesia'] as $field) $this->assertArrayNotHasKey($field, $card);
     }
 

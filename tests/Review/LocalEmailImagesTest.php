@@ -31,17 +31,18 @@ class LocalEmailImagesTest extends ReviewTestCase
         return array_values(array_filter($message->getChildren(), function ($part) { return $part instanceof \Swift_Image; }));
     }
 
-    private function assertWelcomeImages($message, $hasAppStoreBadge, $hasSampleCards = false)
+    private function assertWelcomeImages($message, $key, $hasSampleCards = false)
     {
+        $hasAppStoreBadge = $key !== 'account-welcome-ios';
         $images = $this->images($message);
-        $this->assertCount(($hasAppStoreBadge ? 14 : 13) + ($hasSampleCards ? 3 : 0), $images);
+        $this->assertCount(($key === 'account-welcome-website' ? 13 : 12) + ($hasSampleCards ? 3 : 0), $images);
         $filenames = array_map(function ($image) { return $image->getFilename(); }, $images);
         $this->assertSame($hasAppStoreBadge, in_array('app-store.png', $filenames, true));
         $this->assertStringNotContainsString('src="http', $message->getBody());
         foreach ($images as $image) {
             $this->assertSame('inline', $image->getDisposition());
             $this->assertStringContainsString('src="cid:'.$image->getId().'"', $message->getBody());
-            $directory = $image->getFilename() === 'youtube.png' ? 'images/emails/' : 'images/emails/welcome/';
+            $directory = 'images/emails/welcome/';
             $this->assertSame(file_get_contents(public_path($directory.$image->getFilename())), $image->getBody());
         }
         $raw = $message->toString();
@@ -59,7 +60,7 @@ class LocalEmailImagesTest extends ReviewTestCase
             $this->assertStringContainsString('src="http://pianolit.test/images/', $sample['html']);
             $this->assertStringNotContainsString('cid:', $sample['html']);
             $message = $this->deliver(new EmailPreview($sample['subject'], $sample['html'], $sample['text']));
-            $this->assertWelcomeImages($message, $key !== 'account-welcome-ios', true);
+            $this->assertWelcomeImages($message, $key, true);
             $plain = array_values(array_filter($message->getChildren(), function ($part) { return $part->getBodyContentType() === 'text/plain'; }));
             $this->assertCount(1, $plain);
             $this->assertSame($sample['text'], $plain[0]->getBody());
@@ -73,7 +74,7 @@ class LocalEmailImagesTest extends ReviewTestCase
         foreach (['account-welcome-website' => WebsiteAccountWelcome::class, 'account-welcome' => AccountWelcome::class, 'account-welcome-ios' => IosAccountWelcome::class] as $key => $class) {
             app(\App\Mail\AutomaticEmailSettings::class)->setEnabled($key, true, null);
             $job = unserialize(serialize(new SendQueuedMailable(new $class('Jamie'))));
-            $this->assertWelcomeImages($this->deliver($job->mailable), $key !== 'account-welcome-ios');
+            $this->assertWelcomeImages($this->deliver($job->mailable), $key);
         }
     }
 
@@ -147,17 +148,18 @@ class LocalEmailImagesTest extends ReviewTestCase
         }
     }
 
-    public function test_other_email_previews_embed_the_shared_logo_and_social_icons()
+    public function test_other_email_previews_embed_the_shared_logo_and_labeled_youtube_button()
     {
         $this->local();
         foreach (app(AutomaticEmails::class)->all()->keys()->reject(function ($key) { return strpos($key, 'account-welcome') === 0 || $key === 'admin-weekly-snapshot'; }) as $key) {
             $sample = app(AutomaticEmails::class)->render($key);
-            $this->assertStringContainsString('src="http://pianolit.test/images/brand/app-icon.png', $sample['html']);
+            $this->assertStringContainsString('src="http://pianolit.test/images/emails/welcome/logo.png', $sample['html']);
             $mail = (new EmailPreview($sample['subject'], $sample['html'], $sample['text']))->attachData('Example attachment', 'example.txt');
             $message = $this->deliver($mail);
             $filenames = array_map(function ($image) { return $image->getFilename(); }, $this->images($message));
-            foreach (['app-icon.png', 'youtube.png', 'reddit.png', 'instagram.png'] as $filename) $this->assertContains($filename, $filenames, $key);
-            if ($key === 'piece-shared') $this->assertContains('gift-white.png', $filenames);
+            $this->assertContains('logo.png', $filenames, $key);
+            foreach (['app-icon.png', 'floating-logo.png', 'youtube.png', 'reddit.png', 'instagram.png'] as $filename) $this->assertNotContains($filename, $filenames, $key);
+            $this->assertStringContainsString('Visit us on youtube', $message->getBody());
             $attachments = array_values(array_filter($message->getChildren(), function ($part) { return $part instanceof \Swift_Attachment && !($part instanceof \Swift_Image); }));
             $this->assertCount(1, $attachments);
             $this->assertSame('Example attachment', $attachments[0]->getBody());

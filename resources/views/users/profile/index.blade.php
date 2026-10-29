@@ -2,9 +2,15 @@
 
 @section('content')
 <div class="container profile-page py-4 py-md-5">
-    <header class="mb-4 mb-md-5">
-        <h1 class="mb-2">My profile</h1>
-        <p class="text-muted mb-0">Manage your profile, security and email preferences.</p>
+    <header class="d-flex flex-wrap align-items-center justify-content-between gap-4 mb-4 mb-md-5">
+        <div>
+            <h1 class="mb-2">My profile</h1>
+            <p class="text-muted mb-0">Manage your profile, security and email preferences.</p>
+        </div>
+        <nav class="d-flex flex-wrap gap-3" aria-label="Your purchases">
+            <a class="btn btn-secondary btn-sm" href="{{ route('users.orders') }}">@icon('package')Track your orders</a>
+            <a class="btn btn-secondary btn-sm" href="{{ route('users.purchases') }}">@icon('download')My downloads</a>
+        </nav>
     </header>
     <div class="row g-4 g-lg-5">
         <aside class="col-lg-3">

@@ -21,34 +21,46 @@ module.exports = async function () {
             return element({dataset: {optionGroup: key}, buttons, querySelectorAll: () => buttons});
         }
         const color = group('color'), size = group('size');
-        const label = element(), button = element({disabled: false}), error = element({hidden: true});
+        const label = element(), button = element({disabled: false});
         const nodes = {'[name="variant_id"]': select, '[name="product_id"]': {value: id},
             '[data-option-group="color"]': color, '[data-option-group="size"]': size,
-            '[data-bag-label]': label, '[type="submit"]': button, '.shop-form-error': error,
+            '[data-bag-label]': label, '[type="submit"]': button,
             '[data-variant-fallback]': element(), '[data-option-pickers]': element()};
         const form = element({action: '/bag/items', reportValidity: () => true, querySelector: selector => nodes[selector]});
-        return {form, select, options, color, size, label, button, error};
+        return {form, select, options, color, size, label, button};
     }
     const current = product('1', 2), other = product('2', 5);
-    const quickButton = element({disabled: false}), quickError = element({hidden: true});
+    const quickButton = element({disabled: false});
     const quick = element({action: '/bag/items', reportValidity: () => true, querySelector(selector) {
-        return {'[type="submit"]': quickButton, '.shop-form-error': quickError,
+        return {'[type="submit"]': quickButton,
             '[name="product_id"]': {value: '1'}, '[name="variant_id"]': {value: '91'}}[selector];
     }});
-    const count = element(), noticeText = element(), notice = element({querySelector: () => noticeText});
+    const count = element();
+    const output = {replaceChildren(content) { this.content = content; }};
+    const timers = new Map();
+    let timerId = 0;
+    function template(type) {
+        return {content: {cloneNode() {
+            const message = {};
+            return {type, message, querySelector: () => message};
+        }}};
+    }
+    const feedback = {'[data-feedback-output]': output,
+        '[data-feedback-template="success"]': template('success'),
+        '[data-feedback-template="error"]': template('error')};
     const root = element({querySelectorAll(selector) {
         if (selector === '[data-product-options]') return [current.form, other.form];
         if (selector === '[data-add-to-bag]') return [current.form, other.form, quick];
         if (selector === '[data-add-to-bag] [type="submit"]') return [current.button, other.button, quickButton];
         if (selector === '[data-bag-count]') return [count];
         return [];
-    }, querySelector: selector => selector === '[data-shop-notice]' ? notice : null});
+    }, querySelector: selector => feedback[selector] || null});
     const requests = [];
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/storefront.js'), 'utf8'), {
         document: {querySelector: () => root},
         FormData: class { constructor(form) { this.variant = form.querySelector('[name="variant_id"]').value; } },
         fetch: (url, options) => new Promise(resolve => requests.push({resolve, options})),
-        clearTimeout() {}, setTimeout() { return 1; }
+        clearTimeout(id) { timers.delete(id); }, setTimeout(fn) { timers.set(++timerId, fn); return timerId; }
     });
     function choose(group, value) { group.buttons.find(button => button.dataset.optionValue === value).events.click(); }
     async function resolve(request, payload, ok = true) { request.resolve({ok, status: ok ? 200 : 422, json: async () => payload}); }
@@ -80,16 +92,20 @@ module.exports = async function () {
     await resolve(requests[2], {errors: {quantity: ['You can add up to 10 of each option.']}}, false);
     await pending;
     assert.equal(current.label.textContent, 'In bag (2) · Add more', 'Rejected additions never increment the indication');
-    assert.equal(current.error.hidden, false);
+    assert.equal(output.content.type, 'error');
+    assert.equal(output.content.message.textContent, 'You can add up to 10 of each option.');
+    assert.equal(timers.size, 0, 'An earlier success timer cannot remove the current error alert');
     assert.equal(current.button.disabled, false);
     current.select.value = '93'; current.select.events.change();
     assert.equal(current.label.textContent, 'In bag (1) · Add more');
     pending = quick.events.submit({preventDefault() {}});
     await resolve(requests[3], {count: 11, message: 'Added to your bag', item: {product_id: 1, variant_id: 91, quantity: 3}});
     await pending;
-    assert.equal(quickError.hidden, true, 'Card quick-add forms have no variant select or bag-label element');
     assert.equal(quickButton.disabled, false);
     assert.equal(count.textContent, 11);
-    assert.equal(notice.hidden, false);
+    assert.equal(output.content.type, 'success');
+    assert.equal(output.content.message.textContent, 'Added to your bag');
+    [...timers.values()].forEach(fn => fn());
+    assert.equal(output.content, undefined, 'Successful AJAX notices retain their temporary lifetime');
     console.log('Passed: exact Shop variant bag counts, confirmed additions, selection races, failures and product isolation.');
 };

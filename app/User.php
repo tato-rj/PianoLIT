@@ -79,16 +79,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Review::class);
     }
 
-    public function performances()
-    {
-        return $this->hasMany(Performance::class);
-    }
-
-    public function claps()
-    {
-        return $this->hasMany(Clap::class);
-    }
-
     public function ratings()
     {
         return $this->hasMany(Rating::class);
@@ -122,19 +112,35 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Purchase::class)->latest();
     }
 
+    public function synthesiaRequests()
+    {
+        return $this->hasMany(SynthesiaRequest::class)->with('piece')->orderBy('created_at', 'DESC');
+    }
+
+    public function pendingSynthesiaRequests()
+    {
+        return $this->synthesiaRequests()->whereNull('published_at');
+    }
+
+    public function publishedSynthesiaRequests()
+    {
+        return $this->synthesiaRequests()->whereNotNull('published_at');
+    }
+
+    // Permanent legacy API accessors: keep the old loaded relationship/JSON name.
     public function tutorialRequests()
     {
-        return $this->hasMany(TutorialRequest::class)->with('piece')->orderBy('created_at', 'DESC');
+        return $this->synthesiaRequests();
     }
 
     public function pendingTutorialRequests()
     {
-        return $this->tutorialRequests()->whereNull('published_at');
+        return $this->pendingSynthesiaRequests();
     }
 
     public function publishedTutorialRequests()
     {
-        return $this->tutorialRequests()->whereNotNull('published_at');
+        return $this->publishedSynthesiaRequests();
     }
 
     public function purchasesOf(Merchandise $item = null)

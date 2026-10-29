@@ -6,12 +6,14 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use App\Mail\Traits\EditorialLayout;
 
 class MembershipConfirmed extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, EditorialLayout;
 
     public $firstName, $plan, $trial, $renewalDate;
+    public $theme = 'welcome';
     public $tries = 3;
     public $backoff = [60, 300];
 
@@ -26,6 +28,8 @@ class MembershipConfirmed extends Mailable implements ShouldQueue
 
     public function build()
     {
-        return $this->subject('You’re all set! Welcome to PianoLIT Premium')->markdown('emails.memberships.confirmed');
+        return $this->subject('You’re all set! Welcome to PianoLIT Premium')->markdown('emails.memberships.confirmed', [
+            'websiteUrl' => $this->websiteUrl(),
+        ]);
     }
 }

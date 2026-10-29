@@ -1,4 +1,4 @@
-@component('mail::raw')
+@component('mail::raw', ['footerReason' => 'You’re receiving this email after completing a PianoLIT crash course.'])
 <p>Hey there!</p>
 
 <p>Thanks for taking the <strong>{{$crashcourse->title}}</strong> crash course, we hope you enjoyed.</p>

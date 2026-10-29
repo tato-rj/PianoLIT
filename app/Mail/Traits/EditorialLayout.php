@@ -8,14 +8,7 @@ trait EditorialLayout
 {
     protected function websiteUrl(): string
     {
-        $website = rtrim(config('app.url'), '/');
-        if (!preg_match('#^https?://#i', $website)) {
-            $website = ltrim($website, '/');
-            $host = strtolower((string) parse_url('//'.$website, PHP_URL_HOST));
-            $scheme = substr($host, -5) === '.test' ? request()->getScheme() : 'https';
-            $website = $scheme.'://'.$website;
-        }
-        return $website;
+        return \App\Support\EmailLayout::websiteUrl();
     }
 
     protected function buildMarkdownView()

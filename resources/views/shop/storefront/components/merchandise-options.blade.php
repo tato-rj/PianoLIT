@@ -27,7 +27,6 @@
         <p class="shop-eyebrow mb-4">{{ $product['label'] }}</p>
         <div class="mb-3">@include('shop.storefront.components.quantity')</div>
         <button type="submit" class="shop-button shop-button--dark w-100">@icon('shopping-bag') <span data-bag-label aria-live="polite">{{ $inBag ? 'In bag ('.$inBag.') · Add more' : 'Add to bag' }}</span></button>
-        <p class="shop-form-error mt-3" role="alert" hidden></p>
     </form>
 @else
     <p class="shop-unavailable">Currently unavailable</p>

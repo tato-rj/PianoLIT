@@ -118,7 +118,7 @@ class LearnSubdomainTest extends ReviewTestCase
         ];
     }
 
-    public function test_learn_home_is_an_organized_directory_with_public_destinations_and_a_local_newsletter()
+    public function test_learn_home_is_an_organized_directory_with_public_destinations_and_the_youtube_header()
     {
         $response = $this->get('http://learn.localhost/')->assertOk()
             ->assertSee('PianoLIT Learn')->assertDontSee('Coming up soon!');
@@ -133,8 +133,8 @@ class LearnSubdomainTest extends ReviewTestCase
         }
         $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//a[@href="http://localhost"]')->length);
         $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//*[@aria-current="page" and contains(., "Learn")]')->length);
-        $this->assertSame(1, $xpath->query('//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
-        $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header")]//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
+        $this->assertSame(0, $xpath->query('//header[contains(@class, "site-header")]//button[@data-view="newsletter-subscription"]')->length);
+        $this->assertSame(1, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit" and @target="_blank" and @rel="noopener noreferrer"]')->length);
         foreach (['/timeline', '/birthdays', '/true-or-false', '/riddles', '/tools/staff'] as $retired) {
             $this->assertSame(0, $xpath->query('//main//a[contains(@href, "'.$retired.'")]')->length);
         }
@@ -193,7 +193,7 @@ class LearnSubdomainTest extends ReviewTestCase
         $this->get(route('resources.pianists.index'))->assertOk()
             ->assertSee('href="'.$baseUrl.'"', false)
             ->assertSee('href="'.$learn.'/login"', false)
-            ->assertSee('data-url="'.$learn.'/subscriptions/modal"', false);
+            ->assertSee('href="https://www.youtube.com/pianolit"', false);
         $this->assertSame($learn.'/circle-of-fifths', route('tools.circle-of-fifths'));
         $this->assertSame($learn.'/infographics', route('resources.infographs.index'));
         $this->assertSame($learn.'/great-pianists', route('resources.pianists.index'));

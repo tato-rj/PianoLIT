@@ -1,18 +1,1 @@
-@isset($piece)
-@component('components.dialogs.modal', ['id' => 'share-modal'])
-@slot('header')
-Share with a friend!
-@endslot
-
-@slot('body')
-<form method="POST" disable-on-submit action="{{route('webapp.pieces.share', $piece)}}">
-	@csrf
-
-	<p>I'd like to send the {{$piece->medium_name}} to</p>
-	@input(['bag' => 'default', 'type' => 'email', 'name' => 'recipient_email', 'placeholder' => 'Which email should we send this to?', 'classes' => 'input-light'])
-	<button type="submit" class="btn d-block w-100 btn-primary">Share</button>
-</form>
-@endslot
-
-@endcomponent
-@endisset
+@include('components.media.link-share', ['id' => 'piece-share-modal', 'url' => route('webapp.pieces.show', $piece), 'title' => $piece->medium_name_with_composer])

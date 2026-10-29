@@ -36,6 +36,7 @@ function element(value = '') {
 }
 
 async function main() {
+    await require('./link-share.test.cjs')();
     require('./storefront.test.cjs')();
     await require('./storefront-bag.test.cjs')();
     await require('./express-checkout.test.cjs')();

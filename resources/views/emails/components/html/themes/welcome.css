@@ -43,16 +43,6 @@ h1, h2 {
   background: #f8f9fa;
 }
 
-.welcome-container {
-  width: 600px;
-  max-width: 600px;
-}
-
-.welcome-padding {
-  padding-left: 48px;
-  padding-right: 48px;
-}
-
 .welcome-preheader {
   display: none !important;
   visibility: hidden;
@@ -71,20 +61,8 @@ h1, h2 {
   text-align: center;
 }
 
-.editorial-logo {
-  display: block;
-  height: auto;
-}
-
-.welcome-logo {
-  width: 130px;
-  margin: 0 auto 14px;
-}
-
-.editorial-logo-plain {
-  width: 48px;
-  height: 48px;
-  margin: 0 auto;
+.welcome-hero .editorial-logo {
+  margin: 0 auto 18px;
 }
 
 .welcome-hero h1 {
@@ -122,6 +100,17 @@ h1, h2 {
 
 .welcome-description {
   margin: 0 auto 24px;
+}
+
+.welcome-section-note {
+  margin: 0 auto 24px;
+}
+
+.welcome-section-note p {
+  color: #6c757d;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
 }
 
 .welcome-mockup {
@@ -203,41 +192,66 @@ h1, h2 {
 }
 
 .welcome-benefits {
-  padding-top: 40px;
+  padding-top: 32px;
+  padding-bottom: 32px;
 }
 
 .welcome-benefits h2 {
   margin-top: 0;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .welcome-benefit {
-  padding-bottom: 28px;
-  text-align: center;
+  padding-bottom: 16px;
+  text-align: left;
+}
+
+.welcome-benefit-symbol {
+  width: 24px;
+  padding-top: 1px;
 }
 
 .welcome-benefit-icon {
   display: block;
-  width: 40px;
-  height: 40px;
-  margin: 0 auto 12px;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+}
+
+.welcome-benefit-preview {
+  width: 156px;
+}
+
+.welcome-benefit-mockup {
+  display: block;
+  width: 156px;
+  height: 208px;
+  margin: 0;
+}
+
+.welcome-benefit-with-mockup .welcome-benefit-copy {
+  padding-left: 20px;
+}
+
+.welcome-benefit-copy {
+  padding-left: 12px;
 }
 
 .welcome-benefit h3 {
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   color: #212529;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.3;
-  margin: 0 0 7px;
-  text-align: center;
+  margin: 0 0 4px;
+  text-align: left;
 }
 
 .welcome-benefit p {
   color: #6c757d;
   font-size: 14px;
-  line-height: 1.6;
-  text-align: center;
+  line-height: 1.5;
+  text-align: left;
 }
 
 .welcome-pieces h2 {
@@ -288,23 +302,89 @@ h1, h2 {
   padding: 0 5px;
 }
 
-.welcome-button {
+.editorial-logo {
+  display: block;
+  height: auto;
+}
+
+.editorial-logo-plain {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto;
+}
+
+.welcome-footer, .welcome-footer table, .welcome-footer td, .welcome-footer p, .welcome-footer a {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.welcome-footer table {
+  border-collapse: collapse;
+}
+
+.welcome-footer a {
+  color: #0055fe;
+  text-decoration: none;
+}
+
+.welcome-button, .button {
   display: inline-block;
   box-sizing: border-box;
   vertical-align: middle;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: #212529;
   padding: 11px 21px;
   font-size: 14.4px;
   line-height: 22px;
-  color: white !important;
-  background-color: #0055fe;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
-  border: 1px solid #007bff;
-  border-radius: 12px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
   font-weight: 400;
   letter-spacing: 0.4px;
   text-align: center;
   text-decoration: none;
   mso-padding-alt: 11px 21px;
+}
+
+.welcome-button, .button-primary, .button-blue {
+  color: white !important;
+  background-color: #0055fe;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+  border-color: #007bff;
+}
+
+.welcome-button-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: -4px;
+}
+
+.welcome-button.btn-secondary, .button-secondary {
+  color: #172033 !important;
+  background-color: #fff;
+  border-color: #e4eaf3;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+}
+.welcome-button.btn-secondary:hover, .welcome-button.btn-secondary:focus, .welcome-button.btn-secondary.focus, .button-secondary:hover, .button-secondary:focus, .button-secondary.focus {
+  color: #172033 !important;
+  background-color: #f6f8fc;
+  border-color: #e4eaf3;
+}
+.welcome-button.btn-secondary:not(:disabled):not(.disabled):active, .welcome-button.btn-secondary:not(:disabled):not(.disabled).active, .welcome-button.btn-secondary.dropdown-toggle[aria-expanded=true], .button-secondary:not(:disabled):not(.disabled):active, .button-secondary:not(:disabled):not(.disabled).active, .button-secondary.dropdown-toggle[aria-expanded=true] {
+  background-color: #eaf0ff;
+  border-color: #d4e1ff;
+}
+.welcome-button.btn-secondary:disabled, .welcome-button.btn-secondary.disabled, .button-secondary:disabled, .button-secondary.disabled {
+  background-color: #fff;
+  border-color: #e4eaf3;
+}
+
+.welcome-button.btn-sm {
+  padding: 4px 12px;
+  font-size: 14px;
+  line-height: 22.4px;
+  mso-padding-alt: 4px 12px;
 }
 
 .welcome-button.welcome-app-store {
@@ -332,21 +412,15 @@ h1, h2 {
 }
 
 .welcome-footer p {
-  margin-bottom: 18px;
+  margin: 0 0 18px;
   color: #6c757d;
   font-size: 16px;
+  line-height: 1.65;
   text-align: left;
 }
 
 .editorial-footer-social {
   margin-bottom: 28px;
-}
-
-.editorial-footer-youtube img {
-  display: block;
-  width: 32px;
-  height: 23px;
-  opacity: 0.55;
 }
 
 .editorial-footer-details {
@@ -357,15 +431,6 @@ h1, h2 {
 .editorial-footer-copy {
   overflow-wrap: break-word;
   word-break: break-word;
-}
-
-.editorial-footer-brand {
-  width: 72px;
-  padding-left: 24px;
-}
-
-.editorial-footer-brand .editorial-logo {
-  margin: 0 0 2px auto;
 }
 
 .welcome-footer .editorial-footer-note {
@@ -392,12 +457,9 @@ h1, h2 {
   font-size: 12px;
 }
 
-.freepick-email .welcome-button {
-  font-size: 16px;
-}
-
 .freepick-header {
-  padding: 24px;
+  padding-top: 24px;
+  padding-bottom: 24px;
   text-align: center;
 }
 
@@ -1010,10 +1072,6 @@ h1, h2 {
 
 .snapshot-closing {
   padding-bottom: 26px;
-}
-
-.snapshot-closing .welcome-button {
-  font-size: 16px;
 }
 
 .snapshot-method {

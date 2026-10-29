@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\{Piece, User, Admin};
+use App\{Piece, Admin};
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PiecePolicy
@@ -21,8 +21,4 @@ class PiecePolicy
         return $piece->creator_id == $admin->id;
     }
 
-    public function perform(User $user, Piece $piece)
-    {
-        return ! auth()->user()->performances()->of($piece)->exists();// && ! auth()->user()->performances()->last30days()->exists();
-    }
 }

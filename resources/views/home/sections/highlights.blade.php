@@ -2,8 +2,8 @@
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-10 mx-auto">
 			<img src="{{asset('images/icons/video-player.svg')}}" style="width: 45px" class="mb-2">
-			<h6>Request tutorials</h6>
-			<p>Just tap a button to quickly request a video tutorial for any piece and we'll send it out in just a few days.</p>
+			<h6>Request Synthesia videos</h6>
+			<p>Just tap a button to quickly request a Synthesia video for any piece and we'll send it out in just a few days.</p>
 		</div>
 		<div class="col-lg-4 col-md-4 col-sm-10 mx-auto">
 			<img src="{{asset('images/icons/headphones.svg')}}" style="width: 45px" class="mb-2">

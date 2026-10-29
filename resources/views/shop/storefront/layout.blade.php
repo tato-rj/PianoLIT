@@ -11,17 +11,14 @@
         @component('components.layout.public.content')
             <div class="container py-4 pb-5">
                 @if($errors->getBag('storefront')->any())
-                    <div class="shop-form-error mb-4" role="alert">{{ $errors->getBag('storefront')->first() }}</div>
+                    @alert(['color' => 'red', 'message' => '<strong class="me-2">Sorry | </strong>'.e($errors->getBag('storefront')->first()), 'dismissible' => true, 'floating' => 'top'])
                 @endif
                 @yield('shop-content')
             </div>
         @endcomponent
     </div>
     @include('components.layout.public.footer')
-    <div class="shop-toast" role="status" aria-live="polite" hidden data-shop-notice>
-        <span data-shop-notice-text></span>
-        <a href="{{ route('shop.bag') }}">View bag @icon('arrow-right')</a>
-    </div>
+    @include('shop.storefront.components.alerts')
 </div>
 @include('components.billing.checkout.host', ['cancelUrl' => route('shop.bag')])
 @endsection

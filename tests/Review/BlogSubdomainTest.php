@@ -93,13 +93,18 @@ class BlogSubdomainTest extends ReviewTestCase
     {
         $post = $this->article();
         $origin = 'http://blog.localhost';
-        $this->get(route('posts.index'))->assertOk()->assertSee('PianoLIT Blog')->assertSee($post->title)->assertDontSee('Coming up soon!')->assertDontSee('Latest story');
+        $index = $this->get(route('posts.index'))->assertOk()->assertSee('PianoLIT Blog')->assertSee($post->title)->assertDontSee('Coming up soon!')->assertDontSee('Latest story');
         $response = $this->get(route('posts.show', $post))->assertOk()->assertSee('Existing article content.')->assertDontSee('disqus');
         $response->assertSee('<link rel="canonical" href="'.$origin.'/'.$post->slug.'"', false)
             ->assertSee('href="http://blog.localhost/login"', false)
             ->assertSee('href="http://localhost/support"', false)
             ->assertSee('data-url="'.$origin.'/subscriptions/modal"', false)
             ->assertSee('data-url="'.$origin.'/'.$post->slug.'/gift"', false);
+        foreach ([$index, $response] as $page) {
+            $dom = new \DOMDocument; @$dom->loadHTML($page->getContent()); $xpath = new \DOMXPath($dom);
+            $this->assertSame(0, $xpath->query('//header[contains(@class, "site-header")]//button[@data-view="newsletter-subscription"]')->length);
+            $this->assertSame(1, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit" and @target="_blank" and @rel="noopener noreferrer"]')->length);
+        }
         $this->assertSame('http://localhost', route('home'));
         $this->assertSame('http://localhost/gift', route('gift'));
         $this->assertSame($origin.'/subscriptions', route('subscriptions.store'));
@@ -206,7 +211,7 @@ class BlogSubdomainTest extends ReviewTestCase
         });
         Model::withoutEvents(function () { create(\App\Shop\eBook::class, ['title' => 'Unpublished book', 'published_at' => null]); });
         $response = $this->get(route('posts.index'))->assertOk()->assertSee('Explore PianoLIT')->assertDontSee('Unpublished book')
-            ->assertSee('data-url="http://blog.localhost/subscriptions/modal"', false)
+            ->assertSee('href="https://www.youtube.com/pianolit"', false)
             ->assertSee('href="http://localhost/support"', false)->assertDontSee('Coming up soon!');
         foreach ($items as $item) {
             $response->assertSee($item->title)->assertSee('href="'.$item->showRoute().'"', false);

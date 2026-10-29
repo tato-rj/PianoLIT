@@ -73,7 +73,7 @@ module.exports = async function () {
     cards.handlers['doc:click']({target: {closest: () => Object.assign({}, link, {textContent: 'External link', getAttribute: name => name === 'href' ? 'https://external.example/pieces/178' : null})}});
     assert.strictEqual(cards.queued().filter(event => event.type === 'click').pop().metadata.label, 'External link', 'An external path does not identify a PianoLIT piece');
     const forms = fixture(), fields = {};
-    const form = {id: 'synthesia-request-form', action: '/users/tutorial-requests/42', method: 'POST', closest: () => null,
+    const form = {id: 'synthesia-request-form', action: '/users/synthesia-requests/42', method: 'POST', closest: () => null,
         querySelector(selector) { const match = selector.match(/name="([^"]+)"/); return match ? fields[match[1]] || null : null; },
         appendChild(input) { fields[input.name] = input; }};
     const submit = Object.assign({}, link, {tagName: 'BUTTON', type: 'submit', textContent: 'Submit my request', form, getAttribute: () => null});

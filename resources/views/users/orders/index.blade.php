@@ -4,10 +4,7 @@
 <div class="container py-4 py-md-5">
     <div class="row justify-content-center">
         <div class="col-lg-10 col-xl-9">
-            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 mb-md-5">
-                <h1 class="h2 mb-0">Track your orders</h1>
-                <a href="{{ route('users.purchases') }}">My downloads @icon('arrow-right')</a>
-            </header>
+            @include('users.components.library-header', ['heading' => 'Track your orders', 'icon' => 'package'])
 
             @if(!$orders->total())
                 @include('users.orders.empty')

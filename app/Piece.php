@@ -106,11 +106,6 @@ class Piece extends PianoLit
         return $this->hasMany(PieceView::class);
     }
 
-    public function performances()
-    {
-        return $this->hasMany(Performance::class);
-    }
-
     public function composer()
     {
         return $this->belongsTo(Composer::class);
@@ -131,9 +126,15 @@ class Piece extends PianoLit
         return $this->hasMany(Favorite::class);
     }
 
+    public function synthesiaRequests()
+    {
+        return $this->hasMany(SynthesiaRequest::class);
+    }
+
+    // Retain the legacy relationship name for external/serialized consumers.
     public function tutorialRequests()
     {
-        return $this->hasMany(TutorialRequest::class);
+        return $this->synthesiaRequests();
     }
 
     public function tutorials()

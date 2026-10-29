@@ -32,11 +32,11 @@ class EventServiceProvider extends ServiceProvider
             EmailVerified::class,
         ],
         \Illuminate\Auth\Events\Login::class => [\App\Listeners\Users\RecordAuthentication::class, \App\Listeners\Users\RecordRecentPasswordLogin::class],
-        \App\Events\Tutorials\NewRequest::class => [
-            \App\Listeners\Tutorials\NewRequestListener::class,
+        \App\Events\SynthesiaRequests\NewRequest::class => [
+            \App\Listeners\SynthesiaRequests\NewRequestListener::class,
         ],
-        \App\Events\Tutorials\RequestPublished::class => [
-            \App\Listeners\Tutorials\RequestPublishedListener::class,
+        \App\Events\SynthesiaRequests\RequestPublished::class => [
+            \App\Listeners\SynthesiaRequests\RequestPublishedListener::class,
         ],
         \App\Events\Emails\EmailListSent::class => [
             \App\Listeners\Emails\EmailListSentListener::class
@@ -61,15 +61,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         \App\Events\PurchaseMade::class => [
             \App\Listeners\NewPurchaseListener::class
-        ],
-        \App\Events\PieceShared::class => [
-            \App\Listeners\PieceSharedListener::class
-        ],
-        \App\Events\Performances\PerformanceSubmitted::class => [
-            \App\Listeners\Performances\PerformanceSubmittedListener::class
-        ],
-        \App\Events\Performances\PerformanceApproved::class => [
-            \App\Listeners\Performances\PerformanceApprovedListener::class
         ],
         \App\Events\eScoreGenerated::class => [
             \App\Listeners\eScoreGeneratedListener::class

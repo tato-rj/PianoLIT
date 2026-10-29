@@ -1,6 +1,8 @@
 <div class="profile-provider-row d-flex flex-wrap align-items-center justify-content-between gap-3">
     <div class="d-flex align-items-center gap-3">
-        @include('auth.'.$provider.'.logo')
+        <span class="d-inline-flex align-items-center justify-content-center flex-shrink-0">
+            @include('auth.'.$provider.'.logo', ['logoSize' => 26, 'markOnly' => true])
+        </span>
         <div class="profile-provider-details">
             <h4 class="h6 mb-1">{{ ucfirst($provider) }}</h4>
             <p class="small text-muted mb-0 text-break">{{ $connection['account'] ? ($connection['account']->provider_email ?: 'Connected') : 'Not connected' }}</p>

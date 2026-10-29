@@ -1,0 +1,67 @@
+@use 'sass:math';
+
+$email-button-font-size: math.div($font-size-base, 1rem) * 16px * $button-font-scale;
+$email-button-height: $button-line-height + 2 * $button-padding-y + 2 * $button-border-width;
+$email-button-radius: 4px;
+
+.editorial-logo { display: block; height: auto; }
+.editorial-logo-plain { width: 48px; height: 48px; margin: 0 auto; }
+
+.welcome-footer, .welcome-footer table, .welcome-footer td, .welcome-footer p, .welcome-footer a { font-family: $font-family-sans-serif; }
+.welcome-footer table { border-collapse: collapse; }
+.welcome-footer a { color: $brand-primary; text-decoration: none; }
+.welcome-button, .button {
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    font-family: $font-family-sans-serif;
+    color: $text-color;
+    @include default-button-size($email-button-font-size);
+    border-width: $button-border-width;
+    border-style: solid;
+    border-radius: $email-button-radius;
+    font-weight: 400;
+    letter-spacing: .4px;
+    text-align: center;
+    text-decoration: none;
+    mso-padding-alt: $button-padding-y $button-padding-x;
+}
+.welcome-button, .button-primary, .button-blue {
+    @include primary-button-surface($brand-primary);
+    border-color: $primary;
+}
+.welcome-button-icon { display: inline-block; width: 20px; height: 20px; margin-right: 8px; vertical-align: -4px; }
+.welcome-button.btn-secondary, .button-secondary {
+    @include secondary-button-surface;
+    @include secondary-button-states;
+}
+.welcome-button.btn-sm {
+    // Resolved website .btn-sm values for clients without rem support.
+    padding: 4px 12px;
+    font-size: 14px;
+    line-height: 22.4px;
+    mso-padding-alt: 4px 12px;
+}
+.welcome-button.welcome-app-store {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    font-size: 0;
+    line-height: 0;
+    height: $email-button-height;
+    mso-padding-alt: 0;
+}
+.welcome-app-store img { display: block; width: auto; height: $email-button-height; }
+.welcome-footer { padding-top: 8px; padding-bottom: 36px; text-align: left; }
+.welcome-footer p { margin: 0 0 18px; color: #6c757d; font-size: 16px; line-height: 1.65; text-align: left; }
+.editorial-footer-social { margin-bottom: 28px; }
+.editorial-footer-details { width: 100%; table-layout: fixed; }
+.editorial-footer-copy { overflow-wrap: break-word; word-break: break-word; }
+.welcome-footer .editorial-footer-note { font-size: 14px; line-height: 1.6; }
+.welcome-footer .editorial-footer-links { font-size: 14px; line-height: 1.8; }
+.editorial-footer-links a { color: #6c757d; text-decoration: underline; }
+.editorial-footer-links span { color: #adb5bd; }
+.welcome-footer .welcome-copyright { margin: 22px 0 0; font-size: 12px; }
+

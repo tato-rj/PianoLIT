@@ -16,6 +16,34 @@
 
 .piece-header {
     text-align: center;
+    padding-inline: 144px;
+}
+
+.piece-header-actions {
+    position: absolute;
+    right: 0;
+    bottom: 50%;
+    transform: translateY(50%);
+    gap: 4px;
+}
+
+.piece-header-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 767.98px) {
+    .piece-header { padding-inline: 0; }
+    .piece-header-actions {
+        position: static;
+        transform: none;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
 }
 
 .piece-background {

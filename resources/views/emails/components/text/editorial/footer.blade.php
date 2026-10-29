@@ -1,5 +1,5 @@
 @unless($internal ?? false)
-YouTube: {{ config('services.channels.youtube') }}
+Visit us on youtube: {{ config('services.channels.youtube') }}
 @endunless
 
 {{ $footerReason }}

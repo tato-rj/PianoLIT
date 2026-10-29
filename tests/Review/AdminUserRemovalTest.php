@@ -60,7 +60,7 @@ class AdminUserRemovalTest extends ReviewTestCase
         DB::table('email_list_subscription')->insert(['email_list_id' => $list, 'subscription_id' => $subscription->id]);
         $folder = DB::table('favorite_folders')->insertGetId(['user_id' => $target->id, 'name' => 'Private folder']);
         DB::table('favorites')->insert([['user_id' => $target->id, 'piece_id' => $piece->id, 'favorite_folder_id' => $folder], ['user_id' => $other->id, 'piece_id' => $piece->id, 'favorite_folder_id' => null]]);
-        DB::table('tutorial_requests')->insert(['user_id' => $target->id, 'piece_id' => $piece->id]);
+        DB::table('synthesia_requests')->insert(['user_id' => $target->id, 'piece_id' => $piece->id]);
         DB::table('score_annotations')->insert(['user_id' => $target->id, 'piece_id' => $piece->id, 'score_key' => str_repeat('a', 64), 'marks' => '[]']);
         DB::table('recently_viewed_pieces')->insert(['user_id' => $target->id, 'piece_id' => $piece->id, 'viewed_at' => now()]);
         DB::table('user_auth_providers')->insert(['user_id' => $target->id, 'provider' => 'google', 'provider_user_id' => 'preview-subject', 'provider_email' => $target->email]);
@@ -88,7 +88,7 @@ class AdminUserRemovalTest extends ReviewTestCase
             ['confirmation_email' => strtoupper($f['target']->email), 'user_id' => $f['other']->id])->assertRedirect(route('admin.users.index'));
         $this->assertDatabaseMissing('users', ['id' => $f['target']->id]);
         $this->assertDatabaseHas('users', ['id' => $f['other']->id]);
-        foreach (['favorite_folders', 'favorites', 'tutorial_requests', 'score_annotations', 'recently_viewed_pieces', 'user_auth_providers'] as $table) $this->assertDatabaseMissing($table, ['user_id' => $f['target']->id]);
+        foreach (['favorite_folders', 'favorites', 'synthesia_requests', 'score_annotations', 'recently_viewed_pieces', 'user_auth_providers'] as $table) $this->assertDatabaseMissing($table, ['user_id' => $f['target']->id]);
         $this->assertDatabaseMissing('subscriptions', ['id' => $f['subscription']->id]);
         $this->assertDatabaseMissing('email_list_subscription', ['subscription_id' => $f['subscription']->id]);
         $this->assertDatabaseMissing('locations', ['id' => $f['location']->id]);

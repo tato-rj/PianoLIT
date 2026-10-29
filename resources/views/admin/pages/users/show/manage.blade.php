@@ -7,7 +7,7 @@
         @endif
     @endforeach
     <div class="up-removal-grid">
-        <article class="up-removal-option"><span class="up-pill">Keeps visits & activity</span><h3>Delete account</h3><p>Removes the account, sign-in connections, saved music, markings and tutorial requests. Stored visits, pages and activity records remain.</p><button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delete-user-modal" @if($removalBlocked) disabled @endif>@icon('trash-2')Delete account</button></article>
+        <article class="up-removal-option"><span class="up-pill">Keeps visits & activity</span><h3>Delete account</h3><p>Removes the account, sign-in connections, saved music, markings and Synthesia requests. Stored visits, pages and activity records remain.</p><button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delete-user-modal" @if($removalBlocked) disabled @endif>@icon('trash-2')Delete account</button></article>
         <article class="up-removal-option up-removal-option--purge"><span class="up-pill up-pill--red">Also removes visits & activity</span><h3>Purge account</h3><p>Deletes the same account data, plus its associated visits, pages, events and old SQL activity summaries. Other accounts’ activity stays intact.</p><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#purge-user-modal" @if($removalBlocked) disabled @endif>@icon('skull')Purge account</button></article>
     </div>
     <p class="up-note">Both actions are permanent. Billing and payment records are retained. Active subscriptions must end first; these actions do not cancel Stripe or App Store billing.</p>

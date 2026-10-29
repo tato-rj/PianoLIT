@@ -2,12 +2,12 @@
 
 @section('shop-content')
 @include('components.navigation.breadcrumb', ['items' => [['label' => 'Home', 'url' => route('home')], ['label' => 'Shop', 'url' => route('shop.home')], ['label' => 'Shopping bag']]])
-<p class="shop-eyebrow mb-1">Your</p>
-<h1 class="mb-4 mb-md-5">Shopping bag</h1>
-@if(session('shop_status'))<p role="status">{{ session('shop_status') }}</p>@endif
-@if($shoppingBag['unavailable'])<p role="status">Some items are no longer available and have been left out of your bag.</p>@endif
+
+@if($shoppingBag['unavailable'])
+    @alert(['color' => 'yellow', 'message' => 'Some items are no longer available and have been left out of your bag.', 'dismissible' => true, 'fullX' => true])
+@endif
 @if(count($shoppingBag['lines']))
-    <div class="row g-4 g-lg-5">
+    <div class="row mt-1 g-4 g-lg-5">
         <div class="col-12 col-lg-8">
             @foreach($shoppingBag['lines'] as $line)
                 <article class="shop-bag-item mb-3">

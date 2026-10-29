@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Billing\{Membership, Payment};
 use App\Billing\Sources\Apple;
-use App\{Piece, Subscription, TutorialRequest, User, FavoriteFolder, Location, Review, Rating, Performance, Clap};
+use App\{Piece, Subscription, SynthesiaRequest, User, FavoriteFolder, Location, Review, Rating};
 use Tests\AppTest;
 use App\Merchandise\Purchase;
 use App\Infograph\Infograph;
@@ -48,21 +48,7 @@ class UserTest extends AppTest
 		$this->assertInstanceOf(Review::class, $this->user->reviews->first());
 	}
 
-	/** @test */
-	public function it_has_many_performances()
-	{
-		create(Performance::class, ['user_id' => $this->user->id]);
 
-		$this->assertInstanceOf(Performance::class, $this->user->performances->first());
-	}
-
-    /** @test */
-    public function it_has_many_claps()
-    {
-        create(Clap::class, ['user_id' => $this->user]);
-
-        $this->assertInstanceOf(Clap::class, $this->user->claps()->first());
-    }
 
 	/** @test */
 	public function it_has_many_favorite_folders()
@@ -95,21 +81,21 @@ class UserTest extends AppTest
 	}
 
 	/** @test */
-	public function it_has_many_tutorial_requests()
+	public function it_has_many_synthesia_requests()
 	{
-		create(TutorialRequest::class, ['user_id' => $this->user->id]);
+		create(SynthesiaRequest::class, ['user_id' => $this->user->id]);
 
-		$this->assertInstanceOf(TutorialRequest::class, $this->user->tutorialRequests->first());		 
+		$this->assertInstanceOf(SynthesiaRequest::class, $this->user->synthesiaRequests->first());
 	}
 
 	/** @test */
-	public function it_knows_if_it_has_pending_tutorial_requests()
+	public function it_knows_if_it_has_pending_synthesia_requests()
 	{
-		$this->assertEmpty($this->user->pendingTutorialRequests()->get());
+		$this->assertEmpty($this->user->pendingSynthesiaRequests()->get());
 
-		create(TutorialRequest::class, ['user_id' => $this->user->id]);
+		create(SynthesiaRequest::class, ['user_id' => $this->user->id]);
 		 
-		$this->assertNotEmpty($this->user->fresh()->pendingTutorialRequests()->get());
+		$this->assertNotEmpty($this->user->fresh()->pendingSynthesiaRequests()->get());
 	}
 
 	/** @test */

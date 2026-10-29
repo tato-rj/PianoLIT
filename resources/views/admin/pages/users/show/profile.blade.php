@@ -14,7 +14,7 @@
     <div class="up-hero-access"><span class="up-access-badge" data-profile-status data-base-label="{{ $billingStatus }}">{{ $status }}</span><strong data-profile-access data-billing-access="{{ $billingAccess ? '1' : '0' }}">{{ $hasAccess ? 'Full media access' : 'Preview access' }}</strong><small>Joined {{ optional($user->created_at)->format('M j, Y') ?: 'date not recorded' }}</small></div>
 </section>
 <div class="up-metrics">
-    @foreach([['favorites', 'Saved pieces', 'heart', '#up-favorites'], ['folders', 'Collections', 'folder', '#up-favorites'], ['scores', 'Scores with markings', 'square-pen', '#up-favorites'], ['requests', 'Tutorial requests', 'video', '#up-requests']] as [$key, $label, $icon, $anchor])
+    @foreach([['favorites', 'Saved pieces', 'heart', '#up-favorites'], ['folders', 'Collections', 'folder', '#up-favorites'], ['scores', 'Scores with markings', 'square-pen', '#up-favorites'], ['requests', 'Synthesia requests', 'video', '#up-requests']] as [$key, $label, $icon, $anchor])
     <a class="up-card up-metric" href="{{ $anchor }}"><span class="up-icon">@icon($icon, ['mr' => 0])</span><span>{{ $label }}<strong>{{ number_format($counts[$key]) }}</strong></span></a>
     @endforeach
 </div>

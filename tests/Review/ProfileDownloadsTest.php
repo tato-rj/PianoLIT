@@ -117,7 +117,10 @@ class ProfileDownloadsTest extends ReviewTestCase
     {
         $user = $this->account();
         $empty = $this->actingAs($user, 'web')->get(route('users.purchases'))->assertOk()->assertSee('Your library starts here')
-            ->assertSee(route('resources.infographs.index'))->assertSee(route('shop.home'))->assertDontSee('download-library-grid');
+            ->assertSee(route('resources.infographs.index'))->assertDontSee('download-library-grid');
+        $emptyLinks = $this->xpath($empty)->query('//section[@aria-labelledby="downloads-empty-title"]//a');
+        $this->assertCount(1, $emptyLinks);
+        $this->assertSame(route('resources.infographs.index'), $emptyLinks->item(0)->getAttribute('href'));
         $this->preview($empty, 'empty');
         Model::withoutEvents(function () use ($user) {
             Purchase::create(['user_id' => $user->id, 'item_id' => 999999, 'item_type' => eBook::class]);

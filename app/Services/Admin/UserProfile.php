@@ -51,8 +51,8 @@ class UserProfile
             ->where('f.user_id', $user->id)->select('p.id', 'p.name', 'c.name as composer')
             ->selectRaw('MAX(f.created_at) as saved_at')->groupBy('p.id', 'p.name', 'c.name')
             ->orderByDesc('saved_at')->orderByDesc('p.id')->paginate(AdminPagination::PER_PAGE, ['*'], 'favorites_page')->withQueryString();
-        $requests = DB::table('tutorial_requests as r')->leftJoin('pieces as p', 'p.id', '=', 'r.piece_id')->leftJoin('composers as c', 'c.id', '=', 'p.composer_id')
-            ->where('r.user_id', $user->id)->select('r.id', 'r.piece_id', 'r.created_at', 'r.published_at', 'r.types', 'p.name', 'c.name as composer')
+        $requests = DB::table('synthesia_requests as r')->leftJoin('pieces as p', 'p.id', '=', 'r.piece_id')->leftJoin('composers as c', 'c.id', '=', 'p.composer_id')
+            ->where('r.user_id', $user->id)->select('r.id', 'r.piece_id', 'r.created_at', 'r.published_at', 'p.name', 'c.name as composer')
             ->orderByDesc('r.created_at')->orderByDesc('r.id')->paginate(AdminPagination::PER_PAGE, ['*'], 'requests_page')->withQueryString();
         $counts = [
             'favorites' => $favorites->total(),

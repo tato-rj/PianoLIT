@@ -25,5 +25,4 @@ Route::namespace('WebApp')->prefix('pieces')->name('pieces.')->group(function() 
 
 	Route::get('{piece}/save-to', 'PiecesController@saveTo')->middleware('auth:web')->name('save-to');
 
-	Route::post('{piece}/share', 'PiecesController@share')->middleware('auth:web')->name('share');
 });

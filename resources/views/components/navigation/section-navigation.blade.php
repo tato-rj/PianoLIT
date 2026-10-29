@@ -1,5 +1,4 @@
 <nav id="{{ $id }}" class="section-navigation" aria-label="{{ $label }}" @if($preview ?? false) data-ds-preview @elseif($trackSections ?? true) data-section-navigation @endif>
-    @if(! empty($heading))<p class="small text-muted mb-3">{{ $heading }}</p>@endif
     <ul class="section-navigation__links list-unstyled mb-0">
         @foreach($items as $item)
             <li>

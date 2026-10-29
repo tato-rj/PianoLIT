@@ -20,11 +20,21 @@ restored/deep-linked positions, resizing and the short final section. Location i
 approximate metadata, not proof of signup location. Missing dates/origins/
 locations are shown as Not recorded rather than inferred.
 
+The profile header always includes icon buttons for Track your orders and My
+downloads, including accounts with no purchases. These destinations stay outside
+the profile section menu. The package/download icons also identify their page
+titles. The two library pages do not link to each other; the downloads empty state
+offers only Explore infographics, while the orders empty state offers the Shop.
+
 ## Downloads
 
 My downloads is a standalone page at `/profile/downloads` on the absolute main
-website. Its heading and library align with the logo in the shared public container, without the profile
-section menu. The account dropdown keeps separate My profile and My downloads
+website. Its heading and library use the same centered `col-lg-10 col-xl-9`
+width as Track your orders, without the profile section menu. Both pages reuse
+`users.components.library-header` and `users.components.empty-library`; the paired
+editable SVGs live in `users/components/illustrations`. The empty states share
+artwork size, spacing, typography and standard buttons, also previewed in the
+Design System. The account dropdown keeps separate My profile and My downloads
 links. The existing `users.purchases` name generates the downloads URL, including
 from child hosts and purchase emails. Legacy `/my-profile/purchases` and
 child-host `/profile/downloads` GET/HEAD requests redirect permanently before
@@ -102,7 +112,7 @@ soft-deleted authenticatable User, and introduces no shared model scopes or JSON
 fields. The confirmation email, current proof and all membership sources are
 checked server-side. Active/uncertain billing prevents closure; this flow does
 not cancel or contact Stripe or Apple. Private favorites/folders, newsletter
-subscriptions, locations, tutorial requests, recent pieces, score markings,
+subscriptions, locations, Synthesia requests, recent pieces, score markings,
 provider links/challenges/handoffs and metronome recordings are removed by the
 existing cleanup/cascades. Password-reset tokens are also removed. A failure
 rolls back both private cleanup and the closure marker.

@@ -1,24 +1,22 @@
-@component('mail::message')
-# You’re all set!
-
-Hi {{ $firstName }}, your PianoLIT Premium membership is active. Enjoy full access to scores, videos, and recordings. Your next favorite piece is waiting for you.
-
-**Your plan:** {{ $plan }}
-
-@if($trial)
-Your free trial is active. No payment was due today.@if($renewalDate) Your first billing date is **{{ $renewalDate }}**. Cancel before then in My Membership to avoid the first payment.@endif
-@elseif($renewalDate)
-Your next renewal is **{{ $renewalDate }}**.
-@endif
-
-@component('mail::button', ['url' => route('webapp.discover')])
-Start exploring
+@component('mail::editorial.message', ['title' => 'Welcome to PianoLIT Premium', 'preheader' => 'Your Premium membership is active. Let’s play something you love.', 'websiteUrl' => $websiteUrl, 'footerReason' => 'Your PianoLIT Premium membership', 'unsubscribeUrl' => $websiteUrl.route('users.profile', [], false).'?tab=email-preferences'])
+@component('mail::welcome.hero', ['title' => 'You’re all set!', 'firstName' => $firstName, 'websiteUrl' => $websiteUrl])
+Welcome to Premium, {{ $firstName }}.<br>
+Your next favorite piece is waiting.
 @endcomponent
 
-You can view your billing details and manage your plan anytime in [My Membership]({{ route('webapp.membership.edit') }}).
+@component('mail::welcome.section', ['image' => $websiteUrl.mix('images/emails/welcome/app-devices.png'), 'alt' => 'PianoLIT on a computer and in the iOS app', 'links' => [['url' => route('webapp.discover'), 'label' => 'Start exploring', 'icon' => $websiteUrl.mix('images/emails/welcome/pianolit-white.png')]]])
+@endcomponent
 
-Need a hand? Reply to this email or contact [contact@pianolit.com](mailto:contact@pianolit.com). We’re happy to help.
+@component('mail::welcome.section', ['title' => $plan, 'links' => [['url' => route('webapp.membership.edit'), 'label' => 'My Membership', 'kind' => 'secondary']]])
+{{ $trial ? 'Your free trial is active.' : 'Your membership is active.' }}
 
-Enjoy the music,<br>
-The PianoLIT team
+@if($renewalDate)
+{{ $trial ? 'First billing date' : 'Next renewal' }}: **{{ $renewalDate }}**
+@endif
+@if($trial)
+@slot('note')
+No payment was due today.
+@endslot
+@endif
+@endcomponent
 @endcomponent

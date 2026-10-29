@@ -204,8 +204,8 @@ class AdminUsersTableTest extends ReviewTestCase
         $actions = $xpath->query('//table[@id="users-table"]/tbody/tr[1]/td[6]/div/a');
         $this->assertCount(2, $actions);
         $this->assertSame(route('admin.users.show', $users[0]), $actions[0]->getAttribute('href'));
-        $this->assertSame(route('impersonate', $users[0]), $actions[1]->getAttribute('href'));
-        $this->assertSame('noopener noreferrer', $actions[1]->getAttribute('rel'));
+        $this->assertSame(route('admin.analytics.users.profile', ['user' => $users[0]->id, 'tab' => 'visits']), $actions[1]->getAttribute('href'));
+        $this->assertSame('Logs & analytics', $actions[1]->getAttribute('aria-label'));
         foreach (['unused-account-secret', 'unused-receipt-secret', 'unused-apple-secret', 'unused-customer-secret', 'latest_receipt', 'logs_count', 'favorites_count'] as $unused) $response->assertDontSee($unused);
     }
 

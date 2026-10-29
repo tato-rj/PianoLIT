@@ -4,7 +4,7 @@
         <div class="modal-body">
             <p><strong>{{ trim($user->full_name) }}</strong><br><span class="text-muted">{{ $user->email }} · Account #{{ $user->id }}</span></p>
             <p>{{ $purge ? 'The account and its associated visits, pages and activity records will be permanently removed.' : 'The account will be permanently removed. Stored visits, pages and activity records will be kept.' }}</p>
-            <p class="small text-muted">Saved music, score markings and tutorial requests are removed in both cases. Billing records are retained. Active subscriptions block this action.</p>
+            <p class="small text-muted">Saved music, score markings and Synthesia requests are removed in both cases. Billing records are retained. Active subscriptions block this action.</p>
             @if($errors->getBag($mode)->has('account_removal'))<p class="text-danger" role="alert">{{ $errors->getBag($mode)->first('account_removal') }}</p>@endif
             <form method="POST" action="{{ route($route, $user) }}" data-removal-form data-confirm-email="{{ mb_strtolower(trim($user->email)) }}">
                 @csrf

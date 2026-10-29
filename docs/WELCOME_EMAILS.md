@@ -58,7 +58,7 @@ server's Laravel root, provided the matching component files are deployed.
 
 Regular actions use the same default primary-button dimensions and finish as the
 web app via `shared/_button-foundations.scss`: 11px × 21px padding, 22px line
-height, 1px border, 12px corners and the primary shadow. Email values are resolved
+height, 1px border and the primary shadow, with separate 4px email corners. Email values are resolved
 for inlining rather than depending on browser CSS variables. iOS download links
 use the supplied Apple App Store badge, exported from the identical existing
 `resources/images/apple/download.svg` artwork as a 4× PNG. Its displayed height
@@ -76,24 +76,30 @@ python3 scripts/build-welcome-email-assets.py
 
 The logo and device assets are compositions of existing artwork and real
 screenshots. The hub thumbnails reuse the approved editorial artwork already on
-the homepage; this update generates no new illustrations. The approved rounded icon is upright within an image displayed
-at 130px wide with proportional height. A thin light-gray outline follows the
-icon's own silhouette so the white keys remain clear. The image has a transparent
-outer canvas and retains a small floating gap above a soft floor shadow that
-blends into the shared email background.
-`mail::editorial.logo` supplies this artwork to all three welcomes; its
-`shadow => false` variant gives Freepick the identical outlined icon on
-transparency, displayed smaller at 48px. Welcomes keep their 78px visible icon
-inside the unchanged 130px complete canvas. Rebuild both assets with
+the homepage; this update generates no new illustrations. The approved rounded
+icon has a thin light-gray outline so the white keys remain clear.
+`mail::editorial.logo` displays the same shadow-free `logo.png` at 48px in every
+customer email header, including welcomes, matching the weekly admin snapshot.
+The shared email footer has no repeated logo. The
+older floating asset remains on disk but is no longer rendered. Rebuild the
+outlined artwork with
 `python3 scripts/build-welcome-email-assets.py --logo-only` to preserve the
 existing screenshot mockups.
-The website's approved `app-devices.jpg` composition retains the Discover browser
+The website's approved `app-devices.png` composition retains the Discover browser
 and actual iOS Discover screen from `mockup/main-view.png`. The web app email uses
-`tablet-iphone.jpg`, pairing the real `piece-tablet.jpg` capture with that native
-iPhone artwork. The iOS email uses `webapp-devices.jpg`, keeping the approved
+`tablet-iphone.png`, pairing the real `piece-tablet.jpg` capture with that native
+iPhone artwork. The iOS email uses `webapp-devices.png`, keeping the approved
 browser and replacing the phone screen with Arthur's supplied mobile Discover
 screenshot, saved in `resources/email-sources/welcome/discover-mobile.png`.
 Only device frames/masks surround these real screens; no UI is generated.
+All three PNGs have transparent outer canvases so the devices sit directly on
+the email background. Their legacy JPEGs remain the approved opaque pixel
+sources (and stay available for previously received emails); native composition
+alpha supplies only the transparent silhouette and antialiased frame edges.
+Do not make white screen content transparent or replace the approved screenshots
+when changing the canvas. Rebuild only these three assets with
+`python3 scripts/build-welcome-email-assets.py --mockups-only`, then publish
+the source/public PNG copies and matching manifest entries together.
 Rebuild these two variants without touching the website composition using:
 
 ```sh
@@ -133,12 +139,16 @@ these as past picks available with Premium. With fewer eligible pieces, only
 those available are shown. Browse the PianoLIT library opens `webapp.explore`.
 The cards resolve once per message build for matching HTML and plain text.
 
-The shared footer uses a regular linked YouTube social icon, followed by a
+The shared footer uses the labeled Visit us on youtube button, followed by a
 signup-reason note, contact copy, legal/support
 links and copyright. The outlined, shadow-free PianoLIT icon sits on the right;
-no postal address, social buttons, footer App Store link or other social channels
+no postal address, footer App Store link or other social channels
 appear. Body App Store actions are retained. The Free pick counterpart
-uses the same component with a subscription-reason note. HTML and plain text
+uses the same component with a subscription-reason note. All other customer
+emails reuse this same HTML/plain-text footer through the standard message/raw
+components; admin emails retain their separate footer behavior. List campaigns
+keep recipient-specific unsubscribe links, newsletters keep their list-only
+opt-out, and course lessons keep contact-based cancellation. HTML and plain text
 include the same destinations. **Unsubscribe / email preferences** opens the
 account's current email-list controls through `users.profile?tab=email-preferences`.
 Sign-in is required, and the recipient chooses which lists to leave. No list

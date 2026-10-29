@@ -43,10 +43,10 @@ class AdminEmailsTest extends ReviewTestCase
         $response = $this->get(route('admin.emails.index'))->assertOk()->assertDontSee('Not currently sent')->assertSee('Membership confirmation')->assertSee('Weekly admin snapshot')->assertSee('Sending');
         $xpath = $this->xpath($response);
         $tables = '//table[starts-with(@id,"automatic-emails-")]';
-        $this->assertCount(8, $xpath->query($tables));
-        $this->assertCount(21, $xpath->query($tables.'/tbody/tr'));
-        $this->assertCount(8, $xpath->query('//nav[@aria-label="Email categories"]/a'));
-        foreach (['welcome' => 3, 'account' => 7, 'shop' => 4, 'membership' => 1, 'tutorials' => 2, 'performances' => 2, 'sharing' => 1, 'administration' => 1] as $section => $count) {
+        $this->assertCount(6, $xpath->query($tables));
+        $this->assertCount(18, $xpath->query($tables.'/tbody/tr'));
+        $this->assertCount(6, $xpath->query('//nav[@aria-label="Email categories"]/a'));
+        foreach (['welcome' => 3, 'account' => 7, 'shop' => 4, 'membership' => 1, 'synthesia-requests' => 2, 'administration' => 1] as $section => $count) {
             $id = 'automatic-emails-'.$section;
             $this->assertCount($count, $xpath->query('//table[@id="'.$id.'"]/tbody/tr'));
             $this->assertCount(1, $xpath->query('//section[@aria-labelledby="'.$id.'-title"]//h2[@id="'.$id.'-title"]'));
@@ -58,11 +58,11 @@ class AdminEmailsTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@id="preview-recipient" and contains(@class,"form-control") and @type="email" and @required and @maxlength="254" and @autocomplete="email" and @aria-describedby="preview-send-help"]'));
         $this->assertCount(1, $xpath->query('//label[@for="preview-recipient"]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="_token"]'));
-        $this->assertCount(21, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
-        $this->assertCount(21, $xpath->query($tables.'//a[@target="_blank" and @rel="noopener noreferrer"]'));
-        $this->assertCount(18, $xpath->query('//input[@role="switch" and @checked and @value="1"]'));
-        $this->assertCount(21, $xpath->query('//label[contains(@class,"switch")]/input[@name="enabled" and not(contains(@class,"status-toggle"))]/following-sibling::span[contains(@class,"slider")]'));
-        $this->assertCount(21, $xpath->query('//input[@role="switch"]/ancestor::form/input[@type="hidden" and @name="enabled" and @value="0"]'));
+        $this->assertCount(18, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
+        $this->assertCount(18, $xpath->query($tables.'//a[@target="_blank" and @rel="noopener noreferrer"]'));
+        $this->assertCount(15, $xpath->query('//input[@role="switch" and @checked and @value="1"]'));
+        $this->assertCount(18, $xpath->query('//label[contains(@class,"switch")]/input[@name="enabled" and not(contains(@class,"status-toggle"))]/following-sibling::span[contains(@class,"slider")]'));
+        $this->assertCount(18, $xpath->query('//input[@role="switch"]/ancestor::form/input[@type="hidden" and @name="enabled" and @value="0"]'));
         foreach (['Website welcome', 'Web app welcome', 'iOS app welcome'] as $name) {
             $this->assertCount(1, $xpath->query('//input[@role="switch" and not(@checked) and @value="1" and @aria-label="Automatic sending: '.$name.'"]'));
         }
@@ -133,7 +133,7 @@ class AdminEmailsTest extends ReviewTestCase
     {
         $this->admin();
         $catalog = app(AutomaticEmails::class);
-        foreach (['verify-email', 'reset-password', 'google-link', 'google-reauth', 'apple-link', 'apple-reauth', 'apple-signup', 'piece-shared'] as $key) {
+        foreach (['verify-email', 'reset-password', 'google-link', 'google-reauth', 'apple-link', 'apple-reauth', 'apple-signup'] as $key) {
             $sample = $catalog->render($key);
             $this->assertStringContainsString('href="#email-preview"', $sample['html']);
             $this->assertNotEmpty($sample['text']);
@@ -142,7 +142,7 @@ class AdminEmailsTest extends ReviewTestCase
         $this->assertStringContainsString(route('users.purchases'), $sample['html']);
         $this->assertStringNotContainsString('admin.localhost', $sample['html']);
         $this->assertStringContainsString('Jamie', $sample['html']);
-        $this->assertStringContainsString('Chopin', $catalog->render('tutorial-request')['html']);
+        $this->assertStringContainsString('Chopin', $catalog->render('synthesia-request')['html']);
     }
 
     public function test_each_send_uses_only_the_entered_recipient_and_an_immediate_rendered_preview()
@@ -178,7 +178,7 @@ class AdminEmailsTest extends ReviewTestCase
     public function test_unknown_templates_invalid_recipients_and_csrf_fail_before_sending()
     {
         $this->admin(); $this->withExceptionHandling();
-        foreach (['missing', 'App-Mail-Gift', 'membership-ended'] as $key) {
+        foreach (['missing', 'App-Mail-Gift', 'membership-ended', 'performance-submitted', 'performance-approved', 'piece-shared'] as $key) {
             $this->getJson(route('admin.emails.preview', $key))->assertNotFound();
             $this->getJson(route('admin.emails.content', $key))->assertNotFound();
         }

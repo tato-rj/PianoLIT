@@ -1,7 +1,7 @@
 # Editing emails
 
 Email bodies live here, grouped by purpose. New emails follow the same convention:
-`welcome/`, `memberships/`, `shop/`, `tutorials/`, and so on. Each meaningful
+`welcome/`, `memberships/`, `shop/`, `synthesia-requests/`, and so on. Each meaningful
 variant gets its own Blade view. Text and button labels belong in the views,
 while PHP mail classes handle runtime data and delivery.
 
@@ -16,11 +16,65 @@ Laravel mail theme and simple/raw layouts, including their outer wrappers and
 main content surfaces. Colored promotional sections and white cards keep their
 own surfaces. Keep the `bgcolor` fallbacks on both layout families in sync.
 
-Edit `resources/sass/emails/welcome.scss` for editorial emails and rebuild its
-theme. Older emails use `resources/views/vendor/mail/html/themes/default.css`
-and `layout-simple.blade.php`. The welcome logo has a transparent outer canvas
-so its floor shadow blends into the shared background; publish its matching
-resource/public image and manifest hash together.
+Edit `resources/sass/emails/welcome.scss` for editorial content. All email
+branding styles live once in `resources/sass/emails/_branding.scss`; both the
+welcome and default themes import them. `npm run emails:styles` rebuilds both
+generated CSS files. The default theme preserves the existing transactional body
+styles from `resources/sass/emails/legacy.css` without reformatting them.
+
+## Shared width and spacing
+
+Every HTML email, public or admin, uses a centered **600px** frame, with **48px**
+horizontal body/footer insets on desktop and **24px** at viewport widths of
+620px or less. Below 600px the frame fills the available width. This includes
+Laravel verification/recovery notifications, editorial emails, course/raw
+messages, current and queued legacy admin reports, and the retained simple layout.
+
+`App\Support\EmailLayout` owns these dimensions. Reuse
+`mail::layout.container` for the frame and Outlook fallback, and include
+`mail::layout.styles` in the email head. Laravel inlines the desktop rules while
+retaining the mobile media query. Never set a separate shell width or outer
+horizontal padding in a theme or individual email. Full-width artwork and
+internal card spacing remain part of their content components.
+
+## Shared customer branding
+
+Every customer email uses `components/html/editorial/logo.blade.php` with the
+same outlined, shadow-free 48px `logo.png` used in the weekly admin snapshot.
+Welcome emails also use this plain icon. Keep the artwork and markup here;
+never copy them into individual email bodies or use the separate square app icon.
+
+All customer emails reuse `components/{html,text}/editorial/footer.blade.php`.
+The footer contains text and links only, with no repeated PianoLIT logo; the
+shared logo remains in the email header.
+Standard `mail::message` emails (including verification, recovery and provider
+notifications) reach it through `editorial/customer-footer`. `mail::raw` course
+emails delegate to that same message component and retain their lesson HTML.
+`App\Support\EmailLayout` supplies absolute main-site links and footer metadata:
+list campaigns retain their recipient/list unsubscribe destination, newsletters
+retain their newsletter-only link, and course lessons keep contact-based
+cancellation. Other messages link to account email preferences. Rendering never
+changes a subscription or automatic-sending switch.
+
+Admin reports retain their own footers. The weekly snapshot keeps its existing
+internal footer mode; queued legacy reports keep their original template.
+
+User performance submission/approval emails are retired with the community
+upload feature. Their templates, mail classes, event listeners, admin previews
+and sending switches are removed; the old email keys cannot be enabled or sent.
+See `docs/USER_PERFORMANCES_RETIREMENT.md` for the scope and deployment notes.
+
+The old piece-sharing email, event/listener, notification, sending switch and
+preview are also retired. The piece-page Share modal now opens the visitor's
+own messaging apps or copies a canonical page link; PianoLIT sends no email.
+See `docs/LINK_SHARING.md` for its component and deployment notes.
+
+Export fictional samples of every automatic customer email plus course, gift,
+newsletter, email-change and Free Pick messages without sending mail:
+
+```sh
+php -d error_reporting=8191 scripts/preview-customer-emails.php /tmp/pianolit-customer-email-preview
+```
 
 ## Welcome emails
 
@@ -42,6 +96,14 @@ Keep `{{ $firstName }}`, URL variables, Blade directives and component arguments
 when editing the surrounding wording. Leave `mix(...)` around screenshot paths
 so browsers load the correct asset version.
 
+The three platform mockups use transparent PNGs (`app-devices.png`,
+`tablet-iphone.png`, `webapp-devices.png`), without a white outer image canvas.
+The same browser/native-phone image is reused in Free Pick. Run
+`python3 scripts/build-welcome-email-assets.py --mockups-only` to rebuild them;
+the legacy JPEG masters preserve approved screen pixels while native silhouettes
+provide transparent device edges. Publish their resource/public copies and
+manifest hashes together. Keep the actual screens and device frames opaque.
+
 Shared welcome layout parts are here:
 
 | Change | File |
@@ -52,7 +114,7 @@ Shared welcome layout parts are here:
 | Shared hub copy and image choices | `welcome/hubs.blade.php` |
 | Image-left hub section and rows | `components/html/welcome/{hubs,hub}.blade.php` |
 | Premium benefits copy and icon choices | `welcome/premium.blade.php` |
-| Centered Premium section and icon rows | `components/html/welcome/{benefits,benefit}.blade.php` |
+| Compact Premium section and icon rows | `components/html/welcome/{benefits,benefit}.blade.php` |
 | Three piece cards and library action | `welcome/pieces.blade.php`, `components/html/welcome/pieces.blade.php` |
 | Button markup | `components/html/welcome/button.blade.php` |
 | Welcome title/preheader | `components/html/welcome/message.blade.php` |
@@ -64,7 +126,8 @@ greeting or footer wording, update its plain-text counterpart too. Introduction 
 copy are automatically taken from the body views in both formats. Hub rows place
 128px square images to the left of the existing copy, on one pale lavender
 section. Their table columns stay side by side on phones, with images scaling
-down. Premium benefits follow as centered blue line icons, headings and text;
+down. Premium benefits follow as compact rows with 24px blue icons beside
+left-aligned 16px headings and 14px body text;
 the three piece cards also stay side by side on phones.
 Shop's new hub and Games are labeled as coming soon; update these labels when
 their homepage destinations launch.
@@ -76,14 +139,18 @@ it never invents or duplicates pieces. These past picks retain normal access
 rules. Admin browser/test previews use stable fictional cards with inert links,
 so they do not query the live repertoire or accounts.
 
-The reusable footer follows the supplied left-aligned reference: a regular linked
-YouTube social icon first, then a delivery-reason note, contact
+The reusable footer follows the supplied left-aligned reference: a small secondary
+Visit us on youtube button first, then a delivery-reason note, contact
 copy, Unsubscribe / email preferences, Privacy, Help and Forgot password links,
 and copyright. The shared outlined PianoLIT icon sits at the lower right without
 a floor shadow. There is no postal address or other social channel. The delivery
 reason and contact sentence share the same 14px note style. The account-specific or list-specific
 delivery-reason copy is supplied by the corresponding message component/view.
-The footer has no social buttons or App Store badge/link. The existing App Store
+The YouTube button uses the shared welcome button with `kind: secondary` and
+`size: sm`: the website's white surface, dark text, pale border and light shadow,
+with 14px text and 4px by 12px padding. Its destination
+and label also appear in plain text. The footer has no other social controls or
+App Store badge/link. The existing App Store
 actions in the welcome body remain separate. Free Pick's note says “because you
 are subscribed to PianoLIT Free Picks.” in HTML and plain text.
 The **Unsubscribe / email preferences** link leads to the signed-in account's existing email-list preferences. It
@@ -122,9 +189,16 @@ the sent HTML. Keep the logo's HTML width/height attributes in sync with size
 changes for email clients that use those attributes. Ordinary wording, label and
 markup edits need no asset build.
 
-Regular welcome buttons share the web app's default primary-button dimensions
-and finish through `resources/sass/shared/_button-foundations.scss`. That shared
-file affects both web UI and emails. The App Store link uses `kind: app-store`
+Every primary email button uses one standard in
+`resources/sass/emails/_branding.scss`: the web-app action's body font at 14.4px,
+400 weight, 0.4px letter spacing, white text on PianoLIT `#0055fe`, 11px × 21px
+padding, 22px line height, 46px total height and the verification action's 4px
+corners. The welcome `.welcome-button` and Laravel `.button` renderers share this
+rule, including Free Pick and admin snapshot actions; do not add family-specific
+font overrides. Dimensions and primary/secondary surfaces reuse
+`resources/sass/shared/_button-foundations.scss`. Website corners remain 12px.
+Pass `kind: secondary` for the secondary finish and `size: sm` for compact buttons.
+The App Store link uses `kind: app-store`
 and the badge image in each applicable welcome view; its label supplies the
 accessible name and plain-text link. The supplied Apple artwork is exported from
 `resources/images/apple/download.svg` for email use with:
@@ -132,6 +206,13 @@ accessible name and plain-text link. The supplied Apple artwork is exported from
 ```sh
 python3 scripts/build-welcome-email-assets.py --badge-only
 ```
+
+The Open the web app buttons pass an optional `icon` URL to the same component.
+Their decorative white PNG is exported from the shared compact PianoLIT mark,
+displayed at 20px beside the label and omitted from plain text. Rebuild it with
+`node scripts/build-welcome-email-details.js --button-icon-only` (with the
+`PIANOLIT_SHARP_MODULE` override above when needed), publishing
+the resource/public image and its manifest hash together.
 
 The PNG badge retains its proportions and matches the regular button's 46px
 height. Keep its HTML height attribute in sync if shared button dimensions change.
@@ -188,10 +269,8 @@ edit `resources/sass/emails/welcome.scss` and rebuild with `npm run emails:style
 `EditorialLayout` clones the Markdown renderer per message so other emails keep
 their default theme in long-running workers.
 
-All redesigned email logos use `mail::editorial.logo`. Its default preserves the
-welcome emails' floating artwork and floor shadow; `shadow => false` selects the
-identical outlined icon on transparency, without that shadow/canvas. The visible
-icon is 78px wide in welcomes and 48px wide in Freepick. Rebuild both assets with
+All customer email logos use the single shadow-free 48px
+`mail::editorial.logo`, matching the weekly snapshot. Rebuild its artwork with
 `python3 scripts/build-welcome-email-assets.py --logo-only`; do not substitute the
 separate square app icon. Freepick begins with the smaller centered logo and
 **Free pick of the week**, then a shorter cover image (240px desktop / 170px phone)
@@ -222,7 +301,8 @@ describes the weekly selection; Premium describes the wider library plus
 public-domain score downloads/printing. These views never change access rules.
 
 Freepick's feature icons stay compact at 24px, while regular copy, captions,
-feature headings and button labels use at least the default 16px font. The
+feature headings use at least the default 16px font. Buttons follow the shared
+14.4px email standard above. The
 piece description is left-aligned; the section heading is **Let's dive in**,
 with no period. Account copy omits free, and the Prefer your phone line is
 removed from both HTML and plain text. Shared footer contact and delivery-reason
@@ -290,6 +370,37 @@ php artisan newsletter:send-monthly
 ordinary retries from sending duplicates; opt-outs are rechecked immediately
 before delivery. See `docs/EMAIL_REPORTS.md` for sources, launch entries,
 deployment and retention.
+
+## Membership activation
+
+Edit `memberships/confirmed.blade.php` for the Premium welcome headline, brief
+introduction, app image, action and billing copy. It uses the same editorial
+shell, `welcome.hero` and `welcome.section` components as the welcome emails,
+in HTML and plain text. Arthur removed the entire Yours to explore benefits
+section; the app image/action now leads directly to the plan and billing details.
+Keep its open neutral background and shared typography, without pastel panels.
+Both actions use regular-size shared buttons with 4px corners.
+
+The approved feature-device mockups remain available for future use, but are not
+displayed in this email. Source captures and provenance live in
+`resources/email-sources/membership/`; rebuild their transparent PNGs with
+`scripts/build-email-feature-mockups.js`. Preserve the intact live app screens
+inside their frames. The shared benefit component retains its optional mockup
+variant, and other welcome callers keep their existing icons.
+
+The hero accepts an optional `title`. Sections may omit the heading/divider or
+image, and may supply a short `note` slot for billing footnotes. The benefits
+component can omit its action. Existing welcome callers retain their defaults.
+Styles remain in the welcome theme; rebuild with `npm run emails:styles`.
+`MembershipConfirmed` uses `EditorialLayout` so its theme cannot leak into other
+messages sent by the same worker. The plan section uses the original saved
+plan/trial/date snapshot: trials show the first billing date and no-payment
+note, without a cancellation prompt; paid memberships show the next renewal.
+Missing dates
+are omitted, never invented. Keep the real Discover and My Membership links,
+and leave payment, delivery and queue behavior unchanged.
+The customer preview exporter above writes `membership-confirmation.html` and
+its plain-text counterpart using fictional data.
 
 ## Account email changes
 
@@ -363,3 +474,7 @@ admin previews and newly created local sample orders include sample artwork.
 Administration → Emails lists **Merchandise purchase confirmation**, **Merchandise shipped** and **Merchandise delivered** with independent automatic-sending switches and fictional previews. A split shipment receives one shipping email per package; one arrival email follows only after the last package is delivered. All three have duplicate protection, and historical delivered orders are not automatically emailed. Local checkout never sends them. Managers review delivery states in Shop → Orders; an uncertain send must be checked with the mail provider before a manual retry. See `docs/SHOP_CHECKOUT.md` for signed Printful events, setup and durable delivery semantics.
 
 Local merchandise email previews for actual test-order data are available in Admin → Shop → Orders after creating a sample order or simulating shipment. `LocalShopShipmentsController` renders the same `emails/shop/orders` HTML/plain-text templates without sending through a mail provider. See `docs/SHOP_CHECKOUT.md` for the local-only simulator and tracking workflow.
+
+### Synthesia Requests
+
+Edit `synthesia-requests/new.blade.php` for receipt and `synthesia-requests/published.blade.php` for readiness. Their mailables live in `App\Mail\SynthesiaRequests`; the admin switches/previews are `synthesia-request` and `synthesia-published`. The table-rename migration preserves saved switches. The old `App\Mail\Tutorials` classes remain only for queued messages serialized before this rename and inherit the same delivery switches. See `docs/SYNTHESIA_REQUESTS.md` for the coordinated schema/worker rollout and permanent legacy API boundary.
