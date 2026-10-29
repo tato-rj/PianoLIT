@@ -54,6 +54,7 @@
     @include('auth.alerts.unconfirmed')
     @endconfirmed --}}
 
+    @component('components.account.page')
     <div id="app" @if(request()->getHost() !== 'my.'.config('app.short_url')) class="public-site d-flex flex-column min-vh-100" @endif>
 
         @unless($projectHome ?? false)
@@ -104,6 +105,8 @@
             'floating' => 'top'])
         @endif
     </div>
+
+    @endcomponent
 
     <script src="{{ mix('js/app.js') }}"></script>
     @include('components.tracking.activity')

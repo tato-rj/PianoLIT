@@ -1,0 +1,90 @@
+// Only the universal account/hub drawer reveals beneath the current page.
+.account-menu.account-navigation[data-account-reveal] {
+    transform: none;
+    border-left: 0;
+    transition: opacity 240ms ease;
+    max-width: calc(100vw - 3rem);
+
+    &.showing,
+    &.hiding { pointer-events: none; }
+}
+
+.account-reveal-toggle {
+    position: fixed;
+    z-index: 1047;
+    display: flex;
+    transition: transform 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+    > .account-circle.btn-raw {
+        transition: background-color 240ms ease, border-color 240ms ease;
+
+        > * { transition: opacity 240ms ease; }
+
+        .account-circle__close {
+            display: inline-flex;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    &.account-reveal-toggle--revealed {
+        transform: translate3d(var(--account-toggle-offset), var(--account-toggle-offset-y), 0);
+    }
+}
+
+.account-reveal-toggle-placeholder { display: inline-block; flex-shrink: 0; }
+
+.account-page--prepared {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1046;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--color-page, var(--color-surface));
+    transform: translate3d(0, 0, 0);
+    transition: transform 240ms cubic-bezier(0.2, 0.7, 0.2, 1), border-radius 240ms ease, box-shadow 240ms ease;
+    pointer-events: none;
+
+    > .account-page__content {
+        position: relative;
+        top: var(--account-page-scroll-y);
+        left: var(--account-page-scroll-x);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 2147483647;
+        background: rgba(255, 255, 255, 0.8);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 240ms ease;
+    }
+
+    &.account-page--revealed {
+        transform: translate3d(calc(-1 * var(--account-reveal-offset)), 0, 0);
+        border-radius: 0 20px 20px 0;
+        box-shadow: 12px 0 32px rgba(0, 0, 0, 0.12);
+
+        &::after { opacity: 1; }
+    }
+}
+
+.account-page--metronome.account-page--prepared { background: var(--metronome-color); }
+
+// Keep Bootstrap's own backdrop dismissal, without dimming the page card.
+.account-reveal-backdrop { background: transparent; opacity: 0 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+    .account-page--prepared,
+    .account-page--prepared::after,
+    .account-reveal-toggle,
+    .account-reveal-toggle > .account-circle.btn-raw,
+    .account-reveal-toggle > .account-circle.btn-raw > *,
+    .account-menu.account-navigation[data-account-reveal] { transition: none; }
+}

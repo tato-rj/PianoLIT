@@ -2,19 +2,26 @@
 
 @section('content')
 <div class="content-wrapper"><div class="container-fluid admin-emails">
-    @include('admin.components.page.title', ['title' => 'Emails', 'subtitle' => 'Automatic messages for accounts, purchases, requests and admin reports.'])
+    @include('admin.components.page.title', ['title' => 'Emails', 'subtitle' => 'Manage automatic emails by purpose, from account signup to order delivery.'])
 
+    <p class="admin-emails__note">Each switch controls automatic delivery for that email. Browser and email previews work even when sending is off.</p>
+    @include('admin.pages.emails.send-form')
+
+    <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Email categories">
+        @foreach($sections as $section)
+        <a class="btn btn-secondary btn-sm" href="#{{ $section['id'] }}-title">{{ $section['title'] }}</a>
+        @endforeach
+    </nav>
+
+    @foreach($sections as $section)
     @component('admin.components.table', [
-        'id' => 'automatic-emails', 'label' => 'Automatic emails', 'items' => $emails,
-        'description' => 'Control automatic delivery for everyone. Preview sends work even when sending is off. Turning off account emails also stops their verification and password-reset messages.',
+        'id' => $section['id'], 'title' => $section['title'], 'items' => $section['emails'],
+        'description' => $section['description'],
         'columns' => ['Email', 'Sent when', 'Sending', ['label' => 'Preview actions', 'class' => 'admin-emails__action-heading']],
     ])
-        @slot('toolbar')
-            @include('admin.pages.emails.send-form')
-        @endslot
-        @foreach($emails as $key => $email)
+        @foreach($section['emails'] as $key => $email)
         <tr>
-            <td><span class="admin-table__primary">{{ $email['name'] }}</span><small>{{ $email['category'] }}</small></td>
+            <td><span class="admin-table__primary">{{ $email['name'] }}</span></td>
             <td class="admin-emails__trigger">{{ $email['trigger'] }}</td>
             <td>
                 <form method="POST" action="{{ route('admin.emails.sending', $key) }}">
@@ -34,6 +41,7 @@
         </tr>
         @endforeach
     @endcomponent
+    @endforeach
 
     <p class="admin-emails__note">Free Pick and course emails follow subscription settings. Stripe and Apple receipts follow their provider settings.</p>
 </div></div>

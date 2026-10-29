@@ -22,18 +22,17 @@
         }
     }
 @endphp
-<div class="{{ $preview ? '' : 'offcanvas offcanvas-end ' }}account-menu account-navigation" id="{{ $panelId }}" aria-labelledby="{{ $panelId }}-title" @if($preview) data-ds-preview @else tabindex="-1" @endif>
+<div class="{{ $preview ? '' : 'offcanvas offcanvas-end ' }}account-menu account-navigation" id="{{ $panelId }}" aria-labelledby="{{ $panelId }}-title" @if($preview) data-ds-preview @else tabindex="-1" data-account-reveal @endif>
     <div class="offcanvas-header account-navigation__header">
         <div class="account-menu__identity">
             @if($account)
                 @include('components.account.account-circle', ['account' => $account, 'menuAvatar' => true])
             @endif
             <div class="account-menu__details">
-                <h2 class="account-menu__name mb-0" id="{{ $panelId }}-title">{{ $account ? ($name ?: 'Your account') : 'Explore PianoLIT' }}</h2>
+                <h2 class="account-menu__name mb-0" id="{{ $panelId }}-title">{{ $account ? ($name ?: 'Your account') : null }}</h2>
                 @if($account)<div class="account-menu__email">{{ $account->email }}</div>@endif
             </div>
         </div>
-        <button type="button" class="btn-close flex-shrink-0" @unless($preview) data-bs-dismiss="offcanvas" @endunless aria-label="Close account menu"></button>
     </div>
 
     <div class="offcanvas-body account-navigation__body">

@@ -21,5 +21,6 @@
         @else
             @icon('user-round', ['mr' => 0])
         @endif
+        @icon('x', ['mr' => 0, 'classes' => 'account-circle__close'])
     </button>
 @endif

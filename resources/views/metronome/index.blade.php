@@ -16,6 +16,7 @@
 </head>
 <body class="public-site">
     @include('layouts.html.google.manager-body')
+    @component('components.account.page', ['pageClasses' => 'account-page--metronome'])
     @include('components.layout.public.header', ['transparentHeader' => true])
     <main>
         <button
@@ -76,6 +77,7 @@
         <p class="metronome__message" data-metronome-message role="status" hidden></p>
         <noscript><p class="metronome__message">Enable JavaScript to use the metronome.</p></noscript>
     </main>
+    @endcomponent
     @include('metronome.settings')
     @stack('scripts')
     @include('components.tracking.activity')

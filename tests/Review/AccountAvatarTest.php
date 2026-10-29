@@ -59,8 +59,15 @@ class AccountAvatarTest extends ReviewTestCase
         if ($directory = getenv('ACCOUNT_MENU_PREVIEW_DIR')) {
             if (!is_dir($directory)) mkdir($directory, 0700, true);
             $origin = 'http://127.0.0.1:8767';
-            $html = str_replace(['http://localhost', $photo], [$origin, $origin.'/sample-photo.svg'], $response->getContent());
-            file_put_contents($directory.'/profile.html', $html);
+            $pages = [
+                'profile' => $response->getContent(),
+                'webapp' => $this->get('http://my.localhost/settings')->assertOk()->getContent(),
+                'metronome' => $this->get('http://metronome.localhost')->assertOk()->getContent(),
+            ];
+            foreach ($pages as $name => $html) {
+                $html = str_replace(['http://my.localhost', 'http://metronome.localhost', 'http://localhost', $photo], [$origin, $origin, $origin, $origin.'/sample-photo.svg'], $html);
+                file_put_contents($directory.'/'.$name.'.html', $html);
+            }
         }
     }
 }

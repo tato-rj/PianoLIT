@@ -42,7 +42,16 @@ class AdminEmailsTest extends ReviewTestCase
         $admin = $this->admin();
         $response = $this->get(route('admin.emails.index'))->assertOk()->assertDontSee('Not currently sent')->assertSee('Membership confirmation')->assertSee('Weekly admin snapshot')->assertSee('Sending');
         $xpath = $this->xpath($response);
-        $this->assertCount(21, $xpath->query('//table[@id="automatic-emails"]/tbody/tr'));
+        $tables = '//table[starts-with(@id,"automatic-emails-")]';
+        $this->assertCount(8, $xpath->query($tables));
+        $this->assertCount(21, $xpath->query($tables.'/tbody/tr'));
+        $this->assertCount(8, $xpath->query('//nav[@aria-label="Email categories"]/a'));
+        foreach (['welcome' => 3, 'account' => 7, 'shop' => 4, 'membership' => 1, 'tutorials' => 2, 'performances' => 2, 'sharing' => 1, 'administration' => 1] as $section => $count) {
+            $id = 'automatic-emails-'.$section;
+            $this->assertCount($count, $xpath->query('//table[@id="'.$id.'"]/tbody/tr'));
+            $this->assertCount(1, $xpath->query('//section[@aria-labelledby="'.$id.'-title"]//h2[@id="'.$id.'-title"]'));
+            $this->assertCount(1, $xpath->query('//nav[@aria-label="Email categories"]/a[@href="#'.$id.'-title"]'));
+        }
         $this->assertCount(1, $xpath->query('//a[@href="'.route('admin.emails.index').'" and @aria-current="page"]'));
         $this->assertCount(1, $xpath->query('//ul[@id="settings" and contains(@class, "show")]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="email" and @value="'.$admin->email.'"]'));
@@ -50,7 +59,7 @@ class AdminEmailsTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//label[@for="preview-recipient"]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="_token"]'));
         $this->assertCount(21, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
-        $this->assertCount(21, $xpath->query('//table[@id="automatic-emails"]//a[@target="_blank" and @rel="noopener noreferrer"]'));
+        $this->assertCount(21, $xpath->query($tables.'//a[@target="_blank" and @rel="noopener noreferrer"]'));
         $this->assertCount(18, $xpath->query('//input[@role="switch" and @checked and @value="1"]'));
         $this->assertCount(21, $xpath->query('//label[contains(@class,"switch")]/input[@name="enabled" and not(contains(@class,"status-toggle"))]/following-sibling::span[contains(@class,"slider")]'));
         $this->assertCount(21, $xpath->query('//input[@role="switch"]/ancestor::form/input[@type="hidden" and @name="enabled" and @value="0"]'));

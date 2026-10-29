@@ -44,6 +44,7 @@ async function main() {
     await require('./shop-checkout.test.cjs')();
     await require('./quizzes.test.cjs')();
     require('./section-navigation.test.cjs')();
+    await require('./account-reveal.test.cjs')();
     await require('./profile.test.cjs')();
     require('./downloads.test.cjs')();
     await require('./admin-notifications')();

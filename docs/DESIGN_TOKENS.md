@@ -17,13 +17,14 @@ public website, web app and admin. Commit the rebuilt CSS and Mix manifest toget
 ## Account menu
 
 `components.account.account-circle` opens `components.account.menu`, a shared
-Bootstrap offcanvas from the right on the homepage, public hubs, Shop and `my.*`.
+Bootstrap offcanvas on the right on the homepage, public hubs, Shop and `my.*`.
 There is no separate hamburger. Guests use the same opener and get a same-host
 Sign in link inside the panel. Standalone login/registration/password pages and
 focused games remain free of this navigation.
 
-The panel keeps the shared account menu's 17rem width and `calc(100vw - 1rem)` cap; do not add a wider offcanvas override. Its avatar sits above
-the name and wrapping email, with the close button at the upper right. The
+The panel keeps the shared account menu's 17rem width; the live reveal leaves at
+least 3rem of the page visible for the outside close control. Do not widen it.
+Its avatar sits above the name and wrapping email, without an internal close button. The
 entire panel scrolls naturally, including its header and lower Support/Log out
 area; no footer stays fixed over the content. Help & Support is immediately
 above the same-host CSRF logout form, below a divider. Profile, downloads and
@@ -57,11 +58,29 @@ Membership links use management for an existing membership, pricing for a new
 account, and Settings for a full-access account without a billing record. These
 checks do not call billing/Printful or load relationships into shared user JSON.
 
-`components/_account-menu.scss` and `components/_hub-menu.scss` own the shared
-finish. The versioned `components/account-menu.js` synchronizes expanded state;
-Bootstrap owns focus trapping, Escape/backdrop dismissal, focus return, scroll
-locking and reduced-motion transitions. `layouts.menu.user` pushes one panel to
-the body-level script stack. Design System specimens reuse these same components
+Only this universal menu reveals underneath the page: the shared
+`components.account.page` frame moves left without changing the content width,
+adds 20px right corners, a soft edge shadow and an 80% white veil. The menu stays
+clear. Its original header circle becomes the close X and moves continuously to
+the shifted page's top-right corner (16px inset, constrained to fit narrow strips),
+then travels back and restores its photo/initial on dismissal. Keep this same
+button, rather than hiding it and creating a second close control.
+The close state shows only the X, with transparent background and border for
+both initial and profile-photo accounts; retain its full 44px hit area.
+Crossfade the background, border and avatar/X over the same 240ms as the movement
+in both directions. Start restoring the avatar when the return movement begins,
+so it reaches the header fully restored instead of switching at the end.
+
+`components/_account-menu.scss`, `components/_hub-menu.scss` and
+`components/_account-reveal.scss` own the shared finish. The versioned
+`components/account-menu.js` synchronizes expanded state; `account-reveal.js`
+freezes/restores scroll and sticky positions without reparenting media or changing
+fixed-player geometry. The covered page is inert. Bootstrap retains scroll
+locking, Escape/backdrop dismissal and overlay handoffs; the controller includes
+the external close control in dialog ownership and the keyboard focus cycle.
+Page/control motion is 240ms and respects reduced motion. Other offcanvas panels
+retain their existing presentation. `layouts.menu.user` pushes one panel to the
+body-level script stack. Design System specimens reuse these same components
 with fictitious details and inert actions.
 
 Games' yellow trophy menu remains an independent dropdown using

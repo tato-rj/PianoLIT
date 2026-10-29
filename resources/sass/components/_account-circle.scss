@@ -38,6 +38,15 @@
         font-weight: 400;
         line-height: 1;
     }
+
+    .account-circle__close { display: none; opacity: 0; }
+
+    &.account-circle--close {
+        background: transparent;
+        border-color: transparent;
+        > :not(.account-circle__close) { opacity: 0; }
+        .account-circle__close { display: inline-flex; opacity: 1; }
+    }
 }
 
 .games-player-circle.account-circle.btn-raw {

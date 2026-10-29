@@ -23,9 +23,9 @@ class AutomaticEmails
     public function all()
     {
         return collect([
-            'account-welcome-website' => ['name' => 'Website welcome', 'category' => 'Account', 'trigger' => 'After a new account is created on pianolit.com.', 'default_enabled' => false],
-            'account-welcome' => ['name' => 'Web app welcome', 'category' => 'Account', 'trigger' => 'After a new account is created on the web app.', 'default_enabled' => false],
-            'account-welcome-ios' => ['name' => 'iOS app welcome', 'category' => 'Account', 'trigger' => 'After a new account is created from the iOS app.', 'default_enabled' => false],
+            'account-welcome-website' => ['name' => 'Website welcome', 'category' => 'Welcome', 'trigger' => 'After a new account is created on pianolit.com.', 'default_enabled' => false],
+            'account-welcome' => ['name' => 'Web app welcome', 'category' => 'Welcome', 'trigger' => 'After a new account is created on the web app.', 'default_enabled' => false],
+            'account-welcome-ios' => ['name' => 'iOS app welcome', 'category' => 'Welcome', 'trigger' => 'After a new account is created from the iOS app.', 'default_enabled' => false],
             'verify-email' => ['name' => 'Signup · verify email', 'category' => 'Account', 'trigger' => 'After password signup, or when email verification is requested again.'],
             'reset-password' => ['name' => 'Reset password', 'category' => 'Account', 'trigger' => 'When someone requests a password reset.'],
             'google-link' => ['name' => 'Connect Google · confirm account', 'category' => 'Account', 'trigger' => 'When confirming an existing account before connecting Google.'],
@@ -45,6 +45,27 @@ class AutomaticEmails
             'piece-shared' => ['name' => 'A piece shared with you', 'category' => 'Sharing', 'trigger' => 'When someone sends a piece to an email address.'],
             'admin-weekly-snapshot' => ['name' => 'Weekly admin snapshot', 'category' => 'Administration', 'trigger' => 'Sundays at 10:30 PM New York time, sent to admin managers.'],
         ]);
+    }
+
+    public function sections()
+    {
+        $descriptions = [
+            'Welcome' => ['title' => 'Welcome emails', 'description' => 'Introduce new account holders to the website, web app or iOS app.'],
+            'Account' => ['title' => 'Account & sign-in', 'description' => 'Verify email addresses, recover passwords and confirm Google or Apple sign-in changes. Disabling these messages can prevent people from completing those actions.'],
+            'Shop' => ['title' => 'Purchases & delivery', 'description' => 'Confirm digital and merchandise purchases, then keep customers updated on shipping and delivery.'],
+            'Membership' => ['title' => 'Memberships', 'description' => 'Confirm a web membership or the start of a free trial.'],
+            'Tutorials' => ['title' => 'Tutorial requests', 'description' => 'Acknowledge a request and let the requester know when their tutorial is ready.'],
+            'Performances' => ['title' => 'Performances', 'description' => 'Keep performers informed when their submission is received and approved.'],
+            'Sharing' => ['title' => 'Piece sharing', 'description' => 'Deliver a piece that someone has chosen to share by email.'],
+            'Administration' => ['title' => 'Admin reports', 'description' => 'Send PianoLIT managers a weekly summary of activity and results.'],
+        ];
+
+        return $this->all()->groupBy('category', true)->map(function ($emails, $category) use ($descriptions) {
+            return array_merge($descriptions[$category] ?? ['title' => $category, 'description' => ''], [
+                'id' => 'automatic-emails-'.\Illuminate\Support\Str::slug($category),
+                'emails' => $emails,
+            ]);
+        });
     }
 
     public function find($key)

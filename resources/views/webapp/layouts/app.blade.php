@@ -44,6 +44,7 @@
 
     @include('layouts.html.google.manager-body')
 
+    @component('components.account.page')
     <div id="webapp" @if(request()->routeIs('webapp.playlists.show')) class="playlist-layout" @endif>
         @if(request()->routeIs('webapp.pieces.show'))
             @include('webapp.components.artwork-header', ['image' => asset($piece->web_image_background)])
@@ -116,6 +117,8 @@
     @if($feedbackEnabled)
         @include('webapp.feedback.utility')
     @endif
+
+    @endcomponent
 
     <script src="{{ mix('js/app.js') }}"></script>
     @include('components.tracking.activity')

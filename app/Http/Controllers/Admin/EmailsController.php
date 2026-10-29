@@ -15,7 +15,7 @@ class EmailsController extends Controller
     public function index(Request $request, AutomaticEmails $emails, AutomaticEmailSettings $settings)
     {
         return response()->view('admin.pages.emails.index', [
-            'emails' => $emails->all(), 'sending' => $settings->states(),
+            'sections' => $emails->sections(), 'sending' => $settings->states(),
             'recipient' => $request->user('admin')->email,
         ])->header('Cache-Control', 'no-store, private');
     }
