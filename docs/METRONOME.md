@@ -148,7 +148,7 @@ and [recording format negotiation](https://developer.mozilla.org/en-US/docs/Web/
 
 ## Focused settings and temporary effects (October 29)
 
-Settings now opens with Sound, Rhythm and Appearance summaries; each opens a
+Settings now opens with Rhythm, Sound and Appearance summaries; each opens a
 focused page in the same shared bottom panel. Rhythm contains beats and motion;
 Appearance contains background and number font. Sound keeps the shared sound
 menu/private recorder and opens a nested six-choice Voice effect picker when a
@@ -156,9 +156,10 @@ counting voice is selected. Back restores the parent choice's focus; Done and th
 close handle retain Bootstrap dismissal and immediate recording/preview cleanup.
 
 Voice effects are session-only, generated locally on demand in a short-lived
-worker. Classic on every refresh means the original voice is unchanged. The
+worker. Normal on every refresh means the original voice is unchanged. The
 selected effect remains while changing tempo/settings, without regeneration per
-beat or persisted effect files. The optional public original voice is unavailable
-until Arthur supplies four recordings. See [METRONOME_VOICES.md](METRONOME_VOICES.md)
+beat or persisted effect files. The sound menu contains only the four regular
+sounds followed by the account’s Recorded voices; no public voice section or
+coming-soon placeholder appears. See [METRONOME_VOICES.md](METRONOME_VOICES.md)
 for source recording instructions, the offline original-sample preparation
 command, effect configuration, timing/caching details and verification limits.

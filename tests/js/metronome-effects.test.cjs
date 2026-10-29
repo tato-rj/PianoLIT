@@ -23,13 +23,13 @@ function frequency(buffer) {
 }
 const turn = () => new Promise(resolve => setImmediate(resolve));
 
-test('Classic is byte-for-byte original; every effect preserves the stored samples', () => {
+test('Normal is byte-for-byte original; every effect preserves the stored samples', () => {
     const original = tone(), before = original.getChannelData(0).slice();
     assert.equal(applyVoiceEffect(original, 'classic'), original);
     for (const id of Object.keys(context.effects)) {
         const result = applyVoiceEffect(original, id);
         assert.deepEqual(original.getChannelData(0), before);
-        assert.ok(result.getChannelData(0).every(value => Number.isFinite(value) && Math.abs(value) <= 0.85));
+        assert.ok(result.getChannelData(0).every(value => Number.isFinite(value) && Math.abs(value) <= Math.fround(0.85)));
         if (id !== 'classic') {
             assert.equal(result.getChannelData(0)[0], 0);
             assert.equal(Math.abs(result.getChannelData(0).at(-1)), 0);
@@ -38,10 +38,40 @@ test('Classic is byte-for-byte original; every effect preserves the stored sampl
 });
 
 test('high and deep styles change pitch independently of word duration', () => {
-    for (const [id, ratio] of [['cartoon', 1.3], ['deep-space', 0.68], ['chipmunk', 1.75]]) {
+    for (const [id, ratio] of [['cartoon', 1.5], ['deep-space', 0.68], ['chipmunk', 1.75]]) {
         const result = applyVoiceEffect(tone(), id);
         assert.ok(Math.abs(frequency(result) - 180 * ratio) < 9, `${id}: ${frequency(result)}`);
         assert.ok(Math.abs(result.duration - (id === 'chipmunk' ? 0.4 / 1.1 : 0.4)) < 0.001);
+    }
+});
+
+function spectralPower(buffer, hz) {
+    const data = buffer.getChannelData(0);
+    let real = 0, imaginary = 0;
+    for (let i = 0; i < data.length; i++) {
+        const phase = 2 * Math.PI * hz * i / buffer.sampleRate;
+        real += data[i] * Math.cos(phase);
+        imaginary += data[i] * Math.sin(phase);
+    }
+    return real * real + imaginary * imaginary;
+}
+
+test('Robot is dominated by metallic sidebands instead of the unchanged natural tone', () => {
+    const robot = applyVoiceEffect(tone(1), 'robot');
+    const metallic = spectralPower(robot, 95) + spectralPower(robot, 265);
+    assert.ok(metallic > spectralPower(robot, 180) * 10);
+});
+
+test('Cartoon and Ghost add audible modulation beyond a static pitch shift', () => {
+    for (const [id, shiftedHz] of [['cartoon', 270], ['ghost', 212.4]]) {
+        const result = applyVoiceEffect(tone(1), id);
+        let center = 0, sides = 0;
+        for (let offset = -30; offset <= 30; offset++) {
+            const power = spectralPower(result, shiftedHz + offset);
+            if (Math.abs(offset) <= 2) center += power;
+            else sides += power;
+        }
+        assert.ok(sides > center * 0.3, `${id} needs a pronounced wavering character`);
     }
 });
 

@@ -1,15 +1,16 @@
 {
   "classic": {
-    "label": "Classic",
+    "label": "Normal",
     "icon": "mic",
     "pitch": 1
   },
   "cartoon": {
     "label": "Cartoon",
     "icon": "sparkles",
-    "pitch": 1.3,
-    "highpass": 130,
-    "brightness": 0.3
+    "pitch": 1.5,
+    "highpass": 180,
+    "brightness": 0.45,
+    "vibrato": { "rate": 7, "depth": 0.075 }
   },
   "deep-space": {
     "label": "Deep Space",
@@ -24,14 +25,17 @@
     "pitch": 1,
     "highpass": 200,
     "lowpass": 4200,
-    "robot": true
+    "robot": { "rate": 85, "mix": 0.92 }
   },
   "ghost": {
     "label": "Ghost",
     "icon": "ghost",
-    "pitch": 1.08,
+    "pitch": 1.18,
     "highpass": 420,
-    "echo": 0.23
+    "chorus": { "delay": 14, "depth": 4, "rate": 3.2, "mix": 0.7 },
+    "tremolo": { "rate": 4.8, "depth": 0.45 },
+    "echo": 0.48,
+    "echoDelays": [42, 86]
   },
   "chipmunk": {
     "label": "Chipmunk",

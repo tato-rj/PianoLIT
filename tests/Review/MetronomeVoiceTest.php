@@ -217,6 +217,9 @@ class MetronomeVoiceTest extends ReviewTestCase
         $xpath = new \DOMXPath($dom);
         $this->assertSame(4, $xpath->query('//select/option')->length);
         $this->assertSame(3, $xpath->query('//optgroup[@label="Recorded voices"]/option')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-sound-popup]//*[contains(@class,"dropdown-header")]')->length);
+        $this->assertStringNotContainsString('Spoken counting', $html);
+        $this->assertStringNotContainsString('Voices coming soon', $html);
         $this->assertSame(1, $xpath->query('//optgroup/option[@value="voice:two" and @selected]')->length);
         $this->assertSame(0, $xpath->query('//option[@value="my-voice"]')->length);
         $this->assertSame('<Voice & piano>', $xpath->query('//option[@value="voice:three"]')->item(0)->textContent);

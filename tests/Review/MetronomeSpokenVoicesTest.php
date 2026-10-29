@@ -54,11 +54,8 @@ class MetronomeSpokenVoicesTest extends ReviewTestCase
     public function test_settings_render_focused_pages_and_six_session_effect_choices()
     {
         \Illuminate\Support\Facades\Redis::shouldReceive('get')->andReturn(null);
-        $voices = [['id' => 'classic', 'label' => 'Test tone (QA only)', 'files' => array_map(function ($beat) {
-            return '/audio/metronome/spoken/classic-'.$beat.'-1234567890abcdef.wav';
-        }, range(1, 4))]];
-        $this->app->instance(SpokenVoices::class, \Mockery::mock(SpokenVoices::class, function ($mock) use ($voices) {
-            $mock->shouldReceive('available')->andReturn($voices);
+        $this->app->instance(SpokenVoices::class, \Mockery::mock(SpokenVoices::class, function ($mock) {
+            $mock->shouldNotReceive('available');
         }));
         $html = view('metronome.index', ['errors' => new \Illuminate\Support\ViewErrorBag])->render();
         $dom = new \DOMDocument;
@@ -68,7 +65,13 @@ class MetronomeSpokenVoicesTest extends ReviewTestCase
         $this->assertSame(4, $xpath->query('//*[@data-settings-page and @hidden]')->length);
         $this->assertSame(6, $xpath->query('//*[@data-choice-buttons="voice-effect"]//button')->length);
         $this->assertSame(1, $xpath->query('//*[@data-choice="classic" and @aria-pressed="true"]')->length);
-        $this->assertSame(1, $xpath->query('//option[@value="spoken:classic"]')->length);
+        $this->assertSame('Normal', trim($xpath->query('//*[@data-choice="classic"]')->item(0)->textContent));
+        $this->assertSame(['rhythm', 'sound', 'appearance'], array_map(function ($link) {
+            return $link->getAttribute('data-settings-go');
+        }, iterator_to_array($xpath->query('//*[@data-settings-page="home"]//*[@data-settings-go]'))));
+        $this->assertSame(0, $xpath->query('//option[starts-with(@value,"spoken:")]')->length);
+        $this->assertStringNotContainsString('Spoken counting', $html);
+        $this->assertStringNotContainsString('Voices coming soon', $html);
         $this->assertSame(1, $xpath->query('//*[@data-effect-entry and @hidden]')->length);
         $this->assertSame(1, $xpath->query('//*[@id="metronome-settings" and @data-sheet-draggable]/button[@data-sheet-drag-handle and @data-bs-dismiss="offcanvas"]')->length);
         $this->assertSame(1, $xpath->query('//*[@id="metronome-settings"]//button[contains(@class, "bottom-sheet-handle")]')->length);

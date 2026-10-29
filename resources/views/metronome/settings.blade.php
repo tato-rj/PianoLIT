@@ -3,8 +3,8 @@
         @include('components.dialogs.bottom-sheet.header', ['titleId' => 'settings-title', 'title' => 'Settings', 'closeLabel' => 'Close settings', 'back' => true, 'dragToClose' => true])
         <div class="p-4 overflow-auto" data-settings-scroll>
             <div data-settings-page="home" class="d-grid gap-3">
-                @include('components.navigation.settings-link', ['target' => 'sound', 'icon' => 'volume-2', 'label' => 'Sound', 'summary' => 'Click'])
                 @include('components.navigation.settings-link', ['target' => 'rhythm', 'icon' => 'activity', 'label' => 'Rhythm', 'summary' => '1 beat · Pulse'])
+                @include('components.navigation.settings-link', ['target' => 'sound', 'icon' => 'volume-2', 'label' => 'Sound', 'summary' => 'Click'])
                 @include('components.navigation.settings-link', ['target' => 'appearance', 'icon' => 'palette', 'label' => 'Appearance', 'summary' => 'Color & numbers'])
             </div>
             <div data-settings-page="sound" hidden>
@@ -15,7 +15,7 @@
                     @include('metronome.components.sound-menu')
                 @endauth
                 <div class="mt-4" data-effect-entry hidden>
-                    @include('components.navigation.settings-link', ['target' => 'effects', 'icon' => 'sparkles', 'label' => 'Voice effect', 'summary' => 'Classic'])
+                    @include('components.navigation.settings-link', ['target' => 'effects', 'icon' => 'sparkles', 'label' => 'Voice effect', 'summary' => 'Normal'])
                 </div>
                 <div class="mt-3" data-spoken-feedback hidden>
                     @include('components.feedback.alert', ['color' => 'warning', 'fullX' => true, 'message' => '<span data-spoken-error></span>'])
