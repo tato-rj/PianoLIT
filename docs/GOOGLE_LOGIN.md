@@ -2,7 +2,37 @@
 
 Implemented on the public website and `my.*` using the existing `users` table and `web` guard. The feature is disabled until Google credentials and the additive migration are present. Email/password authentication continues to work while it is disabled.
 
-Apple now extends these shared account/challenge/settings/handoff services; see [APPLE_LOGIN.md](APPLE_LOGIN.md). The original Google OAuth configuration, callbacks, provider/token verifier, session namespaces and deployed migration remain unchanged. New Google linking challenges explicitly record `provider=google` after the Apple migration; pending legacy NULL-provider challenges retain their Google-only interpretation. The Apple column migration requires the three locked Doctrine schema-helper packages documented there, without updating any pre-existing package. Google login does not require Apple credentials.
+Apple now extends these shared account/challenge/settings/handoff services; see [APPLE_LOGIN.md](APPLE_LOGIN.md). The original Google OAuth configuration, callbacks, provider signature/nonce verification requirements, session namespaces and original deployed migration remain unchanged. New Google linking challenges explicitly record `provider=google` after the Apple migration; pending legacy NULL-provider challenges retain their Google-only interpretation. The Apple column migration requires the three locked Doctrine schema-helper packages documented there, without updating any pre-existing package. Google login does not require Apple credentials.
+
+## Browser account photos — October 29, 2026
+
+`2026_10_29_080000_add_auth_provider_profile_images.php` adds nullable
+`profile_image_url` fields to `user_auth_providers` and `auth_link_challenges`.
+It is installed locally; deploy it before expecting production photos. Code
+without those optional columns keeps sign-in working and displays the initial.
+Existing connections acquire a photo on their next Google sign-in or connect.
+The original `users` table, original profile-picture accessor and mobile JSON
+remain unchanged.
+
+The existing `openid email profile` scope already permits Google's optional
+[picture claim](https://developers.google.com/identity/openid-connect/openid-connect).
+Only a fully verified ID token can supply it; callbacks and ownership-proof
+completion retain existing subject/account checks and never accept a submitted
+image URL. URLs must be bounded HTTPS images on `googleusercontent.com` or its
+subdomains, without embedded credentials, fragments or a nonstandard port.
+Invalid/missing photos fall back to the initial without failing authentication.
+No server image fetch or additional provider API request is made.
+
+Images belong to their provider connection and are removed with disconnection
+or account closure; challenge copies follow existing expiry/cleanup and account
+cascade rules. `Services\Navigation\AccountAvatar` reads only the current
+account's Google link and reuses that result within the request. Header and
+menu circles retain the initial behind the image and hide failed images. The
+browser uses `referrerpolicy="no-referrer"`. The existing full-account sign-in,
+linking, handoff, password and recent-proof rules are unchanged. [Sign in with
+Apple provides name/email rather than a profile photo](https://support.apple.com/en-ie/102609),
+so Apple-only accounts keep their initial; a connected Google photo can still
+serve as the account's available image.
 
 ## Configuration in Google Cloud
 

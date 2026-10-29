@@ -45,6 +45,18 @@
         </div>
       </div>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Shop digital cards', 'usage' => 'shop.storefront.components.card · inset covers, readable titles, subtitles and price labels', 'properties' => 'font-size,font-weight,padding,color'])
+      <div class="shop-storefront" data-ds-preview>
+        <div class="row g-3">
+          @foreach([
+            ['name' => 'Piano solos', 'subtitle' => 'A collection of pieces for your next practice', 'price' => '$12.00 USD', 'imageUrl' => asset('images/misc/score1.png')],
+            ['name' => 'A guide to piano practice', 'subtitle' => 'Build a thoughtful daily routine', 'price' => 'Free', 'imageUrl' => asset('images/mockup/crashcourse.png')],
+          ] as $digitalCard)
+            <div class="col-6">@include('shop.storefront.components.card', ['product' => $digitalCard + ['url' => '#ds-components', 'digital' => true, 'variants' => [], 'priceVaries' => false]])</div>
+          @endforeach
+        </div>
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Account and hubs menu', 'usage' => 'components.account.menu · account and hubs offcanvas', 'properties' => 'width,padding,color,border-radius,box-shadow'])
       <span id="ds-account-menu-label" class="visually-hidden">Account menu preview</span>
       @include('components.account.menu', ['account' => (object) ['first_name' => 'Alex', 'last_name' => 'Morgan', 'email' => 'alex@example.test'], 'menuId' => 'ds-account-menu-label', 'designSystemPreview' => true])
@@ -63,9 +75,6 @@
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Side menu header', 'usage' => 'components.layout.side-menu-header · hub and piece menus', 'properties' => 'font-size,padding,color'])
       @include('components.layout.side-menu-header', ['titleId' => 'ds-side-menu-title', 'title' => 'Explore PianoLIT', 'closeLabel' => 'Close menu preview', 'designSystemPreview' => true])
-    @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Public hub menu', 'usage' => 'components.navigation.hub-menu.links · compact hub rows', 'properties' => 'width,color,background-color'])
-      <div data-ds-preview>@include('components.navigation.hub-menu.links', ['designSystemPreview' => true])</div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Bottom panel', 'usage' => 'components.dialogs.bottom-sheet.panel · components.dialogs.bottom-sheet.header', 'properties' => 'padding,color'])
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="offcanvas" data-bs-target="#ds-bottom-sheet" aria-controls="ds-bottom-sheet">Open bottom panel</button>

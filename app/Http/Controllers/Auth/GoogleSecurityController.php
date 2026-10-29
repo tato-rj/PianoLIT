@@ -86,7 +86,11 @@ class GoogleSecurityController extends Controller
             if (!$email && (!$accounts->hasPassword($user) || !Hash::check($request->password, $user->password))) {
                 throw ValidationException::withMessages(['password' => 'That password does not match your PianoLIT account.']);
             }
-            if ($row->purpose === 'link') $accounts->link($user, ['sub' => $row->provider_user_id, 'email' => $row->provider_email], null, $provider);
+            if ($row->purpose === 'link') {
+                $identity = ['sub' => $row->provider_user_id, 'email' => $row->provider_email];
+                if (property_exists($row, 'profile_image_url')) $identity['picture'] = $row->profile_image_url;
+                $accounts->link($user, $identity, null, $provider);
+            }
             $challenges->consume($row);
             $accounts->audit($user->id, 'verified', $provider);
             return $row;

@@ -1,6 +1,8 @@
 @use '../games/reference/variables' as games;
 
 .account-circle.btn-raw {
+    position: relative;
+    overflow: hidden;
     width: var(--field-min-height);
     height: var(--field-min-height);
     padding: 0;
@@ -19,6 +21,17 @@
     .app-icon {
         width: 21px;
         height: 21px;
+    }
+
+    .account-circle__image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: inherit;
+
+        &[hidden] { display: none; }
     }
 
     .account-circle__initial {

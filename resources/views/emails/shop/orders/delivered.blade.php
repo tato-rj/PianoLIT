@@ -12,9 +12,8 @@ Your PianoLIT order has been reported as delivered. We hope it brings a little m
 
 **Your items**
 
-@foreach($order->items as $item)
-- {{ $item['name'] }} · {{ $item['option'] }} × {{ $item['quantity'] }}
-@endforeach
+@component('mail::shop.products', ['items' => $order->items])
+@endcomponent
 
 @component('mail::button', ['url' => $trackingUrl])
 View your order

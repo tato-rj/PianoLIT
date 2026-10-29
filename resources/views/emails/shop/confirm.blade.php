@@ -1,7 +1,11 @@
 @component('mail::message')
 # Thank you for your purchase!
 
-Hi {{$user->first_name}}, your purchase of <strong>{{$item->title}}</strong> has been confirmed and you can find your product by clicking on the button below.
+Hi {{ $user->first_name }}, your purchase is confirmed. Your files are ready to download.
+
+@php($productImage = method_exists($item, 'mockup_image') ? ($item->mockup_image() ?: ($item->cover_path ? $item->cover_image() : null)) : ($item->image ?? null))
+@component('mail::shop.products', ['items' => [['name' => $item->title, 'image' => $productImage]]])
+@endcomponent
 
 @component('mail::button', ['url' => route('users.purchases')])
 View product here

@@ -39,7 +39,8 @@ class IdTokenVerifier
             || !filter_var($claims['email'], FILTER_VALIDATE_EMAIL)) $this->invalid();
         return ['sub' => $claims['sub'], 'email' => strtolower($claims['email']),
             'first_name' => $this->name($claims['given_name'] ?? null) ?: 'PianoLIT',
-            'last_name' => $this->name($claims['family_name'] ?? null)];
+            'last_name' => $this->name($claims['family_name'] ?? null),
+            'picture' => \App\Services\Navigation\AccountAvatar::googleUrl($claims['picture'] ?? null)];
     }
 
     private function name($value)

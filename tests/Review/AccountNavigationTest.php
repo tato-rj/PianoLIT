@@ -119,7 +119,10 @@ class AccountNavigationTest extends ReviewTestCase
             $current = $xpath->query('//*[@id="public-hub-menu"]//a[@aria-current]');
             $this->assertCount($expected === null ? 0 : 1, $current, $routeName);
             if ($expected !== null) $this->assertSame($expected, trim($current->item(0)->textContent), $routeName);
-            $this->assertCount(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]/p[normalize-space(.)="PianoLIT Hubs"]'));
+            $this->assertCount(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//details[not(@open)]/summary/span[normalize-space(.)="PianoLIT Hubs"]'));
+            $this->assertCount(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//summary[contains(@class,"account-menu__link")]/*[contains(@class,"icon-layers")]'));
+            $this->assertCount(1, $xpath->query('//div[contains(@class,"account-menu__footer")]/a[normalize-space(.)="Help & Support"]/following-sibling::form//button[normalize-space(.)="Log out"]'));
+            $this->assertCount(1, $xpath->query('//div[contains(@class,"account-menu__identity")]/span[contains(@class,"account-menu__avatar")]/following-sibling::div[contains(@class,"account-menu__details")]'));
         }
     }
 }

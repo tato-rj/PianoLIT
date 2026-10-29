@@ -124,7 +124,8 @@ class AutomaticEmails
                 $notification = new ConfirmGoogleAccount('#email-preview', $purpose, $provider);
                 break;
             case 'purchase-confirmation':
-                $mail = new ConfirmPurchase((object) ['title' => 'The Pianist’s Practice Companion']);
+                $mail = new ConfirmPurchase((object) ['title' => 'The Pianist’s Practice Companion',
+                    'image' => asset('images/emails/welcome/premium-file-music.png')]);
                 $mail->user = $user;
                 return $mail;
             case 'membership-confirmation': return new MembershipConfirmed('Jamie', 'yearly', true, 'October 22, 2026');
@@ -133,7 +134,8 @@ class AutomaticEmails
             case 'merchandise-delivered':
                 $order = new \App\Shop\ShopOrder(['id' => '00000000-0000-4000-8000-000000000001', 'mode' => 'demo',
                     'recipient' => ['name' => 'Jamie Parker', 'email' => 'jamie@example.test'],
-                    'items' => [['name' => 'Piano rainbow T-shirt', 'option' => 'Mint / M', 'quantity' => 1, 'unit_price' => 2800]],
+                    'items' => [['name' => 'Piano rainbow T-shirt', 'option' => 'Mint / M', 'quantity' => 1, 'unit_price' => 2800,
+                        'image' => asset('images/shop/demo/shirt-mint.png')]],
                     'subtotal' => 2800, 'shipping' => 500, 'tax' => 0, 'total' => 3300, 'currency' => 'usd']);
                 if ($key === 'merchandise-confirmation') return new \App\Mail\Shop\MerchandiseOrderConfirmed($order, '#email-preview');
                 $shipment = new \App\Shop\ShopShipment(['carrier' => 'Example carrier', 'service' => 'Standard delivery',

@@ -1,4 +1,4 @@
-<article class="shop-card h-100">
+<article class="shop-card {{ $product['digital'] ? 'shop-card--digital' : '' }} h-100">
     <div class="shop-card__art">
         <a href="{{ $product['url'] }}" tabindex="-1" aria-hidden="true">
             @if($product['imageUrl'])
@@ -24,6 +24,9 @@
     </div>
     <div class="shop-card__copy">
         <{{ $cardHeading ?? 'h2' }} class="shop-card__title"><a href="{{ $product['url'] }}">{{ $product['name'] }}</a></{{ $cardHeading ?? 'h2' }}>
+        @if($product['digital'] && !empty($product['subtitle']) && $product['subtitle'] !== $product['name'])
+            <p class="shop-card__subtitle">{{ $product['subtitle'] }}</p>
+        @endif
         <p class="shop-card__price mb-0">@if($product['price']){{ $product['priceVaries'] ? 'From ' : '' }}{{ $product['price'] }}@else {{ $product['variants'] ? 'Choose an option' : 'Currently unavailable' }} @endif</p>
     </div>
 </article>

@@ -344,7 +344,21 @@ General acquisition/traffic reporting belongs to GA; see `docs/CAMPAIGN_ATTRIBUT
 
 ## Merchandise orders
 
-`shop/orders/confirmed.blade.php` thanks the customer after verified payment and lists the purchased items and total. `shop/orders/shipped.blade.php` describes one shipped package, its carrier, tracking number/link and delivery estimate when present. `shop/orders/delivered.blade.php` sends “Your order arrived!” once the whole order is reported delivered, listing its items and linking to the private order page. Edit their wording and labels directly in those views; all three reuse the existing transactional `mail::message`, table and button components and produce HTML/plain text.
+`shop/orders/confirmed.blade.php` thanks the customer after verified payment and lists the purchased items and total. `shop/orders/shipped.blade.php` describes one shipped package, its carrier, tracking number/link and delivery estimate when present. `shop/orders/delivered.blade.php` sends “Your order arrived!” once the whole order is reported delivered, listing its items and linking to the private order page. Edit their wording and labels directly in those views; all three reuse the existing transactional `mail::message` and button components and produce HTML/plain text.
+
+All three show product thumbnails through `mail::shop.products`. Its editable
+HTML layout is `components/html/shop/products.blade.php`; the plain-text
+counterpart is `components/text/shop/products.blade.php`. Merchandise uses the
+image saved at checkout. Historical shipping rows resolve that image only when
+their exact name/option matches one saved order variant, retaining the package's
+own quantity and excluding items from other packages. Missing/invalid images
+leave readable product details without an empty image cell. Rendering never
+fetches Printful or current catalogue records. Only public HTTP(S) image URLs
+without embedded credentials are included; plain-text emails omit image URLs.
+
+`shop/confirm.blade.php` also uses this component for eBook/eScore purchase
+confirmations, selecting the product's existing mockup or cover. Fictional
+admin previews and newly created local sample orders include sample artwork.
 
 Administration → Emails lists **Merchandise purchase confirmation**, **Merchandise shipped** and **Merchandise delivered** with independent automatic-sending switches and fictional previews. A split shipment receives one shipping email per package; one arrival email follows only after the last package is delivered. All three have duplicate protection, and historical delivered orders are not automatically emailed. Local checkout never sends them. Managers review delivery states in Shop → Orders; an uncertain send must be checked with the mail provider before a manual retry. See `docs/SHOP_CHECKOUT.md` for signed Printful events, setup and durable delivery semantics.
 

@@ -47,11 +47,15 @@ class Accounts
             throw ValidationException::withMessages([$provider => 'This '.$label.' account is already connected. Please use a different account.']);
         }
         if ($unusableHash === null && !$this->hasPassword($user)) $unusableHash = $user->password;
+        $profile = [];
+        if ($provider === 'google' && array_key_exists('picture', $identity) && Schema::hasColumn('user_auth_providers', 'profile_image_url')) {
+            $profile['profile_image_url'] = \App\Services\Navigation\AccountAvatar::googleUrl($identity['picture']);
+        }
         if (!$existing) {
-            DB::table('user_auth_providers')->insert(['user_id' => $user->id, 'provider' => $provider, 'provider_user_id' => $identity['sub'], 'provider_email' => $identity['email'] ?? null, 'unusable_password_hash' => $unusableHash, 'created_at' => now(), 'updated_at' => now()]);
+            DB::table('user_auth_providers')->insert($profile + ['user_id' => $user->id, 'provider' => $provider, 'provider_user_id' => $identity['sub'], 'provider_email' => $identity['email'] ?? null, 'unusable_password_hash' => $unusableHash, 'created_at' => now(), 'updated_at' => now()]);
             $this->audit($user->id, 'connected', $provider);
         } else {
-            $values = ['updated_at' => now()];
+            $values = $profile + ['updated_at' => now()];
             if (!empty($identity['email'])) $values['provider_email'] = $identity['email'];
             if ($unusableHash !== null) $values['unusable_password_hash'] = $unusableHash;
             DB::table('user_auth_providers')->where('id', $existing->id)->update($values);

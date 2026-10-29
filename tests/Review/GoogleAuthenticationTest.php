@@ -185,6 +185,42 @@ class GoogleAuthenticationTest extends ReviewTestCase
         Http::assertSent(function ($request) { return $request->url() === 'https://oauth2.googleapis.com/token' && strlen($request['code_verifier']) >= 43 && $request['client_secret'] === 'review-secret'; });
     }
 
+    public function test_verified_google_photo_is_kept_with_the_connection_and_removed_on_disconnect()
+    {
+        $user = $this->user();
+        $this->connectRecord($user);
+        $image = 'https://lh3.googleusercontent.com/a/review-photo=s96-c';
+        $this->fakeGoogle(['picture' => $image]);
+        $this->googleCallback($this->start())->assertRedirect('http://localhost/');
+        $this->assertDatabaseHas('user_auth_providers', ['user_id' => $user->id, 'profile_image_url' => $image]);
+        $this->assertSame($image, app(\App\Services\Navigation\AccountAvatar::class)->forAccount($user));
+        $this->assertArrayNotHasKey('profile_image_url', $user->fresh()->toArray());
+        $this->delete('http://localhost/auth/google/disconnect')->assertRedirect();
+        $this->assertNull(app(\App\Services\Navigation\AccountAvatar::class)->forAccount($user));
+    }
+
+    public function test_existing_account_proof_keeps_the_verified_photo_without_accepting_a_submitted_image()
+    {
+        $user = $this->user();
+        $image = 'https://lh3.googleusercontent.com/a/proof-photo=s96-c';
+        $this->fakeGoogle(['picture' => $image]);
+        $this->googleCallback($this->start())->assertRedirect('/auth/google/link');
+        $this->assertDatabaseCount('user_auth_providers', 0);
+        $this->assertDatabaseHas('auth_link_challenges', ['user_id' => $user->id, 'profile_image_url' => $image]);
+        $this->proofPost('http://localhost/auth/google/link/password', ['password' => 'existing-password', 'picture' => 'https://attacker.test/photo.jpg'])->assertRedirect('http://localhost/');
+        $this->assertDatabaseHas('user_auth_providers', ['user_id' => $user->id, 'profile_image_url' => $image]);
+    }
+
+    public function test_bad_optional_photo_does_not_break_verified_google_sign_in()
+    {
+        $user = $this->user();
+        $this->connectRecord($user);
+        $this->fakeGoogle(['picture' => ['malformed']]);
+        $this->googleCallback($this->start())->assertRedirect('http://localhost/');
+        $this->assertAuthenticatedAs($user, 'web');
+        $this->assertNull(app(\App\Services\Navigation\AccountAvatar::class)->forAccount($user));
+    }
+
     public function test_new_google_signup_creates_one_standard_verified_account_without_a_known_password()
     {
         $q = $this->start('my.localhost');

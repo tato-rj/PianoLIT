@@ -1,14 +1,28 @@
 .hub-menu__links {
-    padding: 0.75rem 0 0;
-    border-top: 1px solid var(--color-border);
+    padding: 0;
+
+    summary {
+        list-style: none;
+        cursor: pointer;
+
+        &::-webkit-details-marker { display: none; }
+    }
+
+    .hub-menu__toggle { margin-left: auto; }
+    details[open] .hub-menu__toggle { transform: rotate(180deg); }
+}
+
+.hub-menu__children {
+    margin-left: 2rem;
+    padding: 0.25rem 0 0.5rem;
 }
 
 .hub-menu__link {
-    min-height: 44px;
-    padding: 0.375rem 0.75rem;
+    min-height: 36px;
+    padding: 0.25rem 0.75rem;
     border-radius: var(--radius-sm);
     color: var(--color-text);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     line-height: var(--line-height-body);
     text-decoration: none;
 

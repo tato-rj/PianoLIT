@@ -7,12 +7,7 @@ Your payment is confirmed. Thank you for bringing a little more piano into your 
 
 **Order reference:** {{ $order->id }}
 
-@component('mail::table')
-| Product | Quantity | Total |
-| :--- | :---: | ---: |
-@foreach($order->items as $item)
-| {{ $item['name'] }} · {{ $item['option'] }} | {{ $item['quantity'] }} | {{ app(\App\Services\Shop\Storefront::class)->money($item['unit_price'] * $item['quantity'], strtoupper($order->currency)) }} |
-@endforeach
+@component('mail::shop.products', ['items' => $order->items, 'currency' => $order->currency, 'showPrices' => true])
 @endcomponent
 
 Products: {{ app(\App\Services\Shop\Storefront::class)->money($order->subtotal, strtoupper($order->currency)) }}<br>

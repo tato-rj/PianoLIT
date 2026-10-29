@@ -9,7 +9,9 @@ A package from your PianoLIT order has shipped!
 @if($shipment->carrier)**Carrier:** {{ $shipment->carrier }}<br>@endif
 @if($shipment->service)**Delivery service:** {{ $shipment->service }}<br>@endif
 @if($shipment->tracking_number)**Tracking number:** {{ $shipment->tracking_number }}<br>@endif
-@if($shipment->shipped_at)**Shipped:** {{ $shipment->shipped_at->format('F j, Y') }}@endif
+@if($shipment->shipped_at)
+**Shipped:** {{ $shipment->shipped_at->format('F j, Y') }}
+@endif
 
 @if($shipment->estimated_from && $shipment->estimated_to)
 **Estimated delivery:** {{ $shipment->estimated_from->format('F j') }}–{{ $shipment->estimated_to->format('F j, Y') }}
@@ -18,9 +20,8 @@ A package from your PianoLIT order has shipped!
 @if($shipment->items)
 **In this package**
 
-@foreach($shipment->items as $item)
-- {{ $item['name'] }} · {{ $item['option'] }} × {{ $item['quantity'] }}
-@endforeach
+@component('mail::shop.products', ['items' => $shipment->items, 'orderItems' => $order->items])
+@endcomponent
 @endif
 
 @if($shipment->tracking_url)

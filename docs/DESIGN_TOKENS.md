@@ -22,16 +22,29 @@ There is no separate hamburger. Guests use the same opener and get a same-host
 Sign in link inside the panel. Standalone login/registration/password pages and
 focused games remain free of this navigation.
 
-The panel is 22rem wide, capped at the viewport width. Its fixed header contains
-the account name, wrapping email, initial circle and close button. Account actions
-retain 16px labels, 20px icons and 48px rows. A neutral divider introduces
-`navigation.hub-menu.links`: compact, icon-free 44px rows with a trailing chevron
-on every hub link, beneath a small muted PianoLIT Hubs label. Only iOS opens another tab, with safe external-link attributes.
-Only one menu link is current: an account action suppresses its host hub highlight,
-and Home is current only on the homepage. Nested hub content retains its hub highlight.
-The middle body scrolls independently. The opaque logout footer stays outside
-that scrolling body, always visible at the bottom with safe-area padding; logout
-remains a same-host CSRF POST. Profile, downloads and orders return to main.
+The panel keeps the shared account menu's 17rem width and `calc(100vw - 1rem)` cap; do not add a wider offcanvas override. Its avatar sits above
+the name and wrapping email, with the close button at the upper right. The
+entire panel scrolls naturally, including its header and lower Support/Log out
+area; no footer stays fixed over the content. Help & Support is immediately
+above the same-host CSRF logout form, below a divider. Profile, downloads and
+orders return to main.
+
+Account actions retain 16px labels, 20px icons and 48px rows.
+`navigation.hub-menu.links` renders PianoLIT Hubs as a normal icon row using a
+native details/summary disclosure with a trailing chevron. It starts closed,
+works without JavaScript and resets closed when the offcanvas is dismissed.
+Its expanded destinations use 14px labels, compact 36px rows and a 2rem left margin to make their hierarchy clear. Keep them icon-free with trailing arrows.
+Only iOS opens another tab, with safe external-link attributes. Only one menu
+link is current: an account action suppresses its host hub highlight, and Home
+is current only on the homepage. Nested hub content retains its hub highlight.
+
+`Services\Navigation\AccountAvatar` uses a saved, verified Google image in
+both the header account circle and the menu avatar; the Unicode initial stays
+underneath and returns on image failure. The photo remains circular, uses
+`object-fit: cover` and sends no referrer. Apple provides no profile photo, so an
+Apple-only account keeps its initial. Provider images live in the provider and
+pending-proof tables, never User attributes, loaded relationships or mobile JSON.
+See `GOOGLE_LOGIN.md` for the additive migration and capture rules.
 
 `Services\Navigation\AccountMenu` controls browser-only shortcut visibility.
 My profile and Help & Support are always available for signed-in accounts.
@@ -959,6 +972,8 @@ See `PIANISTS.md` for controls, data states and the editing map.
 
 
 ## Shop storefront exception
+
+Digital catalog cards inset existing eScore/eBook covers and mockups within the square artwork area, leaving space on every side. Use mixed-case 600-weight body-family titles, regular muted subtitles from the existing product record when available (at most two visible lines), and compact yellow outlined price labels aligned at the bottom of the copy. Keep full titles readable and omit redundant category labels. The shared `shop.storefront.components.card` and its Digital cards Design System specimen own this treatment.
 
 Color options include a 22px square swatch beside the readable name. The swatch uses saved Printful catalog hex codes, including a diagonal split for two-tone variants, and keeps its color through button hover/selection. The button retains ordinary contrast and keyboard feedback; missing or conflicting provider color metadata stays text-only. Never add named-color CSS mappings for products.
 

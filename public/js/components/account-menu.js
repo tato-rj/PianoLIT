@@ -12,7 +12,24 @@
     }
 
     document.addEventListener('shown.bs.offcanvas', function (event) { navigationExpanded(event, true); });
-    document.addEventListener('hidden.bs.offcanvas', function (event) { navigationExpanded(event, false); });
+    document.addEventListener('hidden.bs.offcanvas', function (event) {
+        navigationExpanded(event, false);
+        if (event.target.matches('.account-navigation')) {
+            event.target.querySelectorAll('.hub-menu__disclosure[open]').forEach(function (section) { section.open = false; });
+        }
+    });
+
+    // The initial remains behind the photo, including unavailable/cached failures.
+    document.addEventListener('error', function (event) {
+        if (event.target.matches('[data-account-avatar]')) event.target.hidden = true;
+    }, true);
+    function checkAvatars() {
+        document.querySelectorAll('[data-account-avatar]').forEach(function (photo) {
+            if (photo.complete && photo.naturalWidth === 0) photo.hidden = true;
+        });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', checkAvatars, {once: true});
+    else checkAvatars();
 
     function position(trigger, menu) {
         var button = trigger.getBoundingClientRect();

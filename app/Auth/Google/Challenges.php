@@ -25,6 +25,9 @@ class Challenges
         ];
         if (Schema::hasColumn('auth_link_challenges', 'provider')) $values['provider'] = $provider;
         elseif ($provider !== 'google') $this->expired($provider);
+        if ($provider === 'google' && Schema::hasColumn('auth_link_challenges', 'profile_image_url')) {
+            $values['profile_image_url'] = \App\Services\Navigation\AccountAvatar::googleUrl($identity['picture'] ?? null);
+        }
         DB::table('auth_link_challenges')->insert($values);
         $request->session()->put($provider.'_auth.challenge', ['id' => $id, 'secret' => $secret]);
         return $this->current($request, null, false, $provider);

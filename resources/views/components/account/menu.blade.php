@@ -25,13 +25,13 @@
 <div class="{{ $preview ? '' : 'offcanvas offcanvas-end ' }}account-menu account-navigation" id="{{ $panelId }}" aria-labelledby="{{ $panelId }}-title" @if($preview) data-ds-preview @else tabindex="-1" @endif>
     <div class="offcanvas-header account-navigation__header">
         <div class="account-menu__identity">
+            @if($account)
+                @include('components.account.account-circle', ['account' => $account, 'menuAvatar' => true])
+            @endif
             <div class="account-menu__details">
                 <h2 class="account-menu__name mb-0" id="{{ $panelId }}-title">{{ $account ? ($name ?: 'Your account') : 'Explore PianoLIT' }}</h2>
                 @if($account)<div class="account-menu__email">{{ $account->email }}</div>@endif
             </div>
-            @if($account)
-                @include('components.account.account-circle', ['account' => $account, 'menuAvatar' => true])
-            @endif
         </div>
         <button type="button" class="btn-close flex-shrink-0" @unless($preview) data-bs-dismiss="offcanvas" @endunless aria-label="Close account menu"></button>
     </div>
@@ -62,16 +62,16 @@
                     @icon('package', ['mr' => 0])<span>Track your orders</span>
                 </a>
             @endif
-            <a class="account-menu__link" href="{{ $preview ? '#ds-components' : route('contact') }}" @if($currentAccountItem === 'support') aria-current="page" @endif>
-                @icon('circle-help', ['mr' => 0])<span>Help &amp; Support</span>
-            </a>
         </nav>
 
         @include('components.navigation.hub-menu.links', ['designSystemPreview' => $preview, 'accountItemIsCurrent' => $currentAccountItem !== null])
     </div>
 
-    @if($account)
-        <div class="account-menu__footer">
+    <div class="account-menu__footer">
+        <a class="account-menu__link" href="{{ $preview ? '#ds-components' : route('contact') }}" @if($currentAccountItem === 'support') aria-current="page" @endif>
+            @icon('circle-help', ['mr' => 0])<span>Help &amp; Support</span>
+        </a>
+        @if($account)
             @if($preview)
                 <button class="account-menu__link w-100 text-start" type="button">@icon('log-out', ['mr' => 0])<span>Log out</span></button>
             @else
@@ -80,8 +80,8 @@
                     <button class="account-menu__link w-100 text-start" type="submit">@icon('log-out', ['mr' => 0])<span>Log out</span></button>
                 </form>
             @endif
-        </div>
-    @endif
+        @endif
+    </div>
 </div>
 @unless($preview)
     @include('components.account.scripts')

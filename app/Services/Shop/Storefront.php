@@ -74,7 +74,8 @@ class Storefront
     {
         $category = $product instanceof eBook ? 'ebooks' : 'escores';
         return [
-            'id' => $product->id, 'name' => $product->title, 'category' => $category, 'digital' => true,
+            'id' => $product->id, 'name' => $product->title, 'subtitle' => trim($product->subtitle ?? ''),
+            'category' => $category, 'digital' => true,
             'label' => $category === 'ebooks' ? 'eBook' : 'eScore', 'url' => $product->showRoute(),
             'imageUrl' => $product->mockup_image() ?: ($product->cover_path ? $product->cover_image() : null),
             'variants' => [], 'price' => $product->isFree() ? 'Free' : $this->money((int) $product->finalPrice(true), 'USD'),
