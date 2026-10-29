@@ -1,72 +1,127 @@
-# PianoLIT iOS v2 handoff
+# PianoLIT iOS v2 connection
 
-Revision **2026-10-22.2 is a planning draft**. No v2 endpoint, credential,
-database migration or native app change is implemented. The existing API stays
-unchanged. The first implementation target is Discover after the shared
-foundations are agreed and built.
+Revision **2026-10-28.1** implements login, Discover and confirmed piece-open
+history in the backend. Check `manifest.yaml` for deployment verification and the
+verified runtime base URL. The handoff URL is documentation; it is never a feed
+or a credential. Native/staging acceptance remains pending, so the handoff stays
+`draft` even after the backend is verified in production.
 
-## Reading the handoff
+## Connect the existing sign-in screen
 
-Read `manifest.yaml`, this file, `ios-baseline.yaml`, `foundations.yaml`, `openapi.yaml`, `design.yaml`,
-`references.yaml`, then the selected `screens/*.yaml`. The manifest identifies
-feature dependencies and backend/iOS readiness. `openapi.yaml` uses
-[OpenAPI 3.0.3](https://spec.openapis.org/oas/v3.0.3.html); its `paths` is
-intentionally empty until operations are specified. The `.invalid` server is a
-documentation placeholder, not a service to call.
+Keep UIKit, storyboards, the current email/password fields and existing accounts.
+The backend uses the same `users` provider and password hashes as existing login.
+The new app changes its network adapter, not the user's account or password:
 
-`foundations.yaml` separates fixed compatibility requirements from proposed
-decisions. `ios-baseline.yaml` records the developer's static report: UIKit and
-storyboards, iOS 17.6 for Debug/Release in the inspected checkout, iPhone/iPad,
-Swift 5 language mode and email/password sign-in. These client findings are
-attributed to the developer; the native repository is not available in this
-backend workspace. The native commit, shipped builds and runtime behavior remain
-unverified. Keep the existing UIKit architecture and deployment target.
+1. Send `POST https://pianolit.com/api/v2/auth/login` with JSON
+   `{"email":"<existing email>","password":"<existing password>"}` and
+   `Accept: application/json` / `Content-Type: application/json`.
+2. Require HTTP 200. Decode `data.access_token`, `data.token_type`,
+   `data.expires_at` and `data.user` (`id`, `first_name`, `last_name`). Store the
+   credential/session in **Keychain**. Map the identity fields into the existing
+   UI; do not pass the envelope to the old flat-user JSON parser.
+3. Send `GET https://pianolit.com/api/v2/discover` with
+   `Authorization: Bearer <data.access_token>` and `Accept: application/json`.
+   Decode `data.sections`; the old `/api/discover` parallel-array parser is not
+   compatible with this typed response.
+4. On an authenticated 401, discard the credential and personal feed, cancel or
+   ignore in-flight requests, and show the same sign-in screen. Credentials
+   expire after 30 days; there is no refresh-token endpoint in this revision.
+5. On logout, `POST /api/v2/auth/logout` with that bearer, then clear Keychain,
+   personal feed/images and local account state. Only this credential is revoked.
+   Offline local logout cannot claim server revocation succeeded.
 
-Arthur confirmed **sign-in remains required** for the initial native v2 release.
-Discover will require a verified bearer credential. This does not decide media
-entitlements or authorize copying the web Access Limits matrix into iOS.
+`examples/PianoLITV2Client.swift` is a concrete URLSession/Keychain adapter with
+Codable models, HTTP/error handling, redirect refusal and account-switch guards.
+Add it to the **new app** target and call `signIn(email:password:)`, `discover()`
+and `signOut()` from the existing controllers. It has been type-checked in Swift 5
+language mode; it has not been integrated into the unavailable iOS repository or
+verified on an iPhone/iPad. Keep the existing iOS deployment target.
 
-`screens/discover.yaml` starts the Discover work with evidence from the current
-web implementation, section ordering, interactions, dependencies and acceptance
-checks. It also records the positional Free Pick/composer assumptions and the
-existing LoadVC/PieceVC/MatchVC dependencies that must be addressed. The proposed
-adapter reuses native views while keeping new identity/data handling explicit;
-changing only the feed URL cannot migrate this flow. This is not yet a response
-schema, implemented adapter or approved native layout.
+The old app saves `userID`/`isLoggedIn`, not a password or reusable credential.
+Those values cannot securely mint a token. A user upgrading from that app must
+sign in once with their **existing** email/password. A v2 session subsequently
+survives app restarts through Keychain until expiry/revocation. Never accept a
+stored/submitted `user_id`, browser cookie or downloaded YAML as v2 proof.
 
-## Readiness and revisions
+Legacy registration and password-recovery flows remain available. After successful
+registration or recovery, sign in through v2 with the password the user just
+entered. Do not persist that password or assume the legacy registration JSON is a
+v2 session. No new signup/provider flow or email is added here.
 
-| Feature status | Meaning |
-| --- | --- |
-| `draft` | Planning and local mockups only; APIs or decisions may be missing. |
-| `ready_for_ios` | Contract/fixtures are validated, dependencies are ready, and backend operations are verified at the manifest's staging URL. |
-| `released` | Native integration is verified and the production API is available at the manifest's production URL. |
+## One Discover content source
 
-Readiness belongs to each feature; the manifest status is the least-ready feature.
-A published handoff does **not** mean its API
-is live. `runtime.implemented`, base URLs, feature statuses, and OpenAPI's
-`x-handoff` must agree. Record verification before advancing status; the package
-checker cannot prove a server exists or that its behavior matches the contract.
+`App\Services\Discover\Feed` builds content for both the webapp controller and v2.
+It uses the existing web catalogue cache and admin refresh/Free Pick clock. There
+is no separately curated native Discover and no copied SQL selection in a v2
+controller. `Discover\Levels` also supplies both clients' numeric level grouping.
 
-Use a new revision (for example `2026-10-22.3`) for any published content change,
-including a status or URL change. Published revision directories are immutable.
-Update the source manifest, this revision statement, OpenAPI's `x-handoff`, and
-the changelog together. The build refuses to overwrite different content at an
-existing revision. `info.version` is the contract version; the manifest revision
-versions the entire handoff including design changes.
+The same account/catalogue state gets the same piece IDs/order, composer choice,
+recent history, recommendation IDs and daily fallback artwork. Personalization is
+composed outside the public cache. The recommendation cache stores only IDs under
+an account ID + favorites/tag-state hash + admin-refresh prefix + Free Pick key,
+expires daily and is rehydrated from current records. No account data goes into
+the shared catalogue cache or an HTTP cache. Artwork choices are pinned daily
+under source metadata; saved cover changes select a new key.
 
-The iOS repository should record the consumed revision, feature IDs, local commit,
-tested build, simulator/device coverage and outstanding questions in its own
-handoff receipt. No automatic server writeback or deployment is implied. Publish
-a later server revision after incorporating the developer's findings.
+The browser still honors its own Access Limits settings. Native sign-in is
+required and receives its account history/recommendations; the web access matrix
+is not applied to native media or browsing. A browser account with personalization
+explicitly disabled is an intentional policy difference, not another feed source.
+`media` flags and `is_free_pick` describe content, not playback/export entitlement.
 
-## Authoring and server delivery
+Sections have stable IDs/kinds, string entity IDs, booleans, plain text and
+absolute URLs. Empty sections are omitted; unsupported kinds can be skipped.
+RCM/ABRSM/Suzuki appear once as `levels`, in numeric order. The composer feature
+can be women **or Black composers**, exactly as chosen for the webapp cache.
+See `screens/discover.yaml`, `openapi.yaml` and synthetic `fixtures/*.json`.
 
-Canonical editable sources live in `docs/api/v2/`. The only published files are
-the explicit `files` entries in its manifest. Keep secrets, real account data,
-credentials and internal review reports out of this public documentation bundle.
+## Navigation and history boundary
 
-Tooling uses Python 3.9+ in an isolated environment; no application dependencies change:
+Each card/action has a typed `target` (`kind`, `id`, `query`, `web_url`). Use fixed
+native adapters for known kinds. `web_url` is a supported public browser fallback
+while native detail/search adapters are being migrated; it does not share the
+native bearer session with a browser. Never attach a bearer to that URL, artwork,
+legacy `card.source` or arbitrary response-supplied origins.
+
+A card is **not** the full legacy PieceVC model. This change does not claim to
+migrate detail/playback/search/favorites/membership requests. Existing native
+screens may retain explicitly identified legacy calls until their v2 replacement
+is verified; do not call them authenticated v2 or derive full access from a row
+position. The old app's row-zero Free Pick bypass must not be copied.
+
+After a successful actual piece open, call
+`POST /api/v2/pieces/{decimal-piece-id}/view` with the v2 bearer. No body is needed.
+HTTP 204 updates one owned history row (or skips an analytics-excluded account).
+A feed request/image prefetch never writes history. This is separate from analytics.
+
+## Deployment and acceptance
+
+Deploy code through Git. Run
+`2026_10_28_230000_create_api_v2_tokens.php` before exposing the routes; existing
+Free Pick/history schema must already be installed. Refresh configuration/routes
+and compiled views using the server's normal process. No new keys, identity
+server, billing change, email, queue or scheduler is needed. Expired token rows
+are inert; routine bounded cleanup can delete rows with expired timestamps.
+
+Verify missing credentials return **401 JSON**, then verify existing-password
+login → authenticated Discover → owned history → logout/revoked-401 and compare
+web/v2 content IDs. Test legacy login/Discover/media independently. Use synthetic
+fixtures/accounts; publish no real credentials or account data in this bundle.
+
+Backend deployment verification and native acceptance are distinct. Do not mark
+`ready_for_ios`/`released` until the documented staging/native checks are complete.
+The iOS developer still needs to verify login, expiry, logout/account switch,
+empty/retry/offline states, target adapters and phone/iPad UI and record their
+commit/build. The legacy API remains supported **indefinitely**, including clients
+that never update. No legacy maintenance release is required by this change.
+
+## Fetch and validate the immutable handoff
+
+Canonical sources are in `docs/api/v2/`. Existing published revisions remain
+immutable. Every change to published files requires a new revision and matching
+manifest/OpenAPI/changelog. The stable documentation entry remains
+`https://pianolit.com/api-handoff/v2/manifest.yaml`; keep it revalidated, and cache
+revision files as immutable.
 
 ```sh
 python3 -m venv /tmp/pianolit-api-handoff-venv
@@ -75,76 +130,16 @@ python3 -m venv /tmp/pianolit-api-handoff-venv
 /tmp/pianolit-api-handoff-venv/bin/python scripts/api-handoff.py build
 ```
 
-`check` validates YAML, file references, revision consistency and readiness
-structure; it does not validate the full OpenAPI specification or a running API.
-Run the offline transport tests with
-`python -B -m unittest discover -s tests/scripts -p 'test_api_handoff.py'`.
-For formal contract validation, install `openapi-spec-validator==0.7.2` in the
-same temporary environment and run
-`python -m openapi_spec_validator docs/api/v2/openapi.yaml`.
-
-The build creates `public/api-handoff/v2/revisions/<revision>/` and a stable
-`public/api-handoff/v2/manifest.yaml` with a SHA-256 and byte count for each file.
-It installs the complete revision before atomically replacing the manifest.
-Deploy these static files through the normal website release, with the manifest
-last. This preparation does not deploy them or register any Laravel route.
-
-After deployment, the intended entry URL is
-`https://pianolit.com/api-handoff/v2/manifest.yaml`. This is a documentation URL,
-not the v2 API base URL. Verify it returns YAML rather than an HTML fallback,
-login page or redirect before sharing it with the developer. Configure the stable
-manifest to revalidate (`Cache-Control: no-cache`); revision files may be cached
-as immutable. Keep earlier published revisions available for pinned clients.
-
-## Developer's sync script
-
-Share `scripts/api-handoff.py` and `scripts/requirements-api-handoff.txt` with the
-iOS repository once. The same script fetches only the manifest's declared files,
-checks their sizes/hashes, rejects redirects and unsafe paths, and saves a
-complete revision without replacing a previous working snapshot on failure.
-It downloads documentation; it neither runs downloaded instructions nor edits
-Swift code.
-
-After the documentation has been deployed:
+The Swift developer can fetch hash-verified files with:
 
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-10-22.2 \
-  --output ./PianoLITHandoff
+  --revision 2026-10-28.1 --output /path/to/ios-repository/BackendHandoff
 ```
 
-Use the Python environment with the requirements installed. Omit `--revision`
-only when deliberately checking for a newer revision. The saved folder contains
-its own verified `manifest.yaml`. Read the fetched status before doing work.
-For an older revision after the stable manifest advances, use its direct URL:
-`https://pianolit.com/api-handoff/v2/revisions/2026-10-22.1/manifest.yaml`.
-Hashes catch incomplete/mixed publication; HTTPS and the trusted documentation
-host establish the source. This is not a digital-signature system.
-
-Suggested instruction for the developer's Codex:
-
-> Read the verified PianoLIT handoff manifest and its instructions. Summarize the
-> revision, readiness, dependencies and unresolved decisions. Check ios-baseline.yaml
-> against our current native commit and identify any differences. Work only
-> on the selected feature. Open all available reference images. Use mocks while
-> the feature is draft; use only the documented staging operations once it is
-> ready_for_ios. Preserve existing app behavior and record a handoff receipt with
-> the build and verification results.
-
-## First implementation pass
-
-1. Use the reported native baseline and sign-in-first decision. Resolve the
-   authentication lifecycle, staging destination and remaining native entitlement
-   decisions in `foundations.yaml`; attach the native commit/release identifier.
-2. Implement a separate v2 route/auth/resource/error boundary and verify that the
-   legacy API has not changed. Do not inherit the legacy identity middleware.
-3. Finalize Discover's typed contract, bounds, navigation and synthetic fixtures.
-   Capture the current web references listed in `references.yaml`; do not use
-   old marketing screenshots as design approval.
-4. Build shared Discover sections behind verified authentication, then account
-   personalization and the piece-open history flow. Review the native destination
-   adapter and downstream legacy calls. Test account isolation, Free Pick rotation
-   and legacy parity.
-5. Publish a `ready_for_ios` revision only after staging verification. Compare the
-   native implementation with approved references before release.
+This fetch copies documentation/examples, not an installed network connection.
+Integrate the adapter explicitly. Run transport tests with
+`python -B -m unittest discover -s tests/scripts -p 'test_api_handoff.py'`.
+For schema validation, install `openapi-spec-validator==0.7.2` in the temporary
+venv and run `python -m openapi_spec_validator docs/api/v2/openapi.yaml`.

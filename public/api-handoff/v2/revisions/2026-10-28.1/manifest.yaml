@@ -1,0 +1,116 @@
+schema_version: 1
+revision: 2026-10-28.1
+updated_on: '2026-10-28'
+title: PianoLIT iOS v2 handoff
+status: draft
+purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
+api_major_version: 2
+runtime:
+  implemented: true
+  staging_base_url: null
+  production_base_url: https://pianolit.com/api/v2
+  existing_api: unchanged
+  deployment_target: https://pianolit.com/api/v2
+  verification: 'Production verified on 2026-10-28: existing-password login, authenticated
+    Discover matching the shared web builder, owned history, logout/revoked-401, no
+    legacy cache mutation. Synthetic SQL writes rolled back and personal cache removed.
+    External HTTPS Discover/invalid-login return 401 JSON. Staging/native acceptance
+    pending.'
+entrypoints:
+  instructions: README.md
+  foundations: foundations.yaml
+  native_baseline: ios-baseline.yaml
+  contract: openapi.yaml
+  design: design.yaml
+  references: references.yaml
+  swift_example: examples/PianoLITV2Client.swift
+files:
+- path: README.md
+  bytes: 8433
+  sha256: 0b7815f045e678e3aa3a1043cbe2bb407e1cdc5a9fa574656b62ddd762d76a8a
+- path: foundations.yaml
+  bytes: 5703
+  sha256: b3f156ec96aa8b0e32ebae302a5422181c6e8a5059d688c40ba628fbcf87d977
+- path: ios-baseline.yaml
+  bytes: 10384
+  sha256: 3a26ddf1df6e7fdc7e992d2d629b57cd6ae7a16cd75763c7f20291165a28ebe0
+- path: openapi.yaml
+  bytes: 17502
+  sha256: b1d93375ed06a9823bb98c5740eae21534df10abd57100683521159380f8fc4c
+- path: design.yaml
+  bytes: 2740
+  sha256: 094fef76502c95677b0f36acb9045d3930633257ee93192184b02ce896dbe330
+- path: references.yaml
+  bytes: 1824
+  sha256: 27b5d92f4dbfee4a11a92f654b0bcea574595a81c0b7f37cb90f3365cfdc4729
+- path: screens/discover.yaml
+  bytes: 6090
+  sha256: f939bbe5585dbda957d5b33c8a9f3a7510f919752ac27a5d6de793c407746500
+- path: fixtures/discover.json
+  bytes: 21715
+  sha256: cfbcb41783fedd20027a8746c8ebdd277edee2d25f127a16df14afc4804a6609
+- path: fixtures/unauthenticated.json
+  bytes: 183
+  sha256: 28b67a3a1694e2f2e92c75066870b0d385e149b2fad0e335545de84f038510e6
+- path: examples/PianoLITV2Client.swift
+  bytes: 10759
+  sha256: f47c8f1e4fa8e40628050cf0116c423a4d546587e572343874ebd4c7bffe1b52
+features:
+- id: foundations
+  document: foundations.yaml
+  status: draft
+  backend_status: production_verified
+  ios_status: pending_integration
+  depends_on: []
+- id: discover
+  document: screens/discover.yaml
+  status: draft
+  backend_status: production_verified
+  ios_status: pending_integration
+  depends_on:
+  - foundations
+consumer_rules:
+- Read README.md, the concrete OpenAPI operations and examples/PianoLITV2Client.swift
+  for the connection procedure.
+- Pin one revision per integration task; published revisions remain immutable.
+- Draft describes pending native/staging acceptance. An implemented, production_verified
+  backend with a populated production_base_url may be used to integrate these documented
+  operations; draft alone is not evidence of a live service.
+- Use only the runtime base URL marked verified; deployment_target alone is not verification.
+- Keep the current email/password screen and accounts. Point its request to v2 login,
+  save the returned credential in Keychain, then request v2 Discover with Authorization
+  bearer.
+- Legacy users lacking a v2 credential sign in once after upgrade; never silently
+  exchange stored user_id for access.
+- Preserve installed legacy clients and their endpoints indefinitely. This work does
+  not require updating the old app.
+- Discover cards are summaries, not complete PieceVC detail models or media entitlements.
+  Use the documented target/fallback boundary.
+- Record consumed revision, native commit/build, device checks and unresolved destinations
+  in the iOS repository.
+changelog:
+- revision: 2026-10-28.1
+  changes:
+  - Implemented independent v2 email/password credential issuance, bearer authentication,
+    revocation and account-owned history.
+  - Moved web Discover content selection and level grouping into shared services consumed
+    by web and v2; legacy feed stays unchanged.
+  - Added concrete OpenAPI operations, synthetic fixtures and a Swift URLSession/Keychain
+    connection example.
+  - Production deployment and native verification are recorded separately; previous
+    published revisions remain immutable.
+- revision: 2026-10-22.2
+  changes:
+  - Recorded the developer's static UIKit/iOS 17.6/email-password baseline with its
+    verification limits.
+  - Arthur confirmed sign-in remains required for the initial native v2 release.
+  - Identified positional Free Pick handling and legacy detail/search dependencies
+    in Discover.
+  - No runtime implementation or deployment; retained the previous immutable handoff
+    revision.
+- revision: 2026-10-22.1
+  changes:
+  - Established the handoff format, shared API proposals and compatibility boundaries.
+  - Inventoried Discover against the current web implementation.
+  - No runtime endpoints, migrations, Swift changes or deployment in this revision.
+base_path: revisions/2026-10-28.1/
