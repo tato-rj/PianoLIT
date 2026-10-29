@@ -7,7 +7,7 @@ const source = fs.readFileSync(path.join(__dirname, '../../resources/js/componen
 module.exports = async function () {
     function fixture(navigator = {}, legacyCopy = true) {
         const parts = {};
-        for (const selector of ['.modal', 'input', '[data-share-copy]', '[data-share-status]', '[data-share-error]', '[data-share-sms]', '[data-share-error-message]']) {
+        for (const selector of ['.modal', 'input', '[data-share-copy]', '[data-share-status]', '[data-share-error]', '[data-share-sms]', '[data-share-facebook]', '[data-share-error-message]']) {
             parts[selector] = {hidden: true, events: {}, attrs: {}, value: 'https://my.pianolit.com/pieces/42',
                 addEventListener(name, handler) { this.events[name] = handler; },
                 removeEventListener(name) { delete this.events[name]; },
@@ -25,7 +25,7 @@ module.exports = async function () {
                 show() { this.visible = true; } hide() { this.visible = false; } dispose() { this.disposed = true; }
             }}};
         vm.runInNewContext(source, {document: doc, window: win});
-        return {parts, root, win, timers, tooltips, async click(selector) { await parts[selector].events.click(); },
+        return {parts, root, win, timers, tooltips, async click(selector, event) { await parts[selector].events.click(event); },
             close() { parts['.modal'].events['hide.bs.modal'](); parts['.modal'].events['hidden.bs.modal'](); },
             expire() { const pending = [...timers.values()]; timers.clear(); pending.forEach(timer => { assert.equal(timer.delay, 1600); timer.callback(); }); }};
     }
@@ -66,6 +66,38 @@ module.exports = async function () {
     f = fixture({platform: 'MacIntel', maxTouchPoints: 5});
     assert.ok(f.parts['[data-share-sms]'].attrs.href.startsWith('sms:&body='));
 
+    let sharedUrl;
+    let facebookPrevented = false;
+    f = fixture({userAgent: 'iPhone', async share(data) { sharedUrl = data; }, canShare() { return true; }});
+    await f.click('[data-share-facebook]', {preventDefault() { facebookPrevented = true; }});
+    assert.equal(facebookPrevented, true, 'iPhone Facebook sharing avoids the broken app-link handoff.');
+    assert.equal(JSON.stringify(sharedUrl), JSON.stringify({url: 'https://my.pianolit.com/pieces/42'}));
+    await f.click('[data-share-facebook]', {ctrlKey: true, preventDefault() { assert.fail('Modified link clicks retain their normal destination.'); }});
+    f = fixture({platform: 'MacIntel', maxTouchPoints: 5, async share() { throw {name: 'AbortError'}; }});
+    await f.click('[data-share-facebook]', {preventDefault() {}});
+    assert.equal(f.parts['[data-share-error]'].hidden, true, 'Canceling the iPadOS share sheet is silent.');
+    f = fixture({userAgent: 'iPhone', async share() { throw new Error('Unavailable'); }});
+    await f.click('[data-share-facebook]', {preventDefault() {}});
+    assert.equal(f.parts['[data-share-error]'].hidden, false);
+    assert.match(f.parts['[data-share-error-message]'].textContent, /Copy the page link/);
+    for (const navigator of [
+        {userAgent: 'Android', share() {}},
+        {userAgent: 'iPhone'},
+        {userAgent: 'iPhone', share() {}, canShare() { return false; }},
+        {userAgent: 'iPhone', share() {}, canShare() { throw new Error('Denied'); }},
+    ]) {
+        f = fixture(navigator);
+        assert.equal(f.parts['[data-share-facebook]'].events.click, undefined, 'Other devices and unavailable native sharing retain the ordinary Facebook link.');
+    }
+    let finishSharing;
+    let facebookCalls = 0;
+    f = fixture({userAgent: 'iPhone', share() { facebookCalls++; return new Promise((resolve, reject) => { finishSharing = reject; }); }});
+    const facebookPending = f.click('[data-share-facebook]', {preventDefault() {}});
+    await f.click('[data-share-facebook]', {preventDefault() {}});
+    assert.equal(facebookCalls, 1, 'Repeated taps cannot open multiple share sheets.');
+    f.close(); finishSharing(new Error('Late failure')); await facebookPending;
+    assert.equal(f.parts['[data-share-error]'].hidden, true, 'A closed dialog cannot receive late sharing failures.');
+
     let finish;
     f = fixture({clipboard: {writeText() { return new Promise(resolve => { finish = resolve; }); }}});
     const pending = f.click('[data-share-copy]');
@@ -74,5 +106,5 @@ module.exports = async function () {
     f.root.isConnected = false;
     f.win.PianoLITLinkShare.init();
     assert.equal(f.parts['.modal'].events['hide.bs.modal'], undefined, 'Replaced quiz fragments release their modal listeners.');
-    console.log('Passed: field/icon copy, timed tooltip, permission fallback, failure selection, SMS variants and stale dialog feedback.');
+    console.log('Passed: field/icon copy, timed tooltip, permission fallback, failure selection, SMS variants, iOS Facebook sharing/fallback/cancellation and stale dialog feedback.');
 };

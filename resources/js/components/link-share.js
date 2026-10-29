@@ -11,6 +11,7 @@
         const status = root.querySelector('[data-share-status]');
         const error = root.querySelector('[data-share-error]');
         let copying = false;
+        let sharingFacebook = false;
         let generation = 0;
         let tooltip;
         let feedbackTimer;
@@ -52,6 +53,32 @@
             || (win.navigator.platform === 'MacIntel' && win.navigator.maxTouchPoints > 1);
         const sms = root.querySelector('[data-share-sms]');
         if (ios && sms) sms.setAttribute('href', 'sms:&body=' + encodeURIComponent(root.dataset.shareMessage));
+
+        // Facebook's iOS app can swallow sharer links without opening a composer.
+        // The system sheet passes the URL to the selected Facebook share extension.
+        const facebook = root.querySelector('[data-share-facebook]');
+        const facebookData = {url: root.dataset.shareUrl};
+        let nativeFacebook = ios && typeof win.navigator.share === 'function';
+        if (nativeFacebook && typeof win.navigator.canShare === 'function') {
+            try { nativeFacebook = win.navigator.canShare(facebookData); }
+            catch (_) { nativeFacebook = false; }
+        }
+        if (facebook && nativeFacebook) facebook.addEventListener('click', async function (event) {
+            // Preserve open-in-new-tab/window gestures and the ordinary href fallback.
+            if (event.button > 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            if (sharingFacebook) return;
+            sharingFacebook = true;
+            const started = generation;
+            reset();
+            try {
+                await win.navigator.share(facebookData);
+            } catch (problem) {
+                if (started === generation && (!problem || problem.name !== 'AbortError')) {
+                    fail('Facebook sharing could not open. Copy the page link and paste it into a Facebook post.');
+                }
+            } finally { sharingFacebook = false; }
+        });
 
         async function copyLink() {
             if (copying) return;

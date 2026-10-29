@@ -59,6 +59,7 @@ class LinkShareTest extends ReviewTestCase
             $this->assertSame(route('webapp.pieces.show', $piece), $field->getAttribute('value'));
             $this->assertCount(6, $xpath->query('//*[@id="piece-share-modal"]//a[starts-with(@aria-label,"Share via ")]'));
             $this->assertCount(0, $xpath->query('//*[@id="piece-share-modal"]//*[@data-share-native]'));
+            $this->assertCount(1, $xpath->query('//*[@id="piece-share-modal"]//a[@data-share-facebook and @aria-label="Share via Facebook"]'));
             $this->assertCount(0, $xpath->query('//*[@id="piece-share-modal"]//form | //*[@name="recipient_email"]'));
             $email = $xpath->query('//*[@id="piece-share-modal"]//a[starts-with(@href,"mailto:")]')->item(0);
             parse_str(parse_url($email->getAttribute('href'), PHP_URL_QUERY), $emailQuery);

@@ -48,6 +48,20 @@ The dialog ends with Page link; Arthur removed the native More sharing options
 button. There is no separate Instagram destination; visitors can copy the link.
 The SMS URI uses the iOS body separator on iPhone/iPadOS.
 
+On iPhone/iPad, the Facebook button uses the system share sheet when supported;
+choose Facebook there to pass the canonical URL to its share extension. This
+works around a [reported Facebook iOS app handoff bug](https://github.com/heiseonline/shariff/issues/452)
+where ordinary sharer links open the app without a composer. Only the URL is
+passed, preserving Facebook's link preview. The browser cannot select a specific
+app in the system sheet ([Web Share API](https://www.w3.org/TR/web-share/)).
+This does not restore the separate More sharing options button. Other devices,
+unsupported native sharing and modified clicks retain the existing web link;
+cancellation is silent, failures offer copying through the shared error alert,
+and closed/replaced dialogs cannot receive late errors. Final posting remains
+inside Facebook. Public preview testing needs a reachable public URL; local
+`.test` URLs remain local and are never rewritten to potentially unrelated live
+piece IDs. Confirm the final Facebook app handoff on a physical device.
+
 Edit `resources/js/components/link-share.js` for behavior and
 `resources/sass/components/_link-share.scss` for layout. Standard shared modal,
 inputs, buttons, icons, alerts and Bootstrap tooltip supply the controls.
@@ -71,7 +85,7 @@ them; do not purge unrelated jobs. No database migration is needed.
 `LinkShareTest` covers canonical guest/account rendering, encoded destinations,
 invalid URL rejection and closed server/admin delivery endpoints. The focused
 `tests/js/link-share.test.cjs` covers copy, tooltip expiry/cleanup, fallbacks,
-SMS variants and stale feedback. Desktop/mobile browser checks use fictional
+SMS variants, the iOS Facebook share-sheet fallback and stale feedback. Desktop/mobile browser checks use fictional
 rendered Blade output; no messages or social posts are sent. Actual handoff to
 installed messaging apps remains a physical-device check.
 

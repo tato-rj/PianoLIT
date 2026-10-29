@@ -1,6 +1,6 @@
 <div class="link-share__targets" aria-label="Share using">
     @foreach($share['destinations'] as $destination)
-    <a class="link-share__target link-share__target--{{ $destination['brand'] ?? $destination['icon'] }} btn-raw link-none" href="{{ $destination['url'] }}" @if(isset($destination['sms'])) data-share-sms @endif @if(strpos($destination['url'], 'https:') === 0) target="_blank" rel="noopener noreferrer" @endif aria-label="Share via {{ $destination['label'] }}">
+    <a class="link-share__target link-share__target--{{ $destination['brand'] ?? $destination['icon'] }} btn-raw link-none" href="{{ $destination['url'] }}" @if(isset($destination['sms'])) data-share-sms @endif @if(($destination['brand'] ?? null) === 'facebook-f') data-share-facebook @endif @if(strpos($destination['url'], 'https:') === 0) target="_blank" rel="noopener noreferrer" @endif aria-label="Share via {{ $destination['label'] }}">
         <span class="link-share__icon" aria-hidden="true">
             @isset($destination['brand'])
             @fa(['fa_type' => 'b', 'icon' => $destination['brand'], 'mr' => 0])
