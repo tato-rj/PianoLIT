@@ -44,3 +44,18 @@
     cursor: pointer;
     font-weight: 600;
 }
+
+.order-history-empty { max-width: 28rem; }
+
+.order-history-illustration {
+    max-width: 100%;
+    height: auto;
+
+    @media (max-width: 575.98px) { width: 230px; }
+}
+
+.order-history-image {
+    object-fit: contain;
+    background: var(--color-surface-subtle);
+    border-radius: var(--radius-sm);
+}

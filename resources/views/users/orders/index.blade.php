@@ -2,24 +2,45 @@
 
 @section('content')
 <div class="container py-4 py-md-5">
-    <header class="mb-4 mb-md-5">
-        <h1 class="mb-2">Track your orders</h1>
-        <p class="text-muted mb-3">Your merchandise orders, shipping updates and tracking links.</p>
-        <a href="{{ route('users.purchases') }}">Looking for an eBook or eScore? Open My downloads @icon('arrow-right')</a>
-    </header>
-    @forelse($orders as $order)
-        <article class="profile-panel mb-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
-                <div><h2 class="h4 mb-2">{{ $tracking->status($order) }}</h2><p class="text-muted mb-0">{{ $order->paid_at->format('F j, Y') }} · {{ app(\App\Services\Shop\Storefront::class)->money($order->total, strtoupper($order->currency)) }}</p></div>
-                <a class="btn btn-secondary" href="{{ $tracking->url($order) }}">View order @icon('arrow-right')</a>
-            </div>
-            @foreach($order->items as $item)<p class="mb-2">{{ $item['name'] }} · {{ $item['option'] }} × {{ $item['quantity'] }}</p>@endforeach
-            <p class="text-muted mb-0 text-break">Order reference: {{ $order->id }}</p>
-        </article>
-    @empty
-        <p>You don’t have any merchandise orders in this account yet. If you checked out as a guest, use the private tracking link in your confirmation email.</p>
-        <a class="btn btn-primary mt-3" href="{{ route('shop.home') }}">Visit the Shop @icon('arrow-right')</a>
-    @endforelse
-    @if($orders->hasPages()) @pagination(['collection' => $orders]) @endif
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 mb-md-5">
+                <h1 class="h2 mb-0">Track your orders</h1>
+                <a href="{{ route('users.purchases') }}">My downloads @icon('arrow-right')</a>
+            </header>
+
+            @if(!$orders->total())
+                @include('users.orders.empty')
+            @else
+                @forelse($orders as $order)
+                    <article class="profile-panel mb-4">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                            <div>
+                                <h2 class="h5 mb-1">{{ $tracking->status($order) }}</h2>
+                                <p class="text-muted mb-0"><time datetime="{{ $order->paid_at->toDateString() }}">{{ $order->paid_at->format('M j, Y') }}</time> · {{ app(\App\Services\Shop\Storefront::class)->money($order->total, strtoupper($order->currency)) }}</p>
+                            </div>
+                            <a class="btn btn-secondary btn-sm" href="{{ $tracking->url($order) }}">View order @icon('arrow-right')</a>
+                        </div>
+                        <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                            @foreach($order->items as $item)
+                                <li class="d-flex align-items-center gap-3">
+                                    @if(!empty($item['image']))<img class="order-history-image flex-shrink-0" src="{{ $item['image'] }}" alt="" width="64" height="64" loading="lazy">@endif
+                                    <div>
+                                        <p class="fw-bold mb-1">{{ $item['name'] }}</p>
+                                        <p class="text-muted mb-0">{{ $item['option'] }} · Qty {{ $item['quantity'] }}</p>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </article>
+                @empty
+                    <p>No orders on this page. <a href="{{ route('users.orders') }}">Back to your orders</a></p>
+                @endforelse
+                @if($orders->hasPages()) @pagination(['collection' => $orders]) @endif
+            @endif
+
+            <p class="text-muted text-center mt-5 mb-0">Ordered as a guest? Follow the link in your confirmation email.</p>
+        </div>
+    </div>
 </div>
 @endsection

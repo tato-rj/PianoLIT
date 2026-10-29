@@ -35,9 +35,6 @@
     @component('admin.pages.settings.sample', ['label' => 'Newsletter subscribe', 'usage' => 'components.newsletter.subscribe-button · blue pill', 'properties' => 'font-size,padding,color,background-color,border-radius'])
       @include('components.newsletter.subscribe-button', ['label' => 'Subscribe', 'preview' => true])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Public hub menu', 'usage' => 'components.navigation.hub-menu.button · Bootstrap offcanvas', 'properties' => 'padding,color'])
-      @include('components.navigation.hub-menu.button', ['designSystemPreview' => true])
-    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Signed-in account', 'usage' => 'components.account.account-circle · first initial', 'properties' => 'width,height,font-size,color,background-color,border'])
       @include('components.account.account-circle', ['account' => (object) ['first_name' => 'Arthur'], 'menuId' => 'ds-account-circle', 'designSystemPreview' => true])
     @endcomponent

@@ -9,13 +9,7 @@
         <nav class="col-auto ms-auto" aria-label="Bag and account">
             <ul class="list-unstyled d-flex align-items-center gap-3 gap-md-4 mb-0">
                 <li><a class="shop-bag-link" href="{{ route('shop.bag') }}" @if(request()->routeIs('shop.bag')) aria-current="page" @endif>@icon('shopping-bag')<span>Bag (<span data-bag-count>{{ $shoppingBag['count'] }}</span>)</span></a></li>
-                @if(auth('web')->check())
-                    @include('layouts.menu.user', ['accountCircle' => true])
-                @else
-                    <li class="nav-item d-flex align-items-center">
-                        @include('components.account.account-circle')
-                    </li>
-                @endif
+                @include('layouts.menu.user', ['accountCircle' => true])
             </ul>
         </nav>
     </div>

@@ -126,11 +126,7 @@
     overflow: hidden;
     border: 1px solid var(--color-dropdown-border);
     border-radius: var(--radius-button);
-    background: linear-gradient(
-        135deg,
-        rgba(var(--level-shade), 0.04),
-        rgba(var(--level-shade), 0.16)
-    );
+    background: var(--level-surface);
     &__art {
         position: relative;
         height: 76px;

@@ -45,7 +45,7 @@
         </div>
       </div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Account menu', 'usage' => 'components.account.menu · public account dropdown', 'properties' => 'width,padding,color,border-radius,box-shadow'])
+    @component('admin.pages.settings.sample', ['label' => 'Account and hubs menu', 'usage' => 'components.account.menu · account and hubs offcanvas', 'properties' => 'width,padding,color,border-radius,box-shadow'])
       <span id="ds-account-menu-label" class="visually-hidden">Account menu preview</span>
       @include('components.account.menu', ['account' => (object) ['first_name' => 'Alex', 'last_name' => 'Morgan', 'email' => 'alex@example.test'], 'menuId' => 'ds-account-menu-label', 'designSystemPreview' => true])
     @endcomponent
@@ -64,8 +64,8 @@
     @component('admin.pages.settings.sample', ['label' => 'Side menu header', 'usage' => 'components.layout.side-menu-header · hub and piece menus', 'properties' => 'font-size,padding,color'])
       @include('components.layout.side-menu-header', ['titleId' => 'ds-side-menu-title', 'title' => 'Explore PianoLIT', 'closeLabel' => 'Close menu preview', 'designSystemPreview' => true])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Public hub menu', 'usage' => 'components.navigation.hub-menu.panel · shared public navigation', 'properties' => 'width,color,background-color'])
-      @include('components.navigation.hub-menu.panel', ['designSystemPreview' => true])
+    @component('admin.pages.settings.sample', ['label' => 'Public hub menu', 'usage' => 'components.navigation.hub-menu.links · compact hub rows', 'properties' => 'width,color,background-color'])
+      <div data-ds-preview>@include('components.navigation.hub-menu.links', ['designSystemPreview' => true])</div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Bottom panel', 'usage' => 'components.dialogs.bottom-sheet.panel · components.dialogs.bottom-sheet.header', 'properties' => 'padding,color'])
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="offcanvas" data-bs-target="#ds-bottom-sheet" aria-controls="ds-bottom-sheet">Open bottom panel</button>
@@ -89,13 +89,13 @@
         @endforeach
       </div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Transparent hub branding', 'usage' => '@brandIcon · transparent / hub-menu.button · inheritColor', 'properties' => 'color,box-shadow'])
+    @component('admin.pages.settings.sample', ['label' => 'Transparent hub branding', 'usage' => '@brandIcon · transparent / account-circle', 'properties' => 'color,box-shadow'])
       <div class="row g-3">
         @foreach(['bg-primary text-white', 'bg-light text-black'] as $brandingSurface)
           <div class="col-12 col-md-6">
             <div class="d-flex align-items-center justify-content-between rounded p-4 {{ $brandingSurface }}">
               @brandIcon(['size' => '64px', 'transparent' => true])
-              @include('components.navigation.hub-menu.button', ['designSystemPreview' => true, 'inheritColor' => true])
+              @include('components.account.account-circle', ['account' => null, 'designSystemPreview' => true])
             </div>
           </div>
         @endforeach

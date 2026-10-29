@@ -1,27 +1,29 @@
-@component('components.layout.accordion', ['id' => 'downloads-list'])
+<ul class="download-library-grid list-unstyled mb-4" aria-label="Your downloads">
     @foreach($purchases as $purchase)
-        @component('components.layout.accordion-item', ['id' => 'purchase-'.$purchase->id, 'parentId' => 'downloads-list'])
-            @slot('title')
-                <span class="d-block me-3 text-break">
-                    <span class="d-block small text-muted mb-1">{{ $purchase->type === 'Infograph' ? 'Infographic' : $purchase->type }}</span>
-                    <span class="d-block fw-bold mb-1">{{ $purchase->item ? $purchase->item->title : 'Resource unavailable' }}</span>
-                    @if($purchase->created_at)<time class="d-block small text-muted fw-normal" datetime="{{ $purchase->created_at->toDateString() }}">{{ $purchase->created_at->format('M j, Y') }}</time>@endif
-                </span>
-            @endslot
-            <div class="row g-3 align-items-center">
-                <div class="col-sm-auto me-sm-auto">
-                    <dl class="profile-facts mb-0"><dt>Cost</dt><dd class="mb-0">{{ $purchase->cost ? '$'.number_format($purchase->cost, 2) : 'Free' }}</dd></dl>
+        @php($resource = $library->card($purchase))
+        <li class="download-library-item">
+            <article class="download-card" aria-labelledby="download-title-{{ $purchase->id }}">
+                <div class="download-card-cover" aria-hidden="true">
+                    <span class="download-card-placeholder" @if($resource['image']) hidden @endif data-download-placeholder>@icon('file-text', ['mr' => 0])</span>
+                    @if($resource['image'])<img src="{{ $resource['image'] }}" alt="" loading="lazy" decoding="async" data-download-cover>@endif
                 </div>
-                <div class="col-sm-auto">
-                    <div class="d-flex flex-wrap gap-2">
-                        @forelse($purchase->item ? $purchase->item->links() : [] as $label => $hash)
-                            <a class="btn btn-primary btn-sm" href="{{ route('shop.download', ['purchase' => $purchase, 'path' => $hash]) }}" aria-label="Download {{ $purchase->item->title }} ({{ $label }})">@icon('download')Download {{ $label }}</a>
-                        @empty
-                            <p class="small text-muted mb-0">This file is currently unavailable. <a href="{{ route('contact') }}">Contact us</a> for help.</p>
-                        @endforelse
-                    </div>
+                <div class="download-card-info">
+                    <p class="text-muted mb-1">{{ $resource['type'] }}</p>
+                    <h2 class="h6 mb-2 text-break" id="download-title-{{ $purchase->id }}">{{ $resource['title'] }}</h2>
+                    <p class="download-card-meta text-muted mb-0">
+                        @if($purchase->created_at)<time datetime="{{ $purchase->created_at->toDateString() }}">{{ $purchase->created_at->format('M j, Y') }}</time><span aria-hidden="true"> · </span>@endif
+                        <span>{{ $purchase->cost ? '$'.number_format($purchase->cost, 2) : 'Free' }}</span>
+                    </p>
                 </div>
-            </div>
-        @endcomponent
+                <div class="download-card-actions">
+                    @forelse($resource['links'] as $label => $hash)
+                        <a class="btn btn-secondary" href="{{ route('shop.download', ['purchase' => $purchase, 'path' => $hash]) }}" aria-label="Download {{ $resource['title'] }} ({{ $label }})">@icon('download')<span class="download-card-action-label">Download </span>{{ $label }}</a>
+                    @empty
+                        <p class="text-muted mb-2">File unavailable</p>
+                        <a href="{{ route('contact') }}">Get help @icon('arrow-right')</a>
+                    @endforelse
+                </div>
+            </article>
+        </li>
     @endforeach
-@endcomponent
+</ul>

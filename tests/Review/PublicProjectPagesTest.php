@@ -88,8 +88,8 @@ class PublicProjectPagesTest extends ReviewTestCase
             $this->assertSame(0, $xpath->query('//footer | //a[@class="project-watermark"]')->length);
             $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header--overlay")]')->length);
             $this->assertSame(1, $xpath->query('//header//a[@href="'.$website.'" and @aria-label="PianoLIT home"]//*[@role="img" and @aria-label="PianoLIT icon" and contains(@class, "brand-icon--transparent")]')->length);
-            $this->assertSame(1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu" and contains(@class, "text-reset")]')->length);
-            $this->assertSame(0, $xpath->query('//header//*[contains(@class, "account-circle")]')->length);
+            $this->assertSame(1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu" and contains(@class, "account-circle")]')->length);
+            $this->assertSame(1, $xpath->query('//header//*[contains(@class, "account-circle")]')->length);
             $this->assertSame(1, $xpath->query('//div[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]')->length);
             $this->assertSame(1, $xpath->query('//button[@data-metronome and @aria-pressed="false"]')->length);
             $this->assertSame(3, $xpath->query('//*[@class="segmented-control"]')->length);
@@ -156,9 +156,10 @@ class PublicProjectPagesTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header")]')->length);
         $this->assertSame($website, $xpath->query('//header//a[@aria-label="PianoLIT home"]')->item(0)->getAttribute('href'));
         $this->assertSame(0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
-        $this->assertSame(1, $xpath->query('//header//a[@href="'.$origin.'/login"]')->length);
-        $this->assertSame(1, $xpath->query('//header//a[@aria-label="Sign in" and contains(@class, "btn-raw")]')->length);
-        $this->assertSame(0, $xpath->query('//header//button[contains(@class, "account-circle")] | //header//*[@data-games-profile]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//a[@href="'.$origin.'/login"]')->length);
+        $this->assertSame(1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu" and contains(@class, "btn-raw")]')->length);
+        $this->assertSame(1, $xpath->query('//header//button[contains(@class, "account-circle")]')->length);
+        $this->assertSame(0, $xpath->query('//header//*[@data-games-profile]')->length);
         $response->assertSee('data-lucide-name="user-round"', false);
         $this->assertSame(1, $xpath->query('//main//a[@href="'.$website.'"]')->length);
         $this->assertSame(1, $xpath->query('//footer[contains(@class, "site-footer")]')->length);
@@ -170,7 +171,7 @@ class PublicProjectPagesTest extends ReviewTestCase
         $this->call('HEAD', $origin)->assertOk();
     }
 
-    public function test_hub_menu_links_across_public_and_webapp_hosts_and_stays_off_the_homepage_and_account_screens()
+    public function test_account_circle_opens_hubs_across_all_hosts_but_account_screens_stay_standalone()
     {
         foreach (['http://pianolit.test', 'https://pianolit.com'] as $website) {
             $this->useDomain($website);
@@ -191,17 +192,18 @@ class PublicProjectPagesTest extends ReviewTestCase
                 $response = $this->get($origin.($prefix === '' ? '/support' : ''))->assertOk();
                 $xpath = $this->xpath($response->getContent());
                 $this->assertSame(1, $xpath->query('//header//ul/li[last()]/button[@data-bs-toggle="offcanvas" and @data-bs-target="#public-hub-menu" and @aria-controls="public-hub-menu"]')->length);
-                $this->assertSame(1, $xpath->query('//header//a[@aria-label="Sign in" and @href="'.$origin.'/login"]')->length);
+                $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//a[normalize-space(.)="Sign in" and @href="'.$origin.'/login"]')->length);
                 $this->assertSame(1, $xpath->query('//div[@id="public-hub-menu" and contains(@class, "offcanvas-end") and @tabindex="-1" and @aria-labelledby="public-hub-menu-title"]')->length);
-                $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//button[@data-bs-dismiss="offcanvas" and @aria-label="Close hub menu"]')->length);
-                $this->assertSame(8, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a')->length);
-                $this->assertSame(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a[@href="'.$destinations['Web app'].'" and not(@target) and not(@rel)]')->length);
+                $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//button[@data-bs-dismiss="offcanvas" and @aria-label="Close account menu"]')->length);
+                $this->assertSame(8, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a')->length);
+                $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a[@href="'.$destinations['Web app'].'" and not(@target) and not(@rel)]')->length);
                 foreach ($destinations as $label => $destination) {
-                    $this->assertSame(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a[@href="'.$destination.'"]/span[text()="'.$label.'"]')->length, $origin.' → '.$label);
+                    $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a[@href="'.$destination.'"]/span[text()="'.$label.'"]')->length, $origin.' → '.$label);
                 }
-                $this->assertSame(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a[@aria-current="true" and @href="'.$origin.'"]')->length);
+                $this->assertSame($prefix === '' ? 0 : 1, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a[@aria-current="true" and @href="'.$origin.'"]')->length);
+                $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//a[@aria-current]')->length);
             }
-            foreach ([$website, $scheme.'my.'.$host.'/login'] as $url) {
+            foreach ([$website.'/login', $scheme.'my.'.$host.'/login'] as $url) {
                 $this->get($url)->assertOk()->assertDontSee('id="public-hub-menu"', false)->assertDontSee('aria-label="Open hub menu"', false);
             }
         }
@@ -220,12 +222,17 @@ class PublicProjectPagesTest extends ReviewTestCase
             $xpath = $this->xpath($response->getContent());
             $this->assertSame(0, $xpath->query('//header//a[@href="'.$origin.'/login"]')->length);
             $this->assertSame($prefix === '' ? 1 : 0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
-            $this->assertSame(1, $xpath->query('//header//button[@id="navbarDropdown" and @data-bs-toggle="dropdown" and contains(@class, "account-circle")]')->length);
+            $this->assertSame(1, $xpath->query('//header//button[@id="navbarDropdown" and @data-bs-toggle="offcanvas" and contains(@class, "account-circle")]')->length);
             $this->assertSame('H', trim($xpath->query('//header//button//span[contains(@class, "account-circle__initial")]')->item(0)->textContent));
-            $this->assertSame(1, $xpath->query('//header//a[@href="http://localhost/profile"]')->length);
-            $this->assertSame(1, $xpath->query('//header//form[@action="'.$origin.'/logout" and @method="POST"]//input[@name="_token"]')->length);
-            $this->assertSame(1, $xpath->query('//header//form[@action="'.$origin.'/logout"]//button[@type="submit" and normalize-space(.)="Log out"]')->length);
-            $this->assertSame($prefix === '' ? 0 : 1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu"]')->length);
+            $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//a[@href="http://localhost/profile"]')->length);
+            $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//form[@action="'.$origin.'/logout" and @method="POST"]//input[@name="_token"]')->length);
+            $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//form[@action="'.$origin.'/logout"]//button[@type="submit" and normalize-space(.)="Log out"]')->length);
+            $this->assertSame(1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu"]')->length);
+            $this->assertSame(1, $xpath->query('//div[@id="public-hub-menu"]')->length);
+            $this->assertSame(1, $xpath->query('//script[contains(@src,"js/components/account-menu.js")]')->length);
+            $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//div[contains(@class,"offcanvas-body")]//form')->length);
+            $this->assertSame(8, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a/*[contains(@class,"hub-menu__arrow")]')->length);
+            $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//*[contains(@class,"hub-menu__icon")]')->length);
         }
     }
 

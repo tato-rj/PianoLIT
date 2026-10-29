@@ -33,15 +33,27 @@ the web session and returns private, no-store responses.
 
 Downloads renders `users.purchases.index` independently of `users.profile.index`.
 Profile keeps its four scroll-tracked anchors in `users.profile.navigation` and
-has no Downloads entry. The library reuses the public shell, profile panel,
-shared accessible accordions, primary file buttons and native
-pagination. It keeps eight newest account-owned purchases per page, eager-loads
-their resources and preserves pagination queries. Dates and costs come from
+has no Downloads entry. The library reuses the public shell, shared inputs,
+selects, segmented view control, file buttons and native pagination. It shows
+resource artwork and direct format-specific downloads without accordions.
+List, Small icons and Large icons change one card collection through native
+radio controls and CSS; the versioned `downloads.js` remembers only the view
+preference in browser storage and replaces failed covers with a neutral file
+icon. View changes still work without JavaScript/storage. Search and type
+filters run over the whole account-owned collection in `Profile\Downloads`,
+using fixed resource classes and bound, escaped literal search values. Newest
+and oldest ordering use stable date/ID ordering; pagination keeps the filters.
+It keeps eight purchases per page and eager-loads their resources. Dates and costs come from
 the purchase record, with null/zero cost shown as Free. Missing resources or
 resources without file links have an unavailable message rather than breaking
 the library. Existing `shop.download` links, encrypted file parameters and
 original bytes are retained; this redesign does not change file delivery or
 mobile contracts.
+
+The empty library has a short invitation to the Shop and infographics;
+filtered zero results offer Show all downloads. Missing resources and
+out-of-range pages retain their distinct states. No purchases are inferred
+from matching email addresses, and view preferences never establish ownership.
 
 `ProfileDownloadsTest` verifies canonical/legacy routing, account scoping,
 formats, original-file delivery, pagination, navigation and empty/unavailable

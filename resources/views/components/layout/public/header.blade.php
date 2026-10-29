@@ -1,5 +1,4 @@
 @php
-    $showHubMenu = ! request()->routeIs('home') && request()->getHost() !== 'my.'.config('app.short_url');
     $transparentHeader = $transparentHeader ?? false;
     $showAccount = $showAccount ?? true;
     $showHeaderNewsletter = $__env->hasSection('public-header-newsletter');
@@ -12,7 +11,7 @@
                 @if($showBrandName ?? false)<span class="site-header__name d-none d-md-inline">PianoLIT</span>@endif
             </a>
         </div>
-        <nav class="col-auto ms-auto" aria-label="{{ ! $showAccount ? 'Site navigation' : (request()->routeIs('home') ? 'Account and YouTube' : ($showHeaderNewsletter ? 'Account, newsletter and site navigation' : ($showHubMenu ? 'Account and site navigation' : 'Account'))) }}">
+        <nav class="col-auto ms-auto" aria-label="{{ ! $showAccount ? 'Site navigation' : (request()->routeIs('home') ? 'Account and YouTube' : ($showHeaderNewsletter ? 'Account, newsletter and site navigation' : 'Account and site navigation')) }}">
             <ul class="d-flex align-items-center gap-3 list-unstyled mb-0">
                 @if(request()->routeIs('home'))
                     <li class="nav-item d-flex align-items-center">
@@ -25,30 +24,12 @@
                     </li>
                 @endif
                 @if($showAccount)
-                    @if(auth('web')->check())
-                        @if(request()->routeIs('games.home'))
-                            @include('games.challenges.profile.dropdown')
-                        @endif
-                        @include('layouts.menu.user', ['accountCircle' => true])
-                    @else
-                        <li class="nav-item d-flex align-items-center">
-                            @include('components.account.account-circle')
-                        </li>
+                    @if(auth('web')->check() && request()->routeIs('games.home'))
+                        @include('games.challenges.profile.dropdown')
                     @endif
+                    @include('layouts.menu.user', ['accountCircle' => true])
                 @endif
-{{--                 @if($showHubMenu)
-                    <li class="nav-item d-flex align-items-center">
-                        @include('components.navigation.hub-menu.button', ['inheritColor' => $transparentHeader])
-                    </li>
-                @endif --}}
             </ul>
         </nav>
     </div>
 </header>
-@if($showHubMenu)
-    @once
-        @push('scripts')
-            @include('components.navigation.hub-menu.panel')
-        @endpush
-    @endonce
-@endif

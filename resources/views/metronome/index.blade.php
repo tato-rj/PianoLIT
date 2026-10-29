@@ -16,7 +16,7 @@
 </head>
 <body class="public-site">
     @include('layouts.html.google.manager-body')
-    @include('components.layout.public.header', ['transparentHeader' => true, 'showAccount' => false])
+    @include('components.layout.public.header', ['transparentHeader' => true])
     <main>
         <button
             class="metronome"

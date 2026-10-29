@@ -4,25 +4,10 @@
 	</a>
 	<nav aria-label="Account and site navigation">
 		<ul class="d-flex align-items-center gap-3 list-unstyled mb-0">
-			@auth('web')
-				@include('layouts.menu.user', ['accountCircle' => true])
-			@else
-				<li class="nav-item d-flex align-items-center">
-					@include('components.account.account-circle')
-				</li>
-			@endauth
-{{-- 			<li class="nav-item d-flex align-items-center">
-				@include('components.navigation.hub-menu.button')
-			</li> --}}
+			@include('layouts.menu.user', ['accountCircle' => true])
 		</ul>
 	</nav>
 </header>
-
-@once
-	@push('scripts')
-		@include('components.navigation.hub-menu.panel')
-	@endpush
-@endonce
 
 @isset($title)
 <div class="text-center mb-4">

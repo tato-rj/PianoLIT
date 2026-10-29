@@ -3,9 +3,5 @@
     {{ $slot }}
 </div>
 @unless($panelPreview)
-    @once
-        @push('scripts')
-            <script src="{{ mix('js/components/account-menu.js') }}"></script>
-        @endpush
-    @endonce
+    @include('components.account.scripts')
 @endunless

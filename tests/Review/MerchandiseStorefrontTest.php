@@ -110,19 +110,20 @@ class MerchandiseStorefrontTest extends ReviewTestCase
     {
         $product = $this->product();
         foreach ([route('shop.home'), app(\App\Services\Shop\Storefront::class)->productUrl($product), route('shop.bag')] as $url) {
-            $response = $this->get($url)->assertOk()->assertSee('aria-label="Sign in"', false)->assertDontSee('Shop all');
+            $response = $this->get($url)->assertOk()->assertSee('data-account-navigation-toggle', false)->assertDontSee('Shop all');
             $dom = new \DOMDocument;
             @$dom->loadHTML($response->getContent());
             $xpath = new \DOMXPath($dom);
             $links = $xpath->query('//nav[@aria-label="Bag and account"]//a');
-            $this->assertCount(2, $links);
+            $this->assertCount(1, $links);
             $this->assertSame(route('shop.bag'), $links->item(0)->getAttribute('href'));
-            $this->assertSame('http://shop.localhost/login', $links->item(1)->getAttribute('href'));
+            $this->assertCount(1, $xpath->query('//nav[@aria-label="Bag and account"]//button[@data-bs-target="#public-hub-menu"]'));
+            $this->assertCount(1, $xpath->query('//*[@id="public-hub-menu"]//a[@href="http://shop.localhost/login"]'));
         }
         $user = Model::withoutEvents(fn () => create(User::class, ['first_name' => 'Sample']));
         $this->actingAs($user, 'web')->get(route('shop.home'))->assertOk()
-            ->assertSee('aria-label="Account menu for Sample"', false)->assertSee('My profile')->assertSee('My downloads')
-            ->assertSee('href="'.route('users.profile').'"', false)->assertSee('href="'.route('users.purchases').'"', false)
+            ->assertSee('aria-label="Account menu for Sample"', false)->assertSee('My profile')->assertSee('Track your orders')->assertDontSee('My downloads')
+            ->assertSee('href="'.route('users.profile').'"', false)
             ->assertSee('action="http://shop.localhost/logout"', false)->assertSee('js/components/account-menu.js', false);
     }
 

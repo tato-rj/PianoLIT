@@ -65,7 +65,7 @@ class ProfileDownloadsTest extends ReviewTestCase
         $this->withExceptionHandling()->get('http://localhost/profile/downloads')->assertRedirect('http://localhost/login');
     }
 
-    public function test_library_is_owned_by_the_session_and_keeps_formats_costs_and_accessible_accordions()
+    public function test_library_is_owned_by_the_session_and_exposes_original_formats_and_costs_without_accordions()
     {
         $user = $this->account();
         $other = Model::withoutEvents(function () { return create(User::class); });
@@ -74,20 +74,20 @@ class ProfileDownloadsTest extends ReviewTestCase
         $book = $this->resource($user, eBook::class, 'The Book of Piano Techniques and how to master them', ['epub_path' => 'books/test.epub', 'price' => 0], ['cost' => 12, 'created_at' => '2026-08-17 12:00:00']);
         $this->resource($user, eScore::class, 'Piano Solos Book 1', [], ['cost' => 0, 'created_at' => '2024-12-13 12:00:00']);
         $response = $this->actingAs($user, 'web')->get(route('users.purchases').'?user_id='.$other->id)->assertOk()
-            ->assertViewIs('users.purchases.index')->assertSee('My downloads')->assertSee('Infographic')->assertSee('Download PDF')->assertSee('Download ePUB')
+            ->assertViewIs('users.purchases.index')->assertSee('My downloads')->assertSee('Infographic')
             ->assertSee('$12.00')->assertSee('Free')->assertDontSee('Private other account book')->assertDontSee('public-breadcrumb');
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
         $xpath = $this->xpath($response);
         $this->assertCount(1, $xpath->query('//h1[normalize-space(.)="My downloads"]'));
         $this->assertCount(0, $xpath->query('//h1[normalize-space(.)="My profile"]'));
         $this->assertCount(0, $xpath->query('//nav[@id="profile-navigation"]'));
-        $this->assertCount(3, $xpath->query('//button[@data-bs-toggle="collapse" and @aria-expanded="false"]'));
-        foreach ($xpath->query('//button[@data-bs-toggle="collapse"]') as $button) {
-            $id = $button->getAttribute('aria-controls');
-            $this->assertCount(1, $xpath->query('//*[@id="'.$id.'" and @aria-labelledby="'.$id.'-heading"]'));
-        }
+        $this->assertCount(0, $xpath->query('//button[@data-bs-toggle="collapse"]'));
+        $this->assertCount(3, $xpath->query('//article[@aria-labelledby]'));
+        $this->assertCount(3, $xpath->query('//input[@type="radio" and @data-download-view]'));
         $links = $xpath->query('//a[contains(@href,"/shop/'.$book->id.'/download")]');
         $this->assertCount(2, $links);
+        $this->assertSame('Download PDF', trim($links->item(0)->textContent));
+        $this->assertSame('Download ePUB', trim($links->item(1)->textContent));
         $paths = [];
         foreach ($links as $link) {
             parse_str(parse_url($link->getAttribute('href'), PHP_URL_QUERY), $query);
@@ -117,16 +117,68 @@ class ProfileDownloadsTest extends ReviewTestCase
     {
         $user = $this->account();
         $empty = $this->actingAs($user, 'web')->get(route('users.purchases'))->assertOk()->assertSee('Your library starts here')
-            ->assertSee(route('resources.infographs.index'))->assertSee(route('ebooks.index'))->assertDontSee('downloads-list');
+            ->assertSee(route('resources.infographs.index'))->assertSee(route('shop.home'))->assertDontSee('download-library-grid');
         $this->preview($empty, 'empty');
         Model::withoutEvents(function () use ($user) {
             Purchase::create(['user_id' => $user->id, 'item_id' => 999999, 'item_type' => eBook::class]);
         });
-        $this->get(route('users.purchases'))->assertOk()->assertSee('Resource unavailable')->assertSee('This file is currently unavailable.');
+        $this->get(route('users.purchases'))->assertOk()->assertSee('Resource unavailable')->assertSee('File unavailable');
         $profile = $this->get(route('users.profile'))->assertOk()->assertViewIs('users.profile.index')->assertSee('href="http://localhost/profile/downloads"', false);
         $xpath = $this->xpath($profile);
         $this->assertCount(4, $xpath->query('//nav[@data-section-navigation]//a[starts-with(@href,"#")]'));
         $this->assertCount(0, $xpath->query('//nav[@id="profile-navigation"]//a[contains(@href,"/downloads")]'));
         $this->preview($profile, 'profile');
+    }
+
+    public function test_search_and_type_filters_cover_the_whole_owned_library_and_keep_sorting_and_pagination()
+    {
+        $user = $this->account();
+        $other = Model::withoutEvents(fn () => create(User::class));
+        $this->resource($other, eBook::class, 'Piano secret');
+        for ($i = 1; $i <= 10; $i++) $this->resource($user, eBook::class, 'Piano guide '.$i, [], ['created_at' => now()->subDays($i)]);
+        $this->resource($user, Infograph::class, 'Piano poster');
+        $this->resource($user, eScore::class, 'Piano score');
+        $this->actingAs($user, 'web');
+        $url = route('users.purchases').'?q=pIaNo&type=ebooks&sort=oldest';
+        $page = $this->get($url)->assertOk()->assertDontSee('Piano secret')->assertDontSee('Piano poster')->assertDontSee('Piano score');
+        $this->assertSame(10, $page->viewData('purchases')->total());
+        $this->assertSame('Piano guide 10', $page->viewData('purchases')->first()->item->title);
+        $this->assertCount(8, $page->viewData('purchases'));
+        $page->assertSee('q=pIaNo&amp;type=ebooks&amp;sort=oldest&amp;page=2', false);
+        $this->assertCount(2, $this->get($url.'&page=2')->assertOk()->viewData('purchases'));
+        $poster = $this->get(route('users.purchases').'?q=poster&type=infographics')->assertOk();
+        $this->assertSame(1, $poster->viewData('purchases')->total());
+        $this->get(route('users.purchases').'?q=absent')->assertOk()->assertSee('No downloads found')->assertDontSee('Your library starts here');
+    }
+
+    public function test_search_treats_wildcards_literally_and_rejects_invalid_filter_shapes()
+    {
+        $user = $this->account();
+        $this->resource($user, eBook::class, '100% piano');
+        $this->resource($user, eBook::class, 'Other book');
+        $this->actingAs($user, 'web');
+        $page = $this->get(route('users.purchases').'?q=%25')->assertOk();
+        $this->assertSame(1, $page->viewData('purchases')->total());
+        $page->assertSee('100% piano')->assertDontSee('Other book');
+        $this->withExceptionHandling();
+        foreach (['q[]=piano', 'type[]=ebooks', 'type=App%5CUser', 'sort=random', 'q='.str_repeat('a', 151)] as $query) {
+            $this->getJson(route('users.purchases').'?'.$query)->assertStatus(422);
+        }
+    }
+
+    public function test_cards_use_product_artwork_and_handle_missing_or_non_image_resources()
+    {
+        $user = $this->account();
+        $library = app(\App\Services\Profile\Downloads::class);
+        $book = $this->resource($user, eBook::class, 'Covered book', ['mockup_path' => 'books/mockup.png', 'cover_path' => 'books/cover.jpg']);
+        $this->assertSame(asset('storage/books/mockup.png'), $library->card($book->load('item'))['image']);
+        $poster = $this->resource($user, Infograph::class, 'Poster', ['cover_path' => 'infograph/poster.jpg']);
+        $this->assertSame(asset('storage/infograph/thumbnails/poster.jpg'), $library->card($poster->load('item'))['image']);
+        $pdf = $this->resource($user, Infograph::class, 'PDF poster', ['cover_path' => 'infograph/poster.pdf']);
+        $this->assertNull($library->card($pdf->load('item'))['image']);
+        $missing = $this->resource($user, eBook::class, 'No files', ['cover_path' => null, 'mockup_path' => null, 'pdf_path' => null, 'epub_path' => null]);
+        $card = $library->card($missing->load('item'));
+        $this->assertNull($card['image']);
+        $this->assertSame([], $card['links']);
     }
 }

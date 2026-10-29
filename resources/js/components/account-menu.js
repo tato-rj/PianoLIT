@@ -2,6 +2,18 @@
     'use strict';
     var active = null;
 
+    function navigationExpanded(event, expanded) {
+        if (!event.target.matches('.account-navigation')) return;
+        document.querySelectorAll('[data-account-navigation-toggle]').forEach(function (trigger) {
+            if (trigger.getAttribute('aria-controls') === event.target.id) {
+                trigger.setAttribute('aria-expanded', String(expanded));
+            }
+        });
+    }
+
+    document.addEventListener('shown.bs.offcanvas', function (event) { navigationExpanded(event, true); });
+    document.addEventListener('hidden.bs.offcanvas', function (event) { navigationExpanded(event, false); });
+
     function position(trigger, menu) {
         var button = trigger.getBoundingClientRect();
         var styles = window.getComputedStyle(menu);

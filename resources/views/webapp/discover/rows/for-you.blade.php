@@ -4,7 +4,7 @@
 	<p class="text-muted mb-3">Picked for your level and taste.</p>
 	<div class="discover-for-you__rail custom-scroll dragscroll dragscroll-horizontal card-scroll-row">
 		<div class="d-flex gap-3 pb-2">
-			@foreach($row['content'] as $piece)
+			@foreach(collect($row['content'])->take(4) as $piece)
 				@include('webapp.discover.cards.compact-piece', ['showMedia' => true])
 			@endforeach
 		</div>

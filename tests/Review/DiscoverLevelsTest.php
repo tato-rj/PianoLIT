@@ -46,10 +46,11 @@ class DiscoverLevelsTest extends ReviewTestCase
                 $sourceName = ucfirst($key).' '.($key === 'suzuki' ? 'Book ' : '').$number;
                 $this->assertSame(route('webapp.search.results', ['search' => $sourceName]), $card->getAttribute('href'));
             }
-            $this->assertStringContainsString(gradient('darkblue')[0], $cards->item(0)->getAttribute('style'));
-            $this->assertStringContainsString(gradient('red')[0], $cards->item($count - 1)->getAttribute('style'));
+            $color = ['rcm' => 'sky', 'abrsm' => 'mint', 'suzuki' => 'butter'][$key];
+            $this->assertStringContainsString('--level-tone: var(--pastel-'.$color.'-action)', $cards->item(0)->getAttribute('style'));
+            $this->assertStringContainsString('--level-surface: var(--pastel-'.$color.'-accent)', $cards->item(0)->getAttribute('style'));
             $this->assertSame($count, count(array_unique(array_map(function ($card) { return $card->getAttribute('href'); }, iterator_to_array($cards)))));
-            $this->assertSame($count, count(array_unique(array_map(function ($card) { return $card->getAttribute('style'); }, iterator_to_array($cards)))));
+            $this->assertSame(1, count(array_unique(array_map(function ($card) { return $card->getAttribute('style'); }, iterator_to_array($cards)))));
         }
         $this->assertSame($original, $rows->map(function ($row) { return $row['content']->map->getAttributes()->all(); })->all());
     }

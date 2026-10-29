@@ -45,6 +45,7 @@ async function main() {
     await require('./quizzes.test.cjs')();
     require('./section-navigation.test.cjs')();
     await require('./profile.test.cjs')();
+    require('./downloads.test.cjs')();
     await require('./admin-notifications')();
     await require('./admin-playlist-tags')();
     await require('./admin-playlist-editor')();

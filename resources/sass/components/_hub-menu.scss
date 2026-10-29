@@ -1,51 +1,36 @@
-.hub-menu {
-    --bs-offcanvas-width: 18rem;
-    width: var(--bs-offcanvas-width);
-    max-width: 100%;
-    background: var(--color-surface);
+.hub-menu__links {
+    padding: 0.75rem 0 0;
+    border-top: 1px solid var(--color-border);
+}
+
+.hub-menu__link {
+    min-height: 44px;
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-sm);
     color: var(--color-text);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-body);
+    text-decoration: none;
 
-    &__apps { border-bottom: 1px solid var(--color-border); }
-
-    &__link {
-        min-height: 44px;
-        padding: 0.5rem;
-        border-radius: 6px;
+    &:hover,
+    &:focus-visible,
+    &[aria-current="true"] {
         color: var(--color-text);
-        font-size: var(--font-size-base);
-        line-height: var(--line-height-body);
+        background: var(--color-surface-subtle);
         text-decoration: none;
-
-        &:hover,
-        &:focus-visible,
-        &[aria-current="true"] {
-            color: var(--color-text);
-            background: var(--color-surface-subtle);
-            text-decoration: none;
-
-            .hub-menu__icon { color: var(--color-primary); }
-        }
-
-        &:focus-visible,
-        &:active {
-            background: var(--color-border);
-            color: var(--color-text);
-        }
-
-        &[aria-current="true"] { font-weight: 600; }
     }
 
-    &__icon {
-        width: 1.25rem;
-        height: 1.25rem;
-        flex-shrink: 0;
-        font-size: 1.25rem;
-        line-height: 1;
-        color: inherit;
+    &:focus-visible,
+    &:active {
+        background: var(--color-border);
+        color: var(--color-text);
     }
 
-    &__arrow {
-        font-size: var(--font-size-sm);
-        color: inherit;
-    }
+    &[aria-current="true"] { font-weight: 600; }
+}
+
+.hub-menu__arrow {
+    flex-shrink: 0;
+    font-size: var(--font-size-sm);
+    color: inherit;
 }

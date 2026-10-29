@@ -24,7 +24,7 @@
     "/fonts/vendor/@fortawesome/fontawesome-free/webfa-solid-900.ttf?d75e3fd1eb12e9bd66550e304bdd1ec7": "/fonts/vendor/@fortawesome/fontawesome-free/webfa-solid-900.ttf?d75e3fd1eb12e9bd66550e304bdd1ec7",
     "/fonts/vendor/@fortawesome/fontawesome-free/webfa-v4compatibility.woff2?1bac2991f3dbfa237aecb4bcc41ad26f": "/fonts/vendor/@fortawesome/fontawesome-free/webfa-v4compatibility.woff2?1bac2991f3dbfa237aecb4bcc41ad26f",
     "/fonts/vendor/@fortawesome/fontawesome-free/webfa-v4compatibility.ttf?c6a0c95b0a95c4553700768802e10f98": "/fonts/vendor/@fortawesome/fontawesome-free/webfa-v4compatibility.ttf?c6a0c95b0a95c4553700768802e10f98",
-    "/css/shared.css": "/css/shared.css?id=dfe788e5b0652fea541a71c486f4f9ce",
+    "/css/shared.css": "/css/shared.css?id=7d13d4c332623aae50cc7c12ebbbe569",
     "/.mix/css/admin.css": "/.mix/css/admin.css",
     "/.mix/css/app.css": "/.mix/css/app.css",
     "/images/quote-left.svg?c0bdd3f18bcbd09920e3ad2ff686e17f": "/images/quote-left.svg?c0bdd3f18bcbd09920e3ad2ff686e17f",
@@ -34,8 +34,8 @@
     "/css/metronome.css": "/css/metronome.css?id=562c3133aa20ac93f4a540f40431a535",
     "/js/app.js": "/js/app.js?id=76b684469b91549e56ff75197c54bc52",
     "/js/admin.js": "/js/admin.js?id=6d14d37f55f9ac10697f388351cfe612",
-    "/css/app.css": "/css/app.css?id=a57e4d7d507668bfacf7a31f21bba772",
-    "/css/admin.css": "/css/admin.css?id=03fda1914d31e25209b1e864d4e575f5",
+    "/css/app.css": "/css/app.css?id=09cd1570083f5166774e3a930040b13d",
+    "/css/admin.css": "/css/admin.css?id=f31eeac262bc3703a3cf3c155f32c352",
     "/js/views/quizzes.js": "/js/views/quizzes.js?id=f48035129045dc303e11c66dbc22d67d",
     "/js/views/pianists.js": "/js/views/pianists.js?id=f88d1c92fa9718b848a5ff9144fe6f69",
     "/js/views/admin-notifications.js": "/js/views/admin-notifications.js?id=2a2048ddc51f5aadb67c6d0dc27bc14e",
@@ -53,7 +53,7 @@
     "/js/components/chord-finder.js": "/js/components/chord-finder.js?id=a0d3534334933f4c42a7811c02ad9543",
     "/js/components/project-deck.js": "/js/components/project-deck.js?id=937e00d71ceeaaab8ad7e67b535c06b0",
     "/js/components/section-navigation.js": "/js/components/section-navigation.js?id=483a931b5c36fcb0c48981b43f1ab996",
-    "/js/components/account-menu.js": "/js/components/account-menu.js?id=94b381d7ab1ff576f9e176dbcc30e224",
+    "/js/components/account-menu.js": "/js/components/account-menu.js?id=2c3b1dc0079e4b4734396581cfbbd645",
     "/js/components/score-metronome.js": "/js/components/score-metronome.js?id=2362477a48ac33766636c0859ff1d739",
     "/js/vendor/globe.gl.min.js": "/js/vendor/globe.gl.min.js?id=e26b927a5a876052837dde9ee08ae748",
     "/data/composer-globe.geojson": "/data/composer-globe.geojson?id=21ad37d0682f56c2185459fd7e607441",
@@ -1736,5 +1736,6 @@
     "/css/storefront.css": "/css/storefront.css?id=4cc5d8b53d1057167690be8f2472c125",
     "/js/views/storefront.js": "/js/views/storefront.js?id=1546439798d188ed5e124257c0113ecf",
     "/js/views/merchandise-checkout.js": "/js/views/merchandise-checkout.js?id=3689e6d706fccabfe54c67cc75d753ba",
-    "/js/components/express-checkout.js": "/js/components/express-checkout.js?id=87b9d0317d508964bc8a695e2957dac8"
+    "/js/components/express-checkout.js": "/js/components/express-checkout.js?id=87b9d0317d508964bc8a695e2957dac8",
+    "/js/views/downloads.js": "/js/views/downloads.js?id=533a6e3f8d5641de8b371d2aed41482b"
 }

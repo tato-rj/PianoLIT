@@ -1,7 +1,7 @@
 @php
 	$levelSystems = \App\Services\Discover\Levels::groups($rows);
 	$firstLevelSystem = $levelSystems->first(function ($system) { return $system['cards']->isNotEmpty(); });
-	$levelPalette = ['darkblue', 'lightblue', 'teal', 'green', 'yellow', 'orange', 'red'];
+	$levelPalette = ['rcm' => 'sky', 'abrsm' => 'mint', 'suzuki' => 'butter'];
 @endphp
 @if($firstLevelSystem)
 <section class="discover-levels mb-4" aria-labelledby="discover-levels-heading">
@@ -21,23 +21,12 @@
 		<div class="tab-pane {{ $system['key'] === $firstLevelSystem['key'] ? 'active' : '' }}" id="discover-levels-{{ $system['key'] }}" role="tabpanel" aria-labelledby="discover-levels-{{ $system['key'] }}-tab" tabindex="0">
 			<div class="discover-levels__rail custom-scroll dragscroll dragscroll-horizontal card-scroll-row">
 				<div class="d-flex gap-3 pb-2">
-					@foreach($system['cards'] as $index => $card)
+					@foreach($system['cards'] as $card)
 					@php
+						$levelColor = $levelPalette[$system['key']];
 						$levelNumber = preg_replace('/^' . $system['key'] . '\s*(?:book|level)?\s*/i', '', $card->name);
-						$palettePosition = $system['cards']->count() > 1 ? $index * (count($levelPalette) - 1) / ($system['cards']->count() - 1) : 0;
-						$paletteIndex = (int) floor($palettePosition);
-						$blend = $palettePosition - $paletteIndex;
-						$startTones = gradient($levelPalette[$paletteIndex]);
-						$endTones = gradient($levelPalette[min($paletteIndex + 1, count($levelPalette) - 1)]);
-						$tones = [];
-						foreach ([0, 1] as $endpoint) {
-							$startRgb = sscanf(ltrim($startTones[$endpoint], '#'), '%2x%2x%2x');
-							$endRgb = sscanf(ltrim($endTones[$endpoint], '#'), '%2x%2x%2x');
-							$tones[] = sprintf('#%02X%02X%02X', ...array_map(function ($start, $end) use ($blend) { return (int) round($start + ($end - $start) * $blend); }, $startRgb, $endRgb));
-						}
-						$shade = implode(', ', sscanf(ltrim($tones[1], '#'), '%2x%2x%2x'));
 					@endphp
-					<a class="discover-level-card discover-piece-link link-none" href="{{ route('webapp.search.results', ['search' => $card->name]) }}" aria-label="{{ $system['label'] }} {{ $system['unit'] }} {{ $levelNumber }}, {{ $card->pieces_count }} {{ str_plural('piece', $card->pieces_count) }}" style="--level-tone: {{ $tones[0] }}; --level-shade: {{ $shade }};">
+					<a class="discover-level-card discover-piece-link link-none" href="{{ route('webapp.search.results', ['search' => $card->name]) }}" aria-label="{{ $system['label'] }} {{ $system['unit'] }} {{ $levelNumber }}, {{ $card->pieces_count }} {{ str_plural('piece', $card->pieces_count) }}" style="--level-tone: var(--pastel-{{ $levelColor }}-action); --level-surface: var(--pastel-{{ $levelColor }}-accent);">
 						<div class="discover-level-card__art" aria-hidden="true">
 							@include('webapp.discover.cards.level-shapes')
 						</div>

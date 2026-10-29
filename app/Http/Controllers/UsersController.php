@@ -40,11 +40,17 @@ class UsersController extends Controller
         return redirect(\App\Support\ProfileUrl::get(), 301);
     }
 
-    public function purchases()
+    public function purchases(Request $request, \App\Services\Profile\Downloads $library)
     {
-        $purchases = auth()->user()->purchases()->with('item')->orderByDesc('id')->paginate(8)->withQueryString();
+        $validated = $request->validate([
+            'q' => 'nullable|string|max:150',
+            'type' => ['nullable', \Illuminate\Validation\Rule::in(array_keys($library::TYPES))],
+            'sort' => ['nullable', \Illuminate\Validation\Rule::in(['newest', 'oldest'])],
+        ]);
+        $filters = ['q' => trim($validated['q'] ?? ''), 'type' => $validated['type'] ?? '', 'sort' => $validated['sort'] ?? 'newest'];
+        $purchases = $library->page($request->user('web'), $filters);
 
-        return view('users.purchases.index', compact('purchases'));
+        return view('users.purchases.index', compact('purchases', 'filters', 'library'));
     }
 
     public function invite()

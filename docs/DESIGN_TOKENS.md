@@ -16,39 +16,45 @@ public website, web app and admin. Commit the rebuilt CSS and Mix manifest toget
 
 ## Account menu
 
-`components.account.menu-panel` supplies the common account and Game player menu
-surface and loads the positioning script once. `components.account.menu` supplies
-the public account content and its Components specimen. Keep the name/email header, account circle, icon rows, current
-page highlight and separately divided logout area on this component. Its shared
-`components/_account-menu.scss` uses the existing surface, text, border, radius
-and dropdown-shadow tokens. Names and email addresses wrap on narrow screens.
+`components.account.account-circle` opens `components.account.menu`, a shared
+Bootstrap offcanvas from the right on the homepage, public hubs, Shop and `my.*`.
+There is no separate hamburger. Guests use the same opener and get a same-host
+Sign in link inside the panel. Standalone login/registration/password pages and
+focused games remain free of this navigation.
 
-The menu is 17rem wide, reducing the space between the identity text and circle,
-with standard 16px labels and 14px email text.
-The actual header account button stays above the open menu at its original
-screen coordinates, retaining its exact 44px size and white border. Its closed
-state is grey; its open state is dark with a white initial. The popup opens with
-a 180ms fade and slight scale from the circle's center, while the circle's color
-transitions over the same duration. Reduced motion disables both effects.
-The versioned `components/account-menu.js` positions the menu around that button,
-keeps it within the viewport and moves identity text below the circle when other
-header controls leave insufficient room beside it. Resize recalculates the
-position using its untransformed layout width during animation; page scrolling
-dismisses the menu. Bootstrap retains click, keyboard,
-outside-click and Escape handling. Keep My profile and My
-downloads on the absolute main website, Support on its existing destination,
-and logout as a same-host POST form with CSRF and a native submit button.
-The Design System uses fictitious account details, the same account-circle
-renderer and an inert logout button.
+The panel is 22rem wide, capped at the viewport width. Its fixed header contains
+the account name, wrapping email, initial circle and close button. Account actions
+retain 16px labels, 20px icons and 48px rows. A neutral divider introduces
+`navigation.hub-menu.links`: compact, icon-free 44px rows with a trailing chevron
+on every hub link, beneath a small muted PianoLIT Hubs label. Only iOS opens another tab, with safe external-link attributes.
+Only one menu link is current: an account action suppresses its host hub highlight,
+and Home is current only on the homepage. Nested hub content retains its hub highlight.
+The middle body scrolls independently. The opaque logout footer stays outside
+that scrolling body, always visible at the bottom with safe-area padding; logout
+remains a same-host CSRF POST. Profile, downloads and orders return to main.
 
-Games' trophy menu uses the same panel, dimensions, spacing, animation and
-positioning. Its actual 44px trophy circle stays yellow in both states through
-`data-account-menu-tone="yellow"`; the shared circle stylesheet reads its colors
-from the reference Games palette. `games.challenges.profile.menu` keeps player
-name/avatar, best scores and the existing Clear records action. Read-only scores
-use `.account-menu__row`; actions use `.account-menu__link`, so scores do not gain
-click feedback. The Game player Components specimen renders the same panel,
-profile content and yellow-circle partial without changing browser records.
+`Services\Navigation\AccountMenu` controls browser-only shortcut visibility.
+My profile and Help & Support are always available for signed-in accounts.
+My membership appears on `my.*`, My downloads on Learn and Track your orders on
+Shop. An account's membership record (including expired), full-access override,
+owned purchase history or owned paid merchandise order respectively makes that
+shortcut available across all hubs. Order existence reuses `OrderTracking::visible`
+so test/unpaid/digital orders and another account's records do not qualify.
+Membership links use management for an existing membership, pricing for a new
+account, and Settings for a full-access account without a billing record. These
+checks do not call billing/Printful or load relationships into shared user JSON.
+
+`components/_account-menu.scss` and `components/_hub-menu.scss` own the shared
+finish. The versioned `components/account-menu.js` synchronizes expanded state;
+Bootstrap owns focus trapping, Escape/backdrop dismissal, focus return, scroll
+locking and reduced-motion transitions. `layouts.menu.user` pushes one panel to
+the body-level script stack. Design System specimens reuse these same components
+with fictitious details and inert actions.
+
+Games' yellow trophy menu remains an independent dropdown using
+`components.account.menu-panel` and `games.challenges.profile.menu`. Its existing
+positioning, animation, avatar, best scores and Clear records behavior stay intact.
+The shared script loads once even when both controls appear.
 
 ## PianoLIT brand icons
 
@@ -349,6 +355,10 @@ Discover's horizontal piece links reuse `.discover-compact-card` for their white
 `--color-surface`, shared padding and rounded corners, including Recently viewed
 and recommendation rails. Compact piece cards also stay white in Past highlights.
 
+Discover's level cards use one flat pastel accent per system: sky blue for RCM,
+mint green for ABRSM and butter yellow for Suzuki. Their decorative shapes use
+the matching action shade; levels within a system share the same color.
+
 The ordered `$pastel-palette` provides 12 soft tones: sky, cream, mint, lavender,
 peach, rose, aqua, butter, sage, lilac, periwinkle and terracotta. Each exposes
 `--pastel-{name}-surface` for light panels, `-accent` for tabs or soft actions,
@@ -523,45 +533,17 @@ shown only on the main homepage (`home` route).
 It reuses `components.navigation.youtube-button`: a black pill with a white
 YouTube mark, the label “Youtube” and a white diagonal arrow, using the shared dark button, pill radius
 and Bootstrap sizing/alignment. The Design System uses this same component.
-The standalone metronome passes `transparentHeader => true` and `showAccount => false`.
-This preserves the header grid, size, shadow and logo tilt while showing transparent
-branding and the hamburger only. The shared `@brandIcon` transparent option masks
-`icon-white.svg` with current text color; `hub-menu.button` accepts `inheritColor`.
-Selected background luminance chooses black or white for both. The Components
-specimen previews these same components on blue and light surfaces.
+The standalone metronome passes `transparentHeader => true` and retains the
+shared account circle. Its transparent logo follows the selected background's
+luminance; the neutral account circle opens the same account/hub panel. Existing
+metronome controls remain isolated while navigation is open.
 
-Other public pages add `components.navigation.hub-menu.button` after the account
-control. Its Bootstrap offcanvas, `components.navigation.hub-menu.panel`, links to the
-main website, Web app, iOS app, Shop, Games, Learn, Blog and Metronome using named routes
-or the configured App Store URL. It uses a compact 18rem width, capped at the
-viewport width. The hamburger/panel is absent on `home`
-and `my.*`; standalone account pages keep their existing layout. The button
-uses the shared raw-button and Bootstrap spacing/alignment classes, with its
-specimen in the Design System. The hamburger icon is exactly `1.5rem`.
-Web app and iOS app appear first, separated from the website destinations by a
-fine neutral divider; both open a new tab with `rel="noopener noreferrer"`.
-All destinations share aligned 20px icons, 16px labels and full-row
-targets at least 44px tall, with 4px between rows. Retain the shared
-`@icon('pianolit')` mark, Apple's brand icon and the apps' `chevron-right`
-indicators. Labels and arrows use the account menu's full-contrast
-`--color-text` (#212529). Leading hub/app icons inherit that color at rest and
-use `--color-primary` on hover, keyboard focus and the current hub. Keep the
-current icon blue after hover ends. Avoid pill outlines and shadows. Hover/current
-rows use the subtle surface token; the current hub also has a semibold label, and
-keyboard focus and pressed rows use the account menu's stronger neutral border
-color as their background. `components/_hub-menu.scss` owns this
-shared finish; the Design System renders the same complete menu in preview mode.
-Both this menu and the piece Options panel reuse `components.layout.side-menu-header`:
-a 16px heading, Bootstrap `px-4 py-3` spacing with a `gap-3` between the title
-and close button, no divider and the standard
-Bootstrap close button at 0.75rem. Its styles live in the shared stylesheet,
-and the Design System specimen uses the same component. Piece-menu links
-also use 8px bottom spacing.
-The panel is pushed to the body-level script
-stack so it does not affect header layout or inherit a page stacking context.
-`layouts.header` supplies it to the public layout; the homepage and public
-account-security screens use the same component. Web app, admin and mobile
-embedded layouts retain their existing navigation.
+Public, storefront and web-app headers reuse the shared account/hub navigation
+described above. Hub links use named routes or the configured App Store URL.
+The panel is pushed to the body-level script stack so it does not affect header
+layout or inherit a page stacking context. Administration and mobile embedded
+layouts retain their existing navigation. Piece Options keeps its existing
+`components.layout.side-menu-header`, styles and Design System specimen.
 
 The public account control is `components.account.account-circle` with `.btn-raw` and
 shared styles in `components/_account-circle.scss`. Its actual button surface
@@ -569,12 +551,12 @@ provides a consistent white-bordered light-grey circle using `--color-border`,
 with `--color-text-dark` for the icon/initial and `--color-text` on interaction.
 Its shape follows the admin avatar; the public control uses neutral site colors.
 Guests see a smaller `user-round` icon centered inside; signed-in users see
-their first initial, opening the retained account dropdown. Both states use the
+their first initial; both open the shared account/hub panel. Both states use the
 shared field-height token for size and are shown in the Design System. Bootstrap
 flex alignment on header list items centers YouTube beside the circle without
 inline baseline spacing.
 
-On the signed-in Games hub, a second `.account-circle` control opens the separate Game player dropdown. `games.challenges.profile.dropdown` keeps its 21px trophy icon, shared field-height circle size and white border; the Games stylesheet supplies the reference primary yellow (`#ffe54c`) and dark icon color. Keep account links in the account dropdown and game records in this separate menu. Guests keep their direct sign-in link.
+On the signed-in Games hub, a second `.account-circle` control opens the separate Game player dropdown. `games.challenges.profile.dropdown` keeps its 21px trophy icon, shared field-height circle size and white border; the Games stylesheet supplies the reference primary yellow (`#ffe54c`) and dark icon color. Keep account links in the shared offcanvas and game records in this separate menu. Guests sign in through the shared offcanvas.
 
 All public and web-app login/register URLs share `auth.webapp.login`,
 `auth.webapp.register` and their layout; there are no separate website versions.
