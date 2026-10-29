@@ -16,6 +16,47 @@ function interpolate(samples, position) {
     return samples[left] * (1 - mix) + (samples[left + 1] || 0) * mix;
 }
 
+// Small damped delay network, baked into the selected clips in the worker.
+// Diffusion softens distinct echoes; no live reverb nodes or downloaded impulse.
+function reverberate(buffer, { mix, tail, decay, damping }) {
+    const rate = buffer.sampleRate, input = buffer.getChannelData(0);
+    const tailLength = Math.round(rate * tail);
+    const result = sampleBuffer(1, input.length + tailLength, rate);
+    const output = result.getChannelData(0);
+    const combs = [29.7, 37.1, 41.1, 43.7].map(milliseconds => {
+        const length = Math.round(rate * milliseconds / 1000);
+        return { samples: new Float32Array(length), at: 0, low: 0,
+            feedback: Math.pow(0.001, length / rate / decay) };
+    });
+    const diffusers = [5.3, 1.7].map(milliseconds => ({
+        samples: new Float32Array(Math.max(1, Math.round(rate * milliseconds / 1000))), at: 0,
+    }));
+    const dampingAlpha = 1 - Math.exp(-2 * Math.PI * damping / rate);
+    const predelay = Math.round(rate * 0.012);
+    const tailFade = Math.min(tailLength, Math.round(rate * 0.08));
+    for (let i = 0; i < output.length; i++) {
+        const excitation = input[i - predelay] || 0;
+        let wet = 0;
+        for (const comb of combs) {
+            const delayed = comb.samples[comb.at];
+            comb.low += dampingAlpha * (delayed - comb.low);
+            comb.samples[comb.at] = excitation + comb.low * comb.feedback;
+            comb.at = (comb.at + 1) % comb.samples.length;
+            wet += delayed / combs.length;
+        }
+        for (const diffuser of diffusers) {
+            const delayed = diffuser.samples[diffuser.at];
+            const diffused = delayed - wet * 0.6;
+            diffuser.samples[diffuser.at] = wet + diffused * 0.6;
+            diffuser.at = (diffuser.at + 1) % diffuser.samples.length;
+            wet = diffused;
+        }
+        const fade = Math.min(1, (output.length - 1 - i) / Math.max(1, tailFade));
+        output[i] = (input[i] || 0) * (1 - mix) + wet * mix * (0.5 - 0.5 * Math.cos(Math.PI * fade));
+    }
+    return result;
+}
+
 // Pure, bounded processing, run in a worker once per choice/source, never per beat.
 export function applyVoiceEffect(buffer, id) {
     const effect = VOICE_EFFECTS[id];
@@ -30,8 +71,8 @@ export function applyVoiceEffect(buffer, id) {
         resampled[i] = (input[left] || 0) * (1 - mix) + (input[left + 1] || 0) * mix;
     }
     // Restore articulation length after pitch shifting; do not just speed up playback.
-    const result = stretchVoice(pitched, buffer.duration / (effect.tempo || 1), sampleBuffer);
-    const output = result.getChannelData(0);
+    let result = stretchVoice(pitched, buffer.duration / (effect.tempo || 1), sampleBuffer);
+    let output = result.getChannelData(0);
     if (effect.vibrato) {
         const dry = output.slice();
         const speed = 2 * Math.PI * effect.vibrato.rate / rate;
@@ -75,10 +116,16 @@ export function applyVoiceEffect(buffer, id) {
             for (let i = delay; i < output.length; i++) output[i] += dry[i - delay] * effect.echo * scale;
         }
     }
+    if (effect.reverb) {
+        result = reverberate(result, effect.reverb);
+        output = result.getChannelData(0);
+    }
     let sourceEnergy = 0, energy = 0, peak = 0;
     for (const value of input) sourceEnergy += value * value;
     for (const value of output) { energy += value * value; peak = Math.max(peak, Math.abs(value)); }
-    const gain = Math.min(Math.sqrt(sourceEnergy / input.length / Math.max(1e-12, energy / output.length)), 0.85 / Math.max(1e-6, peak));
+    // A reverb tail adds space, not an increase in the word's loudness.
+    const energyLength = effect.reverb ? input.length : output.length;
+    const gain = Math.min(Math.sqrt(sourceEnergy / input.length / Math.max(1e-12, energy / energyLength)), 0.85 / Math.max(1e-6, peak));
     const fade = Math.round(rate * 0.005);
     for (let i = 0; i < output.length; i++) {
         output[i] *= gain * Math.min(1, i / fade, (output.length - 1 - i) / fade);

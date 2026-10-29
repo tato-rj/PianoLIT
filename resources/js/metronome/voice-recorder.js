@@ -384,16 +384,41 @@ export class VoiceRecorder {
         }
     }
 
-    async preview(buffers, id = null) {
+    async previewEffect(select) {
+        this.stopPreview();
+        const version = this.previewRequestVersion;
+        const clockGeneration = this.clock.generation;
+        const running = this.clock.running;
+        const ready = select();
+        if (running) return;
+        try {
+            // Unlock the shared playback device in this click, before waiting
+            // for the worker. Normal/cached effects use the same preview path.
+            const [buffers] = await Promise.all([ready, this.clock.resumeAudio()]);
+            if (version !== this.previewRequestVersion || this.clock.running
+                || clockGeneration !== this.clock.generation) return;
+            if (!buffers?.[0]) { this.stopPreview(); return; }
+            await this.preview([buffers[0]], null, { onlyWhenStopped: true });
+        } catch (error) {
+            if (version !== this.previewRequestVersion) return;
+            this.stopPreview();
+            this.ui('status').textContent = 'Sound couldn’t start. Tap an effect to try again.';
+        }
+    }
+
+    async preview(buffers, id = null, { onlyWhenStopped = false } = {}) {
         if (!buffers?.length) return;
+        if (onlyWhenStopped && this.clock.running) return;
         this.stopPreview();
         this.previewingId = id;
         this.onUpdate(this);
-        this.clock.stop();
+        if (!onlyWhenStopped) this.clock.stop();
+        const clockGeneration = this.clock.generation;
         const generation = this.previewGeneration;
         try {
             await this.clock.resumeAudio();
             if (generation !== this.previewGeneration) return;
+            if (onlyWhenStopped && (this.clock.running || clockGeneration !== this.clock.generation)) return;
             const audio = this.context();
             let time = audio.currentTime + 0.03;
             buffers.forEach(buffer => {

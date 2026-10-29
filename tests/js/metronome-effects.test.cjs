@@ -62,8 +62,8 @@ test('Robot is dominated by metallic sidebands instead of the unchanged natural 
     assert.ok(metallic > spectralPower(robot, 180) * 10);
 });
 
-test('Cartoon and Ghost add audible modulation beyond a static pitch shift', () => {
-    for (const [id, shiftedHz] of [['cartoon', 270], ['ghost', 212.4]]) {
+test('Cartoon adds audible modulation beyond a static pitch shift', () => {
+    for (const [id, shiftedHz] of [['cartoon', 270]]) {
         const result = applyVoiceEffect(tone(1), id);
         let center = 0, sides = 0;
         for (let offset = -30; offset <= 30; offset++) {
@@ -75,12 +75,12 @@ test('Cartoon and Ghost add audible modulation beyond a static pitch shift', () 
     }
 });
 
-test('effects retain short/long words, silence and bounded amplitude without added tails', () => {
+test('effects retain short/long words, silence and bounded amplitude with only a short Ghost tail', () => {
     for (const seconds of [0.06, 0.2, 2]) {
         for (const id of Object.keys(context.effects)) {
             const result = applyVoiceEffect(tone(seconds), id);
-            assert.ok(result.duration <= seconds + 0.001);
-            assert.ok(result.getChannelData(0).every(Number.isFinite));
+            assert.ok(result.duration <= seconds + (id === 'ghost' ? 0.3 : 0.001));
+            assert.ok(result.getChannelData(0).every(value => Number.isFinite(value) && Math.abs(value) <= Math.fround(0.85)));
         }
     }
     for (const id of Object.keys(context.effects)) {
@@ -88,6 +88,23 @@ test('effects retain short/long words, silence and bounded amplitude without add
         assert.ok(silent.getChannelData(0).every(value => value === 0));
     }
     assert.throws(() => applyVoiceEffect(tone(), 'unknown'));
+});
+
+test('Ghost leaves a diffuse decaying reverb after the word and still fits fast beats', () => {
+    const source = tone(0.25), result = applyVoiceEffect(source, 'ghost');
+    const samples = result.getChannelData(0), tail = samples.subarray(source.length);
+    const energy = values => values.reduce((sum, value) => sum + value * value, 0) / values.length;
+    assert.ok(result.duration > source.duration + 0.15, 'the reverb must remain audible after the word');
+    assert.ok(energy(tail.subarray(0, 2400)) > 0.0001);
+    assert.ok(energy(tail.subarray(-1200)) < energy(tail.subarray(0, 1200)) * 0.05, 'the tail should fade away smoothly');
+    assert.equal(samples.at(-1), 0);
+    const compressVoice = vm.runInContext('compressVoice', context);
+    for (const bpm of [20, 120, 300]) {
+        const beatBudget = 60 / bpm * 0.94;
+        const prepared = compressVoice(result, beatBudget, sampleBuffer);
+        assert.ok(prepared.duration <= beatBudget);
+        assert.ok(energy(prepared.getChannelData(0)) > 0.0001);
+    }
 });
 
 test('effect choice survives source/settings changes and always resets in a new page session', async () => {
@@ -110,6 +127,24 @@ test('effect choice survives source/settings changes and always resets in a new 
     assert.equal(new VoiceEffectSelection({}).effect, 'classic');
 });
 
+test('effect previews can await the current result and replay it without regenerating', async () => {
+    let finish, jobs = 0;
+    const source = [tone(), tone(), tone(), tone()], processed = source.map(clip => applyVoiceEffect(clip, 'robot'));
+    const selection = new VoiceEffectSelection({ process: () => {
+        jobs++;
+        return { promise: new Promise(resolve => { finish = resolve; }), cancel() {} };
+    }, useBuffers() {} });
+    selection.setSource(source);
+    assert.equal(await selection.select('classic'), source);
+    const first = selection.select('robot'), repeated = selection.select('robot');
+    assert.equal(first, repeated);
+    finish(processed);
+    assert.equal(await first, processed);
+    assert.equal(await selection.select('robot'), processed);
+    assert.equal(jobs, 1);
+    assert.equal(await selection.select('classic'), source);
+});
+
 test('new effect choices cancel work and discard late results; leaving disposes pending work', async () => {
     const jobs = [], used = [];
     const selection = new VoiceEffectSelection({ process: () => {
@@ -117,11 +152,13 @@ test('new effect choices cancel work and discard late results; leaving disposes 
         job.promise = new Promise(resolve => { job.resolve = resolve; }); jobs.push(job); return job;
     }, useBuffers: value => used.push(value) });
     selection.setSource([tone(), tone(), tone(), tone()]);
-    selection.select('ghost'); selection.select('cartoon');
+    const stale = selection.select('ghost'), current = selection.select('cartoon');
     assert.equal(jobs[0].canceled, true);
     jobs[0].resolve(['stale']); await turn();
+    assert.equal(await stale, undefined, 'a canceled result must not become a preview');
     assert.equal(used.at(-1), null);
     jobs[1].resolve(['current']); await turn();
+    assert.deepEqual(await current, ['current']);
     assert.deepEqual(used.at(-1), ['current']);
     selection.select('robot'); selection.dispose();
     assert.equal(jobs[2].canceled, true);

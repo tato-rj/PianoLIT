@@ -12,6 +12,12 @@ to record your four numbers through the existing private account flow. Choose
 The chosen effect stays selected while you change BPM, beats, appearance or
 sound, and while you close/reopen settings. **Refreshing returns to Normal**.
 The chosen original sound still follows the existing browser/account preferences.
+When playback is stopped, clicking any effect previews only the first number,
+including Normal or an already selected effect. The click unlocks the shared
+playback device before waiting for processing; repeated choices reuse the current
+result. During playback, choices apply without an extra sample or restarting the
+clock. A newer click, leaving the settings page, dismissal or hiding the page
+cancels pending/playing previews. Other setting changes never trigger a sample.
 
 Arthur's October 29 follow-up supersedes the initial request to save six generated
 voice libraries: effects are generated on demand, only in browser memory. They
@@ -66,13 +72,17 @@ To replace the voice, replace the four source files and rerun the same command.
 
 - `resources/data/metronome-voice-effects.json`: labels, icons and effect parameters.
   Additional styles can use the same supported pitch, tempo, filter, brightness,
-  modulation and short-echo parameters. Use an icon already in the shared catalog.
+  modulation, short-echo and reverb parameters. Use an icon already in the shared catalog.
 - `voice-effects.js`: pure DSP. Resampling shifts pitch; waveform-matched time
   stretching restores word duration. Cartoon raises pitch 1.5× with an exaggerated
   pitch wobble. Robot uses mostly wet bipolar ring modulation for a metallic
-  character. Ghost combines a higher pitch, moving delay layers, tremolo and
-  stronger short echoes. Deep Space and Chipmunk keep their existing processing.
-  Source-relative normalization, edge fades and the original duration bound remain.
+  character. Ghost combines its higher pitch with a slow, gentle chorus and
+  damped, diffused reverb; its earlier rhythmic tremolo and distinct echoes are
+  removed. Reverb is baked into the worker result with a 280ms fading tail,
+  rather than live audio nodes or a downloaded impulse. The clock still prepares
+  the whole clip once per tempo to fit the beat. Deep Space and Chipmunk keep
+  their existing processing. Source-relative normalization and edge fades remain;
+  only Ghost extends the original duration, by at most that short reverb tail.
 - `voice-effects-worker.js`: processes four short clips off the UI/audio timing
   thread. Transferred copies leave source buffers intact. Only the current result
   is retained; the worker terminates after each job. Another choice cancels it.

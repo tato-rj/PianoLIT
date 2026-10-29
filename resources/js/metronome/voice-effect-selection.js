@@ -5,29 +5,36 @@ export class VoiceEffectSelection {
         Object.assign(this, { process, useBuffers, onChange, onError });
         this.effect = 'classic';
         this.source = null;
+        this.buffers = null;
+        this.pending = null;
         this.generation = 0;
     }
 
     setSource(source) {
         if (source === this.source) return;
         this.source = source;
-        this.render();
+        this.pending = this.render();
     }
 
     select(effect) {
-        if (this.effect === effect) return;
-        this.effect = effect;
-        this.render();
+        if (this.effect !== effect) {
+            this.effect = effect;
+            this.pending = this.render();
+        }
+        // Re-clicking the selected effect reuses its result, including an
+        // in-flight job, so a preview never regenerates the same four clips.
+        return this.pending || Promise.resolve(this.buffers);
     }
 
     async render() {
         const generation = ++this.generation;
         this.job?.cancel();
         this.job = null;
+        this.buffers = null;
         this.useBuffers(null);
         const processing = !!this.source && this.effect !== 'classic';
         this.onChange(this.effect, processing, !!this.source);
-        if (!processing) return;
+        if (!processing) return this.buffers = this.source;
         try {
             this.job = this.process(this.source, this.effect);
             const result = await this.job.promise;
@@ -35,11 +42,14 @@ export class VoiceEffectSelection {
             this.useBuffers(result);
             this.onChange(this.effect, false, true);
             this.job = null;
+            return this.buffers = result;
         } catch (error) {
             if (generation !== this.generation) return;
             this.effect = 'classic';
             this.onChange(this.effect, false, true);
             this.onError(error);
+            this.job = null;
+            return this.buffers = this.source;
         }
     }
 
@@ -47,6 +57,7 @@ export class VoiceEffectSelection {
         this.generation++;
         this.job?.cancel();
         this.job = null;
+        this.pending = this.buffers = null;
     }
 }
 

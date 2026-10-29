@@ -14,7 +14,7 @@
     "/.mix/js/app.js": "/.mix/js/app.js",
     "/.mix/js/admin.js": "/.mix/js/admin.js",
     "/js/tone.js": "/js/tone.js?id=0ac413b8603d5a79c549ab7807a3ad60",
-    "/js/metronome.js": "/js/metronome.js?id=ae2668959440450262b9b295adbe8ba9",
+    "/js/metronome.js": "/js/metronome.js?id=9513f8b2f7e686a7f77d8c05a499c6bf",
     "/css/musicgames.css": "/css/musicgames.css?id=a1404c158444a90aa8eaac7ec10d4a04",
     "/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.woff2?878f31251d960bd6266f20ccdc4d738f": "/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.woff2?878f31251d960bd6266f20ccdc4d738f",
     "/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.ttf?016b4a6cdced82ab3aa1907e3855cfd2": "/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.ttf?016b4a6cdced82ab3aa1907e3855cfd2",
@@ -1755,6 +1755,6 @@
     "/images/emails/welcome/feature-recordings.png": "/images/emails/welcome/feature-recordings.png?id=c75277d72e0af5e0089178bc8b0f7dd5",
     "/images/emails/welcome/feature-scores.png": "/images/emails/welcome/feature-scores.png?id=66a3158f07a91865d7f4e26d66263c21",
     "/js/components/link-share.js": "/js/components/link-share.js?id=5c6b547d331de5d0cb9b8757e922e92a",
-    "/js/metronome-voice-worker.js": "/js/metronome-voice-worker.js?id=ac2f0bc2f2ededc773a0064a82c39919",
+    "/js/metronome-voice-worker.js": "/js/metronome-voice-worker.js?id=68413a12663339ceab581115b951c891",
     "/audio/metronome/spoken/manifest.json": "/audio/metronome/spoken/manifest.json"
 }

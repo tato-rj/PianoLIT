@@ -32,10 +32,8 @@
     "icon": "ghost",
     "pitch": 1.18,
     "highpass": 420,
-    "chorus": { "delay": 14, "depth": 4, "rate": 3.2, "mix": 0.7 },
-    "tremolo": { "rate": 4.8, "depth": 0.45 },
-    "echo": 0.48,
-    "echoDelays": [42, 86]
+    "chorus": { "delay": 18, "depth": 1.5, "rate": 0.65, "mix": 0.25 },
+    "reverb": { "mix": 0.48, "tail": 0.28, "decay": 0.55, "damping": 3600 }
   },
   "chipmunk": {
     "label": "Chipmunk",

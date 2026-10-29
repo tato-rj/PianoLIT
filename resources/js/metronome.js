@@ -511,7 +511,9 @@ if (soundMenuRoot && settingsPages) {
     document.querySelectorAll('[data-choice-buttons="voice-effect"] [data-choice]').forEach(button => {
         button.addEventListener('click', () => {
             document.querySelector('[data-effect-feedback]').hidden = true;
-            voiceEffects.select(button.dataset.choice);
+            const select = () => voiceEffects.select(button.dataset.choice);
+            if (voiceRecorder) voiceRecorder.previewEffect(select);
+            else select();
         });
     });
     syncVoiceEffects();

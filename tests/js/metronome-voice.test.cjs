@@ -826,3 +826,69 @@ test('expired private access does not stop public counting or change its selecti
     assert.equal(page.clock.buffers, null);
     assert.equal(page.node('signin').hidden, false);
 });
+
+test('an effect click unlocks audio immediately and previews only the first processed number while stopped', async () => {
+    const page = recorderHarness(); await load(page);
+    let ready, resumes = 0, stops = 0;
+    page.clock.running = false;
+    page.clock.stop = () => { stops++; };
+    page.clock.resumeAudio = async () => { resumes++; };
+    const clips = [1, 2, 3, 4].map(number => ({ number, duration: 0.2 }));
+    const playing = page.recorder.previewEffect(() => new Promise(resolve => { ready = resolve; }));
+    assert.equal(resumes, 1, 'unlock must happen inside the click, before worker completion');
+    assert.equal(page.recorder.previewSources.length, 0);
+    ready(clips); await playing;
+    assert.equal(page.recorder.previewSources.length, 1);
+    assert.equal(page.recorder.previewSources[0].buffer, clips[0]);
+    assert.equal(page.clock.running, false);
+    assert.equal(stops, 0, 'preview must not reset or start the metronome');
+    page.recorder.previewSources[0].onended();
+    assert.equal(page.recorder.previewSources.length, 0);
+    await page.recorder.previewEffect(() => Promise.resolve(clips));
+    assert.equal(page.recorder.previewSources.length, 1, 'Normal or an already selected effect can replay');
+});
+
+test('effect clicks during playback apply the choice without previewing or interrupting the clock', async () => {
+    const page = recorderHarness(); await load(page);
+    page.clock.running = true;
+    page.clock.stop = () => assert.fail('Do not stop the metronome');
+    page.clock.resumeAudio = () => assert.fail('Do not create an extra preview');
+    let choices = 0;
+    await page.recorder.previewEffect(() => { choices++; return Promise.resolve([{ duration: 0.2 }]); });
+    assert.equal(choices, 1);
+    assert.equal(page.recorder.previewSources.length, 0);
+    assert.equal(page.clock.running, true);
+});
+
+test('rapid effect clicks, dismissal and a clock start discard pending samples', async () => {
+    const page = recorderHarness(); await load(page);
+    const pending = [];
+    const choose = () => new Promise(resolve => pending.push(resolve));
+    const first = page.recorder.previewEffect(choose);
+    const second = page.recorder.previewEffect(choose);
+    pending[0]([{ duration: 0.2, id: 'stale' }]); await first;
+    assert.equal(page.recorder.previewSources.length, 0);
+    pending[1]([{ duration: 0.2, id: 'latest' }]); await second;
+    assert.equal(page.recorder.previewSources[0].buffer.id, 'latest');
+    const closed = page.recorder.previewEffect(choose);
+    page.recorder.cancel();
+    pending[2]([{ duration: 0.2 }]); await closed;
+    assert.equal(page.recorder.previewSources.length, 0);
+    const started = page.recorder.previewEffect(choose);
+    page.clock.running = true;
+    pending[3]([{ duration: 0.2 }]); await started;
+    assert.equal(page.recorder.previewSources.length, 0);
+});
+
+test('a clock start during audio resume prevents an effect sample without stopping playback', async () => {
+    const page = recorderHarness(); await load(page);
+    let resumed, calls = 0;
+    page.clock.resumeAudio = () => ++calls === 1 ? Promise.resolve() : new Promise(resolve => { resumed = resolve; });
+    page.clock.stop = () => assert.fail('Effect previews never stop playback');
+    const playing = page.recorder.previewEffect(() => Promise.resolve([{ duration: 0.2 }]));
+    await settle();
+    page.clock.running = true;
+    resumed(); await playing;
+    assert.equal(page.recorder.previewSources.length, 0);
+    assert.equal(page.clock.running, true);
+});
