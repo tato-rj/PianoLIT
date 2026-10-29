@@ -13,7 +13,8 @@ class CanonicalProfile
             // Never forward a cross-host POST or its credentials.
             abort_unless(in_array($request->method(), ['GET', 'HEAD'], true), 404);
             $query = $request->server('QUERY_STRING');
-            $destination = $request->is('profile/downloads', 'my-profile/purchases') ? ProfileUrl::downloads() : ProfileUrl::get();
+            $destination = $request->is('profile/downloads', 'my-profile/purchases') ? ProfileUrl::downloads()
+                : ($request->is('profile/orders') ? ProfileUrl::get().'/orders' : ProfileUrl::get());
             return redirect($destination.($query ? '?'.$query : ''), 301);
         }
         return $next($request)->header('Cache-Control', 'no-store, private');

@@ -13,6 +13,8 @@ class AdminMerchandiseTest extends ReviewTestCase
 {
     private $admin;
     private $remote;
+    private $catalog;
+    private $catalogStatus = 200;
 
     public function setUp(): void
     {
@@ -23,6 +25,9 @@ class AdminMerchandiseTest extends ReviewTestCase
         Storage::fake('public');
         Http::swap(new \Illuminate\Http\Client\Factory);
         $this->remote = $this->remoteProduct();
+        $this->catalog = ['product' => ['id' => 71], 'variants' => [
+            ['id' => 4011, 'product_id' => 71, 'color' => 'Black', 'color_code' => '#14191E', 'color_code2' => null],
+        ]];
         $this->fakePrintful();
     }
 
@@ -39,6 +44,7 @@ class AdminMerchandiseTest extends ReviewTestCase
         return ['sync_product' => ['id' => $id, 'name' => 'Piano T-shirt', 'thumbnail_url' => 'https://files.cdn.printful.com/mockup/front.png'],
             'sync_variants' => [['id' => 91, 'variant_id' => 4011, 'name' => 'Piano shirt / Black / M', 'size' => 'M', 'color' => 'Black',
                 'sku' => 'PIANO-M', 'retail_price' => '25.00', 'currency' => 'USD', 'synced' => true, 'discontinued' => false, 'out_of_stock' => false,
+                'product' => ['name' => 'Unisex cotton t-shirt', 'product_id' => 71],
                 'files' => [
                     ['type' => 'default', 'url' => 'https://files.cdn.printful.com/private-print-file.png', 'preview_url' => 'https://files.cdn.printful.com/artwork.png'],
                     ['type' => 'preview', 'preview_url' => 'https://files.cdn.printful.com/mockup/back.png'],
@@ -62,6 +68,13 @@ class AdminMerchandiseTest extends ReviewTestCase
             if (strpos($request->url(), 'https://api.printful.com/store/products?') === 0) {
                 return Http::response(['code' => 200, 'result' => [['id' => 77, 'name' => 'Piano T-shirt', 'variants' => 1]], 'paging' => ['total' => 1, 'offset' => 0, 'limit' => 12]]);
             }
+            if (strpos($request->url(), 'https://api.printful.com/products/') === 0) {
+                $this->assertTrue($request->hasHeader('Authorization', 'Bearer fake-merchandise-token'));
+                $this->assertLessThanOrEqual(5, $options['timeout']);
+                $result = strpos($request->url(), '/variant/') !== false
+                    ? ['product' => $this->catalog['product'], 'variant' => $this->catalog['variants'][0]] : $this->catalog;
+                return Http::response(['code' => $this->catalogStatus, 'result' => $result], $this->catalogStatus);
+            }
             if (strpos($request->url(), 'https://files.cdn.printful.com/mockup/') === 0) {
                 $this->assertFalse($request->hasHeader('Authorization'));
                 $this->assertFalse($request->hasHeader('X-PF-Store-Id'));
@@ -74,6 +87,35 @@ class AdminMerchandiseTest extends ReviewTestCase
     private function imported(): MerchandiseProduct
     {
         return app(MerchandiseCatalog::class)->import(77)[0]->fresh();
+    }
+
+    public function test_import_rejects_duplicate_names_before_copying_images()
+    {
+        $product = $this->imported();
+        $this->assertSame('piano-t-shirt', $product->slug);
+        $this->remote = $this->remoteProduct(78);
+        $this->post(route('admin.merchandise.import'), ['printful_product_id' => 78])
+            ->assertRedirect(route('admin.merchandise.discover'))->assertSessionHas('error');
+        $this->assertDatabaseCount('merchandise_products', 1);
+        $this->assertCount(2, $product->images);
+        $product->delete();
+        $this->post(route('admin.merchandise.import'), ['printful_product_id' => 78])
+            ->assertRedirect(route('admin.merchandise.discover'))->assertSessionHas('error');
+        $this->assertDatabaseCount('merchandise_products', 1);
+    }
+
+    public function test_refresh_checks_names_but_preserves_the_existing_permalink()
+    {
+        $product = $this->imported();
+        MerchandiseProduct::create(['printful_store_id' => 12345, 'printful_product_id' => 80, 'name' => 'Reserved T-shirt', 'variants' => []]);
+        $this->remote['sync_product']['name'] = 'Reserved T-shirt';
+        $this->post($this->action('refresh', $product), ['revision' => $product->revision])
+            ->assertRedirect()->assertSessionHas('error');
+        $this->assertSame('Piano T-shirt', $product->fresh()->name);
+        $this->remote['sync_product']['name'] = 'Renamed piano T-shirt';
+        $this->post($this->action('refresh', $product), ['revision' => $product->revision])->assertRedirect()->assertSessionHas('status');
+        $this->assertSame('Renamed piano T-shirt', $product->fresh()->name);
+        $this->assertSame('piano-t-shirt', $product->fresh()->slug);
     }
 
     private function action(string $action, MerchandiseProduct $product, $image = null): string
@@ -92,6 +134,9 @@ class AdminMerchandiseTest extends ReviewTestCase
         $this->assertCount(2, $product->images);
         $this->assertSame($product->images->first()->id, (int) $product->main_image_id);
         $this->assertSame('25.00', $product->variants[0]['retail_price']);
+        $this->assertSame('Unisex cotton t-shirt', $product->variants[0]['product_name']);
+        $this->assertSame(71, $product->variants[0]['catalog_product_id']);
+        $this->assertSame('#14191e', $product->variants[0]['color_code']);
         $this->assertArrayNotHasKey('files', $product->variants[0]);
         $this->assertArrayNotHasKey('user_id', $product->getAttributes());
         foreach ($product->images as $image) {
@@ -111,7 +156,89 @@ class AdminMerchandiseTest extends ReviewTestCase
         $this->assertSame(1, MerchandiseProduct::count());
         $this->assertSame($files, Storage::disk('public')->allFiles());
         $this->assertSame($product->revision, $product->fresh()->revision);
-        Http::assertSentCount(3);
+        Http::assertSentCount(4);
+    }
+
+    public function test_catalog_colors_match_variant_ids_instead_of_names_or_response_order()
+    {
+        $second = $this->remote['sync_variants'][0];
+        $second['id'] = 92;
+        $second['variant_id'] = 4012;
+        $second['color'] = 'Two-tone';
+        $this->remote['sync_variants'][] = $second;
+        array_unshift($this->catalog['variants'], ['id' => 4012, 'product_id' => 71, 'color_code' => '#ABCDEF', 'color_code2' => '#102030']);
+        $product = $this->imported();
+        $this->assertSame('#14191e', $product->variants[0]['color_code']);
+        $this->assertSame('#abcdef', $product->variants[1]['color_code']);
+        $this->assertSame('#102030', $product->variants[1]['color_code2']);
+        $this->assertCount(1, Http::recorded(fn ($request) => $request->url() === 'https://api.printful.com/products/71'));
+        $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()->assertSee('--swatch-color: #abcdef', false)
+            ->assertSee('--swatch-color-secondary: #102030', false)->assertDontSee('fake-merchandise-token');
+    }
+
+    public function test_color_lookup_fallback_uses_the_exact_catalog_variant_when_product_id_is_absent()
+    {
+        unset($this->remote['sync_variants'][0]['product']['product_id']);
+        $product = $this->imported();
+        $this->assertSame(71, $product->variants[0]['catalog_product_id']);
+        $this->assertSame('#14191e', $product->variants[0]['color_code']);
+        Http::assertSent(fn ($request) => $request->url() === 'https://api.printful.com/products/variant/4011');
+    }
+
+    /** @dataProvider unavailableColorStatuses */
+    public function test_failed_color_refresh_preserves_only_colors_for_the_same_variant_identity(int $status)
+    {
+        $product = $this->imported();
+        $this->catalogStatus = $status;
+        $this->post($this->action('refresh', $product), ['revision' => $product->revision])
+            ->assertRedirect()->assertSessionHas('merchandise_notice');
+        $product->refresh();
+        $this->assertSame('#14191e', $product->variants[0]['color_code']);
+        $this->remote['sync_variants'][0]['variant_id'] = 5000;
+        $this->post($this->action('refresh', $product), ['revision' => $product->revision])->assertRedirect();
+        $this->assertNull($product->fresh()->variants[0]['color_code']);
+        $this->assertFalse($product->fresh()->trashed());
+    }
+
+    public static function unavailableColorStatuses(): array
+    {
+        return [[404], [429], [500]];
+    }
+
+    public function test_color_lookup_has_a_request_budget_for_mixed_catalog_products()
+    {
+        $template = $this->remote['sync_variants'][0];
+        $this->remote['sync_variants'] = [];
+        for ($i = 0; $i < 12; $i++) {
+            $variant = $template;
+            $variant['id'] += $i;
+            $variant['product']['product_id'] += $i;
+            $this->remote['sync_variants'][] = $variant;
+        }
+        $this->imported();
+        $this->assertCount(8, Http::recorded(fn ($request) => strpos($request->url(), 'https://api.printful.com/products/') === 0));
+    }
+
+    /** @dataProvider invalidColorData */
+    public function test_untrusted_or_mismatched_catalog_colors_stay_neutral(array $catalog)
+    {
+        $this->catalog = $catalog;
+        $this->post(route('admin.merchandise.import'), ['printful_product_id' => 77])
+            ->assertRedirect()->assertSessionHas('merchandise_notice');
+        $product = MerchandiseProduct::firstOrFail();
+        $this->assertNull($product->variants[0]['color_code']);
+        $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()->assertDontSee('class="shop-color-swatch"', false);
+    }
+
+    public static function invalidColorData(): array
+    {
+        $row = ['id' => 4011, 'product_id' => 71, 'color_code' => '#14191e', 'color_code2' => null];
+        return [
+            [['product' => ['id' => 99], 'variants' => [$row]]],
+            [['product' => ['id' => 71], 'variants' => [array_merge($row, ['id' => 92])]]],
+            [['product' => ['id' => 71], 'variants' => [array_merge($row, ['product_id' => 99])]]],
+            [['product' => ['id' => 71], 'variants' => [array_merge($row, ['color_code' => '#fff; background:url(https://evil.test)'])]]],
+        ];
     }
 
     public function test_upload_main_order_and_refresh_preserve_local_choices_and_removed_mockups()

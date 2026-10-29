@@ -1801,9 +1801,35 @@ var t=function(){return t=Object.assign||function(t){for(var i,n=1,s=arguments.l
 
 /***/ },
 
+/***/ "./resources/sass/shared.scss"
+/*!************************************!*\
+  !*** ./resources/sass/shared.scss ***!
+  \************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ },
+
 /***/ "./resources/sass/musicgames.scss"
 /*!****************************************!*\
   !*** ./resources/sass/musicgames.scss ***!
+  \****************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ },
+
+/***/ "./resources/sass/storefront.scss"
+/*!****************************************!*\
+  !*** ./resources/sass/storefront.scss ***!
   \****************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
@@ -1844,19 +1870,6 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************************!*\
   !*** ./resources/sass/admin.scss ***!
   \***********************************/
-(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ },
-
-/***/ "./resources/sass/shared.scss"
-/*!************************************!*\
-  !*** ./resources/sass/shared.scss ***!
-  \************************************/
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2887,10 +2900,11 @@ var create = module.exports.create;
 /******/ 		var installedChunks = {
 /******/ 			"/js/games/hub": 0,
 /******/ 			"css/musicgames": 0,
-/******/ 			"css/shared": 0,
 /******/ 			".mix/css/admin": 0,
 /******/ 			".mix/css/app": 0,
-/******/ 			"css/metronome": 0
+/******/ 			"css/metronome": 0,
+/******/ 			"css/storefront": 0,
+/******/ 			"css/shared": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -2940,12 +2954,13 @@ var create = module.exports.create;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	__webpack_require__.O(undefined, ["css/musicgames","css/shared",".mix/css/admin",".mix/css/app","css/metronome"], () => (__webpack_require__("./resources/js/games/hub.js")))
-/******/ 	__webpack_require__.O(undefined, ["css/musicgames","css/shared",".mix/css/admin",".mix/css/app","css/metronome"], () => (__webpack_require__("./resources/sass/musicgames.scss")))
-/******/ 	__webpack_require__.O(undefined, ["css/musicgames","css/shared",".mix/css/admin",".mix/css/app","css/metronome"], () => (__webpack_require__("./resources/sass/metronome.scss")))
-/******/ 	__webpack_require__.O(undefined, ["css/musicgames","css/shared",".mix/css/admin",".mix/css/app","css/metronome"], () => (__webpack_require__("./resources/sass/app.scss")))
-/******/ 	__webpack_require__.O(undefined, ["css/musicgames","css/shared",".mix/css/admin",".mix/css/app","css/metronome"], () => (__webpack_require__("./resources/sass/admin.scss")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/musicgames","css/shared",".mix/css/admin",".mix/css/app","css/metronome"], () => (__webpack_require__("./resources/sass/shared.scss")))
+/******/ 	__webpack_require__.O(undefined, ["css/musicgames",".mix/css/admin",".mix/css/app","css/metronome","css/storefront","css/shared"], () => (__webpack_require__("./resources/js/games/hub.js")))
+/******/ 	__webpack_require__.O(undefined, ["css/musicgames",".mix/css/admin",".mix/css/app","css/metronome","css/storefront","css/shared"], () => (__webpack_require__("./resources/sass/musicgames.scss")))
+/******/ 	__webpack_require__.O(undefined, ["css/musicgames",".mix/css/admin",".mix/css/app","css/metronome","css/storefront","css/shared"], () => (__webpack_require__("./resources/sass/storefront.scss")))
+/******/ 	__webpack_require__.O(undefined, ["css/musicgames",".mix/css/admin",".mix/css/app","css/metronome","css/storefront","css/shared"], () => (__webpack_require__("./resources/sass/metronome.scss")))
+/******/ 	__webpack_require__.O(undefined, ["css/musicgames",".mix/css/admin",".mix/css/app","css/metronome","css/storefront","css/shared"], () => (__webpack_require__("./resources/sass/app.scss")))
+/******/ 	__webpack_require__.O(undefined, ["css/musicgames",".mix/css/admin",".mix/css/app","css/metronome","css/storefront","css/shared"], () => (__webpack_require__("./resources/sass/admin.scss")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/musicgames",".mix/css/admin",".mix/css/app","css/metronome","css/storefront","css/shared"], () => (__webpack_require__("./resources/sass/shared.scss")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

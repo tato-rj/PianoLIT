@@ -204,6 +204,6 @@
 	<p>If you have any questions about this Privacy Policy, please contact us:</p>
 	<ul>
 		<li>By email: contact@pianolit.com</li>
-		<li>By visiting this page on our website: https://pianolit.com/contact-us</li>
+		<li>By visiting this page on our website: https://pianolit.com/support</li>
 
 	</ul>

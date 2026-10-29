@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Files\Uploaders\ImageUpload;
 use App\Shop\{eScore, eScoreTopic};
 use App\Http\Controllers\Traits\ManageFiles;
+use App\Services\Shop\ProductNames;
 
 class eScoresController extends Controller
 {
@@ -36,10 +37,10 @@ class eScoresController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['title' => 'unique:e_scores,title']);
+        $request->merge(['title' => app(ProductNames::class)->validate($request->input('title'))]);
 
         $escore = eScore::create([
-            'slug' => str_slug($request->title),
+            'slug' => ProductNames::slug($request->title),
             'creator_id' => auth()->guard('admin')->user()->id,
             'title' => $request->title,
             'author' => $request->author,
@@ -110,8 +111,9 @@ class eScoresController extends Controller
 
     public function update(Request $request, eScore $escore)
     {
+        $request->merge(['title' => app(ProductNames::class)->validate($request->input('title'), $escore)]);
         $escore->update([
-            'slug' => str_slug($request->title),
+            'slug' => ProductNames::slug($request->title),
             'title' => $request->title,
             'author' => $request->author,
             'subtitle' => $request->subtitle,

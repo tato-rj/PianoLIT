@@ -25,6 +25,6 @@ class WebsiteTracking
             && !auth('admin')->check() && !ExcludedAccounts::request($request)
             && !$request->has('signature')
             && !$request->routeIs('admin.*', 'api.*', 'posts.app', 'password.reset', 'webapp.password.reset',
-                'verification.verify', 'google.*', 'apple.*', 'subscriptions.unsubscribe');
+                'verification.verify', 'google.*', 'apple.*', 'subscriptions.unsubscribe', 'users.orders', 'shop.order', 'shop.order.track');
     }
 }

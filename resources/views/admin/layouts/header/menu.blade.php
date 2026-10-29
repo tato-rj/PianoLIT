@@ -56,6 +56,7 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Shop', 'icon' => 'shopping-cart',
         'dropdown' => [
           ['name' => 'Merchandise', 'route' => route('admin.merchandise.index')],
+          ['name' => 'Orders', 'route' => route('admin.shop-orders.index')],
           [],
           ['name' => 'eBooks', 'route' => route('admin.ebooks.index')],
           ['name' => 'eBook Topics', 'route' => route('admin.ebooks.topics.index')],

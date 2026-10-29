@@ -6,6 +6,13 @@ use Illuminate\Http\Request;
 
 class RedirectsController extends Controller
 {
+    public function support(Request $request)
+    {
+        $query = (string) $request->server('QUERY_STRING', '');
+
+        return redirect()->away(route('contact').($query !== '' ? '?'.$query : ''), 301);
+    }
+
     public function learn(Request $request)
     {
         $origin = parse_url(route('crashcourses.index'));

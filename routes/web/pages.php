@@ -2,7 +2,9 @@
 
 Route::get('/', 'HomeController@index')->name('home');
 
-Route::get('contact-us', 'HomeController@contact')->name('contact');
+Route::get('support', 'HomeController@contact')->name('contact');
+
+Route::get('contact-us', 'RedirectsController@support')->name('legacy.contact');
 
 Route::get('terms-of-service', 'HomeController@terms')->name('terms');
 

@@ -340,3 +340,12 @@ split: conversion mode shows only consented trials and first payments, omitting
 arrival totals/columns and traffic-only rankings. The shared HTML/text campaign
 partials retain compatibility with historical snapshots lacking this mode flag.
 General acquisition/traffic reporting belongs to GA; see `docs/CAMPAIGN_ATTRIBUTION.md`.
+
+
+## Merchandise orders
+
+`shop/orders/confirmed.blade.php` thanks the customer after verified payment and lists the purchased items and total. `shop/orders/shipped.blade.php` describes one shipped package, its carrier, tracking number/link and delivery estimate when present. `shop/orders/delivered.blade.php` sends “Your order arrived!” once the whole order is reported delivered, listing its items and linking to the private order page. Edit their wording and labels directly in those views; all three reuse the existing transactional `mail::message`, table and button components and produce HTML/plain text.
+
+Administration → Emails lists **Merchandise purchase confirmation**, **Merchandise shipped** and **Merchandise delivered** with independent automatic-sending switches and fictional previews. A split shipment receives one shipping email per package; one arrival email follows only after the last package is delivered. All three have duplicate protection, and historical delivered orders are not automatically emailed. Local checkout never sends them. Managers review delivery states in Shop → Orders; an uncertain send must be checked with the mail provider before a manual retry. See `docs/SHOP_CHECKOUT.md` for signed Printful events, setup and durable delivery semantics.
+
+Local merchandise email previews for actual test-order data are available in Admin → Shop → Orders after creating a sample order or simulating shipment. `LocalShopShipmentsController` renders the same `emails/shop/orders` HTML/plain-text templates without sending through a mail provider. See `docs/SHOP_CHECKOUT.md` for the local-only simulator and tracking workflow.

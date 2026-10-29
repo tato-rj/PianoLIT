@@ -60,7 +60,7 @@ class PianistPagesTest extends ReviewTestCase
         $this->pianist('Other artist', ['country_id' => $canada->id]);
         $this->country('Unused country', 'Unused nationality');
         $response = $this->get('http://learn.localhost/great-pianists?search=Artist&country='.$france->id)
-            ->assertOk()->assertSee('Great Pianists')->assertSee('Meet the artists')->assertSee('Join the newsletter')
+            ->assertOk()->assertSee('Great Pianists')->assertSee('Meet the artists')->assertSee('Subscribe')
             ->assertDontSee('Other artist')->assertDontSee('Unused country')->assertDontSee('filterableBy');
         $xpath = $this->xpath($response);
         $this->assertCount(0, $xpath->query('//*[@id="popup-container"]'));

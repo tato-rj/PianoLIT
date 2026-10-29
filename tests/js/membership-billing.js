@@ -10,7 +10,7 @@ function element(attributes = {}) {
         getAttribute(name) {return this.attributes[name];}, setAttribute(name, value) {this.attributes[name] = value;},
         addEventListener(name, callback) {this.events[name] = callback;}, focus() {this.focused = true;}, classList: {contains() {return false;}}};
 }
-function fixture(purpose = 'purchase', invoiceMode = false, split = false, managed = false, invoiceActive = false, deferred = false, saved = false) {
+function fixture(purpose = 'purchase', invoiceMode = false, split = false, managed = false, invoiceActive = false, deferred = false, saved = false, wallets = false) {
     const requests = [], redirects = [], confirmations = [], replies = [];
     const button = element(), errors = element(), coupon = element({'data-coupon-url': '/coupon'}), feedback = element(); coupon.value = '';
     const total = element({'data-base-price': '799'}), mount = element();
@@ -40,7 +40,8 @@ function fixture(purpose = 'purchase', invoiceMode = false, split = false, manag
     label.textContent = purpose === 'card' ? 'Save card' : 'Subscribe for $7.99'; name.value = 'Review Pianist'; postal.value = '10001';
     const mounts = ['cardNumber', 'cardExpiry', 'cardCvc'].map(type => element({'data-stripe-field': type}));
     mounts[0].focus = () => {document.activeElement = mounts[0];};
-    const form = element({'data-operation': 'operation-review', 'data-purpose': purpose, 'data-key': 'pk_review', 'data-prepare': '/prepare', 'data-complete': '/complete'});
+    const form = element({'data-operation': 'operation-review', 'data-purpose': purpose, 'data-key': 'pk_review', 'data-prepare': '/prepare', 'data-complete': '/complete',
+        'data-wallet-amount': '799', 'data-wallet-interval': 'month', 'data-wallet-trial': '7', 'data-wallet-manage': 'https://my.example.test/membership/edit'});
     form.action = '/submit';
     if (saved) form.attributes['data-saved-card-reference'] = 'reference-review';
     form.closest = selector => managed && selector === '[data-checkout-modal]' ? {} : null;
@@ -88,10 +89,15 @@ function fixture(purpose = 'purchase', invoiceMode = false, split = false, manag
     const DOMParser = class {parseFromString(html) {return {querySelector() {return {innerHTML: html};}};}};
     const document = {addEventListener(name, handler) {documentEvents[name] = handler;}, querySelector(selector) {return {'meta[name="csrf-token"]': {content: 'csrf-review'}, '[data-membership-payment]': purpose === 'none' ? null : form, '[data-membership-total]': total, '[data-membership-due]': split ? due : null, '[data-membership-renewal]': split ? renewal : null, '[data-membership-invoices]': invoiceMode ? invoiceRoot : null}[selector] || null;}, querySelectorAll(selector) {return deferred && selector === '[data-payment-card-editor]' ? [editor] : [];}};
     if (invoiceActive) replies.push({html: 'restored invoice rows', after: null});
-    vm.runInNewContext(source, {document, DOMParser, Stripe: () => stripe, fetch, window: {bootstrap: {Modal: {getOrCreateInstance() {return dialog;}}}, CustomEvent: class {constructor(type) {this.type = type;}}, getComputedStyle() {return {color: '#273244', fontFamily: 'system-ui', fontSize: '16px', lineHeight: '24px', getPropertyValue() {return '#697386';}};}, jQuery: invoiceMode ? jquery : null, location: {hash: '', assign(url) { redirects.push(url); }, reload() { redirects.push('reload'); }}}});
+    let walletConfirm;
+    const wallet = {destroy() {this.destroyed = true;}, update() {}};
+    vm.runInNewContext(source, {document, DOMParser, Stripe: () => stripe, fetch, window: {bootstrap: {Modal: {getOrCreateInstance() {return dialog;}}}, CustomEvent: class {constructor(type) {this.type = type;}}, getComputedStyle() {return {color: '#273244', fontFamily: 'system-ui', fontSize: '16px', lineHeight: '24px', getPropertyValue() {return '#697386';}};},
+        PianoLITExpressCheckout: wallets ? {mount(stripe, form, options, confirm) {walletConfirm = confirm; wallet.options = options; return wallet;}} : null,
+        jQuery: invoiceMode ? jquery : null, location: {href: 'https://my.example.test/membership/monthly/checkout', hash: '', assign(url) { redirects.push(url); }, reload() { redirects.push('reload'); }}}});
     return {form, button, errors, coupon, invoiceStatus, invoiceMore, invoiceRetry, invoiceBody, openInvoices() {shown({target:{getAttribute() {return '#invoices-tab';}}});}, feedback, total, stripe, card, requests, redirects, confirmations, replies,
         due, renewal, consent, charge, label, status, name, postal, hosted, preview, cardName, brandLabel, documentEvents, signals, opener, editor, cancel, close, dialog, trap, savedCard, addCard, newFields, newPreview, savedDetails, savedCheck,
         ready() {Object.values(hosted).forEach(field => field.events.ready());},
+        wallet, confirmWallet() {return walletConfirm({confirm: async function () {confirmations.push(['wallet_setup']); return {setupIntent: {id: 'seti_wallet'}};}});},
         submit() {return form.events.submit({preventDefault() {}});}};
 }
 function managementFixture() {
@@ -380,6 +386,17 @@ module.exports = async function () {
     await f.submit(); assert.deepStrictEqual(f.requests.map(r => r.url), ['/coupon']);
     assert(f.errors.textContent.includes('remove the code'));
     assert.strictEqual(f.button.disabled, false);
+
+    f = fixture('purchase', false, true, false, false, false, true, true);
+    f.replies.push({operation_id: 'wallet-operation', setup_secret: 'seti_wallet_secret_review'}, {complete: true}, {redirect: '/welcome'});
+    await f.confirmWallet();
+    assert.strictEqual(JSON.parse(f.requests[0].options.body).use_saved_card, false, 'A wallet never silently charges the selected saved card');
+    assert.strictEqual(JSON.parse(f.requests[1].options.body).setup_intent, 'seti_wallet');
+    assert.deepStrictEqual(f.redirects, ['/welcome']);
+    assert.strictEqual(f.wallet.options.mode, 'setup');
+    assert.strictEqual(f.wallet.options.applePay.recurringPaymentRequest.regularBilling.amount, 799);
+    f.documentEvents['checkout:dispose']({target: {querySelector() {return f.form;}}});
+    assert.strictEqual(f.wallet.destroyed, true);
 
     f = fixture('none', true);
     assert.strictEqual(f.requests.length, 0, 'Invoice history is lazy.');

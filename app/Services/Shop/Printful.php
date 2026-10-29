@@ -5,9 +5,16 @@ namespace App\Services\Shop;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
-/** Server-only, read-only foundation for the merchandise shop. */
+/** Server-only catalog client and bounded transport for guarded order operations. */
 class Printful
 {
+    public function enabled(): bool
+    {
+        // Local development must never use the installed real-store credential,
+        // including when an older configuration cache still contains it.
+        return !app()->environment('local') && (bool) config('services.printful.enabled', true);
+    }
+
     public function stores(): array
     {
         return $this->get('stores')['result'];
@@ -29,6 +36,18 @@ class Printful
         }
 
         return $this->get('store/products/'.$id)['result'];
+    }
+
+    public function catalogProduct(int $id, int $timeout = 5): array
+    {
+        if ($id < 1) throw new PrintfulException('A positive Printful catalog product ID is required.');
+        return $this->get('products/'.$id, [], max(1, min(5, $timeout)))['result'];
+    }
+
+    public function catalogVariant(int $id, int $timeout = 5): array
+    {
+        if ($id < 1) throw new PrintfulException('A positive Printful catalog variant ID is required.');
+        return $this->get('products/variant/'.$id, [], max(1, min(5, $timeout)))['result'];
     }
 
     public function storeId(): string
@@ -56,22 +75,29 @@ class Printful
         return $token;
     }
 
-    private function get(string $path, array $query = []): array
+    private function get(string $path, array $query = [], int $timeout = 15): array
     {
+        return $this->request('GET', $path, $query, $timeout);
+    }
+
+    protected function request(string $method, string $path, array $data = [], int $timeout = 15, bool $allowMissing = false): ?array
+    {
+        if (!$this->enabled()) throw new PrintfulException('Printful is disconnected in this environment.');
         $storeId = $this->storeId();
         $token = $this->token();
 
         try {
             $response = Http::acceptJson()->withToken($token)
                 ->withHeaders(['X-PF-Store-Id' => $storeId])
-                ->withOptions(['allow_redirects' => false, 'connect_timeout' => 5])
-                ->timeout(15)->get('https://api.printful.com/'.$path, $query);
+                ->withOptions(['allow_redirects' => false, 'connect_timeout' => min(5, $timeout)])
+                ->timeout($timeout)->send($method, 'https://api.printful.com/'.$path, [$method === 'GET' ? 'query' : 'json' => $data]);
         } catch (ConnectionException $exception) {
             // Upstream exception text can contain request headers. Do not chain it.
             throw new PrintfulException('Printful could not be reached. Try again later.');
         }
 
         if (!$response->successful()) {
+            if ($allowMissing && $response->status() === 404) return null;
             if ($response->status() === 404 && preg_match('#^store/products/[1-9][0-9]*$#D', $path)) {
                 throw new PrintfulProductNotFound('This product is no longer available in Printful.');
             }
@@ -80,6 +106,8 @@ class Printful
         }
 
         $body = $response->json();
+        // Most v2 resources use a data envelope; webhook settings retain code/result.
+        if (strpos($path, 'v2/') === 0 && is_array($body) && isset($body['data']) && is_array($body['data'])) return $body;
         if (!is_array($body) || ($body['code'] ?? null) !== 200 || !isset($body['result']) || !is_array($body['result'])) {
             throw new PrintfulException('Printful returned an unexpected response.');
         }

@@ -4,27 +4,24 @@ namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
 use App\Shop\{eBook, eBookTopic};
-use App\Filters\ProductFilters;
 use Illuminate\Http\Request;
 use App\Billing\Factories\StripeFactory;
+use App\Services\Shop\{ProductPage, Storefront, MerchandiseBag};
 
 class eBooksController extends Controller
 {
-    public function index(ProductFilters $filters)
+    public function index(Request $request, Storefront $catalog, MerchandiseBag $bag)
     {
-    	$products = eBook::published()->latest()->filter($filters)->paginate(12);
-        $topics = eBookTopic::has('ebooks')->get();
-
-    	return view('shop.products.ebooks', compact(['products', 'topics']));
+        return app(MerchandiseController::class)->index($request, $catalog, $bag, 'ebooks');
     }
 
-    public function show(eBook $ebook)
+    public function show(Request $request, eBook $ebook, ProductPage $page)
     {
-    	return view('shop.products.show.index', ['product' => $ebook]);    	
+        return view('shop.storefront.show', $page->data($ebook, $request));
     }
 
-    public function checkout(eBook $ebook)
+    public function checkout(eBook $ebook, Request $request)
     {
-        return view('shop.checkout.index', ['product' => $ebook]);
+        return app(CheckoutController::class)->digital($request, $ebook, 'ebooks');
     }
 }

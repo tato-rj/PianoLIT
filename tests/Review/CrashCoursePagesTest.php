@@ -155,7 +155,7 @@ class CrashCoursePagesTest extends ReviewTestCase
         $xpath = $this->xpath($response);
         $this->assertCount(2, $xpath->query('//a[contains(@class,"resource-card")]'));
         $this->assertCount(1, $xpath->query('//nav[@aria-label="Course topics"]//a[@aria-current="page" and contains(.,"All courses")]'));
-        $this->assertCount(1, $xpath->query('//main//button[@data-view="newsletter-subscription"]'));
+        $this->assertCount(1, $xpath->query('//header[contains(@class,"site-header")]//button[@data-view="newsletter-subscription"]'));
         $this->preview($response, 'directory');
         $popup = $this->get('http://learn.localhost/subscriptions/modal?view=crashcourse')->assertOk();
         $popup->assertSee('crashcourse-popup-form-email')->assertSee('Start this free course')->assertSee('action="'.route('crashcourses.signup', $course).'"', false);

@@ -10,11 +10,13 @@
         'title' => 'Manage product images', 'subtitle' => $product->name,
         'breadcrumbs' => [['label' => 'Merchandise', 'url' => route('admin.merchandise.index', $returnFilters)]],
     ])
+        @if(app(\App\Services\Shop\Printful::class)->enabled() && (int) $product->printful_store_id !== 0)
         <form method="POST" action="{{ route('admin.merchandise.refresh', ['merchandise' => $product] + $returnFilters) }}">
             @csrf
             <input type="hidden" name="revision" value="{{ $product->revision }}">
             <button class="btn btn-dark btn-sm" type="submit">@icon('refresh-cw')Refresh from Printful</button>
         </form>
+        @endif
     @endcomponent
     @if($errors->getBag('merchandise')->any())
         <div class="alert alert-red" role="alert"><ul class="mb-0">@foreach($errors->getBag('merchandise')->all() as $message)<li>{{ $message }}</li>@endforeach</ul></div>

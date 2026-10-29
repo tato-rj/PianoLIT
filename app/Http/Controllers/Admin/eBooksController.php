@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Files\Uploaders\ImageUpload;
 use App\Shop\{eBook, eBookTopic};
 use App\Http\Controllers\Traits\ManageFiles;
+use App\Services\Shop\ProductNames;
 
 class eBooksController extends Controller
 {
@@ -36,10 +37,10 @@ class eBooksController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['title' => 'unique:e_books,title']);
+        $request->merge(['title' => app(ProductNames::class)->validate($request->input('title'))]);
 
         $ebook = eBook::create([
-            'slug' => str_slug($request->title),
+            'slug' => ProductNames::slug($request->title),
             'creator_id' => auth()->guard('admin')->user()->id,
             'title' => $request->title,
             'author' => $request->author,
@@ -110,8 +111,9 @@ class eBooksController extends Controller
 
     public function update(Request $request, eBook $ebook)
     {
+        $request->merge(['title' => app(ProductNames::class)->validate($request->input('title'), $ebook)]);
         $ebook->update([
-            'slug' => str_slug($request->title),
+            'slug' => ProductNames::slug($request->title),
             'title' => $request->title,
             'author' => $request->author,
             'subtitle' => $request->subtitle,

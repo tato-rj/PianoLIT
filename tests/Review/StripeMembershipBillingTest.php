@@ -63,6 +63,25 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->gateway->calls = [];
     }
 
+    public function test_wallet_return_strips_provider_secrets_and_requires_a_session_bound_checkout()
+    {
+        $id = (string) Str::uuid();
+        $prepared = $this->postJson(route('webapp.membership.prepare', $this->plan), ['operation_id' => $id, 'wallet' => true])
+            ->assertOk()->json();
+        $this->gateway->confirm($prepared['setup_intent']);
+        $this->get(route('webapp.membership.checkout', $this->plan).'?'.http_build_query([
+            'setup_intent' => $prepared['setup_intent'], 'setup_intent_client_secret' => 'not-for-html', 'redirect_status' => 'succeeded']))
+            ->assertRedirect(route('webapp.membership.checkout', $this->plan));
+        $html = $this->getJson(route('webapp.membership.checkout', $this->plan))->assertOk()->json('html');
+        $this->assertStringContainsString('data-wallet-resume="'.$id.'"', $html);
+        $this->assertStringNotContainsString('not-for-html', $html);
+        $this->assertCount(0, $this->gateway->callsTo('subscriptions', 'create'), 'The return GET never purchases a membership');
+        $this->get(route('webapp.membership.checkout', $this->plan).'?'.http_build_query([
+            'setup_intent' => 'seti_unrelated', 'setup_intent_client_secret' => 'untrusted', 'redirect_status' => 'succeeded']))
+            ->assertRedirect(route('webapp.membership.checkout', $this->plan));
+        $this->assertStringContainsString('data-wallet-resume=""', $this->getJson(route('webapp.membership.checkout', $this->plan))->assertOk()->json('html'));
+    }
+
     public function test_ended_membership_settings_keeps_history_and_offers_new_checkout_with_saved_card()
     {
         $this->endedCustomer();
@@ -132,7 +151,7 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->assertSame($payments, DB::table('payments')->get()->toJson());
         $this->assertSame('pm_review', $this->gateway->callsTo('paymentMethods', 'detach')[0]['id']);
         $this->assertDatabaseHas('stripe_billing_operations', ['id' => $id, 'state' => 'complete', 'payment_source_id' => 'pm_review']);
-        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('No card on file.')->assertDontSee('membership-remove-card-confirmation');
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('No card on file')->assertDontSee('membership-remove-card-confirmation');
         $checkout = $this->getJson(route('webapp.membership.checkout', $this->plan))->assertOk()->json('html');
         $this->assertStringNotContainsString('data-checkout-saved-card', $checkout);
         $this->billing->refreshCard($this->source(), $this->gateway->subscriptions['sub_review']);
@@ -177,7 +196,7 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->assertCount(1, $mutations);
         $this->assertSame('paymentMethods', $mutations[0]['resource']);
         $this->assertSame('detach', $mutations[0]['method']);
-        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('No card on file.')
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('No card on file')
             ->assertSee('data-bs-target="#membership-card-editor"', false)->assertDontSee('membership-remove-card-confirmation');
         $this->billing->refreshCard($this->source(), $this->gateway->subscriptions['sub_review']);
         $this->assertFalse((bool) $this->source()->hasCard());

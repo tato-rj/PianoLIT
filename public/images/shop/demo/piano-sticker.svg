@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <title>Local sample: More piano sticker</title>
+  <g transform="rotate(-9 300 300)">
+    <rect x="121" y="154" width="378" height="316" rx="28" fill="#191919" opacity=".12"/>
+    <rect x="110" y="140" width="378" height="316" rx="28" fill="white"/>
+    <rect x="123" y="153" width="352" height="290" rx="18" fill="#b8efda" stroke="#191919" stroke-width="4"/>
+    <text x="299" y="219" text-anchor="middle" fill="#191919" font-family="Arial,sans-serif" font-size="40" font-weight="800">MORE PIANO</text>
+    <rect x="155" y="248" width="288" height="154" rx="6" fill="white" stroke="#191919" stroke-width="4"/>
+    <path d="M196 249V400 M237 249V400 M278 249V400 M319 249V400 M360 249V400 M401 249V400" stroke="#191919" stroke-width="3"/>
+    <g fill="#191919"><rect x="182" y="249" width="28" height="96"/><rect x="223" y="249" width="28" height="96"/><rect x="305" y="249" width="28" height="96"/><rect x="346" y="249" width="28" height="96"/><rect x="387" y="249" width="28" height="96"/></g>
+  </g>
+</svg>

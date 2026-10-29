@@ -31,6 +31,9 @@ class Accounts
         $value = config('services.stripe.'.$account.'_'.$name);
         if (!$value && $account === 'us') $value = config('services.stripe.'.$name);
         if (!is_string($value) || $value === '') throw new \RuntimeException('Stripe billing is temporarily unavailable.');
+        if (app()->environment('local') && strpos($value, ($name === 'key' ? 'pk_test_' : 'sk_test_')) !== 0) {
+            throw new BillingException('Local membership checkout requires Stripe test keys. Live payments are disabled locally.');
+        }
         return $value;
     }
 }

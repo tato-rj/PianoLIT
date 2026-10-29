@@ -97,7 +97,7 @@ class BlogSubdomainTest extends ReviewTestCase
         $response = $this->get(route('posts.show', $post))->assertOk()->assertSee('Existing article content.')->assertDontSee('disqus');
         $response->assertSee('<link rel="canonical" href="'.$origin.'/'.$post->slug.'"', false)
             ->assertSee('href="http://blog.localhost/login"', false)
-            ->assertSee('href="http://localhost/contact-us"', false)
+            ->assertSee('href="http://localhost/support"', false)
             ->assertSee('data-url="'.$origin.'/subscriptions/modal"', false)
             ->assertSee('data-url="'.$origin.'/'.$post->slug.'/gift"', false);
         $this->assertSame('http://localhost', route('home'));
@@ -155,9 +155,9 @@ class BlogSubdomainTest extends ReviewTestCase
             }
         }
         $response->assertSee('href="'.$blog.'/login"', false)
-            ->assertSee('href="'.$baseUrl.'/contact-us"', false);
+            ->assertSee('href="'.$baseUrl.'/support"', false);
         $this->assertSame($baseUrl, $xpath->query('//header//a[@aria-label="PianoLIT home"]')->item(0)->getAttribute('href'));
-        $this->assertSame(1, $xpath->query('//footer//a[@href="'.$baseUrl.'/contact-us" and text()="Support"]')->length);
+        $this->assertSame(1, $xpath->query('//footer//a[@href="'.$baseUrl.'/support" and text()="Support"]')->length);
         $this->assertSame($baseUrl, route('home'));
         $this->assertSame(parse_url($baseUrl, PHP_URL_SCHEME).'://learn.'.$host.'/circle-of-fifths', route('tools.circle-of-fifths'));
         $this->assertSame('/circle-of-fifths', route('tools.circle-of-fifths', [], false));
@@ -207,7 +207,7 @@ class BlogSubdomainTest extends ReviewTestCase
         Model::withoutEvents(function () { create(\App\Shop\eBook::class, ['title' => 'Unpublished book', 'published_at' => null]); });
         $response = $this->get(route('posts.index'))->assertOk()->assertSee('Explore PianoLIT')->assertDontSee('Unpublished book')
             ->assertSee('data-url="http://blog.localhost/subscriptions/modal"', false)
-            ->assertSee('href="http://localhost/contact-us"', false)->assertDontSee('Coming up soon!');
+            ->assertSee('href="http://localhost/support"', false)->assertDontSee('Coming up soon!');
         foreach ($items as $item) {
             $response->assertSee($item->title)->assertSee('href="'.$item->showRoute().'"', false);
         }

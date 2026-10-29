@@ -18,10 +18,10 @@ class ConfirmPurchase extends Mailable
      *
      * @return void
      */
-    public function __construct($item)
+    public function __construct($item, $user = null)
     {
         $this->item = $item;
-        $this->user = auth()->user();
+        $this->user = $user ?? auth()->user();
     }
 
     /**

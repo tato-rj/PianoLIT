@@ -155,7 +155,7 @@ class InfographicPagesTest extends ReviewTestCase
         $this->assertCount(4, $this->xpath($response)->query('//a[contains(@class,"resource-card")]'));
         $xpath = $this->xpath($response);
         $this->assertCount(1, $xpath->query('//nav[@aria-label="Infographic topics"]//a[@aria-current="page" and contains(.,"All infographics")]'));
-        $this->assertCount(1, $xpath->query('//main//button[@data-view="newsletter-subscription"]'));
+        $this->assertCount(1, $xpath->query('//header[contains(@class,"site-header")]//button[@data-view="newsletter-subscription"]'));
         $this->preview($response, 'directory');
     }
 }

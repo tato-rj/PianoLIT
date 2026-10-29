@@ -11,9 +11,9 @@
 					@include('components.account.account-circle')
 				</li>
 			@endauth
-			<li class="nav-item d-flex align-items-center">
+{{-- 			<li class="nav-item d-flex align-items-center">
 				@include('components.navigation.hub-menu.button')
-			</li>
+			</li> --}}
 		</ul>
 	</nav>
 </header>

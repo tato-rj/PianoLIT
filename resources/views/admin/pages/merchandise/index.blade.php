@@ -4,8 +4,8 @@
 <div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', [
         'title' => 'Merchandise',
-        'subtitle' => 'Import Printful products and manage the images for your shop.',
-        'action' => ['label' => 'Import from Printful', 'url' => route('admin.merchandise.discover')],
+        'subtitle' => app()->environment('local') ? 'Local sample products. Printful is disconnected on this machine.' : 'Import Printful products and manage the images for your shop.',
+        'action' => app(\App\Services\Shop\Printful::class)->enabled() ? ['label' => 'Import from Printful', 'url' => route('admin.merchandise.discover')] : null,
     ])
     @if($syncNotice)<div class="alert alert-grey" role="status">{{ $syncNotice }}</div>@endif
     @component('admin.components.table', [
@@ -19,13 +19,13 @@
         ],
         'emptyTitle' => $filters['search'] !== '' ? 'No matching products' : 'No merchandise yet',
         'emptyDescription' => $filters['search'] !== '' ? 'Try another product name or clear the search.' : 'Publish a product to your PianoLIT store in Printful, then import it here.',
-        'emptyAction' => ['label' => 'Import from Printful', 'url' => route('admin.merchandise.discover')],
+        'emptyAction' => app(\App\Services\Shop\Printful::class)->enabled() ? ['label' => 'Import from Printful', 'url' => route('admin.merchandise.discover')] : null,
     ])
         @foreach($products as $product)
         <tr>
             <td><div class="d-flex align-items-center gap-3">
                 @if($product->mainImage)<img src="{{ $product->mainImage->url }}" alt="" width="64" height="64" class="rounded object-fit-contain" loading="lazy">@endif
-                <div><a class="admin-table__primary" href="{{ route('admin.merchandise.edit', ['merchandise' => $product] + $returnFilters) }}">{{ $product->name }}</a><small>Printful #{{ $product->printful_product_id }}</small></div>
+                <div><a class="admin-table__primary" href="{{ route('admin.merchandise.edit', ['merchandise' => $product] + $returnFilters) }}">{{ $product->name }}</a><small>{{ (int) $product->printful_store_id === 0 ? 'Local sample' : 'Printful #'.$product->printful_product_id }}</small></div>
             </div></td>
             <td>{{ count($product->variants) }}</td>
             <td>{{ $product->images_count }}</td>

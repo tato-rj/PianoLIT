@@ -3,6 +3,7 @@
 return [
 
     'printful' => [
+        'enabled' => env('PRINTFUL_ENABLED', true),
         'token' => env('PRINTFUL_API_TOKEN'),
         'token_file' => env('PRINTFUL_API_TOKEN_FILE', storage_path('app/private/printful-api-token')),
         'store_id' => env('PRINTFUL_STORE_ID', '18973423'),

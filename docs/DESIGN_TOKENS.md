@@ -430,6 +430,9 @@ stylesheet precedence. Page templates request only their main bundle.
 `components.billing.payment-card-fields` supplies the three Stripe-hosted mounts and native cardholder/postal fields. Pass a unique `prefix` and the initial `cardholder` value. Native fields use `@input` and shared labels; field layout lives in `components/_payment-card-fields.scss`. Checkout and Billing use this same component. Billing's editor uses `components.dialogs.modal` at body level; its `data-deferred-card` form mounts after the modal is shown, focuses the card number once ready without overriding another user-selected field, and clears its draft after any dismissal while reusing the hosted fields on reopen. The dialog blocks dismissal during verification and temporarily releases its focus trap for Stripe's bank challenge, restoring it on failure. The existing verified SetupIntent flow remains responsible for saving the card.
 
 
+`components.billing.checkout.modal` is the common full-screen payment surface for merchandise, paid eBooks/eScores and membership. The order summary and PianoLIT logo sit in the white rounded panel on the left; payment details sit directly on the open background to the right. Keep the shared layout centered at a maximum of 1080px, with a naturally sized summary card, paired contact fields and one set of grid gutters between address rows. Preserve standard control sizes and typography. Keep this order in the loading state and on phones, where the panels stack. Reuse its payment/summary slots, loading state, secure card fields, shared primary/secondary buttons and cancel/focus lifecycle. `components.billing.checkout.wallets` mounts the shared `express-checkout.js` Stripe controller above card details; only real available Apple Pay/Google Pay buttons appear on valid HTTPS domains. Unsupported devices retain cards without an empty wallet separator. Never draw fake wallet buttons in a preview. Shop's checkout uses this common payment design, including its rounded shared controls, rather than overriding it with the storefront's outlined skin. Shipping/billing fields and priced product rows extend the same shell. See `docs/SHOP_CHECKOUT.md` for behavior and activation.
+
+
 ## Public hub breadcrumbs
 
 Use `components.navigation.breadcrumb` above the content of every redesigned public hub
@@ -444,8 +447,12 @@ container. Start with `['label' => 'Home', 'url' => route('home')]`, add the hub
 any actual parents using named routes, then the current page's label. The last
 item is unlinked with `aria-current="page"`; labels are escaped and long titles
 wrap. Topic filters and pagination keep the directory trail. The component reuses
-Bootstrap breadcrumb, spacing, small-text and wrapping utilities and the shared
-link finish. Its specimen is under Settings → Design System → Components.
+Bootstrap breadcrumb, spacing and wrapping utilities. All public hubs share the
+Shop reference finish: regular 16px body text, normal letter spacing, dark links,
+muted slash separators and a muted current page, with an underline on hover or
+keyboard focus. `components/_breadcrumb.scss`, included by `shared.scss`, owns
+this finish; do not add hub-specific breadcrumb overrides. Its specimen is under
+Settings → Design System → Components.
 
 ## Admin breadcrumbs
 
@@ -591,18 +598,34 @@ with `showCarousel => false`: a shadowed panel centered horizontally and vertica
 using the Bootstrap grid, without the onboarding carousel. Login/register retain it.
 Their forms retain the existing same-host endpoints, CSRF fields and reset token.
 
-The homepage footer is also shared across all full public pages, including the
+The standard footer is shared across all full public pages, including the
 temporary project pages and public account-security screens. Standalone login
 and registration are excluded. Use
 `components.layout.public.footer` through `layouts.footer`; its `.site-footer` styles
 live in `components/_public-footer.scss`. Keep the existing message,
-Contact/Privacy/Terms links and copyright. The `.public-site` shell uses Bootstrap
+Support/Privacy/Terms links and copyright. Arthur’s October 28 reference is the
+standard across every hub using this footer: regular 12px shared body text,
+muted gray, no added letter spacing, and blue underlined links on hover or
+keyboard focus. A centered, wrapping row of all seven hubs (Web app, iOS app,
+Learn, Games, Shop, Metronome and Blog) sits above the centered Support/Privacy/Terms
+links, using the same link finish and Bootstrap grid. The homepage's alternate
+two-caption footer retains its own layout. Footer destinations without this shared
+navigation (Web app, iOS app and Metronome) open in new tabs with
+`target="_blank" rel="noopener noreferrer"`; Learn, Games, Shop, Blog and links
+back to the main homepage stay in the same tab.
+Keep typography, spacing and link behavior in the shared
+component/styles, without hub-specific overrides. The `.public-site` shell uses Bootstrap
 flex/height utilities to keep the footer at the bottom of short pages. Both
 shared templates use Bootstrap `container`, `row`, `col-*` and spacing/alignment
 classes for layout, so width and responsive behavior can be adjusted directly
 in Blade. The footer's three `col-12 col-md-4` groups stack on mobile. Sass
 retains typography, colors and link states. Web app, admin and embedded mobile
 layouts retain their own footers.
+
+The Support center's canonical main-site URL is `/support`, preserving the
+`contact` route name so shared links update automatically. Legacy `/contact-us`
+GET/HEAD requests redirect permanently to the main `/support` URL with their raw
+query strings intact.
 
 The Shop and Games root placeholders use
 `projects.coming-soon` with the shared header/footer, centered Coming up soon
@@ -751,28 +774,33 @@ heading rhythm, and responsive YouTube/Vimeo framing. These rules are scoped to
 the public article; mobile embeds retain their existing typography and media.
 Stored article HTML, cover credits and references are preserved.
 
-`components.newsletter.subscribe-button` supplies the shared primary mail-icon
-opener used in the Blog and Learn introductions and newsletter invitations.
+`components.newsletter.subscribe-button` supplies the shared brand-blue Subscribe
+pill with a white mail icon, used in the Blog and Learn site headers and newsletter
+invitations. It matches the homepage YouTube button's compact size, semibold type,
+pill radius and shadow-free finish through shared button tokens and Bootstrap utilities.
 Its modal URL stays on the request host; `label` changes the caption and
 `preview: true` makes a Design System sample inert.
 
-`components.layout.hub-header` owns the shared landing-page heading, description and
-placement of that newsletter action. Blog and Learn pass a plain `heading`
+`components.layout.hub-header` owns the shared landing-page heading and description.
+Blog and Learn pass a plain `heading`
 (`PianoLIT Blog` / `PianoLIT Learn`) and their description as the slot. Every
 redesigned hub root uses this same simple title treatment, matching Blog's
 responsive 32–48px size, line height and letter spacing; the description uses
 the shared 16px body token and muted text. The shared styles live in
 `components/_hub-header.scss`, including the Design System specimen.
 The shared header uses Bootstrap `mb-5` (48px) to separate it from page content.
-The button appears to the right,
-bottom-aligned on desktop, and below the introduction on phones, without
-extra text above it. Reuse this component as other public hub roots are
+The component opts into `public-header-newsletter`, placing Subscribe in
+`components.layout.public.header` immediately before the account circle, in the
+same position as the homepage's YouTube button. It no longer renders an action
+beside or below the introduction. `showNewsletter: false` suppresses this opt-in;
+Design System previews do not opt in. Reuse this component as other public hub roots are
 redesigned. Do not add a newsletter invitation card at the bottom of any hub root;
 use the shared header action. Its Design System specimen uses `preview: true`.
 
 `components.newsletter.invitation` provides the reusable pastel newsletter panel
-for article and tool detail pages, with the standard primary button and existing
-same-host subscription modal.
+for article and tool detail pages, with the same blue Subscribe pill and existing
+same-host subscription modal. These pages also opt into the top-header action;
+their contextual newsletter invitation remains available within the content.
 Pass a unique `headingId`; `preview: true` renders an inert Design System sample.
 The article explicitly passes `preview: false` so editorial previews also retain
 the subscription action. Related stories reuse `blog.components.story-card` in
@@ -946,3 +974,15 @@ positioning; the Design System includes this same variant. Profile portraits use
 the standard white surface, border, small radius and lift, with 80px square album
 art and shared type/links. Layout-specific rules stay in `pages/_pianists.scss`.
 See `PIANISTS.md` for controls, data states and the editing map.
+
+
+## Shop storefront exception
+
+Color options include a 22px square swatch beside the readable name. The swatch uses saved Printful catalog hex codes, including a diagonal split for two-tone variants, and keeps its color through button hover/selection. The button retains ordinary contrast and keyboard feedback; missing or conflicting provider color metadata stays text-only. Never add named-color CSS mappings for products.
+
+Arthur’s October 28 video reference explicitly gives Shop its own component finish: white page surface, square black outlines, mint actions, yellow price tags and a four/two-column product grid. Arthur subsequently removed flat offset shadows from all Shop UI elements, including hover/pressed states, reserving that treatment for Games. Cards and buttons no longer shift to simulate shadow depth. Product-card actions reveal with a 180ms fade and 12px upward slide on card hover or keyboard focus; retain the shared color transition too. On touch devices the action stays visible, and reduced-motion preferences disable the transition. White buttons/options/gallery controls turn black with white text on hover or keyboard focus; mint buttons darken from `#b8efda` to `#96d9be` while retaining dark text, and already-dark controls turn charcoal. Disabled controls do not react. No decorative star. `resources/sass/storefront.scss` is a separate scoped entry, loaded by the Shop storefront shell and its Design System specimen; legacy digital catalog directories now share the same category view. Fonts remain the shared body/Poppins families, 16px body/control text, 44px desktop and 32px phone headings. The reference’s giant monospace titles and textured background are not used. Reuse `shop.storefront.components` for product cards, branding, gallery, price, Details, options and quantity controls.
+
+Shop’s header uses the standard responsive PianoLIT logo size (`clamp(48px, 7vw, 64px)`) beside plain Shop text, without a highlighted label or an extra PianoLIT wordmark. Its header row uses `mx-lg-4`, and all storefront pages use `components.layout.public.content` plus the usual inner container, matching the other hubs’ content edges. The right side contains Bag and the shared account circle/menu. All, T-shirts, Stickers, eBooks and eScores are outlined category links to the root or `/t-shirts`, `/stickers`, `/ebooks` and `/escores`; published downloads share its product cards rather than separate header links. All Products groups T-shirts across the first two desktop columns and Stickers across the next two, followed by full-width eScores and eBooks sections. Small 16px category headings with right arrows link to the same category destinations as the top navigation, preserving the search query; category-filtered pages omit group headings and redundant card category labels. Each section has one horizontal row with 44px previous/next controls at the heading’s right edge, using `shop.storefront.components.category-row` (also shown in the Design System). Physical sections show two cards, full-width digital sections four. On phones sections stack with two cards visible. Controls disable at scroll boundaries; native touch/keyboard scrolling and reduced-motion preferences are retained. Selected category pages show the complete matching product grid without row arrows or pagination. Merchandise, eBook and eScore details all render `shop.storefront.show` through the web-only `Shop\ProductPage` service, sharing the gallery, price tag, title and open, unboxed Details section. Product-specific partials add options or purchase/download actions; digital editions add their full description, topics, preview/audio, reviews and related cards. Preserve paid/free/member/owned actions and existing digital checkout/download behavior. Paid digital editions use the shared full-screen checkout shell and remain separate from the merchandise bag; free/member/owned actions retain their existing behavior. The Design System uses the actual shared gallery and price partials.
+
+
+Customer merchandise tracking reuses the shared account shell, `profile-panel`, standard headings/buttons and eight-item pagination at `/profile/orders`. Keep My downloads separate and cross-link the two pages. All account menus reuse `components.account.menu`, whose Track your orders entry always links to main. The private Shop order view reuses the storefront shell and `shop.storefront.components.order-tracking` for carrier details, package items, safe external tracking links, delivery estimates and recent carrier events, without a second tracking app design. Receipt and email links lead to that same view; external carrier links open safely in a new tab.

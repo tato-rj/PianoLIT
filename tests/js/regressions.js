@@ -36,6 +36,10 @@ function element(value = '') {
 }
 
 async function main() {
+    require('./storefront.test.cjs')();
+    await require('./storefront-bag.test.cjs')();
+    await require('./express-checkout.test.cjs')();
+    await require('./merchandise-checkout.test.cjs')();
     await require('./shop-product.test.cjs')();
     await require('./shop-checkout.test.cjs')();
     await require('./quizzes.test.cjs')();

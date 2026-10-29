@@ -1,7 +1,11 @@
 <form action="{{ route('webapp.membership.purchase', $plan) }}" method="POST" id="payment-form" class="membership-payment-form"
     @if($savedCard) data-saved-card-reference="{{ $savedCard['reference'] }}" @endif data-checkout-payment data-membership-payment data-purpose="purchase" data-key="{{ $stripeKey }}" data-operation="{{ $operationId }}" data-split-card
-    data-prepare="{{ route('webapp.membership.prepare', $plan) }}" data-complete="{{ route('webapp.membership.complete') }}">
+    data-prepare="{{ route('webapp.membership.prepare', $plan) }}" data-complete="{{ route('webapp.membership.complete') }}"
+    data-wallet-controller="{{ mix('js/components/express-checkout.js') }}" data-wallet-amount="{{ $plan->price }}"
+    data-wallet-interval="{{ $plan->interval }}" data-wallet-trial="{{ $trialDays }}" data-wallet-manage="{{ route('webapp.membership.edit') }}"
+    data-wallet-return="{{ route('webapp.membership.checkout', $plan) }}" data-wallet-resume="{{ $walletResume ?? '' }}">
     @csrf
+    @include('components.billing.checkout.wallets')
     <div class="checkout-card-and-fields">
         @if($savedCard)
         <div class="d-grid gap-3">

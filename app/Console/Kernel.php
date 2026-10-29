@@ -29,6 +29,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('games:cleanup-duels')->everyMinute()->withoutOverlapping();
         $schedule->command('printful:sync-catalog')->everyFiveMinutes()->withoutOverlapping(5);
+        $schedule->command('shop:process-orders')->everyMinute()->withoutOverlapping(5);
+        $schedule->command('shop:send-order-emails')->everyMinute()->withoutOverlapping(5);
+        $schedule->command('shop:sync-shipments')->everyFifteenMinutes()->withoutOverlapping(10)->runInBackground();
         $schedule->command('attribution:prune')->daily();
         $schedule->command('analytics:send-conversions')->everyMinute()->withoutOverlapping();
         $schedule->command('freepicks:sync-history')->everyMinute()->withoutOverlapping();

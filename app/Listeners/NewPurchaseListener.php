@@ -17,8 +17,9 @@ class NewPurchaseListener
      */
     public function handle(PurchaseMade $event)
     {
-        if (! $event->purchase->item->isFree() && app(\App\Mail\AutomaticEmailSettings::class)->enabled('purchase-confirmation'))
-            \Mail::to(auth()->user()->email)->send(new ConfirmPurchase($event->purchase->item));
+        $owner = $event->purchase->user;
+        if ($owner && ! $event->purchase->item->isFree() && app(\App\Mail\AutomaticEmailSettings::class)->enabled('purchase-confirmation'))
+            \Mail::to($owner->email)->send(new ConfirmPurchase($event->purchase->item, $owner));
 
         Admin::notifyAll(new NewPurchaseCompleted($event->purchase));
     }

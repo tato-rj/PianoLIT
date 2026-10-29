@@ -134,7 +134,7 @@ class LearnSubdomainTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//a[@href="http://localhost"]')->length);
         $this->assertSame(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//*[@aria-current="page" and contains(., "Learn")]')->length);
         $this->assertSame(1, $xpath->query('//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
-        $this->assertSame(1, $xpath->query('//header[contains(@class, "hub-header")]//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
+        $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header")]//button[@data-view="newsletter-subscription" and @data-url="http://learn.localhost/subscriptions/modal"]')->length);
         foreach (['/timeline', '/birthdays', '/true-or-false', '/riddles', '/tools/staff'] as $retired) {
             $this->assertSame(0, $xpath->query('//main//a[contains(@href, "'.$retired.'")]')->length);
         }
@@ -277,7 +277,7 @@ class LearnSubdomainTest extends ReviewTestCase
             $response = $this->get('http://learn.localhost/'.$path)->assertOk()->assertSee($title)
                 ->assertSee('<link rel="canonical" href="http://learn.localhost/'.$path.'"', false)
                 ->assertSee('href="http://localhost"', false)
-                ->assertSee('href="http://localhost/contact-us"', false)
+                ->assertSee('href="http://localhost/support"', false)
                 ->assertSee('data-url="http://learn.localhost/subscriptions/modal"', false)
                 ->assertDontSee('http://learn.localhost/tools/', false);
             $response->assertSee('href="http://learn.localhost/login"', false);

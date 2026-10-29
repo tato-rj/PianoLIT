@@ -31,7 +31,7 @@ class MerchandiseController extends Controller
         } catch (PrintfulException $exception) {
             $syncNotice = 'Printful could not be checked right now. Your existing catalog is shown; automatic checks will retry.';
         }
-        $query = MerchandiseProduct::with('mainImage')->withCount('images');
+        $query = app(\App\Services\Shop\Storefront::class)->query()->with('mainImage')->withCount('images');
         if ($filters['search'] !== '') {
             $like = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($filters['search'])).'%';
             $query->whereRaw("LOWER(name) LIKE ? ESCAPE '!'", [$like]);
@@ -78,11 +78,11 @@ class MerchandiseController extends Controller
     {
         $data = $request->validateWithBag('merchandise', ['printful_product_id' => 'required|integer|min:1|max:'.PHP_INT_MAX]);
         try {
-            [$product, $warnings] = $catalog->import((int) $data['printful_product_id']);
+            [$product, $warnings, $colorWarnings] = $catalog->import((int) $data['printful_product_id']);
         } catch (PrintfulException $exception) {
             return redirect()->route('admin.merchandise.discover')->with('error', $exception->getMessage());
         }
-        return $this->importResult($product, $warnings);
+        return $this->importResult($product, $warnings, $colorWarnings);
     }
 
     public function edit(Request $request, MerchandiseProduct $merchandise)
@@ -103,7 +103,7 @@ class MerchandiseController extends Controller
     {
         $revision = $this->revision($request);
         try {
-            [$product, $warnings] = $catalog->import((int) $merchandise->printful_product_id, $merchandise, $revision);
+            [$product, $warnings, $colorWarnings] = $catalog->import((int) $merchandise->printful_product_id, $merchandise, $revision);
         } catch (PrintfulProductNotFound $exception) {
             try {
                 app(PrintfulCatalogSync::class)->reconcile();
@@ -118,7 +118,7 @@ class MerchandiseController extends Controller
         } catch (PrintfulException $exception) {
             return $this->backToImages($merchandise)->with('error', $exception->getMessage());
         }
-        return $this->importResult($product, $warnings);
+        return $this->importResult($product, $warnings, $colorWarnings);
     }
 
     public function upload(Request $request, MerchandiseProduct $merchandise, MerchandiseCatalog $catalog)
@@ -210,10 +210,13 @@ class MerchandiseController extends Controller
         return AdminTableFilters::query(AdminTableFilters::fromRequest($query, self::SORTS));
     }
 
-    private function importResult(MerchandiseProduct $product, int $warnings)
+    private function importResult(MerchandiseProduct $product, int $warnings, int $colorWarnings)
     {
-        $response = $this->backToImages($product)->with('status', 'Product details are up to date. Your gallery choices have been kept.');
-        if ($warnings) $response->with('merchandise_notice', $warnings.' mockup(s) could not be added. Refresh to retry, or upload a downloaded copy.');
+        $response = $this->backToImages($product)->with('status', 'Product saved. Your gallery choices have been kept.');
+        $notices = [];
+        if ($warnings) $notices[] = $warnings.' mockup(s) could not be added. Refresh to retry, or upload a downloaded copy.';
+        if ($colorWarnings) $notices[] = 'Some color swatches could not be refreshed. Saved colors were kept where the variant still matches; otherwise the option stays neutral. Refresh from Printful to retry.';
+        if ($notices) $response->with('merchandise_notice', implode(' ', $notices));
         return $response;
     }
 }

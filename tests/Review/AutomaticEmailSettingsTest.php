@@ -64,7 +64,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $dom = new \DOMDocument; @$dom->loadHTML($page->getContent());
         $xpath = new \DOMXPath($dom);
         $this->assertCount(1, $xpath->query('//input[@role="switch" and @aria-label="Automatic sending: Reset password" and not(@checked)]'));
-        $this->assertCount(18, $xpath->query('//input[@role="switch"]/ancestor::form/input[@name="_token"]'));
+        $this->assertCount(21, $xpath->query('//input[@role="switch"]/ancestor::form/input[@name="_token"]'));
         Mail::assertNothingSent(); Mail::assertNothingQueued();
     }
 

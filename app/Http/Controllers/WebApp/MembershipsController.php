@@ -50,6 +50,13 @@ class MembershipsController extends Controller
 
     public function checkout(Plan $plan, Request $request, MembershipBilling $billing)
     {
+        if ($request->query->has('setup_intent') || $request->query->has('setup_intent_client_secret')) {
+            $return = $request->session()->pull('membership_wallet_return', []);
+            if (($return['user_id'] ?? null) === $request->user('web')->id && ($return['plan'] ?? null) === $plan->name
+                && is_string($request->query('setup_intent')) && ($return['setup_intent'] ?? null) === $request->query('setup_intent')
+                && $request->query('redirect_status') === 'succeeded') $request->session()->flash('membership_wallet_resume', $return['operation_id']);
+            return redirect()->route('webapp.membership.checkout', $plan)->header('Cache-Control', 'private, no-store')->header('Referrer-Policy', 'no-referrer');
+        }
         try {
             $stripeKey = $billing->publicKey($request->user('web'));
         } catch (\Throwable $exception) { return $this->failure($request, $exception, 'webapp.membership.edit'); }
@@ -62,7 +69,9 @@ class MembershipsController extends Controller
         $trialDays = $billing->trialDays($request->user('web'), $plan);
         \App\Activity\Actions::record($request, 'checkout_started', [], 'plan', $plan->id);
         $savedCard = $billing->savedCard($request->user('web'));
-        $data = compact('plan', 'stripeKey', 'operationId', 'trialDays', 'activeCoupon', 'savedCard');
+        $walletResume = $request->session()->pull('membership_wallet_resume');
+        if ($walletResume !== $operationId) $walletResume = null;
+        $data = compact('plan', 'stripeKey', 'operationId', 'trialDays', 'activeCoupon', 'savedCard', 'walletResume');
         if ($request->expectsJson()) {
             return response()->json(['html' => view('webapp.membership.checkout.modal', $data)->render()])
                 ->header('Cache-Control', 'private, no-store');
@@ -73,9 +82,14 @@ class MembershipsController extends Controller
     public function prepare(Request $request, Plan $plan, MembershipBilling $billing)
     {
         $data = $request->validate(['operation_id' => 'required|uuid', 'coupon' => 'nullable|string|max:80',
+            'wallet' => 'sometimes|boolean',
             'use_saved_card' => 'sometimes|boolean', 'saved_card_reference' => ['nullable', 'string', 'regex:/^[a-f0-9]{64}$/D']]);
         try { $result = $billing->prepare($request->user('web'), $data['operation_id'], 'purchase', $plan, $data['coupon'] ?? null, $request->boolean('use_saved_card'), $data['saved_card_reference'] ?? null); }
         catch (\Throwable $exception) { return $this->failure($request, $exception); }
+        if ($request->boolean('wallet') && !empty($result['setup_intent'])) {
+            $request->session()->put('membership_wallet_return', ['user_id' => $request->user('web')->id,
+                'plan' => $plan->name, 'operation_id' => $result['operation_id'], 'setup_intent' => $result['setup_intent']]);
+        }
         try { (new \App\Services\CampaignAttribution)->checkout($request, $request->user('web'), $result['operation_id']); }
         catch (\Throwable $exception) { report($exception); }
         return response()->json($result);
@@ -99,6 +113,7 @@ class MembershipsController extends Controller
         $data = $request->validate(['operation_id' => 'required|uuid']);
         try { $result = $billing->finish($request->user('web'), $data['operation_id']); }
         catch (\Throwable $exception) { return $this->failure($request, $exception); }
+        $request->session()->forget('membership_wallet_return');
         $subscription = json_decode(json_encode($result['subscription']));
         $user = $request->user('web');
         // Retryable analytics bookkeeping stays outside billing completion and

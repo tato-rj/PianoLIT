@@ -3,7 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Merchandise\{MerchandiseImage, MerchandiseProduct};
-use App\Services\Shop\{MerchandiseImages, Printful, PrintfulException};
+use App\Services\Shop\{MerchandiseColors, MerchandiseImages, Printful, PrintfulException, ProductNames};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -18,7 +18,7 @@ class MerchandiseCatalog
         }
         if ($existing) $this->checkRevision($existing, $revision);
         if (!$existing && $found = MerchandiseProduct::withTrashed()->where('printful_store_id', $storeId)->where('printful_product_id', $id)->first()) {
-            if (!$found->trashed()) return [$found, 0];
+            if (!$found->trashed()) return [$found, 0, 0];
             // Explicit re-import restores curation only after Printful returns it.
             $existing = $found;
             $revision = $found->revision;
@@ -29,7 +29,14 @@ class MerchandiseCatalog
             || mb_strlen($name) > 255 || !isset($remote['sync_variants']) || !is_array($remote['sync_variants']) || count($remote['sync_variants']) > 1000) {
             throw new PrintfulException('Printful returned incomplete product details. Nothing was changed.');
         }
+        try {
+            $name = app(ProductNames::class)->validate($name, $existing, $storeId, 'name', 'merchandise');
+        } catch (ValidationException $exception) {
+            throw new PrintfulException('This Printful product needs a unique name before it can be imported or refreshed. '.collect($exception->errors())->flatten()->first());
+        }
+        $slug = $existing && $existing->slug ? $existing->slug : ProductNames::slug($name);
         $variants = $this->variants($remote['sync_variants']);
+        [$variants, $colorWarnings] = app(MerchandiseColors::class)->enrich($variants, $existing ? ($existing->variants ?? []) : []);
         $candidates = $this->mockups($remote);
         $known = $existing ? $existing->images()->withTrashed()->whereNotNull('source_key')->pluck('source_key')->all() : [];
         $assets = [];
@@ -47,14 +54,15 @@ class MerchandiseCatalog
                 }
             }
             $usedPaths = [];
-            $product = DB::transaction(function () use ($existing, $revision, $id, $storeId, $name, $variants, $assets, &$usedPaths, &$warnings) {
+            $product = DB::transaction(function () use ($existing, $revision, $id, $storeId, $name, $slug, $variants, $assets, &$usedPaths, &$warnings) {
                 if (!$existing) {
                     $inserted = DB::table('merchandise_products')->insertOrIgnore([
-                        'printful_store_id' => $storeId, 'printful_product_id' => $id, 'name' => $name,
+                        'printful_store_id' => $storeId, 'printful_product_id' => $id, 'name' => $name, 'slug' => $slug,
                         'variants' => json_encode($variants), 'revision' => 1, 'created_at' => now(), 'updated_at' => now(),
                     ]);
                 }
-                $product = MerchandiseProduct::withTrashed()->where('printful_store_id', $storeId)->where('printful_product_id', $id)->lockForUpdate()->firstOrFail();
+                $product = MerchandiseProduct::withTrashed()->where('printful_store_id', $storeId)->where('printful_product_id', $id)->lockForUpdate()->first();
+                if (!$product) throw new PrintfulException('Another product already uses this URL. Please choose a unique name in Printful and try again.');
                 // A concurrent first import already completed; preserve that gallery.
                 if (!$existing && !$inserted) return $product;
                 if ($existing) $this->checkRevision($product, $revision);
@@ -79,7 +87,7 @@ class MerchandiseCatalog
             throw $exception;
         }
         $images->discard(array_filter($assets, fn ($asset) => !in_array($asset['path'], $usedPaths, true)));
-        return [$product, $warnings];
+        return [$product, $warnings, $colorWarnings];
     }
 
     private function variants(array $variants): array
@@ -91,6 +99,11 @@ class MerchandiseCatalog
             }
             $row = ['id' => (int) $variant['id'], 'variant_id' => (int) $variant['variant_id'], 'synced' => ($variant['synced'] ?? false) === true];
             foreach (['name', 'sku', 'size', 'color'] as $key) $row[$key] = is_string($variant[$key] ?? null) ? mb_substr($variant[$key], 0, 255) : null;
+            // The provider's garment/product name identifies a T-shirt or sticker
+            // even when the merchant's design title doesn't mention its type.
+            $row['product_name'] = is_string($variant['product']['name'] ?? null) ? mb_substr($variant['product']['name'], 0, 255) : null;
+            $catalogId = $variant['product']['product_id'] ?? null;
+            $row['catalog_product_id'] = is_int($catalogId) && $catalogId > 0 ? $catalogId : null;
             $price = $variant['retail_price'] ?? null;
             $row['retail_price'] = is_scalar($price) && preg_match('/^[0-9]{1,8}(\.[0-9]{1,2})?$/D', (string) $price) ? (string) $price : null;
             $row['currency'] = is_string($variant['currency'] ?? null) && preg_match('/^[A-Z]{3}$/D', $variant['currency']) ? $variant['currency'] : null;

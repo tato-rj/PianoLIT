@@ -162,7 +162,7 @@ class PublicProjectPagesTest extends ReviewTestCase
         $response->assertSee('data-lucide-name="user-round"', false);
         $this->assertSame(1, $xpath->query('//main//a[@href="'.$website.'"]')->length);
         $this->assertSame(1, $xpath->query('//footer[contains(@class, "site-footer")]')->length);
-        foreach (['contact-us', 'privacy-policy', 'terms-of-service'] as $path) {
+        foreach (['support', 'privacy-policy', 'terms-of-service'] as $path) {
             $this->assertSame(1, $xpath->query('//footer//a[@href="'.$website.'/'.$path.'"]')->length);
         }
         $this->assertSame($origin, route($name));
@@ -188,7 +188,7 @@ class PublicProjectPagesTest extends ReviewTestCase
             ];
             foreach (['shop.', 'games.', 'learn.', 'blog.', 'my.', ''] as $prefix) {
                 $origin = $scheme.$prefix.$host;
-                $response = $this->get($origin.($prefix === '' ? '/contact-us' : ''))->assertOk();
+                $response = $this->get($origin.($prefix === '' ? '/support' : ''))->assertOk();
                 $xpath = $this->xpath($response->getContent());
                 $this->assertSame(1, $xpath->query('//header//ul/li[last()]/button[@data-bs-toggle="offcanvas" and @data-bs-target="#public-hub-menu" and @aria-controls="public-hub-menu"]')->length);
                 $this->assertSame(1, $xpath->query('//header//a[@aria-label="Sign in" and @href="'.$origin.'/login"]')->length);
@@ -277,7 +277,7 @@ class PublicProjectPagesTest extends ReviewTestCase
 
     public function test_regular_public_pages_share_the_header_while_webapp_and_embedded_layouts_keep_theirs()
     {
-        foreach (['/', '/contact-us', '/privacy-policy', '/terms-of-service'] as $path) {
+        foreach (['/', '/support', '/privacy-policy', '/terms-of-service'] as $path) {
             $response = $this->get('http://localhost'.$path)->assertOk();
             $xpath = $this->xpath($response->getContent());
             $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header")]')->length, $path);

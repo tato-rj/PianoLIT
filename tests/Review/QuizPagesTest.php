@@ -74,7 +74,7 @@ class QuizPagesTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//form[@action="http://learn.localhost/quizzes"]//option[@value="beginner" and @selected]'));
         $this->assertCount(1, $xpath->query('//form//input[@name="topics[]" and @value="theory"]'));
         $this->assertCount(1, $xpath->query('//a[contains(@href,"page=2") and contains(@href,"topics=theory") and contains(@href,"level=beginner") and normalize-space(.)="2"]'));
-        $response->assertDontSee('class="grid row', false)->assertSee('Join the newsletter');
+        $response->assertDontSee('class="grid row', false)->assertSee('Subscribe');
         $this->get('http://learn.localhost/quizzes?topics=theory&level=beginner&page=2')->assertOk()->assertSee('Theory challenge 13');
         $this->get('http://learn.localhost/quizzes?topics=theory&level=')->assertOk()->assertSee('Advanced theory');
         $this->get('http://learn.localhost/quizzes?level=missing')->assertOk()->assertSee('No quizzes match these filters');

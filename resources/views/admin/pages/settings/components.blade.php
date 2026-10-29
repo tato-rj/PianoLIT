@@ -1,6 +1,50 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Shop storefront', 'usage' => 'shop.storefront.components · white, outlined cards and controls without offset shadows', 'properties' => 'font-size,color,border,box-shadow'])
+      <div class="shop-storefront p-2" data-ds-preview>
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          @foreach(\App\Services\Shop\Storefront::CATEGORIES as $key => $label)
+            <button type="button" class="shop-button {{ $key === '' ? 'shop-button--dark' : '' }}">{{ $label }}</button>
+          @endforeach
+          <button type="button" class="shop-button shop-button--mint">Checkout</button>
+        </div>
+        @include('shop.storefront.components.quantity', ['quantity' => 1])
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          @include('shop.storefront.components.option', ['option' => 'Mint', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#b9d8d1']), 'selected' => true])
+          @include('shop.storefront.components.option', ['option' => 'Two-tone', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#14191e', 'color_code2' => '#ffffff']), 'selected' => false])
+        </div>
+        <div class="row g-4 mt-2">
+          <div class="col-12 col-md-6">
+            @include('shop.storefront.components.product-gallery', ['product' => [
+              'gallery' => collect([['url' => asset('images/shop/demo/shirt-mint.png'), 'alt' => 'Sample piano T-shirt']]),
+              'hasPreview' => false,
+            ]])
+          </div>
+          <div class="col-12 col-md-6">
+            @include('shop.storefront.components.product-price', ['product' => [
+              'digital' => false, 'variants' => [1], 'priceVaries' => false,
+              'price' => '$28.00 USD', 'originalPrice' => null,
+            ]])
+            <p class="mb-0">One product gallery and price component for merchandise, eBooks and eScores.</p>
+          </div>
+        </div>
+      </div>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Shop category row', 'usage' => 'shop.storefront.components.category-row · single row with scroll arrows', 'properties' => 'font-size,gap,overflow-x'])
+      <div class="shop-storefront" data-storefront data-ds-preview>
+        <div class="row">
+          @include('shop.storefront.components.category-row', [
+            'sectionId' => 'ds-shop-category', 'categoryKey' => 't-shirts', 'categoryLabel' => 'T-shirts', 'halfWidth' => false,
+            'categoryUrl' => '#ds-components',
+            'categoryProducts' => collect(range(1, 6))->map(fn ($number) => [
+              'name' => 'Piano T-shirt '.$number, 'url' => '#ds-components', 'digital' => false, 'variants' => [],
+              'imageUrl' => asset('images/shop/demo/shirt-mint.png'), 'price' => '$28.00 USD', 'priceVaries' => false,
+            ]),
+          ])
+        </div>
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Account menu', 'usage' => 'components.account.menu · public account dropdown', 'properties' => 'width,padding,color,border-radius,box-shadow'])
       <span id="ds-account-menu-label" class="visually-hidden">Account menu preview</span>
       @include('components.account.menu', ['account' => (object) ['first_name' => 'Alex', 'last_name' => 'Morgan', 'email' => 'alex@example.test'], 'menuId' => 'ds-account-menu-label', 'designSystemPreview' => true])
@@ -143,9 +187,9 @@
     @component('admin.pages.settings.sample', ['label' => 'Public promotion card', 'usage' => 'components.cards.promotion · components.layout.editorial sidebar', 'properties' => 'color,background-color,border,border-radius'])
       @include('components.cards.promotion', ['preview' => true, 'category' => 'Crash courses', 'color' => 'mint', 'title' => 'Discover a new side of music', 'description' => 'Daily lessons delivered to your inbox.', 'action' => 'Start learning', 'url' => route('crashcourses.index')])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Public hub header', 'usage' => 'components.layout.hub-header · shared newsletter action', 'properties' => 'padding,font-size,color'])
+    @component('admin.pages.settings.sample', ['label' => 'Public hub header', 'usage' => 'components.layout.hub-header · introduction', 'properties' => 'padding,font-size,color'])
       @component('components.layout.hub-header', ['heading' => 'PianoLIT Learn', 'preview' => true])
-        A shared introduction and newsletter action for public hubs.
+        A shared introduction for public hubs. Subscribe appears in the top site header.
       @endcomponent
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Newsletter invitation', 'usage' => 'components.newsletter.invitation · pastel-card', 'properties' => 'padding,color,background-color,border,border-radius'])

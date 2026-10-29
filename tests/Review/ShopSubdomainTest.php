@@ -47,14 +47,14 @@ class ShopSubdomainTest extends ReviewTestCase
     }
 
     /** @dataProvider domains */
-    public function test_guests_see_the_public_site_styled_placeholder($baseUrl)
+    public function test_guests_see_the_new_storefront_with_shared_typography($baseUrl)
     {
         $this->useDomain($baseUrl);
         $this->get(route('shop.home'))->assertOk()
-            ->assertSee('class="project-coming-soon"', false)
-            ->assertSee('Coming up soon!')
-            ->assertSee('<h1>Coming up soon!</h1>', false)
-            ->assertSee('images/home/projects/shop.svg', false)
+            ->assertSee('data-storefront', false)
+            ->assertSee('All products')
+            ->assertSee('Good things are on their way')
+            ->assertSee('css/storefront.css', false)
             ->assertSee('href="'.$baseUrl.'"', false)
             ->assertSee('images/brand/app-icon.svg', false)
             ->assertSee('css/app.css', false)

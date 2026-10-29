@@ -12,6 +12,7 @@ class PrintfulCatalogSync
     public function reconcile(): int
     {
         $api = app(Printful::class);
+        if (!$api->enabled()) return 0;
         $storeId = $api->storeId();
         $local = MerchandiseProduct::where('printful_store_id', $storeId)->get(['id', 'printful_product_id']);
         if ($local->isEmpty()) return 0;

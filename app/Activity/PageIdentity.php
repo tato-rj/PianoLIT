@@ -23,7 +23,7 @@ class PageIdentity
         $name = null;
         $accountRoute = preg_replace('/^webapp\./', '', $route);
         foreach (['login' => 'Sign in', 'register' => 'Registration', 'password.' => 'Password reset',
-            'users.profile' => 'Profile', 'users.purchases' => 'My downloads'] as $prefix => $label) {
+            'users.profile' => 'Profile', 'users.purchases' => 'My downloads', 'users.orders' => 'Track your orders'] as $prefix => $label) {
             if ($accountRoute === $prefix || strpos($accountRoute, $prefix.'.') === 0 || (substr($prefix, -1) === '.' && strpos($accountRoute, $prefix) === 0)) { $name = $label; break; }
         }
 
@@ -119,7 +119,7 @@ class PageIdentity
             || ($hub === 'games' && ($path === '/' || preg_match('/^games\.[a-z-]+\.play$/D', $route)))
             || ($hub === 'metronome' && $path === '/')
             || ($hub === 'webapp' && ($kind === 'piece' || in_array($path, ['/', '/explore', '/search', '/playlists', '/highlights', '/tour', '/welcome', '/latest'], true)))
-            || in_array($path, ['/', '/contact-us', '/privacy-policy', '/terms-of-service'], true);
+            || in_array($path, ['/', '/support', '/contact-us', '/privacy-policy', '/terms-of-service'], true);
         $identity = $publicPath && $path !== null ? $path : 'route:'.($route ?: 'unrecorded');
         return (object) ['key' => $hub.':'.$identity, 'hub' => $hub, 'hub_name' => self::HUBS[$hub],
             'name' => rtrim($name, '. '), 'path' => $publicPath ? $path : null, 'section' => $section,

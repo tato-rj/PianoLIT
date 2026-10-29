@@ -34,6 +34,9 @@ class AutomaticEmails
             'apple-reauth' => ['name' => 'Apple · confirm sign-in changes', 'category' => 'Account', 'trigger' => 'When email confirmation is used to update Apple sign-in options.'],
             'apple-signup' => ['name' => 'Apple signup · verify email', 'category' => 'Account', 'trigger' => 'When an email address is supplied to finish Apple signup.'],
             'purchase-confirmation' => ['name' => 'Purchase confirmation', 'category' => 'Shop', 'trigger' => 'After a signed-in customer purchases an eBook or eScore.'],
+            'merchandise-confirmation' => ['name' => 'Merchandise purchase confirmation', 'category' => 'Shop', 'trigger' => 'After Stripe verifies a merchandise payment. Includes a private order link.'],
+            'merchandise-shipped' => ['name' => 'Merchandise shipped', 'category' => 'Shop', 'trigger' => 'After a verified Printful shipment update, once per package. Includes carrier and tracking details.'],
+            'merchandise-delivered' => ['name' => 'Merchandise delivered', 'category' => 'Shop', 'trigger' => 'When all packages are reported delivered, once per order. Subject: Your order arrived!'],
             'membership-confirmation' => ['name' => 'Membership confirmation', 'category' => 'Membership', 'trigger' => 'After a web membership checkout is successfully completed, including a free trial.'],
             'tutorial-request' => ['name' => 'Tutorial request received', 'category' => 'Tutorials', 'trigger' => 'After a tutorial request is submitted.'],
             'tutorial-published' => ['name' => 'Requested tutorial ready', 'category' => 'Tutorials', 'trigger' => 'When a requested tutorial is published.'],
@@ -125,6 +128,25 @@ class AutomaticEmails
                 $mail->user = $user;
                 return $mail;
             case 'membership-confirmation': return new MembershipConfirmed('Jamie', 'yearly', true, 'October 22, 2026');
+            case 'merchandise-confirmation':
+            case 'merchandise-shipped':
+            case 'merchandise-delivered':
+                $order = new \App\Shop\ShopOrder(['id' => '00000000-0000-4000-8000-000000000001', 'mode' => 'demo',
+                    'recipient' => ['name' => 'Jamie Parker', 'email' => 'jamie@example.test'],
+                    'items' => [['name' => 'Piano rainbow T-shirt', 'option' => 'Mint / M', 'quantity' => 1, 'unit_price' => 2800]],
+                    'subtotal' => 2800, 'shipping' => 500, 'tax' => 0, 'total' => 3300, 'currency' => 'usd']);
+                if ($key === 'merchandise-confirmation') return new \App\Mail\Shop\MerchandiseOrderConfirmed($order, '#email-preview');
+                $shipment = new \App\Shop\ShopShipment(['carrier' => 'Example carrier', 'service' => 'Standard delivery',
+                    'tracking_number' => 'PREVIEW123456', 'tracking_url' => '#email-preview', 'shipped_at' => '2026-10-28',
+                    'estimated_from' => '2026-11-01', 'estimated_to' => '2026-11-03',
+                    'items' => [['name' => 'Piano rainbow T-shirt', 'option' => 'Mint / M', 'quantity' => 1]]]);
+                if ($key === 'merchandise-delivered') {
+                    $shipment->status = 'delivered';
+                    $shipment->delivered_at = '2026-10-28';
+                    $order->setRelation('shipments', collect([$shipment]));
+                    return new \App\Mail\Shop\MerchandiseOrderDelivered($order, '#email-preview');
+                }
+                return new \App\Mail\Shop\MerchandiseOrderShipped($order, $shipment, '#email-preview');
             case 'tutorial-request': return new NewRequestEmail($request);
             case 'tutorial-published': return new RequestPublishedEmail($request);
             case 'performance-submitted': return new PerformanceSubmittedEmail($piece);

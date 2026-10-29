@@ -7,7 +7,7 @@ This folder contains components shared across the website, hubs, web app and adm
 | To edit | Open |
 | --- | --- |
 | Account circle and menu, signup cards and access prompts | [account/](account/) |
-| Membership plans, payment-card fields and checkout dialogs | [billing/](billing/) |
+| Membership plans and shared merchandise/digital/membership checkout, wallets and card fields | [billing/](billing/) |
 | PianoLIT logo, browser icons/splash metadata and project watermark | [branding/](branding/) |
 | Resource cards, promotional cards and related-content suggestions | [cards/](cards/) |
 | Standard modals, fullscreen dialogs and bottom sheets | [dialogs/](dialogs/) |

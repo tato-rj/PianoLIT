@@ -4,28 +4,25 @@ namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
 use App\Shop\{eScore, eScoreTopic};
-use App\Filters\ProductFilters;
 use Illuminate\Http\Request;
 use App\Billing\Factories\StripeFactory;
+use App\Services\Shop\{ProductPage, Storefront, MerchandiseBag};
 
 class eScoresController extends Controller
 {
-    public function index(ProductFilters $filters)
+    public function index(Request $request, Storefront $catalog, MerchandiseBag $bag)
     {
-    	$products = eScore::published()->latest()->filter($filters)->paginate(12);
-        $topics = eScoreTopic::has('escores')->get();
-
-    	return view('shop.products.escores', compact(['products', 'topics']));
+        return app(MerchandiseController::class)->index($request, $catalog, $bag, 'escores');
     }
 
-    public function show(eScore $escore)
+    public function show(Request $request, eScore $escore, ProductPage $page)
     {
-    	return view('shop.products.show.index', ['product' => $escore]);    	
+        return view('shop.storefront.show', $page->data($escore, $request));
     }
 
-    public function checkout(eScore $escore)
+    public function checkout(eScore $escore, Request $request)
     {
-        return view('shop.checkout.index', ['product' => $escore]);
+        return app(CheckoutController::class)->digital($request, $escore, 'escores');
     }
 
     public function success(eScore $escore)

@@ -28,7 +28,7 @@
         const root = form.closest ? form.closest('[data-checkout-surface]') || document : document;
         const button = form.querySelector('button[type="submit"]');
         const errors = form.querySelector('#card-errors');
-        let busy = false, stripe, card, cardComplete = false;
+        let busy = false, stripe, card, wallet, cardComplete = false;
         let operation = form.getAttribute('data-operation');
         const purpose = form.getAttribute('data-purpose');
         const coupon = form.querySelector('input[name="coupon"]');
@@ -122,6 +122,16 @@
                 ? (trial ? 'Your ' + trial + '-day free trial starts when checkout is complete. Then you’ll pay ' : 'You authorize a payment of ') + formatted + ' for the discounted billing period. Your subscription renews automatically until canceled; later payments follow the coupon terms. '
                 : (trial ? 'Your ' + trial + '-day free trial starts when checkout is complete. Then ' + formatted + ' is charged every ' + interval + ' until you cancel. ' : 'You authorize a payment of ' + formatted + ' today, then every ' + interval + ' until you cancel. Returning members do not receive another introductory trial. ');
             if (label && !trial) label.setAttribute('data-idle-label', 'Subscribe for ' + formatted);
+            if (wallet) wallet.update({applePay: recurringWallet(amount)});
+        }
+        function recurringWallet(amount) {
+            const trial = Number(form.getAttribute('data-wallet-trial')) || 0;
+            return {recurringPaymentRequest: {paymentDescription: 'PianoLIT Premium', managementURL: form.getAttribute('data-wallet-manage'),
+                regularBilling: {amount: Math.round(amount), label: 'PianoLIT Premium',
+                    recurringPaymentIntervalUnit: form.getAttribute('data-wallet-interval'), recurringPaymentIntervalCount: 1,
+                    ...(trial ? {recurringPaymentStartDate: new Date(Date.now() + trial * 86400000)} : {})},
+                ...(trial ? {trialBilling: {amount: 0, label: trial + '-day free trial', recurringPaymentIntervalUnit: 'day', recurringPaymentIntervalCount: trial}} : {}),
+                billingAgreement: charge ? charge.textContent.trim() : 'Your subscription renews automatically until canceled.'}};
         }
         function initializeFields() {
             if (fieldsInitialized || !stripe) return;
@@ -241,6 +251,42 @@
             }
         });
 
+        if (purpose === 'purchase' && stripe && window.PianoLITExpressCheckout) {
+            wallet = window.PianoLITExpressCheckout.mount(stripe, form, {mode: 'setup',
+                returnUrl: form.getAttribute('data-wallet-return'), applePay: recurringWallet(Number(form.getAttribute('data-wallet-amount'))),
+                error: function (error) { message(error.message || 'Your wallet payment could not be confirmed.'); }}, async function (payment) {
+                if (busy || disposed || couponPending) throw new Error('Please wait for the current checkout request to finish.');
+                busy = true; message(''); controls();
+                try {
+                    if (coupon && coupon.value.trim() && !couponValid) {
+                        await checkCoupon();
+                        if (!couponValid) throw new Error('Please apply a valid coupon or remove it before continuing.');
+                    }
+                    const prepared = await request(form.getAttribute('data-prepare'), {operation_id: operation,
+                        coupon: coupon ? coupon.value.trim() : null, use_saved_card: false, wallet: true});
+                    operation = prepared.operation_id;
+                    if (!prepared.setup_secret) throw new Error('This checkout already has a payment in progress. Please finish it with the payment form below.');
+                    const confirmed = await payment.confirm(prepared.setup_secret, 'setup');
+                    const result = await request(form.action, {operation_id: operation, setup_intent: confirmed.setupIntent.id});
+                    await confirmPayment(result, false);
+                } finally { busy = false; controls(); }
+            });
+        }
+
+        if (purpose === 'purchase' && form.getAttribute('data-wallet-resume')) {
+            (async function () {
+                busy = true; message(''); controls();
+                try {
+                    const prepared = await request(form.getAttribute('data-prepare'), {operation_id: operation,
+                        coupon: coupon ? coupon.value.trim() : null, use_saved_card: false});
+                    if (!prepared.setup_complete || !prepared.setup_intent) throw new Error('Please confirm your wallet again to finish checkout.');
+                    const result = await request(form.action, {operation_id: operation, setup_intent: prepared.setup_intent});
+                    await confirmPayment(result, false);
+                } catch (failure) { message(failure.message || 'Please check your payment before trying again.'); }
+                finally { busy = false; controls(); }
+            }());
+        }
+
         if (coupon) {
             coupon.addEventListener('input', function () {
                 couponRequest += 1; couponPending = false; couponValid = !coupon.value.trim(); feedback.textContent = '';
@@ -281,6 +327,7 @@
             controls();
         }, destroy() {
             disposed = true; couponRequest += 1;
+            if (wallet) wallet.destroy();
             fields.forEach(function (field) { if (field.destroy) field.destroy(); });
             if (!splitCard && card && card.destroy) card.destroy();
             mounted.delete(form);

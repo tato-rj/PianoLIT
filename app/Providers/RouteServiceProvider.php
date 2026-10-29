@@ -29,7 +29,7 @@ class RouteServiceProvider extends ServiceProvider
             if ($route && $route->named('contact')) {
                 return \App\Support\ProfileUrl::base();
             }
-            if ($route && $route->named('users.profile', 'users.profile.*', 'users.purchases', 'users.purchases.*', 'webapp.users.profile', 'users.update', 'users.destroy', 'users.subscriptions.*')) {
+            if ($route && $route->named('users.profile', 'users.profile.*', 'users.purchases', 'users.purchases.*', 'users.orders', 'webapp.users.profile', 'users.update', 'users.destroy', 'users.subscriptions.*')) {
                 return \App\Support\ProfileUrl::base();
             }
             // Public preview links must leave the admin host when paths overlap.

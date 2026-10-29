@@ -13,6 +13,10 @@ class SyncPrintfulCatalog extends Command
 
     public function handle(PrintfulCatalogSync $sync): int
     {
+        if (!app(\App\Services\Shop\Printful::class)->enabled()) {
+            $this->info('Printful is disconnected in this environment. Scheduled checks are skipped.');
+            return 0;
+        }
         try {
             $removed = $sync->reconcile();
         } catch (PrintfulException $exception) {

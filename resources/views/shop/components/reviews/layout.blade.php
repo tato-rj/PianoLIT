@@ -1,8 +1,8 @@
-<section id="reviews" class="border-top pt-4 mb-5" aria-labelledby="product-reviews-title">
+<section id="reviews" class="{{ ($storefront ?? false) ? 'shop-product-section' : 'border-top' }} pt-4 mb-5" aria-labelledby="product-reviews-title">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-        <h2 class="h5 mb-0" id="product-reviews-title">Customer reviews <span class="text-muted">({{ $reviewCount }})</span></h2>
+        <h2 class="{{ ($storefront ?? false) ? '' : 'h5' }} mb-0" id="product-reviews-title">Customer reviews <span class="text-muted">({{ $reviewCount }})</span></h2>
         @if(! $ownedReview)
-            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#review-modal">@icon('square-pen')Write a review</button>
+            <button type="button" class="{{ ($storefront ?? false) ? 'shop-button' : 'btn btn-secondary' }}" data-bs-toggle="modal" data-bs-target="#review-modal">@icon('square-pen')Write a review</button>
         @endif
     </div>
     <div class="row g-4 g-lg-5">
@@ -10,18 +10,18 @@
             @if($reviewCount)
             <div class="d-flex align-items-baseline gap-2 mb-2"><span class="h2 mb-0">{{ $averageRating }}</span><span class="text-muted">out of 5</span></div>
             @include('shop.components.reviews.stars', ['rating' => $averageRating])
-            <p class="small text-muted mb-3">Based on {{ $reviewCount }} {{ str_plural('review', $reviewCount) }}</p>
+            <p class="{{ ($storefront ?? false) ? '' : 'small' }} text-muted mb-3">Based on {{ $reviewCount }} {{ str_plural('review', $reviewCount) }}</p>
             @for($i = 5; $i >= 1; $i--)
                 @php($count = $reviews->where('rating', $i)->count())
-                <div class="d-flex align-items-center gap-2 mb-2 small">
+                <div class="d-flex align-items-center gap-2 mb-2 {{ ($storefront ?? false) ? '' : 'small' }}">
                     <span class="text-nowrap">{{ $i }} @icon('star', ['mr' => 0, 'color' => 'warning'])</span>
-                    <div class="product-detail__rating-bar flex-grow-1" aria-hidden="true"><span style="width: {{ $reviewCount ? $count / $reviewCount * 100 : 0 }}%"></span></div>
+                    <div class="{{ ($storefront ?? false) ? 'shop-review-bar' : 'product-detail__rating-bar' }} flex-grow-1" aria-hidden="true"><span style="width: {{ $reviewCount ? $count / $reviewCount * 100 : 0 }}%"></span></div>
                     <span class="text-muted">{{ $count }}</span>
                 </div>
             @endfor
             @else
             <p class="mb-1">No reviews yet</p>
-            <p class="small text-muted">Share your experience with other pianists.</p>
+            <p class="{{ ($storefront ?? false) ? '' : 'small' }} text-muted">Share your experience with other pianists.</p>
             @endif
             @if($ownedReview)
                 <div class="mt-4">

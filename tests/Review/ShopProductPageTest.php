@@ -46,6 +46,10 @@ class ShopProductPageTest extends ReviewTestCase
     {
         $product = $this->product($class);
         $response = $this->get($product->showRoute())->assertOk()
+            ->assertViewIs('shop.storefront.show')
+            ->assertSee('data-storefront', false)->assertSee('data-shop-gallery', false)->assertSee('shop-price-tag', false)
+            ->assertSee('aria-label="Bag and account"', false)->assertSee('css/storefront.css', false)
+            ->assertDontSee('product-detail__hero', false)->assertDontSee('data-add-to-bag', false)->assertDontSee('Checkout is coming soon')
             ->assertSee('data-book-preview', false)
             ->assertSee('data-book-page="5"', false)
             ->assertSee('data-bs-target="#preview-product"', false)
@@ -132,7 +136,7 @@ class ShopProductPageTest extends ReviewTestCase
             ->assertSee('action="'.$product->purchaseRoute().'"', false)->assertSee('name="_token"', false);
         $product->update(['price' => 12]);
         $user->update(['super_user' => true]);
-        $this->get($product->showRoute())->assertOk()->assertSee('Download now')->assertSee('FREE!');
+        $this->get($product->showRoute())->assertOk()->assertSee('Download now')->assertSee('data-product-price>Free', false);
         $this->assertDatabaseCount('purchases', 0);
         $user->purchases()->create(['item_id' => $product->id, 'item_type' => $class, 'cost' => 12]);
         $this->get($product->showRoute())->assertOk()->assertSee('Download it again')

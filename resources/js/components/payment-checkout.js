@@ -1,4 +1,4 @@
-// Fetch the server-rendered checkout on demand. The shell can host other orders later.
+// Fetch the shared server-rendered checkout for membership and shop orders on demand.
 module.exports = function (win) {
     const doc = win.document;
     const scripts = new Map();
@@ -39,7 +39,7 @@ module.exports = function (win) {
             modal.addEventListener('show.bs.modal', () => {
                 this.opened = true;
                 this.visible = false;
-                this.background = doc.getElementById('webapp');
+                this.background = doc.getElementById('webapp') || doc.querySelector('[data-storefront]');
                 if (this.background) { this.previousInert = this.background.inert; this.background.inert = true; }
             });
             modal.addEventListener('shown.bs.modal', () => {
@@ -113,6 +113,7 @@ module.exports = function (win) {
             this.state('loading');
         }
         stripeScript() {
+            if (this.modal.dataset.checkoutProvider === 'demo') return Promise.resolve(null);
             // Handle rejection immediately even if the dialog closes while
             // the secure payment scripts are still loading.
             return (win.Stripe ? Promise.resolve() : script('https://js.stripe.com/v3/'))
@@ -133,9 +134,13 @@ module.exports = function (win) {
             const controller = this.modal.dataset.checkoutController;
             const controllerUrl = new URL(sameOrigin(controller));
             if (!controllerUrl.pathname.startsWith('/js/views/')) throw new Error('The payment form could not be opened.');
+            const walletController = this.modal.querySelector('[data-wallet-controller]');
+            const walletUrl = walletController ? new URL(sameOrigin(walletController.dataset.walletController)) : null;
+            if (walletUrl && !walletUrl.pathname.startsWith('/js/components/')) throw new Error('The payment form could not be opened.');
             await Promise.all([
                 (stripeReady || this.stripeScript()).then(error => { if (error) throw error; }),
-                script(controllerUrl.href)
+                script(controllerUrl.href),
+                walletUrl ? script(walletUrl.href) : Promise.resolve()
             ]);
             if (generation !== this.generation) return;
             // Mount at the final dimensions behind the placeholder. Card iframes
@@ -195,6 +200,7 @@ module.exports = function (win) {
                 const result = await response.json();
                 if (!response.ok) throw new Error(result.message || 'Checkout could not open. Please try again.');
                 if (generation !== this.generation) return;
+                if (result.redirect) { win.location.assign(sameOrigin(result.redirect)); return; }
                 const page = new win.DOMParser().parseFromString(result.html, 'text/html');
                 const incoming = page.querySelector('#payment-checkout-modal[data-checkout-modal]');
                 const stage = incoming && incoming.querySelector('[data-checkout-stage]');
@@ -202,6 +208,7 @@ module.exports = function (win) {
                 // Leave the existing placeholder in place throughout fetch/mount.
                 this.content.insertAdjacentHTML('beforeend', stage.outerHTML);
                 this.modal.dataset.checkoutController = incoming.dataset.checkoutController;
+                this.modal.dataset.checkoutProvider = incoming.dataset.checkoutProvider || 'stripe';
                 this.urlState(incoming.dataset.checkoutKey);
                 // Only an authenticated, valid checkout response may open the
                 // payment shell or start loading Stripe's hosted fields.

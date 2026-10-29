@@ -12,6 +12,10 @@ class CheckPrintfulConnection extends Command
 
     public function handle(Printful $printful): int
     {
+        if (!$printful->enabled()) {
+            $this->info('Printful is disconnected in this environment. No API request was made.');
+            return 0;
+        }
         try {
             $storeId = $printful->storeId();
             $store = collect($printful->stores())->first(function ($store) use ($storeId) {

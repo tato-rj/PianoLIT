@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <title>Local sample: Play it again sticker</title>
+  <g transform="rotate(9 300 300)">
+    <circle cx="310" cy="314" r="185" fill="#191919" opacity=".12"/>
+    <circle cx="300" cy="300" r="185" fill="white"/>
+    <circle cx="300" cy="300" r="171" fill="#f7ec89" stroke="#191919" stroke-width="4"/>
+    <text x="300" y="222" text-anchor="middle" font-family="Arial,sans-serif" font-size="35" font-weight="800" fill="#191919">PLAY IT AGAIN</text>
+    <circle cx="300" cy="318" r="66" fill="#191919"/>
+    <path d="M285 281 333 318 285 355Z" fill="white" stroke="white" stroke-linejoin="round" stroke-width="5"/>
+    <path d="M211 386Q300 447 389 386" fill="none" stroke="#191919" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

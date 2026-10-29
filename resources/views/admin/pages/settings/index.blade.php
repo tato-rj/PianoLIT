@@ -1,6 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('head')
+  <link rel="stylesheet" href="{{ mix('css/storefront.css') }}">
   @include('layouts.html.google.fonts')
   @include('components.forms.number-fonts')
 @endsection
@@ -51,5 +52,6 @@
   @stack('scripts')
   <script src="{{ asset('js/components/admin-table-bulk-delete.js') }}" defer></script>
   <script src="{{ mix('js/views/admin-design-system.js') }}" defer></script>
+  <script src="{{ mix('js/views/storefront.js') }}" defer></script>
   <script src="{{ mix('js/views/admin-access-limits.js') }}" defer></script>
 @endsection

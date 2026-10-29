@@ -124,14 +124,14 @@ class ShopCatalogSubdomainTest extends ReviewTestCase
             ->assertSee('href="http://shop.localhost/'.$catalog.'/'.$product->slug.'/checkout"', false)
             ->assertSee('<link rel="canonical" href="'.$product->showRoute().'"', false)
             ->assertSee('href="http://shop.localhost/login"', false)
-            ->assertSee('href="http://localhost/contact-us"', false)
+            ->assertSee('href="http://localhost/support"', false)
             ->assertSee('action="'.$product->reviewRoute().'"', false);
         $this->assertStringStartsWith('http://shop.localhost/reviews/', $product->reviewRoute());
         $this->assertStringStartsWith('http://shop.localhost/shop/', $product->purchaseRoute());
         $this->assertSame('http://shop.localhost/'.$catalog, $product->indexRoute());
         $this->assertSame('http://localhost', route('home'));
         $this->assertSame('http://blog.localhost', route('posts.index'));
-        $this->get(route('shop.home'))->assertOk()->assertSee('Coming up soon!')->assertDontSee($product->title);
+        $this->get(route('shop.home'))->assertOk()->assertSee('All products')->assertSee($product->title)->assertDontSee('Unpublished catalog entry');
         Mail::assertNothingSent();
         $this->assertDatabaseCount('purchases', 0);
     }
@@ -161,11 +161,11 @@ class ShopCatalogSubdomainTest extends ReviewTestCase
     }
 
     /** @dataProvider catalogs */
-    public function test_pagination_stays_on_shop_and_unknown_shop_paths_do_not_redirect_to_themselves($catalog, $class)
+    public function test_complete_category_grid_stays_on_shop_and_unknown_paths_do_not_redirect_to_themselves($catalog, $class)
     {
         for ($i = 0; $i < 13; $i++) $this->product($class, ['title' => 'Catalog item '.$i]);
         $this->get(route($catalog.'.index'))->assertOk()
-            ->assertSee('http://shop.localhost/'.$catalog.'?page=2', false);
+            ->assertSee('Catalog item 0')->assertSee('Catalog item 12')->assertDontSee('shop-pagination');
         $this->get(route($catalog.'.index', ['page' => 2]))->assertOk();
         $this->withExceptionHandling()->get('http://shop.localhost/'.$catalog.'/missing/unrecognized')->assertNotFound();
         $this->get('http://shop.localhost/'.$catalog.'/missing-product')->assertNotFound();

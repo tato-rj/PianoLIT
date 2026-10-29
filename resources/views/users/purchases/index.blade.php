@@ -7,6 +7,7 @@
             <header class="mb-4 mb-md-5">
                 <h1 class="mb-2">My downloads</h1>
                 <p class="text-muted mb-0">Your eBooks, eScores and infographics, ready to download again.</p>
+                <a class="d-inline-block mt-3" href="{{ route('users.orders') }}">Track your merchandise orders @icon('arrow-right')</a>
             </header>
             @if($purchases->total())
                 @if($purchases->isNotEmpty())

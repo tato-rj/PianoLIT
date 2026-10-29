@@ -24,6 +24,9 @@
             <a class="dropdown-item account-menu__link" href="{{ $preview ? '#ds-components' : route('users.purchases') }}" @if(! $preview && request()->routeIs('users.purchases')) aria-current="page" @endif>
                 @icon('download', ['mr' => 0])<span>My downloads</span>
             </a>
+            <a class="dropdown-item account-menu__link" href="{{ $preview ? '#ds-components' : route('users.orders') }}" @if(! $preview && request()->routeIs('users.orders')) aria-current="page" @endif>
+                @icon('package', ['mr' => 0])<span>Track your orders</span>
+            </a>
         @else
             <a class="dropdown-item account-menu__link" href="{{ $preview ? '#ds-components' : route('login') }}">
                 @icon('user-round', ['mr' => 0])<span>Sign in</span>
