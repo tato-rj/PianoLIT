@@ -10,6 +10,7 @@ module.exports = async function () {
         for (const selector of ['.modal', 'input', '[data-share-copy]', '[data-share-status]', '[data-share-error]', '[data-share-sms]', '[data-share-error-message]']) {
             parts[selector] = {hidden: true, events: {}, attrs: {}, value: 'https://my.pianolit.com/pieces/42',
                 addEventListener(name, handler) { this.events[name] = handler; },
+                removeEventListener(name) { delete this.events[name]; },
                 setAttribute(name, value) { this.attrs[name] = value; },
                 focus() { this.focused = true; }, select() { this.selected = true; }, setSelectionRange() { this.selected = true; }};
         }
@@ -70,5 +71,8 @@ module.exports = async function () {
     const pending = f.click('[data-share-copy]');
     f.close(); finish(); await pending;
     assert.equal(f.parts['[data-share-status]'].textContent, '', 'A closed dialog cannot receive stale copy feedback.');
+    f.root.isConnected = false;
+    f.win.PianoLITLinkShare.init();
+    assert.equal(f.parts['.modal'].events['hide.bs.modal'], undefined, 'Replaced quiz fragments release their modal listeners.');
     console.log('Passed: field/icon copy, timed tooltip, permission fallback, failure selection, SMS variants and stale dialog feedback.');
 };

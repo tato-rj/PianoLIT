@@ -34,7 +34,7 @@ Frequently edited files:
 - Public editorial page columns: `layout/editorial.blade.php`
 - Resource cards and sidebar promotion cards: `cards/resource.blade.php`, `cards/promotion.blade.php`
 - Inputs and switches: `forms/input.blade.php`, `forms/toggle.blade.php`
-- Link-sharing modal: `media/link-share.blade.php`, `resources/js/components/link-share.js` and `resources/sass/components/_link-share.scss`; the Design System renders the same dialog. The entire readonly URL field and copy icon copy the canonical link, with a brief Bootstrap Copied! tooltip. Pass `useOldInput => false` for this generated URL.
+- Link-sharing modal: `media/link-share.blade.php` and its reusable `media/link-share-options.blade.php` body, `resources/js/components/link-share.js` and `resources/sass/components/_link-share.scss`; the Design System renders the same dialog. The entire readonly URL field and copy icon copy the canonical link, with a brief Bootstrap Copied! tooltip. Pass `useOldInput => false` for this generated URL.
 - Profile/Support section menu: `navigation/section-navigation.blade.php`
 - Accordions, including Support's `variant => minimal`: `layout/accordion.blade.php`, `layout/accordion-item.blade.php` and `resources/sass/components/_accordion.scss`
 - Account prompts: `account/access-modal.blade.php`, `account/signup-card.blade.php`

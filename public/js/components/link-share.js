@@ -1,10 +1,11 @@
 (function (doc, win) {
     'use strict';
+    const installations = new Map();
 
     function install(root) {
         if (root.dataset.linkShareReady) return;
         root.dataset.linkShareReady = 'true';
-        const modal = root.querySelector('.modal');
+        const modal = root.querySelector('.modal') || root.closest('.modal');
         const input = root.querySelector('input');
         const copy = root.querySelector('[data-share-copy]');
         const status = root.querySelector('[data-share-status]');
@@ -84,13 +85,25 @@
             }
         });
 
-        modal.addEventListener('hide.bs.modal', function () { generation++; reset(); });
-        modal.addEventListener('hidden.bs.modal', function () {
+        function hiding() { generation++; reset(); }
+        function hidden() {
             if (tooltip) { tooltip.dispose(); tooltip = null; }
+        }
+        modal.addEventListener('hide.bs.modal', hiding);
+        modal.addEventListener('hidden.bs.modal', hidden);
+        installations.set(root, function () {
+            hiding(); hidden();
+            modal.removeEventListener('hide.bs.modal', hiding);
+            modal.removeEventListener('hidden.bs.modal', hidden);
         });
     }
 
-    function init() { doc.querySelectorAll('[data-link-share]').forEach(install); }
+    function init() {
+        installations.forEach(function (dispose, root) {
+            if (root.isConnected === false) { dispose(); installations.delete(root); }
+        });
+        doc.querySelectorAll('[data-link-share]').forEach(install);
+    }
     win.PianoLITLinkShare = {init: init};
     if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', init);
     else init();

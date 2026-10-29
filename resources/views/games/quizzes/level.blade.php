@@ -1,3 +1,3 @@
 @if($quiz->level)
-<span>@icon('circle-help'){{ ucfirst($quiz->level->name) }}</span>
+<span>@icon('chart-no-axes-column-increasing'){{ ucfirst($quiz->level->name) }}</span>
 @endif

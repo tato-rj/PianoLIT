@@ -38,14 +38,17 @@
                 <img src="{{ $quiz->cover_image() }}" alt="{{ rtrim($quiz->title, '. ') }}" class="quiz-cover w-100 d-block mb-4" decoding="async">
             @endif
 
-            <section class="quiz-start bg-white border rounded-sm p-4 mb-4" data-quiz-introduction aria-labelledby="quiz-start-title">
-                <h2 class="h5 mb-2" id="quiz-start-title">{{ count($quiz->questions) ? 'Ready to give it a try?' : 'This quiz is being prepared' }}</h2>
+            <section class="quiz-start rounded-sm text-center p-4 py-sm-5 mb-4" data-quiz-introduction aria-labelledby="quiz-start-title">
                 @if(count($quiz->questions))
-                    <p class="text-muted mb-3">Trust your brain. Or your lucky finger.</p>
-                    @if($quiz->results_count > 2)<p class="small text-muted mb-3">Average score: <strong>{{ $quiz->average_score }} out of {{ count($quiz->questions) }}</strong> · {{ number_format($quiz->results_count) }} attempts</p>@endif
-                    <button class="btn btn-primary" type="button" id="start-quiz" data-quiz-start>Start quiz @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>
+                    <div class="quiz-start-notes" aria-hidden="true"><span>♫</span><span>✦</span><span>♪</span><span>✦</span></div>
+                    <div class="quiz-start-moments d-flex justify-content-center align-items-center gap-3 mb-4" aria-hidden="true"><span>🧠</span><span>🔥</span><span>🎉</span></div>
+                    <h2 class="h3 mb-3" id="quiz-start-title">Ready for your big moment?</h2>
+                    <p class="mb-4" id="quiz-start-description">One question at a time. A surprise GIF at the finish.</p>
+                    <button class="btn btn-primary btn-lg quiz-start-action" type="button" id="start-quiz" data-quiz-start aria-describedby="quiz-start-description">@icon('play')Start quiz</button>
+                    @if($quiz->results_count > 2)<p class="small text-muted mt-4 mb-0">Average: <strong>{{ $quiz->average_score }} / {{ count($quiz->questions) }}</strong> · {{ number_format($quiz->results_count) }} plays</p>@endif
                     <noscript><p class="small text-muted mt-3 mb-0">Enable JavaScript to answer this quiz.</p></noscript>
                 @else
+                    <h2 class="h5 mb-2" id="quiz-start-title">This quiz is being prepared</h2>
                     <p class="text-muted mb-0">Explore another quiz while we get this one ready.</p>
                 @endif
             </section>
@@ -56,18 +59,29 @@
                     <div class="progress quiz-progress" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="{{ count($quiz->questions) }}" aria-valuenow="0"><div class="progress-bar" style="width: 0%"></div></div>
                 </div>
                 @include('games.quizzes.questions')
-                <div class="d-flex justify-content-end mb-4"><button type="button" class="btn btn-primary" data-quiz-next hidden>Next →</button></div>
-                <section class="quiz-results rounded-sm p-4 mb-4" data-quiz-results hidden tabindex="-1" aria-label="Quiz result" aria-busy="false">
+                <div class="quiz-next d-flex justify-content-end mb-4">
+                    <button type="button" class="btn btn-primary" data-quiz-next hidden>Next →</button>
+                    <button type="button" class="btn btn-secondary" data-quiz-show-result hidden>View result</button>
+                </div>
+            </div>
+            @component('components.dialogs.modal', ['id' => 'quiz-result-modal', 'header' => 'Your result', 'centered' => true, 'data' => ['quiz-modal' => ''], 'options' => ['size' => 'lg', 'body' => ['padding' => 0]]])
+            @slot('body')
+                <section class="quiz-results rounded-sm p-4" data-quiz-results hidden tabindex="-1" aria-label="Quiz result" aria-busy="false">
+                    <div class="quiz-reveal mx-auto mb-4" data-quiz-reveal hidden aria-hidden="true">
+                        <div class="quiz-reveal-orbit"><span>♪</span><span>✦</span><span>♫</span></div>
+                        <span class="quiz-reveal-mystery">?</span>
+                    </div>
                     <div data-quiz-result-status role="status" aria-live="polite"></div>
                     <div id="game-feedback" data-quiz-feedback aria-live="polite" aria-atomic="true"></div>
                     <button type="button" class="btn btn-primary mt-3" data-quiz-retry hidden>Retry</button>
-                    <div class="mt-4" data-quiz-result-actions hidden><div class="d-flex justify-content-center flex-wrap gap-2">
-                        <button type="button" class="btn btn-primary" data-quiz-reset>@icon('rotate-ccw')Play again</button>
+                    <div class="mt-3" data-quiz-result-actions hidden><div class="d-flex justify-content-center flex-wrap gap-2">
+                        <button type="button" class="btn btn-secondary" data-quiz-reset>@icon('rotate-ccw')Play again</button>
                         <button type="button" class="btn btn-secondary" data-quiz-review>Review answers</button>
                         <a class="btn btn-secondary" href="{{ route('quizzes.index') }}">More quizzes @icon('arrow-right', ['mr' => 0, 'ml' => 2])</a>
                     </div></div>
                 </section>
-            </div>
+            @endslot
+            @endcomponent
         </article>
         @if($suggestions->isNotEmpty())
             <section class="border-top pt-4 mt-5" aria-labelledby="more-quizzes-title">
@@ -88,5 +102,6 @@
 @endsection
 
 @push('scripts')
+<script src="{{ mix('js/components/link-share.js') }}" defer></script>
 <script src="{{ mix('js/views/quizzes.js') }}" defer></script>
 @endpush

@@ -82,14 +82,14 @@ class QuizPagesTest extends ReviewTestCase
         Mail::assertNothingOutgoing();
     }
 
-    public function test_detail_has_accessible_questions_preserved_media_and_inline_results()
+    public function test_detail_has_accessible_questions_preserved_media_and_a_result_dialog()
     {
         $quiz = $this->quiz('Discover the piano.', ['questions' => serialize([
             ['Q' => 'Listen to this phrase [storage/quiz/audio/phrase.mp3]', 'A' => ['Major[x]', 'Minor']],
             ['Q' => 'Name this note [storage/quiz/images/note.png]', 'A' => ['C', 'D[x]']],
         ])]);
         $response = $this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk()
-            ->assertSee('Discover the piano')->assertSee('Start quiz')->assertSee('Your progress')->assertSee('Review answers')
+            ->assertSee('Discover the piano')->assertSee('Ready for your big moment?')->assertSee('One question at a time. A surprise GIF at the finish.')->assertSee('Start quiz')->assertSee('Your progress')->assertSee('Review answers')
             ->assertSee('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback', false)
             ->assertDontSee('game-results')->assertDontSee('pinterest.com')->assertDontSee('DISCLAIMER');
         $xpath = $this->xpath($response);
@@ -100,7 +100,12 @@ class QuizPagesTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//audio[@controls and @preload="none"]//source[contains(@src,"/storage/quiz/audio/phrase.mp3")]'));
         $this->assertCount(1, $xpath->query('//img[contains(@src,"/storage/quiz/images/note.png") and @alt]'));
         $this->assertCount(1, $xpath->query('//div[@id="quiz-content" and @hidden]'));
+        $this->assertCount(1, $xpath->query('//button[@data-quiz-start and @aria-describedby="quiz-start-description"]'));
         $this->assertCount(1, $xpath->query('//section[@data-quiz-results and @hidden]'));
+        $this->assertCount(1, $xpath->query('//div[@id="quiz-result-modal" and @data-quiz-modal and @aria-labelledby="quiz-result-modal-title"]//section[@data-quiz-results]'));
+        $this->assertCount(1, $xpath->query('//div[@data-quiz-reveal and @aria-hidden="true" and @hidden]'));
+        $this->assertCount(1, $xpath->query('//div[@id="quiz-result-modal"]//button[@data-bs-dismiss="modal" and @aria-label="Close"]'));
+        $this->assertCount(1, $xpath->query('//button[@data-quiz-show-result and @hidden]'));
         $this->assertCount(1, $xpath->query('//script[contains(@src,"/js/views/quizzes.js?id=")]'));
         $this->assertStringNotContainsString('@if', $response->getContent());
         $this->preview($response, 'detail');
@@ -114,7 +119,7 @@ class QuizPagesTest extends ReviewTestCase
         $this->actingAs($user, 'web');
         foreach (['http://learn.localhost', 'http://localhost'] as $origin) {
             $response = $this->get($origin.'/quizzes/'.$quiz->slug.'/feedback?answers[]=0&answers[]=0&user_id='.$other->id)
-                ->assertOk()->assertSee('1 out of 2')->assertSee('data-quiz-score', false)->assertSee('https://media.giphy.com/media/', false)->assertSee('data-quiz-gif-toggle', false);
+                ->assertOk()->assertSee('1 out of 2')->assertSee('data-quiz-score', false)->assertSee('https://media.giphy.com/media/', false)->assertDontSee('data-quiz-gif-toggle', false)->assertSee('Share my score');
             $this->preview($response, 'feedback');
         }
         $this->assertSame(2, DB::table('quiz_results')->where('quiz_id', $quiz->id)->where('user_id', $user->id)->where('score', 1)->count());
@@ -134,7 +139,7 @@ class QuizPagesTest extends ReviewTestCase
             $this->assertCount(1, $xpath->query('//div[@data-quiz-tier="'.$tier.'"]'));
             $this->assertCount(1, $xpath->query('//img[@data-quiz-gif and @data-animated-src="'.$original['gif'].'" and @referrerpolicy="no-referrer"]'));
             $this->assertCount(1, $xpath->query('//img[contains(@src,"/giphy_s.gif")]'));
-            $this->assertCount(1, $xpath->query('//button[@data-quiz-gif-toggle]'));
+            $this->assertCount(0, $xpath->query('//button[@data-quiz-gif-toggle]'));
             $this->assertLessThan(12, str_word_count($xpath->query('//h2')->item(0)->textContent));
             $this->preview($response, 'feedback-'.$tier);
         }
@@ -143,6 +148,111 @@ class QuizPagesTest extends ReviewTestCase
     private function responseForView($view, $data)
     {
         return new \Illuminate\Http\Response(view($view, $data)->render());
+    }
+
+    public function test_finale_compares_against_earlier_plays_of_this_quiz_before_saving_the_current_score()
+    {
+        $quiz = $this->quiz('Can you outsmart a piano?');
+        foreach ([0, 1, 2] as $score) $quiz->results()->create(['score' => $score]);
+        $other = $this->quiz('Another quiz');
+        $other->results()->create(['score' => 2]);
+        foreach ([2 => ['above', [0, 1]], 1 => ['tied', [0, 0]], 0 => ['below', [1, 0]]] as $score => [$standing, $answers]) {
+            $response = $this->get('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback?'.http_build_query(['answers' => $answers, 'quiz_average' => 0, 'plays' => 999999]));
+            $response->assertOk()->assertSee('earlier plays')->assertDontSee('999,999');
+            $xpath = $this->xpath($response);
+            $this->assertCount(1, $xpath->query('//*[@data-quiz-comparison and @data-standing="'.$standing.'"]'));
+            $this->assertCount(1, $xpath->query('//*[@role="progressbar" and @aria-labelledby="quiz-average-score-label" and @aria-valuenow="1" and @aria-valuemax="2"]'));
+            $this->assertCount(1, $xpath->query('//*[@role="progressbar" and @aria-labelledby="quiz-your-score-label" and @aria-valuenow="'.$score.'"]'));
+            $this->assertCount(1, $xpath->query('//*[contains(@class,"quiz-play-count")]//strong[text()="3"]'));
+            $this->assertSame(4, $quiz->results()->count(), 'Only the existing completion write is performed.');
+            $this->preview($response, 'comparison-'.[0 => 'oops', 1 => 'good', 2 => 'perfect'][$score]);
+            $quiz->results()->latest('id')->first()->delete(); // Isolated test fixture only; keep the same benchmark for each state.
+        }
+    }
+
+    public function test_comparison_distinguishes_no_history_zero_average_and_incompatible_old_scores()
+    {
+        $quiz = $this->quiz();
+        $service = app(\App\Services\QuizResultComparison::class);
+        $empty = $service->beforeCurrentPlay($quiz, 0, 2);
+        $this->assertSame('first', $empty['standing']);
+        $this->assertNull($empty['average']);
+        $this->assertSame(0, $empty['plays']);
+        $first = $this->get('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback?answers[]=1&answers[]=0')->assertOk()->assertSee('First on stage!')->assertSee('No earlier plays yet.');
+        $this->assertCount(1, $this->xpath($first)->query('//*[@role="progressbar"]'), 'An unavailable average must not look like a zero score.');
+        $zero = $service->beforeCurrentPlay($quiz, 0, 2);
+        $this->assertSame('tied', $zero['standing']);
+        $this->assertSame('0', $zero['average_label']);
+        $this->assertSame(0.0, $zero['average_percent']);
+        foreach ([2, 2] as $score) $quiz->results()->create(['score' => $score]);
+        $decimal = $service->beforeCurrentPlay($quiz, 2, 2);
+        $this->assertSame('1.3', $decimal['average_label']);
+        $this->assertSame(65.0, $decimal['average_percent']);
+        $quiz->results()->create(['score' => 8]);
+        $changed = $service->beforeCurrentPlay($quiz, 2, 2);
+        $this->assertSame('unavailable', $changed['standing']);
+        $this->assertNull($changed['average']);
+        $this->assertSame(4, $changed['plays']);
+        $this->assertSame(4, $quiz->results()->count(), 'Comparison reads never create or change results.');
+        Mail::assertNothingOutgoing();
+    }
+
+    public function test_shared_scores_have_signed_public_pages_and_large_downloadable_social_cards()
+    {
+        $quiz = $this->quiz('Can you outsmart a piano?');
+        $sharing = app(\App\Services\QuizResultShare::class);
+        foreach ([0 => 'oops', 1 => 'good', 2 => 'perfect'] as $score => $tier) {
+            $answers = $score === 2 ? [0, 1] : ($score === 1 ? [0, 0] : [1, 0]);
+            $response = $this->get('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback?'.http_build_query(['answers' => $answers]));
+            $response->assertOk()->assertSee('Share my score')->assertSee('GIF via GIPHY')->assertDontSee('Pause GIF');
+            $share = $sharing->data($quiz, $score, 2);
+            $xpath = $this->xpath($response);
+            $this->assertSame($share['url'], $xpath->query('//*[@data-quiz-share-panel]')->item(0)->getAttribute('data-share-url'));
+            $this->assertCount(6, $xpath->query('//a[starts-with(@aria-label,"Share via ")]'));
+            $this->assertCount(1, $xpath->query('//input[@readonly and @value="'.$share['url'].'"]'));
+            foreach ($share['destinations'] as $destination) {
+                parse_str(parse_url($destination['url'], PHP_URL_QUERY), $params);
+                $this->assertStringContainsString($share['url'], implode(' ', $params));
+            }
+            $before = DB::table('quiz_results')->count();
+            $page = $this->get($share['url'])->assertOk()->assertSee('Take the quiz');
+            $meta = $this->xpath($page);
+            $this->assertSame($share['url'], $meta->query('//meta[@property="og:url"]')->item(0)->getAttribute('content'));
+            $this->assertSame($share['image'], $meta->query('//meta[@property="og:image"]')->item(0)->getAttribute('content'));
+            $this->assertCount(1, $meta->query('//meta[@name="twitter:card" and @content="summary_large_image"]'));
+            $image = $this->get($share['image'])->assertOk()->assertHeader('Content-Type', 'image/png');
+            $size = getimagesizefromstring($image->getContent());
+            $this->assertSame([1200, 630], [$size[0], $size[1]]);
+            $this->get($share['download'])->assertOk()->assertHeader('Content-Disposition', 'attachment; filename="pianolit-quiz-score.png"');
+            $this->assertSame($before, DB::table('quiz_results')->count(), 'Share previews never record quiz plays.');
+            $this->preview($response, 'share-feedback-'.$tier);
+            $this->preview($page, 'shared-'.$tier);
+            if ($directory = getenv('QUIZ_PREVIEW_DIR')) file_put_contents($directory.'/score-'.$score.'.png', $image->getContent());
+        }
+        Mail::assertNothingOutgoing();
+    }
+
+    public function test_shared_scores_reject_tampering_drafts_and_invalid_bounds_without_changing_legacy_feedback()
+    {
+        $this->withExceptionHandling();
+        $quiz = $this->quiz();
+        $sharing = app(\App\Services\QuizResultShare::class);
+        $share = $sharing->data($quiz, 1, 2);
+        $tracked = $this->get($share['url'].'&fbclid=example&utm_source=facebook&igsh=example')->assertOk();
+        $this->assertSame($share['url'], $this->xpath($tracked)->query('//meta[@property="og:url"]')->item(0)->getAttribute('content'));
+        $this->get(str_replace('/1/2', '/2/2', $share['url']))->assertForbidden();
+        $this->get(str_replace('/1/2', '/2/2', $share['url']).'&fbclid=example')->assertForbidden();
+        $this->get(strtok($share['image'], '?'))->assertForbidden();
+        $this->get($share['image'].'&download=1')->assertForbidden();
+        foreach ([[3, 2], [0, 0], [1, 1000]] as [$score, $total]) {
+            $this->get(\URL::signedRoute('quizzes.share', ['quiz' => $quiz->slug, 'score' => $score, 'total' => $total]))->assertNotFound();
+        }
+        $quiz->forceFill(['published_at' => null])->saveQuietly();
+        $this->get($share['url'])->assertNotFound();
+        $this->get($share['image'])->assertNotFound();
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->get('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback?answers[]=0&answers[]=1')
+            ->assertOk()->assertSee('2 out of 2')->assertDontSee('data-quiz-share-panel', false);
     }
 
     public function test_drafts_stay_private_and_empty_quizzes_and_directories_remain_usable()

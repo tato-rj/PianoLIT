@@ -34,7 +34,7 @@
         transition: background-color .15s ease, color .15s ease;
     }
 
-    @each $service, $color in ('mail': #0055fe, 'message-circle': #34c759, 'whatsapp': #25d366, 'facebook-f': #0866ff, 'reddit': #ff4500, 'telegram': #229ed9) {
+    @each $service, $color in ('mail': #0055fe, 'message-circle': #34c759, 'whatsapp': #25d366, 'facebook-f': #0866ff, 'reddit': #ff4500, 'telegram': #229ed9, 'x-twitter': #171717) {
         &__target--#{$service} {
             --share-color: #{$color};
             --share-background: #{rgba($color, .1)};

@@ -1,20 +1,20 @@
 <meta name="keywords" content="{{$shareable['keywords']}}">
 <meta name="description" content="{{$shareable['description']}}">
-<meta name="twitter:card" value="{{$shareable['description']}}">
+
 <meta property="og:site_name" content="PianoLIT" />
 <meta property="og:title" content="{{$shareable['title']}}" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="{{url()->current()}}" />
+<meta property="og:url" content="{{$shareable['url'] ?? url()->current()}}" />
 <meta property="og:image" content="{{$shareable['thumbnail']}}" />
-<meta property="og:image:width" content="400" />
-<meta property="og:image:height" content="245" />
+<meta property="og:image:width" content="{{$shareable['image_width'] ?? 400}}" />
+<meta property="og:image:height" content="{{$shareable['image_height'] ?? 245}}" />
 <meta property="og:description" content="{{$shareable['description']}}" />
 <meta property="article:published_time" content="{{$shareable['created_at']}}">
 <meta property="article:modified_time" content="{{$shareable['updated_at']}}">
 <meta property="og:updated_time" content="{{$shareable['updated_at']}}">
 
 <meta name="twitter:site" content="@litpiano">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="{{$shareable['card'] ?? 'summary'}}">
 <meta name="twitter:image" content="{{$shareable['thumbnail']}}">
 <meta name="twitter:title" content="{{$shareable['title']}}">
 <meta name="twitter:description" content="{{$shareable['description']}}">
@@ -30,4 +30,4 @@
 <meta itemprop="dateModified" content="{{$shareable['updated_at']}}" />
 <meta itemprop="author" content="PianoLIT"/>
 
-<link rel="canonical" href="{{url()->current()}}" />
+<link rel="canonical" href="{{$shareable['url'] ?? url()->current()}}" />

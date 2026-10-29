@@ -45,4 +45,6 @@ Route::prefix('quizzes')->name('quizzes.')->group(function () {
     Route::get('', 'QuizzesController@index')->name('index');
     Route::get('{quiz}', 'QuizzesController@show')->name('show');
     Route::get('{quiz}/feedback', 'QuizzesController@feedback')->name('feedback');
+    Route::get('{quiz}/results/{score}/{total}', 'QuizzesController@share')->where(['score' => '[0-9]{1,3}', 'total' => '[0-9]{1,3}'])->middleware(\App\Http\Middleware\ValidateQuizShareSignature::class)->name('share');
+    Route::get('{quiz}/results/{score}/{total}/image.png', 'QuizzesController@shareImage')->where(['score' => '[0-9]{1,3}', 'total' => '[0-9]{1,3}'])->middleware(\App\Http\Middleware\ValidateQuizShareSignature::class)->name('share-image');
 });

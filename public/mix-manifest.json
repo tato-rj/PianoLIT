@@ -39,9 +39,9 @@
     "/js/views/storefront.js": "/js/views/storefront.js?id=c16f08a9c182372d0fed5346063994ea",
     "/js/app.js": "/js/app.js?id=8c92e0f00bfa222e314280587e8dc0d7",
     "/js/admin.js": "/js/admin.js?id=71d6be56615c7b596c4675d3a54d5ad2",
-    "/css/app.css": "/css/app.css?id=e4cd2c323c110712aa588c2dac30c689",
+    "/css/app.css": "/css/app.css?id=dbc7de213fde7fea95e8a7dec55b4f41",
     "/css/admin.css": "/css/admin.css?id=ac30eedae49c392bc1afa1dcbdaa1c7e",
-    "/js/views/quizzes.js": "/js/views/quizzes.js?id=07cdf28ae3b0159f4791896e760fbae7",
+    "/js/views/quizzes.js": "/js/views/quizzes.js?id=453e95e3c17637284e0e1e267ec57657",
     "/js/views/pianists.js": "/js/views/pianists.js?id=f88d1c92fa9718b848a5ff9144fe6f69",
     "/js/views/admin-notifications.js": "/js/views/admin-notifications.js?id=df6c7c7717b57d47d9ece89afaac3bd6",
     "/js/views/admin-design-system.js": "/js/views/admin-design-system.js?id=68e9d3df1d2fd5df887fe8b1cb232aba",
@@ -1754,7 +1754,7 @@
     "/images/emails/welcome/feature-synthesia.png": "/images/emails/welcome/feature-synthesia.png?id=8696a590a5b5d2411299155f060fd966",
     "/images/emails/welcome/feature-recordings.png": "/images/emails/welcome/feature-recordings.png?id=c75277d72e0af5e0089178bc8b0f7dd5",
     "/images/emails/welcome/feature-scores.png": "/images/emails/welcome/feature-scores.png?id=66a3158f07a91865d7f4e26d66263c21",
-    "/js/components/link-share.js": "/js/components/link-share.js?id=5c6b547d331de5d0cb9b8757e922e92a",
+    "/js/components/link-share.js": "/js/components/link-share.js?id=0bdb738aad8128fb7dcebd2d28f89806",
     "/js/metronome-voice-worker.js": "/js/metronome-voice-worker.js?id=68413a12663339ceab581115b951c891",
     "/audio/metronome/spoken/manifest.json": "/audio/metronome/spoken/manifest.json"
 }

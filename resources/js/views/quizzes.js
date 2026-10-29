@@ -16,6 +16,10 @@
     const progress = root.querySelector('[role="progressbar"]');
     const progressLabel = root.querySelector('[data-quiz-progress-label]');
     const streakLabel = root.querySelector('[data-quiz-streak]');
+    const modal = root.querySelector('[data-quiz-modal]');
+    const reveal = root.querySelector('[data-quiz-reveal]');
+    const showResult = root.querySelector('[data-quiz-show-result]');
+    const dialog = window.bootstrap.Modal.getOrCreateInstance(modal);
     const motion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
     const animations = new Set();
     const previousPicks = {};
@@ -25,6 +29,10 @@
     let currentQuestion = 0;
     let streak = 0;
     let pauseGif = function () {};
+    let autoRevealTimer = null;
+    let revealTimer = null;
+    let finishRevealWait = null;
+    let afterClose = null;
 
     function reducedMotion() { return (motion && motion.matches) || document.hidden; }
 
@@ -35,9 +43,9 @@
         return choice;
     }
 
-    function focus(element) {
+    function focus(element, scroll) {
         element.focus({preventScroll: true});
-        element.scrollIntoView({behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start'});
+        if (scroll) element.scrollIntoView({behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start'});
     }
 
     function animate(element, frames, options, cleanup) {
@@ -103,48 +111,144 @@
         focus(question.querySelector('h2'));
     }
 
+    function cancelScheduledReveal() {
+        window.clearTimeout(autoRevealTimer);
+        autoRevealTimer = null;
+    }
+
+    function scheduleResult() {
+        cancelScheduledReveal();
+        if (document.hidden || pending || !results.hidden || answers.includes(null) || !answers.length) return;
+        const currentAttempt = attempt;
+        autoRevealTimer = window.setTimeout(function () {
+            autoRevealTimer = null;
+            if (currentAttempt === attempt && !document.hidden) loadResult(true);
+        }, reducedMotion() ? 350 : 650);
+    }
+
+    function cancelRevealPause() {
+        window.clearTimeout(revealTimer);
+        revealTimer = null;
+        if (finishRevealWait) { finishRevealWait(); finishRevealWait = null; }
+    }
+
+    function revealPause(suspense) {
+        if (!suspense || reducedMotion()) return Promise.resolve();
+        return new Promise(function (resolve) {
+            finishRevealWait = resolve;
+            revealTimer = window.setTimeout(function () {
+                revealTimer = null;
+                finishRevealWait = null;
+                resolve();
+            }, 1100);
+        });
+    }
+
+    function closeFor(action) {
+        if (!modal.classList.contains('show')) { action(); return; }
+        afterClose = action;
+        dialog.hide();
+    }
+
     function prepareGif() {
         const gif = feedback.querySelector('[data-quiz-gif]');
-        const toggle = feedback.querySelector('[data-quiz-gif-toggle]');
-        if (!gif || !toggle) return;
+        if (!gif) return;
         const still = gif.getAttribute('src');
         let playing = false;
         let failed = false;
         function play(value) {
             playing = value && !failed;
             gif.src = playing ? gif.dataset.animatedSrc : still;
-            toggle.textContent = playing ? 'Pause GIF' : 'Play GIF';
         }
         pauseGif = function () { if (playing) play(false); };
         gif.addEventListener('error', function () {
             if (failed) return;
             failed = true;
             gif.hidden = true;
-            toggle.hidden = true;
         });
-        toggle.hidden = false;
-        toggle.addEventListener('click', function () { play(!playing); });
-        play(!reducedMotion());
-        if (gif.complete && !gif.naturalWidth) { gif.hidden = true; toggle.hidden = true; failed = true; }
+        play(!reducedMotion() && modal.classList.contains('show'));
+        if (gif.complete && !gif.naturalWidth) { gif.hidden = true; failed = true; }
     }
 
-    async function loadResult() {
+    function prepareShare() {
+        const panel = feedback.querySelector('[data-quiz-share-panel]');
+        const open = feedback.querySelector('[data-quiz-share-open]');
+        const score = feedback.querySelector('[data-quiz-score]');
+        if (!panel || !open) return;
+        open.hidden = false;
+        if (window.PianoLITLinkShare) window.PianoLITLinkShare.init();
+        function showSharing(sharing) {
+            panel.hidden = !sharing;
+            score.hidden = sharing;
+            actions.hidden = sharing;
+            open.setAttribute('aria-expanded', String(sharing));
+            if (sharing) {
+                pauseGif();
+                clearEffects();
+                focus(panel.querySelector('h2'));
+                animate(panel.querySelector('img'), [{opacity: 0, transform: 'scale(.94) rotate(-2deg)'}, {opacity: 1, transform: 'scale(1) rotate(0)'}], {duration: 450, easing: 'ease-out'});
+            } else focus(open);
+            dialog.handleUpdate();
+        }
+        open.addEventListener('click', function () { showSharing(true); });
+        panel.querySelector('[data-quiz-share-back]').addEventListener('click', function () { showSharing(false); });
+        const native = panel.querySelector('[data-quiz-share-native]');
+        if (typeof window.navigator.share === 'function') {
+            native.hidden = false;
+            native.addEventListener('click', async function () {
+                if (native.disabled) return;
+                native.disabled = true;
+                const error = panel.querySelector('[data-share-error]');
+                error.hidden = true;
+                try {
+                    await window.navigator.share({title: panel.dataset.shareTitle, text: panel.dataset.shareTitle, url: panel.dataset.shareUrl});
+                } catch (failure) {
+                    if (failure.name !== 'AbortError') {
+                        panel.querySelector('[data-share-error-message]').textContent = 'Choose a social button or copy your link instead.';
+                        error.hidden = false;
+                    }
+                } finally { native.disabled = false; }
+            });
+        }
+    }
+
+    function animateComparison() {
+        feedback.querySelectorAll('[data-quiz-compare-fill]').forEach(function (bar, index) {
+            animate(bar, [{transform: 'scaleX(0)'}, {transform: 'scaleX(1)'}], {
+                duration: 850, delay: 180 + index * 170, easing: 'cubic-bezier(.16, 1, .3, 1)', fill: 'backwards'
+            });
+        });
+        const medal = feedback.querySelector('[data-quiz-award]');
+        if (medal) animate(medal, [
+            {transform: 'scale(.3) rotate(-100deg)', opacity: 0},
+            {transform: 'scale(1.16) rotate(12deg)', opacity: 1, offset: .7},
+            {transform: 'scale(1) rotate(0)', opacity: 1}
+        ], {duration: 750, delay: 350, fill: 'backwards', easing: 'ease-out'});
+    }
+
+    async function loadResult(suspense) {
         if (pending || !answers.length || answers.includes(null)) return;
         pending = true;
         const currentAttempt = attempt;
         next.hidden = true;
-        questions.forEach(function (question) { question.hidden = true; });
+        cancelScheduledReveal();
         results.hidden = false;
         results.setAttribute('aria-busy', 'true');
         actions.hidden = true;
         retry.hidden = true;
         status.setAttribute('role', 'status');
         status.textContent = 'Cue the drumroll…';
+        reveal.hidden = false;
         feedback.innerHTML = '';
-        focus(results);
+        showResult.hidden = false;
+        dialog.show();
         try {
-            const response = await window.axios.get(root.dataset.url, {params: {answers: answers.slice()}});
+            const responses = await Promise.all([
+                window.axios.get(root.dataset.url, {params: {answers: answers.slice()}, timeout: 15000}),
+                revealPause(suspense)
+            ]);
             if (currentAttempt !== attempt) return;
+            const response = responses[0];
             if (typeof response.data !== 'string' || !response.data.includes('data-quiz-score')) throw new Error('Missing quiz result');
             feedback.innerHTML = response.data;
             status.textContent = '';
@@ -152,8 +256,12 @@
             const score = feedback.querySelector('[data-quiz-score]');
             results.dataset.quizTier = score ? score.dataset.quizTier : 'good';
             prepareGif();
-            animate(feedback, [{opacity: 0, transform: 'scale(.9) translateY(18px)'}, {opacity: 1, transform: 'scale(1.025)'}, {opacity: 1, transform: 'scale(1)'}], {duration: 650, easing: 'ease-out'});
-            burst(results, true, results.dataset.quizTier !== 'oops');
+            prepareShare();
+            if (modal.classList.contains('show')) {
+                animate(feedback, [{opacity: 0, transform: 'scale(.9) translateY(18px)'}, {opacity: 1, transform: 'scale(1.025)'}, {opacity: 1, transform: 'scale(1)'}], {duration: 650, easing: 'ease-out'});
+                burst(results, true, results.dataset.quizTier !== 'oops');
+                animateComparison();
+            }
         } catch (error) {
             if (currentAttempt !== attempt) return;
             status.setAttribute('role', 'alert');
@@ -161,8 +269,11 @@
             retry.hidden = false;
         } finally {
             if (currentAttempt === attempt) {
+                cancelRevealPause();
+                reveal.hidden = true;
                 pending = false;
                 results.setAttribute('aria-busy', 'false');
+                dialog.handleUpdate();
             }
         }
     }
@@ -176,7 +287,7 @@
     questions.forEach(function (question, index) {
         const buttons = Array.from(question.querySelectorAll('[data-quiz-answer]'));
         buttons.forEach(function (button) {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function (event) {
                 if (answers[index] !== null || button.disabled || question.hidden) return;
                 answers[index] = Number(button.dataset.quizAnswer);
                 stopAudio();
@@ -212,9 +323,14 @@
                 animate(reaction, [{transform: 'translateY(8px) scale(.92)', opacity: 0}, {transform: 'translateY(0) scale(1)', opacity: 1}], {duration: 360});
                 burst(question, false, won);
                 updateProgress();
-                next.textContent = index === questions.length - 1 ? 'The big reveal →' : 'Next →';
-                next.hidden = false;
-                next.focus({preventScroll: true});
+                if (index === questions.length - 1) {
+                    next.hidden = true;
+                    scheduleResult();
+                } else {
+                    next.hidden = false;
+                    // Pointer answers stay in place. Keyboard activation can continue on Next without scrolling.
+                    if (event.detail === 0) next.focus({preventScroll: true});
+                }
             });
         });
     });
@@ -222,48 +338,75 @@
     next.addEventListener('click', function () {
         if (answers[currentQuestion] === null || next.hidden) return;
         if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
-        else loadResult();
     });
-    retry.addEventListener('click', loadResult);
-    root.querySelector('[data-quiz-review]').addEventListener('click', function () {
-        stopAudio();
-        pauseGif();
+    retry.addEventListener('click', function () { loadResult(false); });
+    showResult.addEventListener('click', function () { dialog.show(); });
+    modal.addEventListener('shown.bs.modal', function () {
+        // Bootstrap ignores hide() during its opening transition; finish a quick replay/review click afterward.
+        if (afterClose) dialog.hide();
+    });
+    modal.addEventListener('hide.bs.modal', function () {
+        cancelRevealPause();
         clearEffects();
-        questions.forEach(function (question) { question.hidden = false; });
-        if (questions.length) focus(questions[0].querySelector('h2'));
+        pauseGif();
+    });
+    modal.addEventListener('hidden.bs.modal', function () {
+        if (afterClose) {
+            const action = afterClose;
+            afterClose = null;
+            action();
+        } else if (!showResult.hidden) showResult.focus({preventScroll: true});
+    });
+    root.querySelector('[data-quiz-review]').addEventListener('click', function () {
+        closeFor(function () {
+            stopAudio();
+            pauseGif();
+            clearEffects();
+            questions.forEach(function (question) { question.hidden = false; });
+            if (questions.length) focus(questions[0].querySelector('h2'), true);
+        });
     });
     root.querySelector('[data-quiz-reset]').addEventListener('click', function () {
-        attempt += 1;
-        pending = false;
-        streak = 0;
-        answers = questions.map(function () { return null; });
-        pauseGif();
-        pauseGif = function () {};
-        clearEffects();
-        questions.forEach(function (question) {
-            delete question.dataset.quizOutcome;
-            const reaction = question.querySelector('[data-quiz-question-feedback]');
-            reaction.textContent = '';
-            reaction.removeAttribute('aria-label');
-            question.querySelectorAll('[data-quiz-answer]').forEach(function (button) {
-                button.disabled = false;
-                button.setAttribute('aria-pressed', 'false');
-                button.classList.remove('is-correct', 'is-incorrect');
-                button.querySelector('[data-quiz-answer-outcome]').hidden = true;
+        closeFor(function () {
+            attempt += 1;
+            cancelScheduledReveal();
+            cancelRevealPause();
+            pending = false;
+            streak = 0;
+            answers = questions.map(function () { return null; });
+            pauseGif();
+            pauseGif = function () {};
+            clearEffects();
+            questions.forEach(function (question) {
+                delete question.dataset.quizOutcome;
+                const reaction = question.querySelector('[data-quiz-question-feedback]');
+                reaction.textContent = '';
+                reaction.removeAttribute('aria-label');
+                question.querySelectorAll('[data-quiz-answer]').forEach(function (button) {
+                    button.disabled = false;
+                    button.setAttribute('aria-pressed', 'false');
+                    button.classList.remove('is-correct', 'is-incorrect');
+                    button.querySelector('[data-quiz-answer-outcome]').hidden = true;
+                });
             });
+            results.hidden = true;
+            reveal.hidden = true;
+            showResult.hidden = true;
+            results.setAttribute('aria-busy', 'false');
+            delete results.dataset.quizTier;
+            feedback.innerHTML = '';
+            status.textContent = '';
+            actions.hidden = true;
+            retry.hidden = true;
+            updateProgress();
+            if (questions.length) showQuestion(0);
         });
-        results.hidden = true;
-        results.setAttribute('aria-busy', 'false');
-        delete results.dataset.quizTier;
-        feedback.innerHTML = '';
-        status.textContent = '';
-        actions.hidden = true;
-        retry.hidden = true;
-        updateProgress();
-        if (questions.length) showQuestion(0);
     });
     function suspend() { clearEffects(); pauseGif(); stopAudio(); }
-    if (motion && motion.addEventListener) motion.addEventListener('change', function () { if (motion.matches) suspend(); });
-    document.addEventListener('visibilitychange', function () { if (document.hidden) suspend(); });
-    window.addEventListener('pagehide', suspend);
+    if (motion && motion.addEventListener) motion.addEventListener('change', function () { if (motion.matches) { suspend(); cancelRevealPause(); } });
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) { suspend(); cancelScheduledReveal(); }
+        else scheduleResult();
+    });
+    window.addEventListener('pagehide', function () { suspend(); cancelScheduledReveal(); cancelRevealPause(); dialog.hide(); });
 })();

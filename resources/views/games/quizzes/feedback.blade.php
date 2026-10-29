@@ -10,12 +10,23 @@
 <div class="quiz-score text-center" data-quiz-score data-quiz-tier="{{ $tier }}">
     <p class="quiz-score-number mb-2"><span class="visually-hidden">{{ $feedback['score'] }} out of {{ $feedback['questions_count'] }}</span><span aria-hidden="true">{{ $feedback['score'] }}<span class="quiz-score-total"> / {{ $feedback['questions_count'] }}</span></span></p>
     <h2 class="h4 mb-3">{{ randval($lines[$tier]) }}</h2>
+    <div class="quiz-finale-grid {{ !empty($comparison) ? 'quiz-finale-grid-compared' : '' }}">
+    @if(!empty($comparison))
+        @include('games.quizzes.comparison')
+    @endif
+    <div>
     <div class="quiz-gif-frame mx-auto">
         <span class="quiz-gif-fallback" aria-hidden="true">{{ $tier === 'oops' ? '🙈' : ($tier === 'perfect' ? '🏆' : '🎉') }}</span>
         <img class="quiz-gif" data-quiz-gif src="{{ str_replace('/giphy.gif', '/giphy_s.gif', $feedback['gif']) }}" data-animated-src="{{ $feedback['gif'] }}" alt="{{ $tier === 'oops' ? 'A little comic relief for that round' : 'Your well-earned victory dance' }}" width="480" height="270" referrerpolicy="no-referrer">
     </div>
-    <div class="d-flex justify-content-center align-items-center gap-3 mt-2">
-        <span class="small text-muted">GIPHY</span>
-        <button type="button" class="btn btn-secondary btn-sm" data-quiz-gif-toggle hidden>Play GIF</button>
+    <p class="quiz-gif-credit mb-0 mt-1">GIF via GIPHY</p>
     </div>
+    </div>
+    @if(!empty($share))
+        <button type="button" class="btn btn-primary btn-lg quiz-share-action mt-2" data-quiz-share-open aria-controls="quiz-share-panel" aria-expanded="false" hidden>@icon('share')Share my score</button>
+    @endif
 </div>
+
+@if(!empty($share))
+    @include('games.quizzes.share-panel')
+@endif
