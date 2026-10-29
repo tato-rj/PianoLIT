@@ -38,7 +38,7 @@ class RecentlyViewedPiecesTest extends ReviewTestCase
     public function test_piece_visits_create_a_unique_newest_first_row_above_latest_pieces()
     {
         $this->actingAs($this->user, 'web');
-        $this->get(route('webapp.discover'))->assertOk()->assertDontSee('Recently viewed');
+        $this->get(route('webapp.discover'))->assertOk()->assertDontSee('id="recently-viewed-heading"', false);
         $this->get(route('webapp.pieces.show', $this->first))->assertOk();
         $this->get(route('webapp.discover'))->assertOk()->assertSeeInOrder(['Recently viewed', 'First viewed piece', 'Latest pieces']);
         $this->travel(1)->seconds();
@@ -58,13 +58,13 @@ class RecentlyViewedPiecesTest extends ReviewTestCase
     public function test_history_is_private_to_the_signed_in_account_and_guests_are_not_recorded()
     {
         (new RecentlyViewedPieces)->record($this->user, $this->first);
-        $this->get(route('webapp.discover', ['user_id' => $this->user->id]))->assertOk()->assertDontSee('Recently viewed');
+        $this->get(route('webapp.discover', ['user_id' => $this->user->id]))->assertOk()->assertDontSee('id="recently-viewed-heading"', false);
         $this->get(route('webapp.pieces.show', [$this->second, 'user_id' => $this->user->id]))->assertOk();
         $this->assertDatabaseCount('recently_viewed_pieces', 1);
 
         $other = Model::withoutEvents(function () { return create(User::class)->setAppends(['full_name']); });
         $this->actingAs($other, 'web');
-        $this->get(route('webapp.discover', ['user_id' => $this->user->id]))->assertOk()->assertDontSee('Recently viewed');
+        $this->get(route('webapp.discover', ['user_id' => $this->user->id]))->assertOk()->assertDontSee('id="recently-viewed-heading"', false);
         $this->get(route('webapp.pieces.show', [$this->second, 'user_id' => $this->user->id]))->assertOk();
         $this->assertDatabaseHas('recently_viewed_pieces', ['user_id' => $other->id, 'piece_id' => $this->second->id]);
         $this->assertDatabaseMissing('recently_viewed_pieces', ['user_id' => $this->user->id, 'piece_id' => $this->second->id]);

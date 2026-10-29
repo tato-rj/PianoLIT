@@ -50,6 +50,11 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($request->is('api/v2', 'api/v2/*')) {
+            $response = \App\Services\Api\V2\Response::exception($exception);
+            return $response->header('Cache-Control', 'no-store, private');
+        }
+
         if (onWebapp() && $this->codeIs(404, $exception))
             return redirect(route('webapp.discover'));
 

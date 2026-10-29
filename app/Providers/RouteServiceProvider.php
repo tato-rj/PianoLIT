@@ -78,6 +78,10 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapMetronomeRoutes();
 
+        // v2 never runs legacy caller-supplied user_id authentication.
+        Route::prefix('api/v2')->name('api.v2.')->middleware([\App\Http\Middleware\Api\V2\Boundary::class, 'throttle:120,1,v2-read:'])
+            ->group(base_path('routes/api-v2.php'));
+
         $this->mapApiRoutes();
 
         Route::middleware('web')->group(base_path('routes/google-auth.php'));

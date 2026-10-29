@@ -8,47 +8,16 @@ use App\Api\Api;
 use App\{Composer, Country, Piece, Tag};
 use Illuminate\Validation\Rule;
 use App\Services\WebApp\{ComposerGroups, ExploreCatalogue};
-use App\Services\RecentlyViewedPieces;
 use App\Services\WebApp\PieceCards;
 use App\Services\WebApp\GalleryGradients;
 
 class TabsController extends Controller
 {
-    public function discover(Request $request, Api $api, RecentlyViewedPieces $recentlyViewed)
+    public function discover(Request $request, \App\Services\Discover\Feed $feed)
     {
         $composers = Composer::atLeast(1)->get()->sortBy('last_name')->values();
-        $rows = $api->for('webapp')->discover();
-        $womenRow = $rows->firstWhere('title', 'From women composers');
-        $composerFeature = $rows->firstWhere('title', $womenRow['web_composer_feature'] ?? 'From women composers');
-
-        // Use one composer feature in the existing slot and keep Past highlights.
-        // Presentation changes stay outside the shared/mobile feed.
-        $rows = $rows->map(function ($row) use ($api, $composerFeature) {
-            if ($row['title'] === 'From women composers' && $composerFeature) {
-                return $composerFeature;
-            } elseif ($row['title'] === 'From black composers') {
-                $row['title'] = 'Past highlights';
-                $row['content'] = Piece::freePicks()->free(false)
-                    ->where('highlighted_at', '<=', now())->orderByDesc('id')->with('composer')->take(7)->get();
-                $api->withAttributes($row['content'], ['type' => 'piece', 'source' => route('api.pieces.find')]);
-            }
-            return $row;
-        });
-
-        if (app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user())) {
-            $pieces = $recentlyViewed->forUser(auth('web')->user());
-            if ($pieces->isNotEmpty()) {
-                $api->order(2)->withAttributes($pieces, ['type' => 'piece', 'source' => route('api.pieces.find')]);
-                $position = $rows->search(function ($row) { return $row['title'] === 'Latest pieces'; });
-                // Personal rows must stay outside the shared discovery cache.
-                $rows->splice($position === false ? 2 : $position, 0, [[
-                    'title' => 'Recently viewed',
-                    'row' => 'gallery',
-                    'type' => 'piece',
-                    'content' => $pieces,
-                ]]);
-            }
-        }
+        $rows = $feed->rows(auth('web')->user(),
+            app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user()));
 
         // Clone cached models before adding any request-local presentation data.
         $cards = [];

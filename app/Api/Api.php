@@ -13,7 +13,7 @@ class Api extends Factory
 
     protected $results, $request, $query, $options, $for;
 
-	public function discover()
+	public function discover($personalize = true)
 	{
         $key = Redis::get('app.discover') ?: 'app.discover';
         // Web ranking must never replace the cached mobile recommendation pool.
@@ -56,7 +56,7 @@ class Api extends Factory
         });
         
         $collection = clone $collection;
-        if ($this->for !== 'webapp' || app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user())) {
+        if ($personalize && ($this->for !== 'webapp' || app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user()))) {
             $collection->splice(3, 0, [$this->order(3)->suggestions('For you')]);
         }
 

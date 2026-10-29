@@ -1,13 +1,5 @@
 @php
-	$levelSystems = collect([
-		['key' => 'rcm', 'label' => 'RCM', 'unit' => 'Level', 'title' => 'Equivalent to the RCM levels'],
-		['key' => 'abrsm', 'label' => 'ABRSM', 'unit' => 'Level', 'title' => 'Equivalent to the ABRSM levels'],
-		['key' => 'suzuki', 'label' => 'Suzuki', 'unit' => 'Book', 'title' => 'Equivalent to the Suzuki series'],
-	])->map(function ($system) use ($rows) {
-		$feedRow = collect($rows)->firstWhere('title', $system['title']);
-		$system['cards'] = collect($feedRow['content'] ?? [])->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)->values();
-		return $system;
-	});
+	$levelSystems = \App\Services\Discover\Levels::groups($rows);
 	$firstLevelSystem = $levelSystems->first(function ($system) { return $system['cards']->isNotEmpty(); });
 	$levelPalette = ['darkblue', 'lightblue', 'teal', 'green', 'yellow', 'orange', 'red'];
 @endphp
