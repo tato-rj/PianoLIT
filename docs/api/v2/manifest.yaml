@@ -1,6 +1,6 @@
 schema_version: 1
-revision: 2026-10-28.1
-updated_on: '2026-10-28'
+revision: 2026-10-29.1
+updated_on: '2026-10-29'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -14,8 +14,9 @@ runtime:
   verification: 'Production verified on 2026-10-28: existing-password login, authenticated
     Discover matching the shared web builder, owned history, logout/revoked-401, no
     legacy cache mutation. Synthetic SQL writes rolled back and personal cache removed.
-    External HTTPS Discover/invalid-login return 401 JSON. Staging/native acceptance
-    pending.'
+    External HTTPS Discover/invalid-login return 401 JSON. The 2026-10-29.1 Latin
+    American composer-feature addition is implemented locally and awaits deployment.
+    Staging/native acceptance pending.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -45,7 +46,7 @@ features:
 - id: discover
   document: screens/discover.yaml
   status: draft
-  backend_status: production_verified
+  backend_status: implemented_locally
   ios_status: pending_integration
   depends_on:
   - foundations
@@ -69,6 +70,14 @@ consumer_rules:
 - Record consumed revision, native commit/build, device checks and unresolved destinations
   in the iOS repository.
 changelog:
+- revision: 2026-10-29.1
+  changes:
+  - Added Latin American composers as a third equally eligible nonempty composer-feature
+    pool in the shared web/v2 cache, retaining one stable selection per cache refresh.
+  - Added latin_american_composers with the existing composer_feature kind; legacy
+    mobile rows and cache remain unchanged.
+  - Implemented locally only; production deployment and staging/native acceptance
+    remain pending. Preserved prior immutable revisions.
 - revision: 2026-10-28.1
   changes:
   - Implemented independent v2 email/password credential issuance, bearer authentication,

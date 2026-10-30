@@ -1,7 +1,9 @@
 # PianoLIT iOS v2 connection
 
-Revision **2026-10-28.1** implements login, Discover and confirmed piece-open
-history in the backend. Check `manifest.yaml` for deployment verification and the
+Revision **2026-10-29.1** adds Latin American composers to Discover's shared
+composer-feature choice. This addition is implemented locally; production
+deployment remains pending. Login, Discover and confirmed piece-open history
+were verified in production in **2026-10-28.1**. Check `manifest.yaml` for deployment verification and the
 verified runtime base URL. The handoff URL is documentation; it is never a feed
 or a credential. Native/staging acceptance remains pending, so the handoff stays
 `draft` even after the backend is verified in production.
@@ -72,7 +74,11 @@ explicitly disabled is an intentional policy difference, not another feed source
 Sections have stable IDs/kinds, string entity IDs, booleans, plain text and
 absolute URLs. Empty sections are omitted; unsupported kinds can be skipped.
 RCM/ABRSM/Suzuki appear once as `levels`, in numeric order. The composer feature
-can be women **or Black composers**, exactly as chosen for the webapp cache.
+can be women, Black or Latin American composers, exactly as chosen for the webapp
+cache. Each available group has an equal chance when the admin refresh or daily
+expiry rebuilds that cache; browser/API reloads retain the chosen group. Its IDs
+are `women_composers`, `black_composers` and `latin_american_composers`, all with
+kind `composer_feature`. Only one appears, and groups without pieces are skipped.
 See `screens/discover.yaml`, `openapi.yaml` and synthetic `fixtures/*.json`.
 
 ## Navigation and history boundary
@@ -135,7 +141,7 @@ The Swift developer can fetch hash-verified files with:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-10-28.1 --output /path/to/ios-repository/BackendHandoff
+  --revision 2026-10-29.1 --output /path/to/ios-repository/BackendHandoff
 ```
 
 This fetch copies documentation/examples, not an installed network connection.

@@ -33,6 +33,7 @@ class DiscoverResponse
                 'For you' => ['for_you', 'personalized_piece_rail'],
                 'From women composers' => ['women_composers', 'composer_feature'],
                 'From black composers' => ['black_composers', 'composer_feature'],
+                'From Latin American composers' => ['latin_american_composers', 'composer_feature'],
                 'Past highlights' => ['past_highlights', 'highlight_rail'],
                 "Like today's free pick" => ['similar_to_free_pick', 'compact_piece_rail'],
             ];

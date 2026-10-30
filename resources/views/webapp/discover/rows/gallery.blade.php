@@ -21,6 +21,8 @@
 	@include('webapp.discover.rows.women-composers')
 @elseif($row['title'] === 'From black composers')
 	@include('webapp.discover.rows.composer-feature', ['featureKey' => 'black'])
+@elseif($row['title'] === 'From Latin American composers')
+	@include('webapp.discover.rows.composer-feature', ['featureKey' => 'latin-american'])
 @elseif($row['title'] === 'Past highlights')
 	@include('webapp.discover.rows.past-highlights')
 @else

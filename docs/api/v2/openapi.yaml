@@ -8,12 +8,12 @@ info:
     an app.
 servers:
 - url: https://pianolit.com/api/v2
-  description: Live production backend verified 2026-10-28; native acceptance remains
-    pending.
+  description: Live base backend verified 2026-10-28; the Latin American composer
+    feature addition awaits deployment. Native acceptance remains pending.
 security:
 - MobileBearer: []
 x-handoff:
-  revision: 2026-10-28.1
+  revision: 2026-10-29.1
   status: draft
   implemented: true
   native_integration: pending
@@ -518,6 +518,7 @@ components:
           - for_you
           - women_composers
           - black_composers
+          - latin_american_composers
           - past_highlights
           - mood
           - similar_to_free_pick

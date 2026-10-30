@@ -175,6 +175,7 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         return [
             ['From women composers', 'women-composers-heading'],
             ['From black composers', 'black-composers-heading'],
+            ['From Latin American composers', 'latin-american-composers-heading'],
         ];
     }
 

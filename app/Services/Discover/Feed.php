@@ -16,7 +16,10 @@ class Feed
         $rows = $api->discover(false);
         $women = $rows->firstWhere('title', 'From women composers');
         $feature = $rows->firstWhere('title', $women['web_composer_feature'] ?? 'From women composers');
-        $rows = $rows->map(function ($row) use ($api, $feature) {
+        // The extra candidate pool is displayed only through the original slot.
+        $rows = $rows->reject(function ($row) {
+            return $row['title'] === 'From Latin American composers';
+        })->values()->map(function ($row) use ($api, $feature) {
             if ($row['title'] === 'From women composers' && $feature) return $feature;
             if ($row['title'] === 'From black composers') {
                 $row['title'] = 'Past highlights';

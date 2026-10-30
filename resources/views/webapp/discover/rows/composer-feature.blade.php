@@ -13,7 +13,7 @@
 			</div>
 			<a href="{{ route('webapp.search.results', ['search' => $featuredComposer->name, 'model' => \App\Composer::class]) }}" class="discover-composer-feature__action btn pastel-card__action d-inline-flex align-items-center justify-content-center gap-3">Discover pieces @icon('arrow-right', ['mr' => 0])</a>
 		</div>
-		<div class="discover-composer-feature__pieces custom-scroll" role="region" aria-label="Pieces from {{ $featureKey === 'black' ? 'Black' : 'women' }} composers" tabindex="0">
+		<div class="discover-composer-feature__pieces custom-scroll" role="region" aria-label="Pieces from {{ $featureKey === 'black' ? 'Black' : ($featureKey === 'latin-american' ? 'Latin American' : 'women') }} composers" tabindex="0">
 			@foreach($row['content'] as $piece)
 				@include('webapp.discover.cards.compact-piece', ['showMedia' => false])
 			@endforeach

@@ -41,9 +41,10 @@ class Api extends Factory
             ]);
 
             if ($this->for === 'webapp') {
-                // Pick once per web feed refresh, retaining both original pools
-                // and leaving the legacy mobile feed and its fields unchanged.
-                $features = $rows->whereIn('title', ['From women composers', 'From black composers'])
+                // The third pool and selected-group marker belong only to the
+                // shared web/v2 cache; legacy mobile rows stay unchanged.
+                $rows->push($this->order(3)->ethnicity('latin american', 'From Latin American composers'));
+                $features = $rows->whereIn('title', ['From women composers', 'From black composers', 'From Latin American composers'])
                     ->filter(function ($row) { return collect($row['content'])->isNotEmpty(); });
                 $featureTitle = $features->isNotEmpty() ? $features->random()['title'] : null;
                 $rows = $rows->map(function ($row) use ($featureTitle) {

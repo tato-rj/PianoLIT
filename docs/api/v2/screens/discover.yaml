@@ -1,7 +1,7 @@
 id: discover
 status: draft
 depends_on: [foundations]
-backend_status: production_verified
+backend_status: implemented_locally
 ios_status: pending_integration
 objective: Serve the current web Discover content from one shared builder, with an independent native v2 connection.
 operation:
@@ -37,10 +37,10 @@ sections_in_display_order:
     kind: personalized_piece_rail
     maximum_items: 6
     selection: Existing account suggestions, same shared account-specific ID selection as web; omit when empty.
-  - id: women_composers_or_black_composers
-    actual_ids: [women_composers, black_composers]
+  - id: composer_feature
+    actual_ids: [women_composers, black_composers, latin_american_composers]
     kind: composer_feature
-    selection: One available feature selected by the shared web cache. Same portrait/biography excerpt and ordered pieces as web; never show both features in this slot.
+    selection: Women, Black or Latin American composers, selected uniformly among groups with pieces whenever the shared web cache rebuilds after admin refresh or daily expiry. Retain the choice across browser/API reloads. Same portrait/biography excerpt and ordered pieces as web; show exactly one feature in this slot.
   - id: levels
     kind: level_selector
     title: Find pieces at your level
