@@ -6,6 +6,7 @@ use App\{Piece, Composer, Tag, Tutorial};
 use Illuminate\Support\Facades\Redis;
 use App\Playlist;
 use App\Blog\Post;
+use App\Services\Discover\ComposerFeatures;
 
 class Api extends Factory
 {
@@ -41,10 +42,13 @@ class Api extends Factory
             ]);
 
             if ($this->for === 'webapp') {
-                // The third pool and selected-group marker belong only to the
+                // Additional pools and the selected-group marker belong only to the
                 // shared web/v2 cache; legacy mobile rows stay unchanged.
                 $rows->push($this->order(3)->ethnicity('latin american', 'From Latin American composers'));
-                $features = $rows->whereIn('title', ['From women composers', 'From black composers', 'From Latin American composers'])
+                foreach (ComposerFeatures::GROUPS as $title => $group) {
+                    if (isset($group['country'])) $rows->push($this->order(3)->countryFeature($group['country'], $title));
+                }
+                $features = $rows->whereIn('title', array_keys(ComposerFeatures::GROUPS))
                     ->filter(function ($row) { return collect($row['content'])->isNotEmpty(); });
                 $featureTitle = $features->isNotEmpty() ? $features->random()['title'] : null;
                 $rows = $rows->map(function ($row) use ($featureTitle) {
@@ -63,6 +67,17 @@ class Api extends Factory
 
         return $collection;
 	}
+
+    private function countryFeature(string $code, string $title)
+    {
+        $collection = Piece::with('composer')->whereHas('composer.country', function ($query) use ($code) {
+            $query->where('flag_code', $code);
+        })->inRandomOrder()->take(12)->get()->shuffle();
+
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
+
+        return $this->createPlaylist($collection, ['row' => 'gallery', 'type' => 'piece', 'title' => $title]);
+    }
 
     public function playlists($group = null)
     {

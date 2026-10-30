@@ -2,7 +2,7 @@
 
 namespace Tests\Review;
 
-use App\{Composer, Piece, Tag, User};
+use App\{Composer, Country, Piece, Tag, User};
 use App\Api\Api;
 use App\Services\DiscoverRefresh;
 use Illuminate\Database\Eloquent\Model;
@@ -10,9 +10,13 @@ use Illuminate\Support\Facades\{Cache, Redis};
 
 class DiscoverComposerFeatureTest extends ReviewTestCase
 {
-    private $women, $black, $latinAmerican, $prefixes = [];
+    private $composers = [], $prefixes = [];
 
-    private const FEATURE_TITLES = ['From women composers', 'From black composers', 'From Latin American composers'];
+    private const FEATURE_TITLES = ['From women composers', 'From black composers', 'From Latin American composers',
+        'From American composers', 'From Italian composers', 'From Russian composers', 'From Ukrainian composers'];
+
+    private const FEATURE_LABELS = ['women' => 'women', 'black' => 'Black', 'latin-american' => 'Latin American',
+        'american' => 'American', 'italian' => 'Italian', 'russian' => 'Russian', 'ukrainian' => 'Ukrainian'];
 
     public function setUp(): void
     {
@@ -25,17 +29,29 @@ class DiscoverComposerFeatureTest extends ReviewTestCase
         });
         $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
         Model::withoutEvents(function () {
-            $this->women = create(Composer::class, ['name' => 'Woman Composer Fixture', 'gender' => 'female', 'ethnicity' => 'white', 'cover_path' => '']);
-            $this->black = create(Composer::class, ['name' => 'Black Composer Fixture', 'gender' => 'male', 'ethnicity' => 'black', 'cover_path' => '']);
-            $this->latinAmerican = create(Composer::class, ['name' => 'Latin American Composer Fixture', 'gender' => 'male', 'ethnicity' => 'latin american', 'cover_path' => '']);
+            $otherCountry = create(Country::class, ['name' => 'France', 'nationality' => 'French', 'flag_code' => 'fr']);
+            $this->composers['women'] = create(Composer::class, ['name' => 'Woman Composer Fixture', 'gender' => 'female', 'ethnicity' => 'white', 'cover_path' => '', 'country_id' => $otherCountry->id]);
+            $this->composers['black'] = create(Composer::class, ['name' => 'Black Composer Fixture', 'gender' => 'male', 'ethnicity' => 'black', 'cover_path' => '', 'country_id' => $otherCountry->id]);
+            $this->composers['latin-american'] = create(Composer::class, ['name' => 'Latin American Composer Fixture', 'gender' => 'male', 'ethnicity' => 'latin american', 'cover_path' => '', 'country_id' => $otherCountry->id]);
+            foreach (['american' => ['United States', 'us'], 'italian' => ['Italy', 'it'], 'russian' => ['Russia', 'ru'], 'ukrainian' => ['Ukraine', 'ua']] as $key => [$name, $code]) {
+                $country = create(Country::class, ['name' => $name, 'nationality' => self::FEATURE_LABELS[$key], 'flag_code' => $code]);
+                $this->composers[$key] = create(Composer::class, ['name' => self::FEATURE_LABELS[$key].' Composer Fixture', 'gender' => 'male', 'ethnicity' => 'white', 'cover_path' => '', 'country_id' => $country->id]);
+            }
             $level = create(Tag::class, ['name' => 'intermediate', 'type' => 'level']);
             $period = create(Tag::class, ['name' => 'romantic', 'type' => 'period']);
-            foreach ([$this->women, $this->black, $this->latinAmerican] as $composer) {
+            foreach ($this->composers as $composer) {
                 $piece = create(Piece::class, ['name' => $composer->name.' piece', 'composer_id' => $composer->id,
                     'cover_path' => null, 'highlighted_at' => now()->subWeek()]);
                 $piece->tags()->attach([$level->id, $period->id]);
             }
         });
+    }
+
+    private function keepOnlyGroup(?string $key)
+    {
+        foreach ($this->composers as $group => $composer) {
+            if ($group !== $key) $composer->updateQuietly(['gender' => 'male', 'ethnicity' => 'white', 'country_id' => null]);
+        }
     }
 
     private function cacheKey()
@@ -63,7 +79,37 @@ class DiscoverComposerFeatureTest extends ReviewTestCase
             ['From women composers', 'women', 'female'],
             ['From black composers', 'black', 'black'],
             ['From Latin American composers', 'latin-american', 'latin american'],
+            ['From American composers', 'american', 'us'],
+            ['From Italian composers', 'italian', 'it'],
+            ['From Russian composers', 'russian', 'ru'],
+            ['From Ukrainian composers', 'ukrainian', 'ua'],
         ];
+    }
+
+    public function countryChoices()
+    {
+        return array_slice($this->featureChoices(), 3);
+    }
+
+    /** @dataProvider countryChoices */
+    public function test_country_features_use_the_recorded_country_and_retain_the_twelve_piece_limit($title, $key, $code)
+    {
+        $this->keepOnlyGroup($key);
+        Model::withoutEvents(function () use ($key) {
+            // A matching name/nationality label on another country must not
+            // classify this composer as belonging to the selected country.
+            $otherCountry = create(Country::class, ['name' => 'Canada', 'nationality' => self::FEATURE_LABELS[$key], 'flag_code' => 'ca']);
+            $otherComposer = create(Composer::class, ['name' => self::FEATURE_LABELS[$key].' Composer', 'gender' => 'male', 'ethnicity' => 'white', 'country_id' => $otherCountry->id]);
+            create(Piece::class, ['composer_id' => $otherComposer->id]);
+            create(Piece::class, ['composer_id' => $this->composers['women']->id]);
+            create(Piece::class, ['composer_id' => $this->composers[$key]->id], 13);
+        });
+        $rows = (new Api)->for('webapp')->discover(false);
+        $this->assertSame($title, $this->selectedTitle($rows));
+        $pieces = collect($rows->firstWhere('title', $title)['content']);
+        $this->assertCount(12, $pieces);
+        $this->assertSame([$this->composers[$key]->id], $pieces->pluck('composer_id')->unique()->values()->all());
+        $this->assertSame($code, $pieces->first()->composer->country->flag_code);
     }
 
     /** @dataProvider featureChoices */
@@ -77,16 +123,17 @@ class DiscoverComposerFeatureTest extends ReviewTestCase
             $this->assertCount(1, $features);
             $this->assertSame($title, $features->first()['title']);
             foreach ($features->first()['content'] as $piece) {
-                $this->assertSame($group, $key === 'women' ? $piece->composer->gender : $piece->composer->ethnicity);
+                $actual = $key === 'women' ? $piece->composer->gender : ($key === 'black' || $key === 'latin-american' ? $piece->composer->ethnicity : $piece->composer->country->flag_code);
+                $this->assertSame($group, $actual);
             }
             $response->assertSeeInOrder([$key.'-composers-heading', 'past-highlights-heading']);
             $titles = $response->viewData('rows')->pluck('title')->values();
             $this->assertSame($titles->search($title) + 1, $titles->search('Equivalent to the Suzuki series'));
-            foreach (['women', 'black', 'latin-american'] as $otherKey) {
+            foreach (array_keys(self::FEATURE_LABELS) as $otherKey) {
                 if ($otherKey !== $key) $response->assertDontSee('id="'.$otherKey.'-composers-heading"', false);
             }
-            $response->assertSee('aria-label="Pieces from '.($key === 'black' ? 'Black' : ($key === 'latin-american' ? 'Latin American' : 'women')).' composers"', false);
-            $composer = ['women' => $this->women, 'black' => $this->black, 'latin-american' => $this->latinAmerican][$key];
+            $response->assertSee('aria-label="Pieces from '.self::FEATURE_LABELS[$key].' composers"', false);
+            $composer = $this->composers[$key];
             $response->assertSee(e(route('webapp.search.results', ['search' => $composer->name, 'model' => Composer::class])), false);
             $this->assertSame($title, $this->selectedTitle(Cache::get($this->cacheKey())));
             $this->assertNull(Cache::get($this->cacheKey())->firstWhere('title', 'Past highlights'));
@@ -119,7 +166,7 @@ class DiscoverComposerFeatureTest extends ReviewTestCase
         $this->assertSame($before, serialize(Cache::get(Api::freePickCacheKey('app.discover'))));
         $this->assertNotNull($mobile->firstWhere('title', 'From women composers'));
         $this->assertNotNull($mobile->firstWhere('title', 'From black composers'));
-        $this->assertNull($mobile->firstWhere('title', 'From Latin American composers'));
+        foreach (array_slice(self::FEATURE_TITLES, 2) as $title) $this->assertNull($mobile->firstWhere('title', $title));
         foreach ((new Api)->discover() as $row) $this->assertArrayNotHasKey('web_composer_feature', $row);
     }
 
@@ -127,37 +174,31 @@ class DiscoverComposerFeatureTest extends ReviewTestCase
     {
         $this->selectCachedTitle('From women composers');
         $oldKey = $this->cacheKey();
-        $this->women->updateQuietly(['gender' => 'male']);
-        $this->black->updateQuietly(['ethnicity' => 'white']);
+        $this->keepOnlyGroup('ukrainian');
         $this->assertSame('From women composers', $this->selectedTitle((new Api)->for('webapp')->discover()));
         app(\App\Http\Controllers\Admin\RedisController::class)->update(app(DiscoverRefresh::class));
         $this->assertNotSame($oldKey, $this->cacheKey());
-        $this->assertSame('From Latin American composers', $this->selectedTitle((new Api)->for('webapp')->discover()));
+        $this->assertSame('From Ukrainian composers', $this->selectedTitle((new Api)->for('webapp')->discover()));
         $this->assertSame('From women composers', $this->selectedTitle(Cache::get($oldKey)));
     }
 
     public function test_daily_expiry_rebuilds_the_choice_without_an_admin_refresh()
     {
         $this->selectCachedTitle('From women composers');
-        $this->women->updateQuietly(['gender' => 'male']);
-        $this->black->updateQuietly(['ethnicity' => 'white']);
+        $this->keepOnlyGroup('american');
         $this->travel(25)->hours();
-        $this->assertSame('From Latin American composers', $this->selectedTitle((new Api)->for('webapp')->discover()));
+        $this->assertSame('From American composers', $this->selectedTitle((new Api)->for('webapp')->discover()));
     }
 
     /** @dataProvider featureChoices */
     public function test_a_single_group_or_an_empty_catalogue_does_not_produce_an_empty_random_choice($title, $key, $group)
     {
-        if ($key !== 'women') $this->women->updateQuietly(['gender' => 'male']);
-        if ($key !== 'black') $this->black->updateQuietly(['ethnicity' => 'white']);
-        if ($key !== 'latin-american') $this->latinAmerican->updateQuietly(['ethnicity' => 'white']);
+        $this->keepOnlyGroup($key);
         $this->assertSame($title, $this->selectedTitle((new Api)->for('webapp')->discover()));
-        $this->women->updateQuietly(['gender' => 'male']);
-        $this->black->updateQuietly(['ethnicity' => 'white']);
-        $this->latinAmerican->updateQuietly(['ethnicity' => 'white']);
+        $this->keepOnlyGroup(null);
         Cache::forget($this->cacheKey());
         $this->assertNull($this->selectedTitle((new Api)->for('webapp')->discover()));
-        $this->get(route('webapp.discover'))->assertOk()
-            ->assertDontSee('women-composers-heading')->assertDontSee('black-composers-heading')->assertDontSee('latin-american-composers-heading');
+        $response = $this->get(route('webapp.discover'))->assertOk();
+        foreach (array_keys(self::FEATURE_LABELS) as $key) $response->assertDontSee($key.'-composers-heading');
     }
 }

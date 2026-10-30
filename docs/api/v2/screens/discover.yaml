@@ -38,9 +38,10 @@ sections_in_display_order:
     maximum_items: 6
     selection: Existing account suggestions, same shared account-specific ID selection as web; omit when empty.
   - id: composer_feature
-    actual_ids: [women_composers, black_composers, latin_american_composers]
+    actual_ids: [women_composers, black_composers, latin_american_composers, american_composers, italian_composers, russian_composers, ukrainian_composers]
     kind: composer_feature
-    selection: Women, Black or Latin American composers, selected uniformly among groups with pieces whenever the shared web cache rebuilds after admin refresh or daily expiry. Retain the choice across browser/API reloads. Same portrait/biography excerpt and ordered pieces as web; show exactly one feature in this slot.
+    selection: Women, Black, Latin American, American, Italian, Russian or Ukrainian composers, selected uniformly among groups with pieces whenever the shared web cache rebuilds after admin refresh or daily expiry. Retain the choice across browser/API reloads. Same portrait/biography excerpt and ordered pieces as web; show exactly one feature in this slot.
+    country_groups: Saved composer country flag codes us (United States), it, ru and ua; no inferred nationality. Each country pool retains the twelve-piece limit.
   - id: levels
     kind: level_selector
     title: Find pieces at your level

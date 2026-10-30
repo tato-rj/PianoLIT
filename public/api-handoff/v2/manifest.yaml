@@ -1,5 +1,5 @@
 schema_version: 1
-revision: 2026-10-29.1
+revision: 2026-10-29.2
 updated_on: '2026-10-29'
 title: PianoLIT iOS v2 handoff
 status: draft
@@ -15,8 +15,8 @@ runtime:
     Discover matching the shared web builder, owned history, logout/revoked-401, no
     legacy cache mutation. Synthetic SQL writes rolled back and personal cache removed.
     External HTTPS Discover/invalid-login return 401 JSON. The 2026-10-29.1 Latin
-    American composer-feature addition is implemented locally and awaits deployment.
-    Staging/native acceptance pending.'
+    American addition and 2026-10-29.2 country-based composer-feature additions are
+    implemented locally and await deployment. Staging/native acceptance pending.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -27,8 +27,8 @@ entrypoints:
   swift_example: examples/PianoLITV2Client.swift
 files:
 - path: README.md
-  bytes: 8938
-  sha256: 4091030d3dfefd8259dfc70087ca7b28dd41a1638612aed91df54677e61c83b7
+  bytes: 9314
+  sha256: 2ddb832a62a7b74a1e94c2a840242c6522d7414f095f63cec90d9078cb22d235
 - path: foundations.yaml
   bytes: 5703
   sha256: b3f156ec96aa8b0e32ebae302a5422181c6e8a5059d688c40ba628fbcf87d977
@@ -36,8 +36,8 @@ files:
   bytes: 10384
   sha256: 3a26ddf1df6e7fdc7e992d2d629b57cd6ae7a16cd75763c7f20291165a28ebe0
 - path: openapi.yaml
-  bytes: 17597
-  sha256: dde724669e0cbdfaea878f3882fe545d72bd4c205dc42cd3441579f6dc8d0f4c
+  bytes: 17710
+  sha256: 6b32710c81c2b0af9d60562df1d155fa4b9c60fc3e9bdea4fb6069b82a4f8227
 - path: design.yaml
   bytes: 2740
   sha256: 094fef76502c95677b0f36acb9045d3930633257ee93192184b02ce896dbe330
@@ -45,8 +45,8 @@ files:
   bytes: 1824
   sha256: 27b5d92f4dbfee4a11a92f654b0bcea574595a81c0b7f37cb90f3365cfdc4729
 - path: screens/discover.yaml
-  bytes: 6250
-  sha256: 39253cec55d7168fcb1b9531f6f87f75184720b36d57f6d08ee3eb4e54ee9c81
+  bytes: 6532
+  sha256: 7c157d6f90f07c7d8239b5c91366186752c1d68711846093fc1d9c906c6353b5
 - path: fixtures/discover.json
   bytes: 21715
   sha256: cfbcb41783fedd20027a8746c8ebdd277edee2d25f127a16df14afc4804a6609
@@ -90,6 +90,16 @@ consumer_rules:
 - Record consumed revision, native commit/build, device checks and unresolved destinations
   in the iOS repository.
 changelog:
+- revision: 2026-10-29.2
+  changes:
+  - Expanded the shared composer-feature pool to seven groups with American, Italian,
+    Russian and Ukrainian composers, using the composer's saved country flag code.
+  - Added american_composers, italian_composers, russian_composers and ukrainian_composers
+    under the existing composer_feature kind. Only nonempty groups participate equally.
+  - Shared group metadata supplies web dispatch, accessible labels and v2 IDs. Legacy
+    mobile rows/cache, refresh timing and original group selection rules remain unchanged.
+  - Implemented locally only; production deployment and staging/native acceptance
+    remain pending. Preserved prior immutable revisions.
 - revision: 2026-10-29.1
   changes:
   - Added Latin American composers as a third equally eligible nonempty composer-feature
@@ -122,4 +132,4 @@ changelog:
   - Established the handoff format, shared API proposals and compatibility boundaries.
   - Inventoried Discover against the current web implementation.
   - No runtime endpoints, migrations, Swift changes or deployment in this revision.
-base_path: revisions/2026-10-29.1/
+base_path: revisions/2026-10-29.2/

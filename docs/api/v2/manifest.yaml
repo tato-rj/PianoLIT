@@ -1,5 +1,5 @@
 schema_version: 1
-revision: 2026-10-29.1
+revision: 2026-10-29.2
 updated_on: '2026-10-29'
 title: PianoLIT iOS v2 handoff
 status: draft
@@ -15,7 +15,8 @@ runtime:
     Discover matching the shared web builder, owned history, logout/revoked-401, no
     legacy cache mutation. Synthetic SQL writes rolled back and personal cache removed.
     External HTTPS Discover/invalid-login return 401 JSON. The 2026-10-29.1 Latin
-    American composer-feature addition is implemented locally and awaits deployment.
+    American addition and 2026-10-29.2 country-based composer-feature additions are
+    implemented locally and await deployment.
     Staging/native acceptance pending.'
 entrypoints:
   instructions: README.md
@@ -70,6 +71,16 @@ consumer_rules:
 - Record consumed revision, native commit/build, device checks and unresolved destinations
   in the iOS repository.
 changelog:
+- revision: 2026-10-29.2
+  changes:
+  - Expanded the shared composer-feature pool to seven groups with American, Italian,
+    Russian and Ukrainian composers, using the composer's saved country flag code.
+  - Added american_composers, italian_composers, russian_composers and ukrainian_composers
+    under the existing composer_feature kind. Only nonempty groups participate equally.
+  - Shared group metadata supplies web dispatch, accessible labels and v2 IDs. Legacy
+    mobile rows/cache, refresh timing and original group selection rules remain unchanged.
+  - Implemented locally only; production deployment and staging/native acceptance
+    remain pending. Preserved prior immutable revisions.
 - revision: 2026-10-29.1
   changes:
   - Added Latin American composers as a third equally eligible nonempty composer-feature

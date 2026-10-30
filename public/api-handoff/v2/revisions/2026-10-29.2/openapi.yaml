@@ -1,0 +1,657 @@
+openapi: 3.0.3
+info:
+  title: PianoLIT mobile API v2 — Discover
+  version: 1.0.0
+  description: Independent v2 login and Discover. Web and v2 share App\Services\Discover\Feed.
+    Legacy /api routes remain supported indefinitely. Deployment/native verification
+    is recorded in the manifest; downloading this specification does not authenticate
+    an app.
+servers:
+- url: https://pianolit.com/api/v2
+  description: Live base backend verified 2026-10-28; the expanded composer-feature
+    pool awaits deployment. Native acceptance remains pending.
+security:
+- MobileBearer: []
+x-handoff:
+  revision: 2026-10-29.2
+  status: draft
+  implemented: true
+  native_integration: pending
+paths:
+  /auth/login:
+    post:
+      operationId: loginV2
+      summary: Sign in with the existing account email and password
+      security: []
+      description: Use the current native sign-in form. This endpoint checks the existing
+        users provider/password hash and issues a separate opaque 30-day credential.
+        Does not alter browser/legacy login, send email or mutate billing. A stored
+        legacy user ID cannot be exchanged for a token. Missing token after upgrade
+        requires one sign-in. No refresh token; repeat login on expiry. Password changes/deletion
+        invalidate tokens. Login is limited to 5 attempts/minute/IP.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '401':
+          description: Missing/invalid/expired/revoked credential, or incorrect email/password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Resource unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Invalid fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Too many requests; obey Retry-After.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: Server error; no internal details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Credential issued; no cookie required.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+  /auth/logout:
+    post:
+      operationId: logoutV2
+      summary: Revoke only the supplied credential
+      responses:
+        '401':
+          description: Missing/invalid/expired/revoked credential, or incorrect email/password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Resource unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Invalid fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Too many requests; obey Retry-After.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: Server error; no internal details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '204':
+          description: Revoked. Clear Keychain and account-specific data.
+  /discover:
+    get:
+      operationId: getDiscover
+      summary: Fetch the same Discover content as the webapp for this account
+      description: 'One ordered sections array; no analytics/history write. Content
+        uses the same catalogue cache, recommendation IDs, Free Pick clock, past highlights,
+        artwork and level grouping as web Discover. Empty sections are omitted. No
+        native media entitlement is granted. The browser-specific Access Limits matrix
+        is not used by native. Submitted user_id and query tokens cannot establish
+        identity. Read requests: 120/minute/IP, no-store/private.'
+      responses:
+        '401':
+          description: Missing/invalid/expired/revoked credential, or incorrect email/password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Resource unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Invalid fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Too many requests; obey Retry-After.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: Server error; no internal details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Current shared Discover content.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoverResponse'
+  /pieces/{piece}/view:
+    post:
+      operationId: recordPieceViewV2
+      summary: Record a confirmed piece open for the authenticated account
+      description: Call only after a piece opens successfully, never for feed/image
+        prefetch. No request body is required. Repeated calls update one account/piece
+        row. Existing analytics exclusions apply. Does not implement piece detail,
+        playback, favorites or analytics.
+      parameters:
+      - name: piece
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Identifier'
+      responses:
+        '401':
+          description: Missing/invalid/expired/revoked credential, or incorrect email/password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Resource unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Invalid fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Too many requests; obey Retry-After.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: Server error; no internal details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '204':
+          description: History updated, or excluded account intentionally skipped.
+components:
+  securitySchemes:
+    MobileBearer:
+      type: http
+      scheme: bearer
+      description: 'POST /auth/login with the existing email/password obtains this
+        credential. Only Authorization: Bearer <access_token> is accepted. Store in
+        Keychain; send only to the fixed v2 origin. Legacy account IDs, cookies and
+        downloaded YAML are not credentials.'
+  schemas:
+    Identifier:
+      type: string
+      pattern: ^[1-9][0-9]*$
+      example: '123'
+    UtcInstant:
+      type: string
+      format: date-time
+      pattern: Z$
+    ResponseMeta:
+      type: object
+      required:
+      - request_id
+      properties:
+        request_id:
+          type: string
+          format: uuid
+    ErrorEnvelope:
+      type: object
+      required:
+      - error
+      - meta
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          - message
+          - fields
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            fields:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    Target:
+      type: object
+      required:
+      - kind
+      - id
+      - query
+      - web_url
+      properties:
+        kind:
+          type: string
+          enum:
+          - piece
+          - composer_pieces
+          - search
+          - composers
+          - catalogue
+          - highlights
+        id:
+          type: string
+          nullable: true
+        query:
+          type: string
+          nullable: true
+        web_url:
+          type: string
+          format: uri
+    UserSummary:
+      type: object
+      required:
+      - id
+      - first_name
+      - last_name
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        first_name:
+          type: string
+        last_name:
+          type: string
+    LoginRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          minLength: 1
+          maxLength: 4096
+          writeOnly: true
+    LoginResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - access_token
+          - token_type
+          - expires_at
+          - user
+          properties:
+            access_token:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+              description: Returned only at issuance. Store in Keychain; never in
+                logs/UserDefaults.
+            token_type:
+              type: string
+              enum:
+              - Bearer
+            expires_at:
+              $ref: '#/components/schemas/UtcInstant'
+            user:
+              $ref: '#/components/schemas/UserSummary'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ComposerSummary:
+      type: object
+      required:
+      - kind
+      - id
+      - name
+      - short_name
+      - portrait_url
+      - biography
+      - piece_count
+      - target
+      properties:
+        kind:
+          type: string
+          enum:
+          - composer
+        id:
+          $ref: '#/components/schemas/Identifier'
+        name:
+          type: string
+        short_name:
+          type: string
+        portrait_url:
+          type: string
+          format: uri
+        biography:
+          type: string
+        piece_count:
+          type: integer
+          minimum: 0
+        target:
+          $ref: '#/components/schemas/Target'
+    PieceSummary:
+      type: object
+      required:
+      - kind
+      - id
+      - title
+      - featured_title
+      - subtitle
+      - catalogue
+      - composer
+      - artwork_url
+      - difficulty
+      - is_new
+      - is_free_pick
+      - media
+      - target
+      properties:
+        kind:
+          type: string
+          enum:
+          - piece
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        featured_title:
+          type: string
+        subtitle:
+          type: string
+        catalogue:
+          type: string
+        composer:
+          $ref: '#/components/schemas/ComposerSummary'
+        artwork_url:
+          type: string
+          format: uri
+        difficulty:
+          type: string
+          nullable: true
+        is_new:
+          type: boolean
+        is_free_pick:
+          type: boolean
+        media:
+          type: object
+          required:
+          - performance
+          - synthesia
+          - tutorial
+          - audio
+          - score
+          properties:
+            performance:
+              type: boolean
+            synthesia:
+              type: boolean
+            tutorial:
+              type: boolean
+            audio:
+              type: boolean
+            score:
+              type: boolean
+        target:
+          $ref: '#/components/schemas/Target'
+    LevelSummary:
+      type: object
+      required:
+      - kind
+      - id
+      - title
+      - number
+      - piece_count
+      - target
+      properties:
+        kind:
+          type: string
+          enum:
+          - level
+        id:
+          type: string
+        title:
+          type: string
+        number:
+          type: integer
+          minimum: 0
+        piece_count:
+          type: integer
+          minimum: 0
+        target:
+          $ref: '#/components/schemas/Target'
+    LevelGroup:
+      type: object
+      required:
+      - id
+      - label
+      - items
+      properties:
+        id:
+          type: string
+          enum:
+          - rcm
+          - abrsm
+          - suzuki
+        label:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LevelSummary'
+    ContentSection:
+      type: object
+      required:
+      - id
+      - kind
+      - title
+      - items
+      - action
+      - featured_composer
+      properties:
+        id:
+          type: string
+          enum:
+          - free_pick
+          - composers
+          - recently_viewed
+          - latest_pieces
+          - for_you
+          - women_composers
+          - black_composers
+          - latin_american_composers
+          - american_composers
+          - italian_composers
+          - russian_composers
+          - ukrainian_composers
+          - past_highlights
+          - mood
+          - similar_to_free_pick
+        kind:
+          type: string
+          enum:
+          - featured_piece
+          - portrait_rail
+          - compact_piece_rail
+          - artwork_piece_rail
+          - personalized_piece_rail
+          - composer_feature
+          - highlight_rail
+        title:
+          type: string
+        items:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/PieceSummary'
+            - $ref: '#/components/schemas/ComposerSummary'
+        action:
+          type: object
+          required:
+          - kind
+          - id
+          - query
+          - web_url
+          properties:
+            kind:
+              type: string
+              enum:
+              - piece
+              - composer_pieces
+              - search
+              - composers
+              - catalogue
+              - highlights
+            id:
+              type: string
+              nullable: true
+            query:
+              type: string
+              nullable: true
+            web_url:
+              type: string
+              format: uri
+          nullable: true
+        featured_composer:
+          type: object
+          required:
+          - kind
+          - id
+          - name
+          - short_name
+          - portrait_url
+          - biography
+          - piece_count
+          - target
+          properties:
+            kind:
+              type: string
+              enum:
+              - composer
+            id:
+              $ref: '#/components/schemas/Identifier'
+            name:
+              type: string
+            short_name:
+              type: string
+            portrait_url:
+              type: string
+              format: uri
+            biography:
+              type: string
+            piece_count:
+              type: integer
+              minimum: 0
+            target:
+              $ref: '#/components/schemas/Target'
+          nullable: true
+    LevelsSection:
+      type: object
+      required:
+      - id
+      - kind
+      - title
+      - subtitle
+      - default_group
+      - groups
+      properties:
+        id:
+          type: string
+          enum:
+          - levels
+        kind:
+          type: string
+          enum:
+          - level_selector
+        title:
+          type: string
+        subtitle:
+          type: string
+        default_group:
+          type: string
+          enum:
+          - rcm
+          - abrsm
+          - suzuki
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/LevelGroup'
+    DiscoverResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - sections
+          properties:
+            sections:
+              type: array
+              items:
+                oneOf:
+                - $ref: '#/components/schemas/ContentSection'
+                - $ref: '#/components/schemas/LevelsSection'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'

@@ -1,0 +1,470 @@
+{
+    "data": {
+        "sections": [
+            {
+                "id": "composers",
+                "kind": "portrait_rail",
+                "title": "Composers",
+                "items": [
+                    {
+                        "kind": "composer",
+                        "id": "1",
+                        "name": "Shared Composer",
+                        "short_name": "S. Composer",
+                        "portrait_url": "http://localhost/storage/fixture.jpg",
+                        "biography": "Architecto aut consequatur et totam. Nobis illum veniam perferendis et excepturi ut. Harum exercitationem rerum voluptas et qui cupiditate aut provident.",
+                        "piece_count": 1,
+                        "target": {
+                            "kind": "composer_pieces",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "http://my.localhost/search?search=Shared%20Composer&model=App%5CComposer"
+                        }
+                    }
+                ],
+                "action": {
+                    "kind": "composers",
+                    "id": null,
+                    "query": null,
+                    "web_url": "http://my.localhost/composers"
+                },
+                "featured_composer": null
+            },
+            {
+                "id": "recently_viewed",
+                "kind": "compact_piece_rail",
+                "title": "Recently viewed",
+                "items": [
+                    {
+                        "kind": "piece",
+                        "id": "1",
+                        "title": "Shared Discover piece BWV 79 No.4",
+                        "featured_title": "Shared Discover piece",
+                        "subtitle": "S. Composer",
+                        "catalogue": "BWV 79 No.4",
+                        "composer": {
+                            "kind": "composer",
+                            "id": "1",
+                            "name": "Shared Composer",
+                            "short_name": "S. Composer",
+                            "portrait_url": "http://localhost/storage/fixture.jpg",
+                            "biography": "Architecto aut consequatur et totam. Nobis illum veniam perferendis et excepturi ut. Harum exercitationem rerum voluptas et qui cupiditate aut provident.",
+                            "piece_count": 1,
+                            "target": {
+                                "kind": "composer_pieces",
+                                "id": "1",
+                                "query": null,
+                                "web_url": "http://my.localhost/search?search=Shared%20Composer&model=App%5CComposer"
+                            }
+                        },
+                        "artwork_url": "http://localhost/storage/fixture.jpg",
+                        "difficulty": "intermediate",
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "media": {
+                            "performance": false,
+                            "synthesia": false,
+                            "tutorial": false,
+                            "audio": false,
+                            "score": false
+                        },
+                        "target": {
+                            "kind": "piece",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "http://my.localhost/pieces/1"
+                        }
+                    }
+                ],
+                "action": null,
+                "featured_composer": null
+            },
+            {
+                "id": "latest_pieces",
+                "kind": "artwork_piece_rail",
+                "title": "Latest pieces",
+                "items": [
+                    {
+                        "kind": "piece",
+                        "id": "1",
+                        "title": "Shared Discover piece",
+                        "featured_title": "Shared Discover piece",
+                        "subtitle": "S. Composer",
+                        "catalogue": "BWV 79 No.4",
+                        "composer": {
+                            "kind": "composer",
+                            "id": "1",
+                            "name": "Shared Composer",
+                            "short_name": "S. Composer",
+                            "portrait_url": "http://localhost/storage/fixture.jpg",
+                            "biography": "Architecto aut consequatur et totam. Nobis illum veniam perferendis et excepturi ut. Harum exercitationem rerum voluptas et qui cupiditate aut provident.",
+                            "piece_count": 1,
+                            "target": {
+                                "kind": "composer_pieces",
+                                "id": "1",
+                                "query": null,
+                                "web_url": "http://my.localhost/search?search=Shared%20Composer&model=App%5CComposer"
+                            }
+                        },
+                        "artwork_url": "http://localhost/storage/fixture.jpg",
+                        "difficulty": "intermediate",
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "media": {
+                            "performance": false,
+                            "synthesia": false,
+                            "tutorial": false,
+                            "audio": false,
+                            "score": false
+                        },
+                        "target": {
+                            "kind": "piece",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "http://my.localhost/pieces/1"
+                        }
+                    }
+                ],
+                "action": {
+                    "kind": "catalogue",
+                    "id": null,
+                    "query": null,
+                    "web_url": "http://my.localhost/search?catalogue=1&search="
+                },
+                "featured_composer": null
+            },
+            {
+                "id": "for_you",
+                "kind": "personalized_piece_rail",
+                "title": "For you",
+                "items": [
+                    {
+                        "kind": "piece",
+                        "id": "1",
+                        "title": "Shared Discover piece BWV 79 No.4",
+                        "featured_title": "Shared Discover piece",
+                        "subtitle": "S. Composer",
+                        "catalogue": "BWV 79 No.4",
+                        "composer": {
+                            "kind": "composer",
+                            "id": "1",
+                            "name": "Shared Composer",
+                            "short_name": "S. Composer",
+                            "portrait_url": "http://localhost/storage/fixture.jpg",
+                            "biography": "Architecto aut consequatur et totam. Nobis illum veniam perferendis et excepturi ut. Harum exercitationem rerum voluptas et qui cupiditate aut provident.",
+                            "piece_count": 1,
+                            "target": {
+                                "kind": "composer_pieces",
+                                "id": "1",
+                                "query": null,
+                                "web_url": "http://my.localhost/search?search=Shared%20Composer&model=App%5CComposer"
+                            }
+                        },
+                        "artwork_url": "http://localhost/storage/fixture.jpg",
+                        "difficulty": "intermediate",
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "media": {
+                            "performance": false,
+                            "synthesia": false,
+                            "tutorial": false,
+                            "audio": false,
+                            "score": false
+                        },
+                        "target": {
+                            "kind": "piece",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "http://my.localhost/pieces/1"
+                        }
+                    }
+                ],
+                "action": null,
+                "featured_composer": null
+            },
+            {
+                "id": "black_composers",
+                "kind": "composer_feature",
+                "title": "From Black composers",
+                "items": [
+                    {
+                        "kind": "piece",
+                        "id": "1",
+                        "title": "Shared Discover piece",
+                        "featured_title": "Shared Discover piece",
+                        "subtitle": "S. Composer",
+                        "catalogue": "BWV 79 No.4",
+                        "composer": {
+                            "kind": "composer",
+                            "id": "1",
+                            "name": "Shared Composer",
+                            "short_name": "S. Composer",
+                            "portrait_url": "http://localhost/storage/fixture.jpg",
+                            "biography": "Architecto aut consequatur et totam. Nobis illum veniam perferendis et excepturi ut. Harum exercitationem rerum voluptas et qui cupiditate aut provident.",
+                            "piece_count": 1,
+                            "target": {
+                                "kind": "composer_pieces",
+                                "id": "1",
+                                "query": null,
+                                "web_url": "http://my.localhost/search?search=Shared%20Composer&model=App%5CComposer"
+                            }
+                        },
+                        "artwork_url": "http://localhost/storage/fixture.jpg",
+                        "difficulty": "intermediate",
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "media": {
+                            "performance": false,
+                            "synthesia": false,
+                            "tutorial": false,
+                            "audio": false,
+                            "score": false
+                        },
+                        "target": {
+                            "kind": "piece",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "http://my.localhost/pieces/1"
+                        }
+                    }
+                ],
+                "action": null,
+                "featured_composer": {
+                    "kind": "composer",
+                    "id": "1",
+                    "name": "Shared Composer",
+                    "short_name": "S. Composer",
+                    "portrait_url": "http://localhost/storage/fixture.jpg",
+                    "biography": "Architecto aut consequatur et totam. Nobis illum veniam perferendis et excepturi ut. Harum exercitationem rerum voluptas et qui cupiditate aut provident.",
+                    "piece_count": 1,
+                    "target": {
+                        "kind": "composer_pieces",
+                        "id": "1",
+                        "query": null,
+                        "web_url": "http://my.localhost/search?search=Shared%20Composer&model=App%5CComposer"
+                    }
+                }
+            },
+            {
+                "id": "levels",
+                "kind": "level_selector",
+                "title": "Find pieces at your level",
+                "subtitle": "Similar difficulty to RCM, ABRSM or Suzuki books.",
+                "default_group": "rcm",
+                "groups": [
+                    {
+                        "id": "rcm",
+                        "label": "RCM",
+                        "items": [
+                            {
+                                "kind": "level",
+                                "id": "rcm-2",
+                                "title": "Level 2",
+                                "number": 2,
+                                "piece_count": 5,
+                                "target": {
+                                    "kind": "search",
+                                    "id": null,
+                                    "query": "RCM 2",
+                                    "web_url": "http://my.localhost/search?search=RCM%202"
+                                }
+                            },
+                            {
+                                "kind": "level",
+                                "id": "rcm-10",
+                                "title": "Level 10",
+                                "number": 10,
+                                "piece_count": 5,
+                                "target": {
+                                    "kind": "search",
+                                    "id": null,
+                                    "query": "RCM 10",
+                                    "web_url": "http://my.localhost/search?search=RCM%2010"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "id": "abrsm",
+                        "label": "ABRSM",
+                        "items": []
+                    },
+                    {
+                        "id": "suzuki",
+                        "label": "Suzuki",
+                        "items": [
+                            {
+                                "kind": "level",
+                                "id": "suzuki-2",
+                                "title": "Book 2",
+                                "number": 2,
+                                "piece_count": 9,
+                                "target": {
+                                    "kind": "search",
+                                    "id": null,
+                                    "query": "Suzuki Book 2",
+                                    "web_url": "http://my.localhost/search?search=Suzuki%20Book%202"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "past_highlights",
+                "kind": "highlight_rail",
+                "title": "Past highlights",
+                "items": [
+                    {
+                        "kind": "piece",
+                        "id": "1",
+                        "title": "Shared Discover piece BWV 79 No.4",
+                        "featured_title": "Shared Discover piece",
+                        "subtitle": "S. Composer",
+                        "catalogue": "BWV 79 No.4",
+                        "composer": {
+                            "kind": "composer",
+                            "id": "1",
+                            "name": "Shared Composer",
+                            "short_name": "S. Composer",
+                            "portrait_url": "http://localhost/storage/fixture.jpg",
+                            "biography": "Architecto aut consequatur et totam. Nobis illum veniam perferendis et excepturi ut. Harum exercitationem rerum voluptas et qui cupiditate aut provident.",
+                            "piece_count": 1,
+                            "target": {
+                                "kind": "composer_pieces",
+                                "id": "1",
+                                "query": null,
+                                "web_url": "http://my.localhost/search?search=Shared%20Composer&model=App%5CComposer"
+                            }
+                        },
+                        "artwork_url": "http://localhost/storage/fixture.jpg",
+                        "difficulty": "intermediate",
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "media": {
+                            "performance": false,
+                            "synthesia": false,
+                            "tutorial": false,
+                            "audio": false,
+                            "score": false
+                        },
+                        "target": {
+                            "kind": "piece",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "http://my.localhost/pieces/1"
+                        }
+                    }
+                ],
+                "action": {
+                    "kind": "highlights",
+                    "id": null,
+                    "query": null,
+                    "web_url": "http://my.localhost/highlights"
+                },
+                "featured_composer": null
+            },
+            {
+                "id": "mood",
+                "kind": "compact_piece_rail",
+                "title": "Pieces that are calm",
+                "items": [
+                    {
+                        "kind": "piece",
+                        "id": "1",
+                        "title": "Shared Discover piece",
+                        "featured_title": "Shared Discover piece",
+                        "subtitle": "S. Composer",
+                        "catalogue": "BWV 79 No.4",
+                        "composer": {
+                            "kind": "composer",
+                            "id": "1",
+                            "name": "Shared Composer",
+                            "short_name": "S. Composer",
+                            "portrait_url": "http://localhost/storage/fixture.jpg",
+                            "biography": "Architecto aut consequatur et totam. Nobis illum veniam perferendis et excepturi ut. Harum exercitationem rerum voluptas et qui cupiditate aut provident.",
+                            "piece_count": 1,
+                            "target": {
+                                "kind": "composer_pieces",
+                                "id": "1",
+                                "query": null,
+                                "web_url": "http://my.localhost/search?search=Shared%20Composer&model=App%5CComposer"
+                            }
+                        },
+                        "artwork_url": "http://localhost/storage/fixture.jpg",
+                        "difficulty": "intermediate",
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "media": {
+                            "performance": false,
+                            "synthesia": false,
+                            "tutorial": false,
+                            "audio": false,
+                            "score": false
+                        },
+                        "target": {
+                            "kind": "piece",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "http://my.localhost/pieces/1"
+                        }
+                    }
+                ],
+                "action": null,
+                "featured_composer": null
+            },
+            {
+                "id": "similar_to_free_pick",
+                "kind": "compact_piece_rail",
+                "title": "Like this week's free pick",
+                "items": [
+                    {
+                        "kind": "piece",
+                        "id": "1",
+                        "title": "Shared Discover piece",
+                        "featured_title": "Shared Discover piece",
+                        "subtitle": "S. Composer",
+                        "catalogue": "BWV 79 No.4",
+                        "composer": {
+                            "kind": "composer",
+                            "id": "1",
+                            "name": "Shared Composer",
+                            "short_name": "S. Composer",
+                            "portrait_url": "http://localhost/storage/fixture.jpg",
+                            "biography": "Architecto aut consequatur et totam. Nobis illum veniam perferendis et excepturi ut. Harum exercitationem rerum voluptas et qui cupiditate aut provident.",
+                            "piece_count": 1,
+                            "target": {
+                                "kind": "composer_pieces",
+                                "id": "1",
+                                "query": null,
+                                "web_url": "http://my.localhost/search?search=Shared%20Composer&model=App%5CComposer"
+                            }
+                        },
+                        "artwork_url": "http://localhost/storage/fixture.jpg",
+                        "difficulty": "intermediate",
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "media": {
+                            "performance": false,
+                            "synthesia": false,
+                            "tutorial": false,
+                            "audio": false,
+                            "score": false
+                        },
+                        "target": {
+                            "kind": "piece",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "http://my.localhost/pieces/1"
+                        }
+                    }
+                ],
+                "action": null,
+                "featured_composer": null
+            }
+        ]
+    },
+    "meta": {
+        "request_id": "9741bbe5-edad-4130-9576-470394307c29"
+    }
+}

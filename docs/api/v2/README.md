@@ -1,7 +1,8 @@
 # PianoLIT iOS v2 connection
 
-Revision **2026-10-29.1** adds Latin American composers to Discover's shared
-composer-feature choice. This addition is implemented locally; production
+Revision **2026-10-29.2** adds American, Italian, Russian and Ukrainian composers
+to Discover's shared composer-feature choice, alongside women, Black and Latin
+American composers. These additions are implemented locally; production
 deployment remains pending. Login, Discover and confirmed piece-open history
 were verified in production in **2026-10-28.1**. Check `manifest.yaml` for deployment verification and the
 verified runtime base URL. The handoff URL is documentation; it is never a feed
@@ -74,11 +75,16 @@ explicitly disabled is an intentional policy difference, not another feed source
 Sections have stable IDs/kinds, string entity IDs, booleans, plain text and
 absolute URLs. Empty sections are omitted; unsupported kinds can be skipped.
 RCM/ABRSM/Suzuki appear once as `levels`, in numeric order. The composer feature
-can be women, Black or Latin American composers, exactly as chosen for the webapp
+can be women, Black, Latin American, American, Italian, Russian or Ukrainian
+composers, exactly as chosen for the webapp
 cache. Each available group has an equal chance when the admin refresh or daily
 expiry rebuilds that cache; browser/API reloads retain the chosen group. Its IDs
-are `women_composers`, `black_composers` and `latin_american_composers`, all with
+are `women_composers`, `black_composers`, `latin_american_composers`,
+`american_composers`, `italian_composers`, `russian_composers` and
+`ukrainian_composers`, all with
 kind `composer_feature`. Only one appears, and groups without pieces are skipped.
+Country groups use the composer's saved country `flag_code`: `us` (United States),
+`it`, `ru` or `ua`. No names, birthplace guesses or continent-wide matches are used.
 See `screens/discover.yaml`, `openapi.yaml` and synthetic `fixtures/*.json`.
 
 ## Navigation and history boundary
@@ -141,7 +147,7 @@ The Swift developer can fetch hash-verified files with:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-10-29.1 --output /path/to/ios-repository/BackendHandoff
+  --revision 2026-10-29.2 --output /path/to/ios-repository/BackendHandoff
 ```
 
 This fetch copies documentation/examples, not an installed network connection.

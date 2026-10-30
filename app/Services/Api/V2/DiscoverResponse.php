@@ -3,7 +3,7 @@
 namespace App\Services\Api\V2;
 
 use App\{Composer, Piece};
-use App\Services\Discover\Levels;
+use App\Services\Discover\{ComposerFeatures, Levels};
 use App\Services\WebApp\PieceCards;
 use Illuminate\Support\Str;
 
@@ -31,13 +31,13 @@ class DiscoverResponse
                 'Recently viewed' => ['recently_viewed', 'compact_piece_rail'],
                 'Latest pieces' => ['latest_pieces', 'artwork_piece_rail'],
                 'For you' => ['for_you', 'personalized_piece_rail'],
-                'From women composers' => ['women_composers', 'composer_feature'],
-                'From black composers' => ['black_composers', 'composer_feature'],
-                'From Latin American composers' => ['latin_american_composers', 'composer_feature'],
                 'Past highlights' => ['past_highlights', 'highlight_rail'],
                 "Like today's free pick" => ['similar_to_free_pick', 'compact_piece_rail'],
             ];
             $definition = $map[$title] ?? (Str::startsWith($title, 'Pieces that are ') ? ['mood', 'compact_piece_rail'] : null);
+            if ($feature = ComposerFeatures::forTitle($title)) {
+                $definition = [str_replace('-', '_', $feature['key']).'_composers', 'composer_feature'];
+            }
             if (!$definition) continue;
             [$id, $kind] = $definition;
             $section = ['id' => $id, 'kind' => $kind,

@@ -1,0 +1,87 @@
+id: discover
+status: draft
+depends_on: [foundations]
+backend_status: implemented_locally
+ios_status: pending_integration
+objective: Serve the current web Discover content from one shared builder, with an independent native v2 connection.
+operation:
+  method: GET
+  path: /api/v2/discover
+  operation_id: getDiscover
+  implemented: true
+  authentication: POST /api/v2/auth/login with existing email/password, then Authorization bearer. No YAML download or legacy user_id exchange authenticates a request.
+  response: data.sections and meta.request_id, exactly defined in openapi.yaml.
+  persistence: Feed requests never write history, analytics or favorites.
+source_of_truth:
+  builder: app/Services/Discover/Feed.php
+  shared_web: app/Http/Controllers/WebApp/TabsController.php
+  v2: app/Http/Controllers/Api/V2/DiscoverController.php
+  levels: app/Services/Discover/Levels.php
+  catalogue: Existing web App\Api\Api content cache and admin/Free Pick clock; legacy native cache remains separate and unchanged.
+  ranking: Existing web SimilarPieces ranking; do not use the legacy native similarity algorithm for v2.
+sections_in_display_order:
+  - id: free_pick
+    kind: featured_piece
+    selection: Current due scheduled Free Pick. Omitted if absent; explicit is_free_pick, never row-position entitlement.
+  - id: composers
+    kind: portrait_rail
+    selection: Same cached composer IDs/order/portraits/counts as web. Native target composer_pieces; action composers.
+  - id: recently_viewed
+    kind: compact_piece_rail
+    maximum_items: 12
+    selection: Current verified account history, most-recent first with piece-ID tie-breaker, before Latest. Empty/excluded-account rows omitted.
+  - id: latest_pieces
+    kind: artwork_piece_rail
+    selection: Same cached video-eligible pieces/newest order as web. is_new uses the existing five-day window; action catalogue.
+  - id: for_you
+    kind: personalized_piece_rail
+    maximum_items: 6
+    selection: Existing account suggestions, same shared account-specific ID selection as web; omit when empty.
+  - id: composer_feature
+    actual_ids: [women_composers, black_composers, latin_american_composers, american_composers, italian_composers, russian_composers, ukrainian_composers]
+    kind: composer_feature
+    selection: Women, Black, Latin American, American, Italian, Russian or Ukrainian composers, selected uniformly among groups with pieces whenever the shared web cache rebuilds after admin refresh or daily expiry. Retain the choice across browser/API reloads. Same portrait/biography excerpt and ordered pieces as web; show exactly one feature in this slot.
+    country_groups: Saved composer country flag codes us (United States), it, ru and ua; no inferred nationality. Each country pool retains the twelve-piece limit.
+  - id: levels
+    kind: level_selector
+    title: Find pieces at your level
+    subtitle: Similar difficulty to RCM, ABRSM or Suzuki books.
+    selection: RCM, ABRSM and Suzuki groups in that order; numeric item ordering, first nonempty group selected, empty systems disabled. Omit section when all empty.
+  - id: past_highlights
+    kind: highlight_rail
+    maximum_items: 7
+    selection: Previous highlighted pieces, excluding current Free Pick/future highlights; ID descending. First item featured; action highlights.
+  - id: mood
+    kind: compact_piece_rail
+    selection: Same cached mood heading and pieces as web.
+  - id: similar_to_free_pick
+    kind: compact_piece_rail
+    title: Like this week's free pick
+    selection: Same existing web-ranked related pieces. Omit if no current pick/results.
+limits:
+  policy: Match current web selection exactly, including its cached randomized 8–12 item base-rail size, composer-feature pools and existing per-query limits; do not truncate v2 independently.
+  scope: No request pagination or independent native editorial selection. See current builder for catalogue limits; hardening a shared limit must change both modern consumers together.
+  response_cache: private, no-store
+native_connection:
+  sample: examples/PianoLITV2Client.swift
+  ui: Preserve the existing email/password screen, UIKit/storyboards, iOS deployment target and numeric identity adapter boundary.
+  parsing: Typed section IDs/kinds and card types, never aligned arrays/title dispatch or row-zero Free Pick bypass.
+  session: Keychain credential, one reauthentication after upgrade if only legacy local identity exists; cancel/discard stale account responses.
+  navigation: Typed target kinds map to deliberately implemented native adapters. Public web_url is the supported fallback until a destination is migrated; no bearer is sent to that URL.
+  dependency_limit: Discover summaries are not full PieceVC detail models. Legacy destination calls may remain explicitly identified until replaced; they are not authenticated v2.
+  history: POST /api/v2/pieces/{piece}/view after a successful actual open, using the verified token; never feed/image prefetch.
+  entitlements: Media flags and is_free_pick are display facts. Preserve native membership/media decisions pending their own v2 specification; do not import web Access Limits.
+client_states:
+  loading: Native loading state, no playback/access decision from unresolved membership.
+  refresh: Preserve same-account content until success, one current refresh; discard older responses.
+  failure: Retry state when empty; keep successful same-account data on a refresh error.
+  empty: Deliberate empty feed, with no placeholder headings pretending to contain content.
+  account_switch: Clear personal content/images and discard late responses. Missing/expired/revoked token returns to existing login.
+  unsupported: Skip unknown section/item kinds without crashing or inventing access.
+  accessibility: VoiceOver, Dynamic Type and Reduce Motion; no autoplay.
+acceptance:
+  local: See tests/Review/ApiV2DiscoverTest.php and the existing Discover/FreePick/mobile regression suites.
+  backend_deployment: Must be recorded in manifest runtime verification before sharing a live address.
+  native_pending: Login, authenticated feed, confirmed-open history, logout/expiry/account switch, target adapters and actual phone/iPad UI/build checks.
+legacy_support: Existing installed app endpoints and media delivery remain available indefinitely; no maintenance update is required for users who never upgrade.
+out_of_scope: [new social login, guest browsing, SwiftUI rewrite, deployment target change, native billing or media redesign, complete detail/search/favorites migration]
