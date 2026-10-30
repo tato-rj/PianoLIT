@@ -50,8 +50,10 @@ and result reveal do not call scrollIntoView. Pointer answers leave focus alone;
 keyboard answers can focus Next with preventScroll. Quiz pages disable browser
 scroll anchoring and reserve space for reactions/Next so feedback does not pull
 the viewport. Explicit Review answers still scrolls to the review. The centered
-start panel uses a large shared primary play button, brief instructions, colorful
-musical accents and a short, reduced-motion-aware entrance for its three symbols.
+start panel uses the plain heading Test your knowledge and the instruction
+Answer each question, then see your score. Arthur prefers straightforward intro
+copy and the regular shared primary Start quiz button: no btn-lg or extra minimum
+width. Musical accents and the short, reduced-motion-aware entrance remain.
 Empty quizzes retain their preparation state without a start button.
 
 The same GET feedback endpoint receives the same ordered `answers[]` indexes. The

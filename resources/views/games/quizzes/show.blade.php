@@ -42,9 +42,9 @@
                 @if(count($quiz->questions))
                     <div class="quiz-start-notes" aria-hidden="true"><span>♫</span><span>✦</span><span>♪</span><span>✦</span></div>
                     <div class="quiz-start-moments d-flex justify-content-center align-items-center gap-3 mb-4" aria-hidden="true"><span>🧠</span><span>🔥</span><span>🎉</span></div>
-                    <h2 class="h3 mb-3" id="quiz-start-title">Ready for your big moment?</h2>
-                    <p class="mb-4" id="quiz-start-description">One question at a time. A surprise GIF at the finish.</p>
-                    <button class="btn btn-primary btn-lg quiz-start-action" type="button" id="start-quiz" data-quiz-start aria-describedby="quiz-start-description">@icon('play')Start quiz</button>
+                    <h2 class="h3 mb-3" id="quiz-start-title">Test your knowledge</h2>
+                    <p class="mb-4" id="quiz-start-description">Answer each question, then see your score.</p>
+                    <button class="btn btn-primary" type="button" id="start-quiz" data-quiz-start aria-describedby="quiz-start-description">@icon('play')Start quiz</button>
                     @if($quiz->results_count > 2)<p class="small text-muted mt-4 mb-0">Average: <strong>{{ $quiz->average_score }} / {{ count($quiz->questions) }}</strong> · {{ number_format($quiz->results_count) }} plays</p>@endif
                     <noscript><p class="small text-muted mt-3 mb-0">Enable JavaScript to answer this quiz.</p></noscript>
                 @else

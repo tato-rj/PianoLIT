@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-10-29 — Simplify the quiz introduction and use the regular Start button (P3, complete locally)
+
+- **Request / change:** Arthur rejected Ready for your big moment and the oversized Start quiz button. The heading is now Test your knowledge, with the direct instruction Answer each question, then see your score. Removed btn-lg, the quiz-specific button class and its 220px minimum width; the action uses the shared default primary button. Intro artwork, gameplay and the result screen are unchanged. Keep future intro copy straightforward.
+- **Verification:** Existing isolated quiz rendering checks pass **2 tests / 52 assertions** with the updated copy. Production/CSS and final asset checks pass; a parsed CSS comparison confirms only the obsolete start-button width rule was removed. Browser preview shows a normal **130 × 46px** button with 14.4px text and no minimum width. Proof: `/Users/arthur/.codex/visualizations/2026/10/29/01a189b1-f615-7f03-96e1-ff63e0355440/quiz/start-standard-button.png`. Only app.css and its manifest entry were copied back. No normal database writes or deployment.
+
 ### 2026-10-29 — Restore soft gameplay colors while retaining the finale (P3, complete locally)
 
 - **Request / change:** Arthur preferred the light question gradients and answer buttons during play, and explicitly kept the end screen/results. Restored lavender/mint/peach question gradients, soft answer-letter circles, pale mint correct answers and pale rose incorrect answers in `_quizzes.scss`. Explicit dark outcome text overrides the shared secondary button text rule, fixing the reported dark-green/black combination. Start, reveal, comparison, GIF, sharing and all results styling remain unchanged.
