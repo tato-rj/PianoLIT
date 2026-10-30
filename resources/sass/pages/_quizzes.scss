@@ -63,10 +63,10 @@
         position: relative;
         isolation: isolate;
         overflow: hidden;
-        background: #fff;
-        border-top: 5px solid #0055fe !important;
-        &[data-quiz-outcome="correct"] { border-top-color: #007a53 !important; }
-        &[data-quiz-outcome="incorrect"] { border-top-color: #c52c45 !important; }
+        background: linear-gradient(135deg, #f1edff, #fff 55%);
+        border-top: 5px solid #b39ae8 !important;
+        &[data-quiz-outcome="correct"] { background: linear-gradient(135deg, #dcf9e9, #fff 65%); border-top-color: #2ab27b !important; }
+        &[data-quiz-outcome="incorrect"] { background: linear-gradient(135deg, #fff0dc, #fff 65%); border-top-color: #edaa49 !important; }
     }
     .quiz-item h2 { line-height: 1.65; scroll-margin-top: 24px; }
     .quiz-answer {
@@ -79,8 +79,8 @@
         letter-spacing: normal;
 
         &:disabled { opacity: 1; cursor: default; }
-        &.is-correct { border-color: #007a53; background: #007a53; color: #fff; }
-        &.is-incorrect { border-color: #c52c45; background: #c52c45; color: #fff; }
+        &.is-correct { border-color: var(--color-success); background: #d0f4df; color: #12462d !important; }
+        &.is-incorrect { border-color: var(--color-danger); background: #ffe0e2; color: #742632 !important; }
     }
     .quiz-answer-letter {
         flex: 0 0 30px;
@@ -88,12 +88,12 @@
         text-align: center;
         border-radius: 50%;
         font-weight: 600;
-        background: #0055fe;
-        color: #fff;
+        background: #e6ddff;
+        color: #39225c;
     }
-    .quiz-answer:nth-child(2n) .quiz-answer-letter { background: #00cfa2; color: #062c24; }
-    .quiz-answer:nth-child(3n) .quiz-answer-letter { background: #ffdc28; color: #172347; }
-    .quiz-answer:nth-child(4n) .quiz-answer-letter { background: #ff3e9d; color: #172347; }
+    .quiz-answer:nth-child(2n) .quiz-answer-letter { background: #d7f5ed; color: #164b3d; }
+    .quiz-answer:nth-child(3n) .quiz-answer-letter { background: #fff0ba; color: #5d4610; }
+    .quiz-answer:nth-child(4n) .quiz-answer-letter { background: #ffdfe9; color: #68263c; }
     .quiz-answer-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
     .quiz-answer-outcome { flex: 0 0 auto; font-weight: 600; }
     .quiz-reaction { font-weight: 600; min-height: 3.2em; }

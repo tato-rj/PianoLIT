@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-10-29 — Restore soft gameplay colors while retaining the finale (P3, complete locally)
+
+- **Request / change:** Arthur preferred the light question gradients and answer buttons during play, and explicitly kept the end screen/results. Restored lavender/mint/peach question gradients, soft answer-letter circles, pale mint correct answers and pale rose incorrect answers in `_quizzes.scss`. Explicit dark outcome text overrides the shared secondary button text rule, fixing the reported dark-green/black combination. Start, reveal, comparison, GIF, sharing and all results styling remain unchanged.
+- **Verification:** The isolated Node 24 production/CSS build and final asset checks pass. A parsed CSS comparison verifies every rule outside quiz question/answer selectors is identical. Browser checks confirm the lavender initial card, peach incorrect card, mint/rose disabled buttons and actual dark text colors; contrast is 9.12:1 correct and 8.23:1 incorrect. Proof: `/Users/arthur/.codex/visualizations/2026/10/29/01a189b1-f615-7f03-96e1-ff63e0355440/quiz/gameplay-light-colors.png`. Only app.css and its manifest entry were copied from the isolated build. No new tests, data writes, behavior changes or deployment.
+
 ### 2026-10-29 — Use difficulty bars for the quiz level (P3, complete locally)
 
 - **Request / change:** Arthur identified the question-mark icon beside the difficulty label as unrelated to level. `games/quizzes/level.blade.php` now uses Lucide’s three ascending bars (`chart-no-axes-column-increasing`) through the shared icon renderer. Regenerated the icon catalog; only that icon was added. Level text/data and all quiz behavior remain unchanged.

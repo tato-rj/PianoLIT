@@ -95,7 +95,7 @@ numeric values. The award spins/pops once and bars fill in sequence; reduced
 motion shows final values immediately. Close, sharing, replay and hidden-page
 cleanup cancel these effects through the existing animation manager. Desktop
 places the comparison beside the GIF; phones stack them with compact spacing.
-Panels remain white.
+Result panels remain white.
 
 `QuizResultComparison` reads one aggregate (COUNT/AVG/MIN/MAX) scoped to this quiz
 before the existing completion write. The current round never changes its own
@@ -115,9 +115,12 @@ unchanged; this adds no migration, analytics event or email.
 
 ## Result sharing
 
-Arthur's latest color direction replaces pastel panel washes with white start,
-question and result surfaces. Strong blue, yellow, green and pink accents remain
-in the start symbols, answer states, spinning reveal and score card.
+Arthur's final color direction keeps the start and result surfaces white, with
+strong accents in the start symbols, spinning reveal and score card. During
+gameplay, question cards retain their lighter lavender/mint/peach gradients and
+answer letters use soft colors. Correct/wrong answer buttons use pale mint/rose
+with explicit dark outcome text, which takes precedence over the shared secondary
+button text rule. This gameplay-only adjustment does not alter the finale.
 
 Share my score switches the existing modal to a card preview plus Facebook,
 WhatsApp, X, Reddit, Telegram and Email links. It reuses the shared
