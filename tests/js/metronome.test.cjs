@@ -8,16 +8,17 @@ const root = path.join(__dirname, '../../resources/js');
 const read = name => fs.readFileSync(path.join(root, name), 'utf8')
     .replace(/^import .*;\n/gm, '')
     .replace(/^export /gm, '');
-const source = ['gesture', 'settings', 'conductor', 'voice-stretch', 'clock'].map(name => read(`metronome/${name}.js`)).join('\n');
+const source = ['gesture', 'settings', 'conductor', 'voice-stretch', 'voice-onset', 'output-clock', 'clock'].map(name => read(`metronome/${name}.js`)).join('\n');
 
 function voiceBuffer(seconds, frequency = 180, rate = 24000) {
     const data = Float32Array.from({ length: Math.round(seconds * rate) }, (_, i) =>
-        0.5 * Math.sin(2 * Math.PI * frequency * i / rate));
+        i < Math.round(rate * 0.003) ? 0 : 0.5 * Math.sin(2 * Math.PI * frequency * i / rate));
     return { length: data.length, sampleRate: rate, numberOfChannels: 1,
         duration: data.length / rate, getChannelData: () => data };
 }
 
 function setup({ deferredResume = false, resumeError = false } = {}) {
+    const frames = new Map();
     const timers = new Map();
     const timeouts = new Map();
     let wallTime = 0;
@@ -81,10 +82,11 @@ function setup({ deferredResume = false, resumeError = false } = {}) {
             return timerId;
         },
         clearTimeout(id) { timeouts.delete(id); },
-        requestAnimationFrame() { return ++timerId; },
-        cancelAnimationFrame() {},
+        performance: { now: () => audio.currentTime * 1000 },
+        requestAnimationFrame(fn) { frames.set(++timerId, fn); return timerId; },
+        cancelAnimationFrame(id) { frames.delete(id); },
     });
-    vm.runInContext(`${source}\nglobalThis.api = { TempoGesture, MetronomeClock, normalizeSettings, loadSettings, loadTempo, colorPalette, conductorPoint, conductorPreparationPoint, conductorPreparationBeats, CONDUCTING_PATTERNS };`, context);
+    vm.runInContext(`${source}\nglobalThis.api = { TempoGesture, MetronomeClock, normalizeSettings, loadSettings, loadTempo, colorPalette, conductorPoint, conductorPreparationPoint, conductorPreparationBeats, CONDUCTING_PATTERNS, OutputClock, alignVoiceOnset };`, context);
     const clock = new context.api.MetronomeClock({
         createContext: () => audio,
         onStateChange: value => states.push(value),
@@ -92,7 +94,12 @@ function setup({ deferredResume = false, resumeError = false } = {}) {
         onError: error => errors.push(error),
     });
     return {
-        context, clock, audio, timers, oscillators, states, errors, beatIndices,
+        context, clock, audio, timers, frames, oscillators, states, errors, beatIndices,
+        frame(time = audio.currentTime) {
+            audio.currentTime = time;
+            const pending = [...frames.values()]; frames.clear();
+            pending.forEach(fn => fn(time * 1000));
+        },
         get beatCount() { return beatCount; },
         resume: () => resolveResume(),
         tick(milliseconds) {
@@ -109,6 +116,7 @@ function setup({ deferredResume = false, resumeError = false } = {}) {
         advance(time) {
             audio.currentTime = time;
             for (const tick of timers.values()) tick();
+            this.frame(time);
         },
     };
 }
@@ -249,7 +257,7 @@ test('instrument and recorded-voice visuals follow delayed speaker output while 
         const page = setup();
         page.audio.outputLatency = 0.25;
         page.clock.setBeats(4);
-        page.clock.setVoiceBuffers([1, 2, 3, 4].map(number => ({ number, duration: 0.3 })));
+        page.clock.setVoiceBuffers([1, 2, 3, 4].map(number => Object.assign(voiceBuffer(0.3), { number })));
         page.clock.setSound(sound);
         await page.clock.start();
         for (let tick = 1; tick <= 10; tick++) page.advance(tick * 0.025);
@@ -276,14 +284,17 @@ test('output timestamps interpolate device time and invalid timestamps fall back
     page.audio.outputLatency = 0.4;
     page.context.performance = { now: () => 1020 };
     page.audio.getOutputTimestamp = () => ({ contextTime: 0.5, performanceTime: 1000 });
+    page.clock.outputClock.reset();
     page.advance(0.75);
     assert.equal(page.clock.getBeatPosition().beat, 1);
     assert.equal(page.clock.getBeatPosition().progress, 0);
     for (const stamp of [{ contextTime: 0, performanceTime: 0 }, { contextTime: -1, performanceTime: 1000 },
         { contextTime: NaN, performanceTime: 1000 }, { contextTime: 0.5, performanceTime: -1000 }]) {
+        page.clock.outputClock.reset();
         page.audio.getOutputTimestamp = () => stamp;
         assert.equal(page.clock.outputTime(), 0.35);
     }
+    page.clock.outputClock.reset();
     page.audio.getOutputTimestamp = () => { throw new Error('Unsupported'); };
     assert.equal(page.clock.outputTime(), 0.35);
     page.clock.stop();
@@ -360,7 +371,7 @@ test('a stalled scheduler resumes without a burst of missed beats', async () => 
 test('personal voice counts wrap at the chosen beat count and preserve audio-clock timing', async () => {
     for (const beats of [1, 2, 3, 4]) {
         const page = setup();
-        page.clock.setVoiceBuffers([1, 2, 3, 4].map(number => ({ number, duration: 0.3 })));
+        page.clock.setVoiceBuffers([1, 2, 3, 4].map(number => Object.assign(voiceBuffer(0.3), { number })));
         page.clock.setSound('my-voice');
         page.clock.setBeats(beats);
         await page.clock.start();
@@ -462,7 +473,7 @@ function setupPage(savedSettings = null, { reducedMotion = false, savedTempo = n
         closest: selector => selector.includes('[data-tempo-step]'),
         addEventListener(name, callback) { this.listeners[name] = callback; },
     }));
-    const number = { textContent: '120', dataset: {}, animate };
+    const number = element({ textContent: '120', dataset: {}, animate });
     const pulseLayer = element({ animate });
     const message = { hidden: true };
     const documentListeners = {};
@@ -571,17 +582,12 @@ function ballPoint(transform) {
 }
 
 function animatedBallPoint(page) {
-    const animation = page.conductorAnimations.at(-1);
-    if (!animation || animation.canceled) return ballPoint(page.conductorParts.ball.style.transform);
-    const { duration } = animation.options;
-    const phase = (animation.currentTime % duration) / duration;
-    const afterIndex = animation.keyframes.findIndex(frame => frame.offset > phase);
-    const before = animation.keyframes[afterIndex - 1];
-    const after = animation.keyframes[afterIndex];
-    const t = (phase - before.offset) / (after.offset - before.offset);
-    const from = ballPoint(before.transform);
-    const to = ballPoint(after.transform);
-    return from.map((value, axis) => value + (to[axis] - value) * t);
+    page.frame();
+    return ballPoint(page.conductorParts.ball.style.transform);
+}
+
+function visibleCounts(page) {
+    return page.beatNumbers.filter(number => Number(number.style.opacity) > 0);
 }
 
 function assertBallNear(actual, expected) {
@@ -905,20 +911,19 @@ test('conductor indicator choices appear only in conductor mode and changing the
     page.advance(0.2);
     page.advance(0.26);
     page.advance(0.6);
-    const animation = page.conductorAnimations.at(-1);
     const position = animatedBallPoint(page);
     page.markerInputs[1].checked = true;
     page.markerInputs[1].listeners.change();
     assert.equal(page.surface.dataset.conductorMarker, 'hand');
-    assert.equal(page.conductorAnimations.at(-1), animation);
-    assert.equal(animation.canceled, false);
+    assert.equal(page.frames.size, 1);
+    assert.equal(page.frames.size, 1);
     assert.deepEqual(animatedBallPoint(page), position);
     page.advance(0.7);
     assert.notDeepEqual(animatedBallPoint(page), position);
     page.markerInputs[0].checked = true;
     page.markerInputs[0].listeners.change();
     assert.equal(page.surface.dataset.conductorMarker, 'dot');
-    assert.equal(page.conductorAnimations.at(-1), animation);
+    assert.equal(page.frames.size, 1);
     page.typeInputs[0].checked = true;
     page.typeInputs[0].listeners.change();
     assert.equal(page.conductorOptions.hidden, true);
@@ -931,20 +936,19 @@ test('path visibility defaults off for existing settings and toggling it keeps t
     page.click();
     await new Promise(setImmediate);
     page.advance(0.6);
-    const animation = page.conductorAnimations.at(-1);
     const before = animatedBallPoint(page);
     page.pathInput.checked = true;
     page.pathInput.listeners.change();
     assert.equal(page.surface.dataset.showPath, 'true');
-    assert.equal(animation.canceled, false);
-    assert.equal(page.conductorAnimations.at(-1), animation);
+    assert.equal(page.frames.size, 1);
+    assert.equal(page.frames.size, 1);
     assert.equal(setupPage(page.storage.get('metronome.settings.v1')).pathInput.checked, true);
     page.advance(0.7);
     assert.notDeepEqual(animatedBallPoint(page), before);
     page.pathInput.checked = false;
     page.pathInput.listeners.change();
     assert.equal(page.surface.dataset.showPath, 'false');
-    assert.equal(animation.canceled, false);
+    assert.equal(page.frames.size, 1);
     assert.equal(JSON.parse(page.storage.get('metronome.settings.v1')).showPath, false);
 });
 
@@ -1106,10 +1110,8 @@ test('the conductor, pulse and counting number reach the beat when delayed audio
     assert.ok(Math.abs(page.oscillators[0].startTime - 0.25) < 1e-8);
     assert.equal(clock.getBeatPosition().beat, 0);
     assertBallNear(animatedBallPoint(page), page.context.api.conductorPoint(4, 0, 0));
-    const pulse = page.animations.filter(animation => animation.target === page.pulseLayer && !animation.canceled).at(-1);
-    const number = page.animations.filter(animation => animation.target === page.number && !animation.canceled).at(-1);
-    assert.equal(pulse.startTime, page.conductorAnimations.at(-1).startTime);
-    assert.equal(number.startTime, pulse.startTime);
+    assert.ok(Number(page.pulseLayer.style.opacity) > 0.999);
+    assert.equal(visibleCounts(page)[0].textContent, '1');
     page.click();
 });
 
@@ -1241,276 +1243,193 @@ test('opening drops use the same gentle motion as the repeating downstroke and r
     }
 });
 
-test('browser motion follows every pattern without per-frame JavaScript or beat restarts', async () => {
+test('every rendered frame follows the audio position for each conductor pattern', async () => {
     for (const count of [1, 2, 3, 4]) {
         const page = setupPage(JSON.stringify({ beats: count, type: 'conductor' }));
-        const { conductorPoint, conductorPreparationBeats } = page.context.api;
-        page.click();
-        await new Promise(setImmediate);
-        const animation = page.conductorAnimations[0];
-        const drop = conductorPreparationBeats(count) * 0.5;
-        assert.equal(animation.options.iterations, Infinity);
-        assert.equal(animation.options.easing, 'linear');
-        // The browser timeline advances even when no JS frame or scheduler runs.
-        for (let frame = 0; frame <= 240; frame++) {
-            const phase = count * frame / 240;
-            page.audio.currentTime = drop + phase * 0.5;
-            assertBallNear(animatedBallPoint(page), conductorPoint(count, Math.floor(phase), phase % 1));
+        page.click(); await new Promise(setImmediate);
+        const clock = vm.runInContext('clock', page.context);
+        for (let frame = 0; frame < 600; frame++) {
+            const time = frame / 60;
+            if (frame % 2 === 0) page.advance(time); else page.frame(time);
+            const position = clock.getBeatPosition();
+            const expected = position.preparing ? page.context.api.conductorPreparationPoint(count, position.progress)
+                : page.context.api.conductorPoint(count, position.beat, position.progress);
+            assertBallNear(animatedBallPoint(page), expected);
+            assert.equal(page.frames.size, 1);
         }
-
-        page.click();
-        page.click();
-        await new Promise(setImmediate);
-        const restarted = page.conductorAnimations.at(-1);
-        const start = page.audio.currentTime;
-        for (let tick = 1; tick <= 200; tick++) page.advance(start + tick * 0.025);
-        assert.equal(page.conductorAnimations.length, 2, 'Ordinary clicks keep the same looping animation.');
-        assert.equal(restarted.seeks, 1, 'Audio scheduler rounding must not seek on each click.');
+        assert.equal(page.animations.length, 0, 'No competing document-timeline animations or seeks');
+        page.click(); assert.equal(page.frames.size, 0);
     }
 });
 
-test('conductor corrects a settled output offset after restart without seeking for ordinary frame rounding', async () => {
-    const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
-    page.click();
-    await new Promise(setImmediate);
-    page.advance(0.3);
-    page.click();
-    page.click();
-    await new Promise(setImmediate);
-    for (let tick = 1; tick <= 20; tick++) page.advance(0.3 + tick * 0.025);
-    const animation = page.conductorAnimations.at(-1);
-    const clock = vm.runInContext('clock', page.context);
-    // Model the compositor being ahead when the resumed device's timestamp
-    // settles. The previous 80ms tolerance left this offset indefinitely.
-    animation.startTime -= 55;
-    page.advance(0.825);
-    const position = clock.getBeatPosition();
-    assertBallNear(animatedBallPoint(page), page.context.api.conductorPoint(4, position.beat, position.progress));
-    const seeks = animation.seeks;
-    animation.startTime -= 10;
-    page.advance(0.85);
-    assert.equal(animation.seeks, seeks, 'Normal audio-block/frame rounding must not force repeated seeks');
-    assert.ok(page.animations.filter(item => !item.canceled).every(item => item.startTime === animation.startTime));
-    page.click();
+test('speaker timestamp noise cannot rewind or jump the presentation clock', () => {
+    const { OutputClock } = setup().context.api;
+    const clock = new OutputClock();
+    let wall = 10, noisy = 0;
+    const context = { currentTime: 1, getOutputTimestamp: () => ({ contextTime: context.currentTime - 0.08 + noisy, performanceTime: wall * 1000 }) };
+    let last = clock.read(context, wall * 1000);
+    for (let frame = 1; frame <= 600; frame++) {
+        wall += 1 / 60; context.currentTime += 1 / 60;
+        noisy = [0, -0.06, 0.035, -0.01, 0.025][frame % 5];
+        const next = clock.read(context, wall * 1000);
+        assert.ok(next - last >= 0.92 / 60 - 1e-10 && next - last <= 1.08 / 60 + 1e-10,
+            'A noisy measurement cannot seek the rendered position');
+        assert.ok(Math.abs(next - (context.currentTime - 0.08)) < 0.015);
+        last = next;
+    }
 });
 
-test('tempo changes retime the opening drop and repeating animation without moving the ball', async () => {
-    const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
+test('the real page keeps conductor phase continuous through noisy device timestamps at 58 BPM', async () => {
+    const page = setupPage(JSON.stringify({ beats: 2, type: 'conductor' }), { savedTempo: '58' });
     const clock = vm.runInContext('clock', page.context);
-    const { conductorPoint, conductorPreparationPoint } = page.context.api;
-    page.click();
-    await new Promise(setImmediate);
+    page.audio.outputLatency = 0.08;
+    let noise = 0;
+    page.audio.getOutputTimestamp = () => ({ contextTime: Math.max(0, page.audio.currentTime - 0.08 + noise),
+        performanceTime: page.audio.currentTime * 1000 });
+    page.click(); await new Promise(setImmediate);
+    let previous;
+    for (let frame = 1; frame <= 600; frame++) {
+        noise = frame > 120 ? [0, -0.06, 0.035, -0.01, 0.025][frame % 5] : 0;
+        page.advance(frame / 60);
+        const position = clock.getBeatPosition();
+        if (position.preparing) continue;
+        const phase = position.beat + position.progress;
+        if (previous !== undefined) {
+            const delta = (phase - previous + 2) % 2;
+            assert.ok(delta <= 1.08 / 60 / (60 / 58) + 1e-8, 'No backward phase seek or forward jump');
+        }
+        assertBallNear(animatedBallPoint(page), page.context.api.conductorPoint(2, position.beat, position.progress));
+        previous = phase;
+    }
+});
+
+test('tempo edits preserve the current conductor position and continue at the new pace', async () => {
+    const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
+    page.click(); await new Promise(setImmediate);
     for (const [time, tempo] of [[0.1, 60], [1.1, 240], [1.3, 40], [2.5, 180]]) {
         while (page.audio.currentTime + 0.025 < time) page.advance(page.audio.currentTime + 0.025);
         page.advance(time);
         const before = animatedBallPoint(page);
         vm.runInContext(`setTempo(${tempo})`, page.context);
         assertBallNear(animatedBallPoint(page), before);
-        assert.equal(page.conductorAnimations.length, 1);
-        assert.equal(page.conductorAnimations[0].options.duration, 4 * 60000 / tempo);
-        page.audio.currentTime += 0.04;
-        const position = clock.getBeatPosition();
-        const expected = position.preparing ? conductorPreparationPoint(4, position.progress)
-            : conductorPoint(4, position.beat, position.progress);
-        assertBallNear(animatedBallPoint(page), expected);
+        assert.equal(page.frames.size, 1);
+        page.advance(time + 0.04);
+        const position = vm.runInContext('clock.getBeatPosition()', page.context);
+        assertBallNear(animatedBallPoint(page), position.preparing
+            ? page.context.api.conductorPreparationPoint(4, position.progress)
+            : page.context.api.conductorPoint(4, position.beat, position.progress));
     }
 });
 
-test('hidden pages, settings, reduced motion, and classic mode cancel continuous motion and resume in phase', async () => {
+test('hidden pages, settings and reduced motion cancel rendering and return on the audible beat', async () => {
     const page = setupPage(JSON.stringify({ beats: 3, type: 'conductor' }));
-    const clock = vm.runInContext('clock', page.context);
-    page.click();
-    await new Promise(setImmediate);
-    const current = () => page.conductorAnimations.at(-1);
-    page.context.document.hidden = true;
-    page.documentListeners.visibilitychange();
-    assert.equal(current().canceled, true);
+    page.click(); await new Promise(setImmediate);
+    page.context.document.hidden = true; page.documentListeners.visibilitychange();
+    assert.equal(page.frames.size, 0);
+    assert.equal(visibleCounts(page).length, 0);
     for (let tick = 1; tick <= 80; tick++) page.advance(tick * 0.025);
-    page.context.document.hidden = false;
-    page.documentListeners.visibilitychange();
-    assert.equal(current().canceled, false);
-    const position = clock.getBeatPosition();
+    page.context.document.hidden = false; page.documentListeners.visibilitychange();
+    assert.equal(page.frames.size, 1);
+    const position = vm.runInContext('clock.getBeatPosition()', page.context);
     assertBallNear(animatedBallPoint(page), page.context.api.conductorPoint(3, position.beat, position.progress));
-    page.settingsButton.listeners.click();
-    assert.equal(current().canceled, true);
-    page.tick(400);
-    page.closeButton.listeners.click();
-    page.tick(300);
-    assert.equal(current().canceled, false);
-    page.motionPreference.matches = true;
-    page.motionPreference.onchange();
-    assert.equal(current().canceled, true);
-    page.motionPreference.matches = false;
-    page.motionPreference.onchange();
-    assert.equal(current().canceled, false);
-    page.typeInputs[0].checked = true;
-    page.typeInputs[0].listeners.change();
-    assert.equal(current().canceled, true);
+    page.settingsButton.listeners.click(); assert.equal(page.frames.size, 0);
+    page.closeButton.listeners.click(); page.tick(300); assert.equal(page.frames.size, 1);
+    page.motionPreference.matches = true; page.motionPreference.onchange();
+    assert.equal(page.frames.size, 0); assert.equal(visibleCounts(page).length, 0);
+    page.motionPreference.matches = false; page.motionPreference.onchange(); assert.equal(page.frames.size, 1);
+    page.typeInputs[0].checked = true; page.typeInputs[0].listeners.change();
+    assert.equal(visibleCounts(page).length, 0);
+    assert.equal(page.frames.size, 1, 'Pulse mode shares the same single frame loop');
+    page.click(); assert.equal(page.frames.size, 0);
 });
 
-test('a stalled audio scheduler re-aligns the continuous motion with the recovered clicks', async () => {
+test('a stalled scheduler cannot display phantom counts while waiting for the recovered audio', async () => {
     const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
-    const clock = vm.runInContext('clock', page.context);
-    page.click();
-    await new Promise(setImmediate);
-    page.advance(10);
-    page.advance(10.025);
-    const position = clock.getBeatPosition();
+    page.click(); await new Promise(setImmediate);
+    page.advance(0.3);
+    page.frame(5); // No scheduler callbacks: no new sound can have started.
+    assert.equal(visibleCounts(page).length, 0);
+    page.advance(5); page.advance(5.025);
+    const position = vm.runInContext('clock.getBeatPosition()', page.context);
+    assert.equal(visibleCounts(page)[0].textContent, String(position.beat + 1));
     assertBallNear(animatedBallPoint(page), page.context.api.conductorPoint(4, position.beat, position.progress));
-    assert.equal(page.conductorAnimations.length, 1);
+    assert.equal(page.frames.size, 1);
 });
 
-test('downbeat darkening animates only the background layer opacity for every beat group', async () => {
-    for (const count of [1, 2, 3, 4]) {
-        const page = setupPage(JSON.stringify({ beats: count }));
-        page.click();
-        await new Promise(setImmediate);
-        for (let tick = 1; tick <= count * 20; tick++) page.advance(tick * 0.025);
-        const pulses = page.animations.filter(animation => animation.target === page.pulseLayer);
-        assert.equal(pulses.length, 1);
-        assert.deepEqual(JSON.parse(JSON.stringify(pulses[0].keyframes)), [{ opacity: 1 }, { opacity: 0 }]);
-        assert.equal(pulses[0].options.duration, 500);
-        assert.equal(page.animations.some(animation => animation.target === page.surface), false);
-    }
-});
-
-function visualPhase(animation) {
-    const elapsed = animation.currentTime - (animation.options.delay || 0);
-    return elapsed < 0 ? null : (elapsed % animation.options.duration) / animation.options.duration;
-}
-
-test('the conductor downbeat flash and number pulse reach the bottom on the same frame without waiting for a timer callback', async () => {
+test('the downbeat flash, number and marker meet scheduled audio on the same display frame', async () => {
     for (const count of [1, 2, 3, 4]) {
         const page = setupPage(JSON.stringify({ beats: count, type: 'conductor' }));
-        const clock = vm.runInContext('clock', page.context);
-        page.click();
-        await new Promise(setImmediate);
-        const ball = page.conductorAnimations[0];
-        const background = page.animations.find(animation => animation.target === page.pulseLayer);
-        const number = page.animations.find(animation => animation.target === page.number);
-        assert.equal(background.startTime, ball.startTime);
-        assert.equal(number.startTime, ball.startTime);
-        page.advance(0.2); // Audio is scheduled, but its visual callback has not run.
-        page.audio.currentTime = 0.249;
-        assert.equal(visualPhase(background), null, 'The opening drop must not flash early.');
-        page.audio.currentTime = 0.25;
-        assert.equal(clock.lastBeatIndex, null, 'The scheduler has not delivered the beat callback yet.');
+        page.click(); await new Promise(setImmediate);
+        page.advance(0.2); // Beat scheduled, but scheduler hasn't delivered a visual callback.
+        page.frame(0.249); assert.equal(visibleCounts(page).length, 0);
+        page.frame(0.25);
+        assert.equal(vm.runInContext('clock.lastBeatIndex', page.context), null);
         assertBallNear(animatedBallPoint(page), [200, 540]);
-        assert.equal(visualPhase(background), 0);
-        assert.equal(visualPhase(number), 0);
-
-        // Check another bar with a callback deliberately delayed by 20ms.
+        assert.equal(Number(page.pulseLayer.style.opacity), 1);
+        assert.equal(page.number.style.transform, 'scale(1.35)');
+        assert.equal(visibleCounts(page)[0].textContent, '1');
         const downbeat = 0.25 + count * 0.5;
         for (let time = 0.275; time < downbeat - 0.02; time += 0.025) page.advance(time);
-        page.audio.currentTime = downbeat;
+        page.frame(downbeat);
         assertBallNear(animatedBallPoint(page), [200, 540]);
-        assert.ok(visualPhase(background) < 0.000001);
-        assert.ok(visualPhase(number) < 0.000001);
-        assert.equal(page.animations.length, 3 + count, 'Beats reuse continuous effects, including one per count digit.');
+        assert.ok(Number(page.pulseLayer.style.opacity) > 0.999999);
+        assert.equal(page.animations.length, 0);
     }
 });
 
-test('conductor flashes only on beat one while the number pulses on every beat', async () => {
-    const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
-    page.click();
-    await new Promise(setImmediate);
-    const background = page.animations.find(animation => animation.target === page.pulseLayer);
-    const number = page.animations.find(animation => animation.target === page.number);
-    for (let beat = 1; beat <= 3; beat++) {
-        page.audio.currentTime = 0.25 + beat * 0.5;
-        assert.equal(visualPhase(background), beat / 4);
-        assert.equal(visualPhase(number), 0);
-        const restingFrames = background.keyframes.filter(frame => frame.offset >= 1 / 4);
-        assert.ok(restingFrames.every(frame => frame.opacity === 0));
-    }
-});
-
-function countOpacity(animation) {
-    const phase = visualPhase(animation);
-    if (phase === null) return 0;
-    const before = animation.keyframes.filter(frame => frame.offset <= phase).at(-1);
-    const after = animation.keyframes.find(frame => frame.offset > phase);
-    return before.opacity + (after.opacity - before.opacity) * (phase - before.offset) / (after.offset - before.offset);
-}
-
-test('conductor counts wrap at the selected beats and fade over one beat at slow and fast tempos', async () => {
+test('conductor counts have equal beat windows, one visible digit and a smooth fade at every supported tempo', async () => {
     for (const count of [1, 2, 3, 4]) {
-        for (const tempo of [20, 120, 300]) {
+        for (const tempo of [20, 58, 120, 300]) {
             const page = setupPage(JSON.stringify({ beats: count, type: 'conductor' }), { savedTempo: String(tempo) });
-            page.click();
-            await new Promise(setImmediate);
-            const counters = page.animations.filter(animation => page.beatNumbers.includes(animation.target));
-            assert.equal(counters.length, count);
-            const interval = 60 / tempo;
-            const firstBeat = interval / 2;
-            page.audio.currentTime = firstBeat - 0.001;
-            assert.ok(counters.every(animation => countOpacity(animation) === 0), 'The silent opening drop has no count.');
-            for (let beat = 0; beat <= count; beat++) {
-                let previousOpacity = 0.12;
+            page.click(); await new Promise(setImmediate);
+            const interval = 60 / tempo, first = interval / 2;
+            for (let beat = 0; beat <= count * 2; beat++) {
+                let opacity = 0.12;
                 for (const progress of [0.0001, 0.25, 0.75, 0.9999]) {
-                    page.audio.currentTime = firstBeat + (beat + progress) * interval;
-                    const visible = counters.filter(animation => countOpacity(animation) > 0);
-                    assert.equal(visible.length, 1, 'Only the current count is visible.');
-                    assert.equal(visible[0].target.textContent, String(beat % count + 1));
-                    const opacity = countOpacity(visible[0]);
-                    assert.ok(opacity < previousOpacity, 'The current digit fades throughout its beat.');
-                    previousOpacity = opacity;
+                    const time = first + (beat + progress) * interval;
+                    while (page.audio.currentTime + 0.025 < time) page.advance(page.audio.currentTime + 0.025);
+                    page.advance(time);
+                    const visible = visibleCounts(page);
+                    assert.equal(visible.length, 1);
+                    assert.equal(visible[0].textContent, String(beat % count + 1));
+                    assert.ok(Number(visible[0].style.opacity) < opacity);
+                    opacity = Number(visible[0].style.opacity);
+                    if (beat % count) assert.equal(Number(page.pulseLayer.style.opacity), 0);
                 }
             }
         }
     }
 });
 
-test('tempo edits, recovered stalls, and reopened settings keep all conductor effects on one timeline', async () => {
-    const page = setupPage(JSON.stringify({ beats: 4, type: 'conductor' }));
-    page.click();
-    await new Promise(setImmediate);
-    const live = target => page.animations.filter(animation => animation.target === target && !animation.canceled).at(-1);
-    const check = () => {
-        const ball = page.conductorAnimations.at(-1);
-        const background = live(page.pulseLayer);
-        const number = live(page.number);
-        assert.equal(background.startTime, ball.startTime);
-        assert.equal(number.startTime, ball.startTime);
-        assert.equal(background.options.duration, ball.options.duration);
-        assert.equal(number.options.duration, ball.options.duration / 4);
-        assert.ok(Math.abs(number.keyframes[1].offset * number.options.duration - 180) < 0.000001);
-        for (const digit of page.beatNumbers) {
-            const count = live(digit);
-            assert.equal(count.startTime, ball.startTime);
-            assert.equal(count.options.duration, ball.options.duration);
-            assert.equal(count.options.delay, background.options.delay);
-        }
-    };
-    page.advance(0.1);
-    vm.runInContext('setTempo(80)', page.context);
-    check();
-    page.advance(0.5);
-    vm.runInContext('setTempo(240)', page.context);
-    check();
-    page.advance(10);
-    page.advance(10.025);
-    check();
-    page.settingsButton.listeners.click();
-    assert.equal(live(page.pulseLayer), undefined);
-    assert.equal(live(page.number), undefined);
-    assert.ok(page.beatNumbers.every(digit => !live(digit)));
-    page.tick(400);
-    page.closeButton.listeners.click();
-    page.tick(300);
-    check();
-    page.motionPreference.matches = true;
-    page.motionPreference.onchange();
-    assert.equal(live(page.pulseLayer), undefined);
-    assert.equal(live(page.number), undefined);
-    assert.ok(page.beatNumbers.every(digit => !live(digit)));
-    page.motionPreference.matches = false;
-    page.motionPreference.onchange();
-    check();
-    page.click();
-    assert.equal(live(page.pulseLayer), undefined);
-    assert.equal(live(page.number), undefined);
-    assert.ok(page.beatNumbers.every(digit => !live(digit)));
+test('two-to-one voice onsets use the same exact interval as one-to-two, despite different recorded lead-ins', async () => {
+    const page = setup();
+    const clips = [0.06, 0, 0.025, 0].map((lead, i) => {
+        const sound = voiceBuffer(0.3 + lead, 140 + i * 35);
+        sound.getChannelData(0).fill(0, 0, Math.floor(lead * sound.sampleRate));
+        if (!lead) sound.getChannelData(0).fill(0.4, 0, 72);
+        return sound;
+    });
+    const original = clips.map(clip => clip.getChannelData(0).slice());
+    page.clock.setVoiceBuffers(clips); page.clock.setSound('my-voice');
+    page.clock.setBeats(2); page.clock.setTempo(58); await page.clock.start();
+    for (let t = 0.025; t < 30; t += 0.025) page.advance(t);
+    const onsets = page.oscillators.map(source => {
+        const samples = source.buffer.getChannelData(0);
+        let peak = 0; for (const v of samples) peak = Math.max(peak, Math.abs(v));
+        return source.startTime + samples.findIndex(v => Math.abs(v) >= Math.max(0.0001, peak * 0.005)) / source.buffer.sampleRate;
+    });
+    for (let i = 1; i < onsets.length; i++) assert.ok(Math.abs(onsets[i] - onsets[i - 1] - 60 / 58) < 1 / 24000 + 1e-9);
+    clips.forEach((clip, i) => assert.deepEqual(clip.getChannelData(0), original[i]));
+});
+
+test('account text fields retain native keyboard input without changing metronome playback or tempo', () => {
+    const page = setupPage();
+    for (const key of ['ArrowUp', 'ArrowDown', 'Enter', 'Escape']) {
+        page.documentListeners.keydown({ key, target: { closest: selector => selector.includes('textarea') },
+            preventDefault() { throw new Error('Text input was intercepted'); } });
+    }
+    assert.equal(page.number.textContent, '120');
+    assert.equal(page.attributes['aria-pressed'], undefined);
 });
 
 test('public counting and temporary effects share the beat clock without private-library interference', async () => {
@@ -1562,9 +1481,9 @@ test('rhythm changes keep the audible pattern until the new downbeat, including 
     assert.equal(clock.getBeatPosition().beat, 0);
     const voiced = page.oscillators.find(source => source.startTime === boundary && !source.disconnected);
     assert.equal(voiced.buffer.count, 1);
-    const visible = page.animations.filter(animation => !animation.canceled && page.beatNumbers.includes(animation.target) && countOpacity(animation) > 0);
+    const visible = visibleCounts(page);
     assert.equal(visible.length, 1);
-    assert.equal(visible[0].target.textContent, '1');
+    assert.equal(visible[0].textContent, '1');
 });
 
 test('a pending bar restart survives tempo and effect changes without replaying the previous count', async () => {

@@ -211,21 +211,6 @@ function ballTransform([x, y]) {
     return `translate3d(${(x / 44 - 0.5) * 100}%, ${(y / 44 - 0.5) * 100}%, 0)`;
 }
 
-const motionKeyframes = new Map();
-function conductorKeyframes(beats) {
-    if (!motionKeyframes.has(beats)) {
-        const motion = conductingMotion[beats];
-        // Bake the flow into one continuous compositor animation. Sampling
-        // in time retains the shared turn velocities without per-beat seeks.
-        const steps = 2048;
-        motionKeyframes.set(beats, Array.from({ length: steps + 1 }, (_, step) => ({
-            transform: ballTransform(pointAtDistance(motion, distanceAtTime(motion, step / steps * motion.beats))),
-            offset: step / steps,
-        })));
-    }
-    return motionKeyframes.get(beats);
-}
-
 export class ConductorView {
     constructor(stage, { pulseLayer, number }) {
         this.path = stage.querySelector('[data-conductor-path]');
@@ -233,10 +218,6 @@ export class ConductorView {
         this.beatNumbers = Array.from(stage.querySelectorAll('[data-conductor-count]'));
         this.pulseLayer = pulseLayer;
         this.number = number;
-        this.animation = null;
-        this.pulseAnimations = [];
-        this.pulseTiming = null;
-        this.duration = null;
         this.beats = 1;
         this.setBeats(1);
     }
@@ -265,101 +246,32 @@ export class ConductorView {
     }
 
     stop() {
-        if (this.animation) this.animation.cancel();
-        this.pulseAnimations.forEach(animation => animation.cancel());
-        this.animation = null;
-        this.pulseAnimations = [];
-        this.pulseTiming = null;
-        this.duration = null;
+        this.pulseLayer.style.opacity = '0';
+        this.number.style.transform = '';
+        this.number.style.opacity = '';
+        this.beatNumbers.forEach(number => { number.style.opacity = '0'; });
     }
 
-    syncPulses(duration, preparing) {
-        const interval = duration / this.beats;
-        // Suppress the tail of the imaginary previous bar during the opening
-        // drop. The first pulse starts exactly at the ball's first bottom hit.
-        const delay = preparing ? duration : 0;
-        const changed = !this.pulseTiming || this.pulseTiming.duration !== duration || this.pulseTiming.delay !== delay;
-        const numberFrames = [
-            { transform: 'scale(1.35)', opacity: 1, offset: 0, easing: 'ease-out' },
-            { transform: 'scale(1)', opacity: 0.88, offset: 180 / interval },
-            { transform: 'scale(1)', opacity: 0.88, offset: 1 },
-        ];
-        if (!this.pulseAnimations.length) {
-            const backgroundFrames = [
-                { opacity: 1, offset: 0, easing: 'ease-out' },
-                { opacity: 0, offset: 1 / this.beats },
-            ];
-            if (this.beats > 1) backgroundFrames.push({ opacity: 0, offset: 1 });
-            this.pulseAnimations = [
-                this.pulseLayer.animate(backgroundFrames, { duration, delay, iterations: Infinity }),
-                this.number.animate(numberFrames, { duration: interval, delay, iterations: Infinity }),
-                ...this.beatNumbers.slice(0, this.beats).map((number, beat) => {
-                    const start = beat / this.beats;
-                    const end = (beat + 1) / this.beats;
-                    // Each digit owns one beat of the bar, fading completely
-                    // before the next appears, on the conductor's timeline.
-                    const frames = start > 0 ? [{ opacity: 0, offset: 0 }, { opacity: 0, offset: start }] : [];
-                    frames.push({ opacity: 0.12, offset: start, easing: 'ease-out' }, { opacity: 0, offset: end });
-                    if (end < 1) frames.push({ opacity: 0, offset: 1 });
-                    return number.animate(frames, { duration, delay, iterations: Infinity });
-                }),
-            ];
-        } else if (changed) {
-            this.pulseAnimations[0].effect.updateTiming({ duration, delay });
-            this.pulseAnimations[1].effect.setKeyframes(numberFrames);
-            this.pulseAnimations[1].effect.updateTiming({ duration: interval, delay });
-            this.pulseAnimations.slice(2).forEach(animation => animation.effect.updateTiming({ duration, delay }));
-        }
-        this.pulseTiming = { duration, delay };
-
-        for (const animation of this.pulseAnimations) {
-            if (this.animation.startTime !== null) {
-                // All effects use the exact same document-timeline
-                // origin, including after tempo edits and drift corrections.
-                // No timer callback is needed to start a downbeat flash.
-                if (animation.startTime !== this.animation.startTime) animation.startTime = this.animation.startTime;
-            } else {
-                // Newly created animations resolve their pending start on the
-                // same frame; give them identical elapsed time in the meantime.
-                animation.currentTime = this.animation.currentTime;
-            }
-        }
-    }
-
-    sync(position, tempo, animate, force = false) {
-        if (!animate) {
-            this.stop();
+    sync(position, tempo, active, showCounts = true) {
+        // One audio position owns every visible part of this frame. There are
+        // no independently running animations to seek, rewind or drift apart.
+        if (showCounts) {
             if (position.preparing) this.prepare(position.progress);
             else this.render(position.beat, position.progress);
+        }
+        if (!active || position.preparing || position.waiting) {
+            this.stop();
             return;
         }
-
-        const duration = this.beats * 60000 / tempo;
-        const phase = position.preparing
-            ? 1 - conductorPreparationBeats(this.beats) / this.beats * (1 - position.progress)
-            : (position.beat + position.progress) / this.beats;
-        const elapsed = (phase % 1) * duration;
-        const retime = force || this.duration !== duration;
-        if (!this.animation) {
-            // One browser-managed transform animation continues through beats
-            // and bars, independently of JavaScript's 25ms audio scheduler.
-            this.animation = this.ball.animate(conductorKeyframes(this.beats), {
-                duration, iterations: Infinity, easing: 'linear',
-            });
-        } else if (this.duration !== duration) {
-            this.animation.effect.updateTiming({ duration });
-        }
-        this.duration = duration;
-
-        const current = (this.animation.currentTime || 0) % duration;
-        const difference = Math.abs(current - elapsed);
-        const drift = Math.min(difference, duration - difference);
-        // Ignore normal audio-block/frame rounding. Seeking on every click
-        // would put the scheduler's jitter back into the otherwise smooth motion.
-        // A resumed output device can settle tens of milliseconds later. Correct
-        // that offset within one scheduler tick instead of allowing the next
-        // digit to appear noticeably before its spoken count.
-        if (retime || drift > 25) this.animation.currentTime = elapsed;
-        this.syncPulses(duration, position.preparing);
+        const progress = position.progress;
+        // Smooth ease-out, evaluated from audio time rather than callback age.
+        const fade = (1 - progress) ** 3;
+        const pulse = (1 - Math.min(1, progress * 60000 / tempo / 180)) ** 3;
+        this.pulseLayer.style.opacity = String(position.beat === 0 ? fade : 0);
+        this.number.style.transform = `scale(${1 + 0.35 * pulse})`;
+        this.number.style.opacity = String(0.88 + 0.12 * pulse);
+        this.beatNumbers.forEach((number, beat) => {
+            number.style.opacity = String(showCounts && beat === position.beat ? 0.12 * fade : 0);
+        });
     }
 }

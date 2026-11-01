@@ -236,3 +236,21 @@ test('an effect change keeps the last complete sound until a replacement is read
     assert.equal(used.at(-1), null, 'an old recording must never stand in for a newly selected source');
     selection.dispose();
 });
+
+test('returning from page cache can regenerate the selected effect after disposal', async () => {
+    const used = [], jobs = [];
+    const selection = new VoiceEffectSelection({ useBuffers: buffers => used.push(buffers), process: () => {
+        const job = { cancel() {} }; job.promise = new Promise(resolve => { job.finish = resolve; }); jobs.push(job); return job;
+    } });
+    const source = [tone(), tone(), tone(), tone()];
+    selection.setSource(source);
+    const old = selection.select('ghost');
+    selection.dispose();
+    selection.setSource(source);
+    jobs[0].finish(['stale']); await old;
+    assert.equal(used.at(-1), null);
+    jobs[1].finish(['restored ghost']);
+    await selection.pending;
+    assert.equal(selection.effect, 'ghost');
+    assert.deepEqual(used.at(-1), ['restored ghost']);
+});

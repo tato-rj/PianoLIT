@@ -63,6 +63,7 @@ export class VoiceEffectSelection {
         this.job?.cancel();
         this.job = null;
         this.pending = this.buffers = null;
+        this.source = null;
     }
 }
 

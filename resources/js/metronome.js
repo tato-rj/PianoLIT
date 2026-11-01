@@ -48,9 +48,7 @@ let tempoSaveTimer = null;
 let gesture = null;
 let pointerId = null;
 let suppressClick = false;
-let pulse = null;
-let backgroundPulse = null;
-let backgroundPulseTempo = DEFAULT_TEMPO;
+let visualFrame = null;
 let edgePress = null;
 let edgeRepeatTimer = null;
 let settingsOpen = false;
@@ -82,31 +80,10 @@ const clock = new MetronomeClock({
         if (running) voiceRecorder?.stopPreview();
         surface.setAttribute('aria-pressed', String(running));
         updateLabel();
-        if (!running && pulse) pulse.cancel();
-        if (!running && backgroundPulse) backgroundPulse.cancel();
         syncConductor();
     },
-    onBeat: beat => {
-        if (settings.type === 'conductor') {
-            return;
-        }
-        if (reducedMotion.matches) return;
-        if (beat === 0) {
-            if (backgroundPulse) backgroundPulse.cancel();
-            backgroundPulseTempo = tempo;
-            backgroundPulse = pulseLayer.animate([
-                { opacity: 1 },
-                { opacity: 0 },
-            ], { duration: 60000 / tempo, easing: 'ease-out' });
-        }
-        if (pulse) pulse.cancel();
-        pulse = number.animate([
-            { transform: 'scale(1.35)', opacity: 1 },
-            { transform: 'scale(1)', opacity: 0.88 },
-        ], { duration: 180, easing: 'ease-out' });
-    },
-    onReady: () => syncConductor(true),
-    onTick: () => { if (settings.type === 'conductor') syncConductor(); },
+    onBeat: () => {},
+    onReady: () => syncConductor(),
     onError: () => {
         message.textContent = 'Sound couldn’t start. Tap to try again.';
         message.hidden = false;
@@ -124,15 +101,12 @@ function updateLabel() {
 function setTempo(value) {
     const previousTempo = tempo;
     tempo = Math.round(clampTempo(value));
+    if (tempo === previousTempo && number.textContent === String(tempo)) return;
     number.textContent = String(tempo);
     fontMenu?.render();
-    if (backgroundPulse && backgroundPulse.playState === 'running') {
-        // Keep the current fade in step with tempo changes during a swipe.
-        backgroundPulse.updatePlaybackRate(tempo / backgroundPulseTempo);
-    }
     clock.setTempo(tempo);
     if (tempo !== previousTempo) voiceRecorder?.stopPreview();
-    if (tempo !== previousTempo) syncConductor(true);
+    if (tempo !== previousTempo) syncConductor();
     updateLabel();
     if (tempo !== previousTempo) {
         clearTimeout(tempoSaveTimer);
@@ -157,20 +131,18 @@ function toggle() {
     else clock.start({ leadInBeats: settings.type === 'conductor' ? conductorPreparationBeats(settings.beats) : 0 });
 }
 
-function syncConductor(force = false) {
-    if (settings.type !== 'conductor') {
-        conductor.stop();
-        return;
-    }
+function syncConductor() {
+    if (visualFrame !== null) cancelAnimationFrame(visualFrame);
+    visualFrame = null;
     const position = clock.getBeatPosition();
-    // Rhythm belongs to the audible timeline, not the newly clicked radio.
     if (conductor.beats !== position.beatsPerBar) conductor.setBeats(position.beatsPerBar);
+    const active = clock.ready && !settingsOpen && !navigationOpen && !document.hidden && !reducedMotion.matches;
     if (reducedMotion.matches) position.progress = 0;
-    const animate = clock.ready && !position.waiting && !settingsOpen && !navigationOpen && !document.hidden && !reducedMotion.matches;
-    // After a scheduler stall, align to the next real click, not an imagined
-    // beat beyond the last sound that was actually scheduled.
-    if (animate && position.progress === 1 && !force) return;
-    conductor.sync(position, position.tempo, animate, force);
+    conductor.sync(position, position.tempo, active, settings.type === 'conductor');
+    if (active) visualFrame = requestAnimationFrame(() => {
+        visualFrame = null;
+        syncConductor();
+    });
 }
 
 function applySettings(value, persist = true) {
@@ -180,11 +152,6 @@ function applySettings(value, persist = true) {
     if (settings.sound.startsWith('spoken:') && settings.sound !== `spoken:${spokenId}`) settings.sound = 'click';
     if (previous.beats !== settings.beats || previous.sound !== settings.sound) voiceRecorder?.stopPreview();
     palette = colorPalette(settings.color);
-    if (previous.type !== settings.type) {
-        if (pulse) pulse.cancel();
-        if (backgroundPulse) backgroundPulse.cancel();
-    }
-    if (previous.color !== settings.color && backgroundPulse) backgroundPulse.cancel();
     document.documentElement.style.setProperty('--metronome-color', settings.color);
     document.documentElement.style.setProperty('--metronome-pulse', palette.pulse);
     document.documentElement.style.setProperty('--metronome-ink', palette.ink);
@@ -288,13 +255,7 @@ soundInput.addEventListener('change', () => {
     voiceRecorder?.remember(settings.sound);
 });
 pathInput.addEventListener('change', () => applySettings({ ...settings, showPath: pathInput.checked }));
-reducedMotion.addEventListener('change', () => {
-    if (reducedMotion.matches) {
-        if (pulse) pulse.cancel();
-        if (backgroundPulse) backgroundPulse.cancel();
-    }
-    syncConductor();
-});
+reducedMotion.addEventListener('change', () => syncConductor());
 
 surface.addEventListener('pointerdown', event => {
     if (settingsOpen || navigationOpen || !event.isPrimary || event.button !== 0 || pointerId !== null || edgePress) return;
@@ -378,6 +339,7 @@ edgeButtons.forEach(button => {
 
 document.addEventListener('keydown', event => {
     if (settingsOpen || navigationOpen || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.target?.closest('input, textarea, select, [contenteditable="true"], [role="textbox"]')) return;
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         event.preventDefault();
         setTempo(tempo + (event.key === 'ArrowUp' ? 1 : -1) * (event.shiftKey ? 10 : 1));
@@ -406,6 +368,9 @@ window.addEventListener('pagehide', () => {
     voiceRecorder?.cancel();
     stopEdgeRepeat();
     clock.releaseAudio();
+});
+window.addEventListener('pageshow', event => {
+    if (event.persisted) syncVoiceEffects();
 });
 const preferredSpoken = settings.sound.startsWith('spoken:') ? settings.sound.slice(7) : null;
 applySettings(settings, false);

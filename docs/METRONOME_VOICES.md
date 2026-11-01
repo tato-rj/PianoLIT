@@ -30,13 +30,17 @@ ending the previous sound before the next starts, including voice-to-instrument
 changes. While a new effect processes, playback keeps the last completed effect
 for that recording and switches when the result is ready. Selecting another
 recording clears the previous recording's effect immediately.
-The conductor also corrects output/compositor drift greater than 25ms after
-resume, while ignoring ordinary frame rounding and keeping its continuous motion.
+The conductor, count and pulses render from one speaker-adjusted audio position
+on each display frame. A monotonic output-clock filter absorbs timestamp jitter;
+there are no independent compositor timelines or 25ms seek corrections. Playback
+copies trim or pad unequal quiet word prefixes to the same 3ms attack lead before
+tempo fitting, including the two-to-one transition. Source recordings stay untouched.
 
 Arthur's October 29 follow-up supersedes the initial request to save six generated
 voice libraries: effects are generated on demand, only in browser memory. They
 are never saved to an account, localStorage, IndexedDB, audio files or the server.
-Normal plays the original recording unchanged. Private recording previews and
+Normal retains the original voice, pitch and speed except when tempo fitting is needed;
+count playback uses the onset alignment above. Private recording previews and
 saved WAVs remain original. No speech synthesis, AI API, third-party voice samples,
 backend processing, subscriptions or paid services are involved.
 
@@ -111,10 +115,13 @@ To replace the voice, replace the four source files and rerun the same command.
   samples are listed or loaded by it.
 - `clock.js`: private and public source slots stay separate; both use decoded
   AudioBuffers scheduled against AudioContext time. Changing effects preserves the
-  beat timeline, while restarting begins at One. No regular HTML audio or timer-
-  only spoken-beat timing is used. Short gain ramps prevent overlapping clip edges.
+  beat timeline, while restarting begins at One. `voice-onset.js` aligns attacks
+  once per source, and `output-clock.js` stabilizes the visual output estimate.
+  No regular HTML audio or timer-only spoken-beat timing is used. Short gain ramps prevent overlapping clip edges.
 - `settings-pages.js`: one Bootstrap bottom sheet, focused Rhythm/Sound/Appearance
   pages and a nested Voice effect picker, with parent navigation and focus return.
+  Returning from the browser page cache restores the selected temporary effect
+  and can regenerate a canceled job; refreshing still starts at Normal.
   Shared selection buttons, navigation rows and bottom-sheet header are represented
   in the Design System. All microphone/session/ownership protections remain.
 

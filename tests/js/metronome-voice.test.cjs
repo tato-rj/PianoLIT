@@ -294,7 +294,7 @@ test('recording closes old playback before capture and waits for the microphone 
     page.scope.setInterval = () => 1;
     page.scope.clearInterval = () => {};
     page.scope.navigator.audioSession = { type: 'auto' };
-    vm.runInContext(['gesture', 'settings', 'voice-stretch', 'clock'].map(read).join('\n') + '\nglobalThis.MetronomeClock = MetronomeClock;', page.scope);
+    vm.runInContext(['gesture', 'settings', 'voice-stretch', 'voice-onset', 'output-clock', 'clock'].map(read).join('\n') + '\nglobalThis.MetronomeClock = MetronomeClock;', page.scope);
     const clock = new page.scope.MetronomeClock({ onStateChange() {}, onBeat() {}, onError(error) { throw error; },
         createContext() {
             assert.equal(microphoneOpen, false, 'Never reopen playback while microphone shutdown is pending');

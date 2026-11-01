@@ -1,6 +1,8 @@
 import { clampTempo, DEFAULT_TEMPO } from './gesture';
 import { SOUND_PROFILES } from './settings';
 import { compressVoice } from './voice-stretch';
+import { OutputClock } from './output-clock';
+import { alignVoiceOnset } from './voice-onset';
 
 export class MetronomeClock {
     constructor({ createContext, onStateChange, onBeat, onError, onReady = () => {}, onTick = () => {} }) {
@@ -15,6 +17,7 @@ export class MetronomeClock {
         this.ready = false;
         this.generation = 0;
         this.audioRequest = 0;
+        this.outputClock = new OutputClock();
         this.context = null;
         this.audioSession = null;
         this.timer = null;
@@ -53,6 +56,7 @@ export class MetronomeClock {
             if (this.context.state !== 'running') throw new Error('Audio is unavailable.');
 
             this.prepareVoices();
+            this.outputClock.reset();
             this.ready = true;
             this.beatSpan = leadInBeats || 1;
             this.beatAnchor = leadInBeats ? this.context.currentTime : null;
@@ -257,18 +261,7 @@ export class MetronomeClock {
     }
 
     outputTime() {
-        const context = this.context;
-        // currentTime is the rendering head, ahead of the sound at the speaker.
-        // Map the device's timestamp to now, including after a route change.
-        try {
-            const stamp = context.getOutputTimestamp?.();
-            if (stamp && stamp.performanceTime > 0 && Number.isFinite(stamp.contextTime) && stamp.contextTime >= 0) {
-                const age = (performance.now() - stamp.performanceTime) / 1000;
-                if (age >= 0 && age < 1) return Math.min(context.currentTime, stamp.contextTime + age);
-            }
-        } catch (error) { /* Older browsers may not expose an output timestamp. */ }
-        const latency = context.outputLatency ?? context.baseLatency ?? 0;
-        return context.currentTime - (Number.isFinite(latency) && latency > 0 ? latency : 0);
+        return this.outputClock.read(this.context);
     }
 
     presentationAt(now) {
@@ -377,8 +370,13 @@ export class MetronomeClock {
         // Prepare once before starting/rescheduling, never inside the beat
         // scheduler. Keep only this tempo's four clips to bound memory usage.
         const duration = 60 / this.tempo * 0.94;
+        if (this.alignedVoiceSource !== buffers) {
+            this.alignedVoiceSource = buffers;
+            this.alignedVoices = buffers.map(buffer => alignVoiceOnset(buffer,
+                (channels, length, rate) => this.context.createBuffer(channels, length, rate)));
+        }
         this.preparedVoiceSource = buffers;
-        this.preparedVoices = buffers.map(buffer => compressVoice(buffer, duration,
+        this.preparedVoices = this.alignedVoices.map(buffer => compressVoice(buffer, duration,
             (channels, length, rate) => this.context.createBuffer(channels, length, rate)));
         this.preparedVoiceTempo = this.tempo;
     }
