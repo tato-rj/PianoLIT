@@ -70,7 +70,8 @@
             by one, or the right edge to increase it by one. Hold either edge to keep
             adjusting. Swipe up in the center to increase the tempo,
             or down to decrease it. Swipe slowly for fine adjustments, quickly for
-            bigger changes. Tempo ranges from 20 to 300 beats per minute.
+            bigger changes. Swipe left or right in the center to stop playback;
+            a horizontal swipe never starts it. Tempo ranges from 20 to 300 beats per minute.
             You can also use Space or Enter to start or stop, and the up and down
             arrow keys to adjust the tempo.
         </p>

@@ -25,6 +25,7 @@ export class VoiceRecorder {
         this.draft = [];
         this.revision = null;
         this.ready = false;
+        this.loadError = null;
         this.saving = false;
         this.storageKey = `metronome.voice.${root.dataset.owner}.v1`;
         this.selectedKey = `metronome.voice.${root.dataset.owner}.selected.v1`;
@@ -145,6 +146,7 @@ export class VoiceRecorder {
         this.loadingVoice = false;
         const selection = this.selection;
         this.ready = false;
+        this.loadError = null;
         this.controls();
         this.ui('reload').hidden = true;
         this.ui('signin').hidden = true;
@@ -152,6 +154,10 @@ export class VoiceRecorder {
         try {
             const data = await this.request();
             if (version !== this.loadVersion) return;
+            if (!Array.isArray(data?.recordings) || !Number.isInteger(data.limit) || data.limit < 1
+                || data.recordings.some(voice => !voice || !['id', 'name', 'revision'].every(key => typeof voice[key] === 'string'))) {
+                throw new Error('Invalid voice library.');
+            }
             this.library = data.recordings;
             this.limit = data.limit;
             this.ready = true;
@@ -161,7 +167,8 @@ export class VoiceRecorder {
             else { this.clearVoice(); this.summary(); }
         } catch (error) {
             if (version !== this.loadVersion) return;
-            this.ui('status').textContent = [401, 419].includes(error.status) ? error.message : 'Your voices couldn’t load. Try again.';
+            this.loadError = [401, 419].includes(error.status) ? error.message : 'Your voices couldn’t load. Try again.';
+            this.ui('status').textContent = this.loadError;
             this.ui('reload').hidden = false;
             this.invalidateSession(error);
         }
@@ -170,9 +177,11 @@ export class VoiceRecorder {
     summary() {
         this.soundOptions();
         this.controls();
-        this.ui('status').textContent = this.library.length >= this.limit ? 'You have 20 saved voices. Delete one to make room.'
+        this.ui('status').textContent = this.loadError || (!this.ready ? 'Loading your voices…'
+            : this.loadingVoice ? 'Loading recording…'
+            : this.library.length >= this.limit ? 'You have 20 saved voices. Delete one to make room.'
             : this.supported ? '' : window.isSecureContext
-            ? 'This browser can’t record audio. Try another browser.' : 'Open this page over HTTPS to record.';
+            ? 'This browser can’t record audio. Try another browser.' : 'Open this page over HTTPS to record.');
     }
 
     current() { return this.library.find(voice => voice.id === this.activeId); }
@@ -203,6 +212,16 @@ export class VoiceRecorder {
     }
 
     clearVoice() {
+        this.voiceVersion++;
+        this.loadingVoice = false;
+        this.loadError = null;
+        this.preferredId = null;
+        this.preferred = false;
+        this.ui('reload').hidden = true;
+        try {
+            localStorage.removeItem(this.selectedKey);
+            localStorage.setItem(this.storageKey, '0');
+        } catch (error) { /* Optional preference. */ }
         this.activeId = this.revision = null;
         this.saved = this.buffers = [];
         this.clock.setVoiceBuffers(null);
@@ -217,6 +236,8 @@ export class VoiceRecorder {
         if (activate) this.clock.stop();
         this.activeId = id;
         this.loadingVoice = true;
+        this.loadError = null;
+        this.ui('reload').hidden = true;
         this.buffers = this.saved = [];
         this.clock.setVoiceBuffers(null);
         this.ui('rename-panel').hidden = true;
@@ -224,6 +245,7 @@ export class VoiceRecorder {
         this.ui('status').textContent = 'Loading recording…';
         try {
             const data = await this.request('GET', null, id);
+            if (version !== this.voiceVersion) return;
             const buffers = await Promise.all(data.clips.map(clip => this.decodeVoice(voiceBytes(clip))));
             if (version !== this.voiceVersion) return;
             this.library = this.library.map(voice => voice.id === id ? { id, name: data.name, revision: data.revision } : voice);
@@ -241,10 +263,12 @@ export class VoiceRecorder {
         } catch (error) {
             if (version !== this.voiceVersion) return;
             if (this.sound === 'my-voice') this.useSound('click');
+            if (!error.status) error = new Error('This recording couldn’t play. Retry or delete it.');
+            this.loadError = error.message;
             this.failure(error);
             this.ui('reload').hidden = false;
         } finally {
-            if (version === this.voiceVersion) { this.loadingVoice = false; this.controls(); }
+            if (version === this.voiceVersion) { this.loadingVoice = false; this.summary(); }
         }
     }
 
@@ -265,6 +289,7 @@ export class VoiceRecorder {
 
     async record({ resume = false, redo = null } = {}) {
         if (!this.ready || !this.supported || this.saving || this.loadingVoice || this.library.length >= this.limit) return;
+        this.loadError = null;
         const flow = ++this.flow;
         this.stopPreview();
         this.clock.stop();
@@ -528,6 +553,12 @@ export class VoiceRecorder {
         const flow = this.flow;
         const { id, revision } = target;
         const active = id === this.activeId;
+        // Deleting owns the selected recording now. An older download/decode
+        // must not put its audio or selection back after this request succeeds.
+        if (active) {
+            this.voiceVersion++;
+            this.loadingVoice = false;
+        }
         this.saving = true;
         this.controls();
         this.stopPreview();
@@ -557,6 +588,7 @@ export class VoiceRecorder {
 
     invalidateSession(error) {
         if (![401, 419].includes(error.status)) return;
+        this.loadError = error.message;
         this.flow++;
         this.voiceVersion++;
         this.loadVersion++;

@@ -1,13 +1,13 @@
 import Dropdown from 'bootstrap/js/dist/dropdown';
 
 export class SoundMenu {
-    constructor({ root, input, onSelect, onPlay, onEdit, onDelete, onRecord, onClose }) {
-        Object.assign(this, { root, input, onSelect, onPlay, onEdit, onDelete, onRecord, onClose });
+    constructor({ root, input, onSelect, onPlay, onEdit, onDelete, onClose }) {
+        Object.assign(this, { root, input, onSelect, onPlay, onEdit, onDelete, onClose });
         this.trigger = root.querySelector('[data-sound-toggle]');
         this.label = root.querySelector('[data-sound-label]');
         this.list = root.querySelector('[data-sound-voices]');
         this.template = root.querySelector('[data-sound-template]');
-        this.empty = root.querySelector('[data-sound-empty]');
+        this.voicesLabel = root.querySelector('[data-sound-voices-label]');
         this.rows = new Map();
         this.list?.querySelectorAll('[data-sound-row]').forEach(row => this.rows.set(row.dataset.voiceId, row));
         this.dropdown = new Dropdown(this.trigger, { autoClose: 'outside' });
@@ -27,7 +27,6 @@ export class SoundMenu {
         root.addEventListener('click', event => {
             const button = event.target.closest('button');
             if (!button || button.disabled) return;
-            if (button.matches('[data-sound-empty]')) { this.close(); this.onRecord(); return; }
             if (button.dataset.soundValue) { this.close(); this.onSelect(button.dataset.soundValue); this.trigger.focus(); return; }
             const id = button.closest('[data-sound-row]')?.dataset.voiceId;
             if (!id) return;
@@ -79,8 +78,8 @@ export class SoundMenu {
                 row.querySelector('[data-sound-edit]').setAttribute('aria-label', `Rename ${option.text}`);
                 row.querySelector('[data-sound-delete]').setAttribute('aria-label', `Delete ${option.text}`);
             });
-            this.empty.hidden = !!voices.length || !recorder?.ready;
-            this.empty.disabled = !recorder?.ready || !recorder?.supported || !!recorder?.saving;
+            this.list.hidden = !voices.length;
+            if (this.voicesLabel) this.voicesLabel.hidden = !voices.length;
         }
         this.root.querySelectorAll('[data-sound-value]').forEach(button => {
             const selected = button.dataset.soundValue === this.input.value;

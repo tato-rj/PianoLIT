@@ -7,8 +7,8 @@ Added October 22, 2026 at `metronome.pianolit.com` (local: `metronome.pianolit.t
 The original source was copied from `/Users/arthur/Desktop/Websites/ArthurVillar/resources/js/music/metronome.js` and its `metronome/` modules. The gestures and conductor geometry retain their original behavior; the audio clock also supports private counting recordings. The October 31 renderer samples one audio-derived position per display frame instead of seeking independent Web Animations. The hand SVG comes from that project's `resources/artwork/metronome/conductor-hand.svg`. The original JavaScript regression tests were copied with the source and adapted for PianoLIT's selectors/default blue.
 
 - 20–300 BPM; tap the center or press Space/Enter to start/stop.
-- Tap/hold either edge for one-BPM changes; vertical swipes retain the original speed-sensitive adjustment. Arrow keys adjust tempo; Escape stops playback.
-- One to four beats; Click, Woodblock, Beep and Cowbell sounds. Signed-in accounts select named recordings in the same Sound dropdown, under Recorded voices. The generic My voice entry appears only without saved recordings and opens the recorder.
+- Tap/hold either edge for one-BPM changes; vertical swipes retain the original speed-sensitive adjustment. Swiping left/right in the center stops playback only, including a pending audio start, without changing tempo. Each swipe locks to its initial dominant direction after the existing 6px movement threshold; a release click cannot restart playback. Among pointer gestures, only a tap starts playback. Arrow keys adjust tempo; Escape stops playback.
+- One to four beats; Click, Woodblock, Beep and Cowbell sounds. Signed-in accounts select named recordings in the same Sound dropdown, under Recorded voices. Only actual saved recordings appear under Recorded voices; an empty library has no voice row or heading. New recording remains directly below the sound control.
 - Classic pulse and Conductor modes, with Dot/Hand indicators and an optional path.
 - Tempo numerals pulse to 135% size in both modes. Conductor mode also counts the selected 1–4 beats in large, bold background numerals at 12% peak opacity, fading completely over each beat. Counts, marker, background and numeral pulse share one audio-derived position, including tempo edits, the silent opening drop and resumed playback; stopping, hidden pages, settings and reduced motion cancel the animated count.
 - Number font: Nunito (rounded default), Outfit (geometric sans serif), Playfair Display (classic serif), Pattaya (handwritten) and Sail (stylized). The custom dropdown shows each name, style and current BPM preview; selection applies immediately in both modes and persists in host-local settings. Older or invalid preferences fall back to Nunito. Only the digits and selected weights load from Google Fonts; settings keep the standard PianoLIT typography.
@@ -58,12 +58,19 @@ group beneath the four instruments; there is no second recording selector.
 Each voice row has play/stop, edit-name and delete icon buttons. Previewing,
 renaming or deleting another row preserves the selected sound. Deletion asks for confirmation with the browser’s native confirm dialog, naming
 the target recording. Cancel sends no delete request. A full-width `.btn-sm` New recording button stays visible
-directly below the Sound control, outside the menu. The generic My voice option
-appears only when the library is empty and starts recording. Names use shared `@input` fields, allow up to 60
+directly below the Sound control, outside the menu. There is no generic My voice row or empty Recorded voices heading. Only saved
+recordings appear in that group; New recording is the sole creation action. The
+hidden native select keeps its internal `my-voice` compatibility value. Names use shared `@input` fields, allow up to 60
 characters, and each account can keep up to 20 recordings. Cancel preserves all
 saved recordings. There is no inline deletion message or custom delete modal. Closing settings or
 hiding/leaving the page stops the microphone and preview; a late permission grant
 is immediately released.
+
+Loading and session failures remain visible through settings navigation, with
+retry/sign-in available. An undecodable recording retains its metadata and delete
+action. Deleting the selected voice invalidates pending downloads/decodes and
+clears its browser preference; a late response cannot restore the deleted audio.
+Original saved audio is never rewritten as part of this recovery.
 
 Each number starts with a yellow Wait cue and a three-step, 1.5-second countdown.
 It turns green and pulses with Speak now only when capture starts. A successful

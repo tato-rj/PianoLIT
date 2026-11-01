@@ -261,7 +261,7 @@ function recorderHarness({ saved = false, preferred = false, confirmDeletion = t
         Option: function (text, value) { return element({ text, value }); },
         document: { createElement: tag => element({ tagName: tag.toUpperCase() }) },
         voiceBase64: context.api.voiceBase64, voiceBytes: context.api.voiceBytes, VOICE_RATE: 24000,
-        localStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) },
+        localStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value), removeItem: key => storage.delete(key) },
         window: { AudioContext: function () { return audioContext; }, MediaRecorder: {}, isSecureContext: true,
             OfflineAudioContext: function () { return { decodeAudioData: audioContext.decodeAudioData }; },
             confirm(message) { confirmations.push(message); return confirmDeletion; } },
@@ -573,7 +573,81 @@ test('deleting the last recording restores an instrument and leaves recording av
     assert.equal(page.option.parentNode, page.soundInput);
     assert.equal(page.soundInput.value, 'click');
     assert.equal(page.node('start').disabled, false);
+    assert.equal(page.storage.has('metronome.voice.10.selected.v1'), false);
+    assert.equal(page.storage.get('metronome.voice.10.v1'), '0');
 });
+
+test('library failures remain visible through settings navigation and can be retried', async () => {
+    const page = recorderHarness();
+    page.resolve(page.requests[0], {}, 503); await settle();
+    page.recorder.cancel(); // SettingsPages calls this when navigating to Sound.
+    assert.equal(page.recorder.ready, false);
+    assert.match(page.node('status').textContent, /couldn’t load/);
+    assert.equal(page.node('reload').hidden, false);
+    assert.equal(page.node('start').disabled, true);
+    const retry = page.recorder.load();
+    page.resolve(page.requests[1], { recordings: [], limit: 20 }); await retry;
+    assert.equal(page.node('status').textContent, '');
+    assert.equal(page.node('reload').hidden, true);
+    assert.equal(page.node('start').disabled, false);
+});
+
+test('unexpected successful library responses cannot corrupt the menu or disable retry', async () => {
+    for (const response of [null, { clips: [] }, { recordings: [null], limit: 20 }]) {
+        const page = recorderHarness();
+        page.resolve(page.requests[0], response); await settle();
+        page.recorder.cancel();
+        assert.equal(page.recorder.ready, false);
+        assert.equal(page.recorder.library.length, 0);
+        assert.match(page.node('status').textContent, /couldn’t load/);
+        assert.equal(page.node('reload').hidden, false);
+        const retry = page.recorder.load();
+        page.resolve(page.requests[1], page.data()); await retry;
+        assert.equal(page.node('start').disabled, false);
+    }
+});
+
+test('undecodable audio leaves the real recording deletable using its metadata revision', async () => {
+    const page = recorderHarness({ saved: true });
+    page.audioContext.decodeAudioData = async () => { throw new Error('Decode failed'); };
+    await load(page);
+    page.recorder.cancel();
+    assert.equal(page.recorder.ready, true);
+    assert.equal(page.recorder.loadingVoice, false);
+    assert.match(page.node('status').textContent, /couldn’t play/);
+    assert.equal(page.node('reload').hidden, false);
+    const deleting = page.recorder.confirmDelete('first');
+    assert.equal(page.requests[2].options.method, 'DELETE');
+    assert.deepEqual(JSON.parse(page.requests[2].options.body), { revision: 'old' });
+    page.resolve(page.requests[2], { deleted: 'first' }); await deleting;
+    assert.equal(page.recorder.library.length, 0);
+    assert.equal(page.clock.buffers, null);
+    assert.equal(page.node('status').textContent, '');
+    assert.equal(page.node('reload').hidden, true);
+    assert.equal(page.node('start').disabled, false);
+});
+
+for (const pending of ['download', 'decode']) {
+    test(`deleting a voice invalidates its pending ${pending} and cannot resurrect it`, async () => {
+        const page = recorderHarness({ saved: true, preferred: true });
+        const decodes = [];
+        if (pending === 'decode') page.audioContext.decodeAudioData = () => new Promise(resolve => decodes.push(resolve));
+        page.resolve(page.requests[0], page.data()); await settle();
+        if (pending === 'decode') { page.resolve(page.requests[1], page.detail()); await settle(); }
+        const deleting = page.recorder.confirmDelete('first');
+        page.resolve(page.requests[2], { deleted: 'first' }); await deleting;
+        if (pending === 'download') page.resolve(page.requests[1], page.detail());
+        else decodes.forEach(resolve => resolve({ duration: 0.2 }));
+        await settle();
+        assert.equal(page.recorder.library.length, 0);
+        assert.equal(page.recorder.activeId, null);
+        assert.equal(page.clock.buffers, null);
+        assert.equal(page.soundInput.value, 'click');
+        assert.equal(page.recorder.loadingVoice, false);
+        assert.equal(page.node('start').disabled, false);
+        assert.equal(page.storage.has('metronome.voice.10.selected.v1'), false);
+    });
+}
 
 test('closing during a rename cannot show a late success or change the playing voice', async () => {
     const page = recorderHarness({ saved: true });

@@ -23,13 +23,12 @@
                 @endforeach
             </div>
             @if($soundCanRecord)
-                <div class="dropdown-header mt-2" id="{{ $soundId }}-voices-label">Recorded voices</div>
-                <div role="group" aria-labelledby="{{ $soundId }}-voices-label" data-sound-voices>
+                <div class="dropdown-header mt-2" id="{{ $soundId }}-voices-label" data-sound-voices-label @unless(count($soundRecordings)) hidden @endunless>Recorded voices</div>
+                <div role="group" aria-labelledby="{{ $soundId }}-voices-label" data-sound-voices @unless(count($soundRecordings)) hidden @endunless>
                     @foreach($soundRecordings as $soundRecording)
                         @include('metronome.components.sound-voice', ['recording' => $soundRecording, 'selected' => ($value ?? 'click') === 'voice:'.$soundRecording['id']])
                     @endforeach
                 </div>
-                <button type="button" class="dropdown-item" data-sound-empty @if(count($soundRecordings)) hidden @endif>My voice</button>
                 <template data-sound-template>@include('metronome.components.sound-voice', ['recording' => ['id' => '', 'name' => '']])</template>
             @endif
         </div>

@@ -14,11 +14,17 @@ export class TempoGesture {
         this.lastY = y;
         this.lastTime = time;
         this.moved = false;
+        this.axis = null;
     }
 
     move(x, y, time) {
-        if (Math.hypot(x - this.startX, y - this.startY) >= 6) this.moved = true;
-        if (!this.moved) return Math.round(this.tempo);
+        if (!this.moved && Math.hypot(x - this.startX, y - this.startY) >= 6) {
+            this.moved = true;
+            // Keep one intent for the whole swipe; small sideways drift during
+            // tempo adjustment must not stop playback, or vice versa.
+            this.axis = Math.abs(x - this.startX) > Math.abs(y - this.startY) ? 'horizontal' : 'vertical';
+        }
+        if (!this.moved || this.axis === 'horizontal') return Math.round(this.tempo);
 
         const distance = this.lastY - y;
         const elapsed = Math.max(1, time - this.lastTime);

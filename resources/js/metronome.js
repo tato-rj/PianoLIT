@@ -267,7 +267,10 @@ surface.addEventListener('pointerdown', event => {
 
 function movePointer(event) {
     if (event.pointerId !== pointerId || !gesture) return;
-    setTempo(gesture.move(event.clientX, event.clientY, event.timeStamp));
+    const nextTempo = gesture.move(event.clientX, event.clientY, event.timeStamp);
+    if (gesture.axis === 'horizontal') {
+        if (clock.running) clock.stop();
+    } else setTempo(nextTempo);
     suppressClick = gesture.moved;
     surface.classList.toggle('is-dragging', gesture.moved);
 }
@@ -411,7 +414,6 @@ if (soundMenuRoot) {
         onPlay: id => voiceRecorder?.previewRecording(id),
         onEdit: id => voiceRecorder?.edit(id),
         onDelete: id => voiceRecorder?.confirmDelete(id),
-        onRecord: () => voiceRecorder?.record(),
         onClose: () => voiceRecorder?.stopPreview() });
     soundMenu.render();
 }
@@ -433,7 +435,7 @@ if (settingsPanel.querySelector('[data-settings-page]')) {
         voiceRecorder?.cancel();
     });
     settingsPanel.addEventListener('click', event => {
-        if (event.target.closest('[data-voice-start], [data-sound-empty]')) {
+        if (event.target.closest('[data-voice-start]')) {
             spokenCounting?.cancel();
             restoreSpoken = null;
         }

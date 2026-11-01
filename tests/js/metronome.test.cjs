@@ -153,6 +153,17 @@ test('tap jitter keeps the tempo unchanged and bounds can be reversed immediatel
     assert.ok(swipe.move(0, 990, 80) > 20);
 });
 
+test('swipes keep their initial direction so sideways drift cannot change the action', () => {
+    const { TempoGesture } = setup().context.api;
+    const horizontal = new TempoGesture(120, 100, 100, 0);
+    assert.equal(horizontal.move(140, 104, 100), 120);
+    assert.equal(horizontal.move(140, 180, 200), 120);
+    const vertical = new TempoGesture(120, 100, 100, 0);
+    assert.ok(vertical.move(102, 80, 100) > 120);
+    assert.ok(vertical.move(180, 60, 200) > 120);
+    assert.equal(vertical.axis, 'vertical');
+});
+
 test('clicks follow the audio clock at 120 BPM and stop cancels queued sound', async () => {
     const page = setup();
     await page.clock.start();
@@ -629,6 +640,44 @@ test('canceled gestures do not toggle playback; keyboard remains usable', () => 
     assert.equal(page.attributes['aria-pressed'], 'true');
     key('Escape');
     assert.equal(page.attributes['aria-pressed'], 'false');
+});
+
+for (const direction of [-1, 1]) {
+    test(`a ${direction < 0 ? 'left' : 'right'} swipe stops playback, never starts it or changes tempo`, async () => {
+        for (const playing of [false, true]) {
+            const page = setupPage();
+            if (playing) { page.click(); await new Promise(setImmediate); }
+            page.pointer('pointerdown', 150, 200, 0);
+            page.pointer('pointermove', 150 + direction * 60, 204, 100);
+            assert.equal(vm.runInContext('clock.running', page.context), false);
+            page.pointer('pointerup', 150 + direction * 100, 220, 150);
+            page.click(); // Browser click following pointerup must not restart.
+            assert.equal(vm.runInContext('clock.running', page.context), false);
+            assert.equal(page.number.textContent, '120');
+            assert.equal(page.timers.size, 0);
+            assert.equal(page.frames.size, 0);
+            assert.ok(page.oscillators.every(source => source.stopTime <= page.audio.currentTime));
+            page.pointer('pointerdown', 150, 200, 200);
+            page.pointer('pointerup', 152, 201, 250);
+            page.click(); await new Promise(setImmediate);
+            assert.equal(vm.runInContext('clock.running', page.context), true, 'A subsequent tap can start normally');
+        }
+    });
+}
+
+test('a horizontal swipe also cancels a start waiting for audio to unlock', async () => {
+    const page = setupPage();
+    let finishResume;
+    page.audio.resume = () => new Promise(resolve => { finishResume = () => { page.audio.state = 'running'; resolve(); }; });
+    page.click();
+    page.pointer('pointerdown', 100, 200, 0);
+    page.pointer('pointerup', 180, 200, 100); // Works even without a move event.
+    page.click();
+    finishResume(); await new Promise(setImmediate);
+    assert.equal(vm.runInContext('clock.running', page.context), false);
+    assert.equal(page.oscillators.length, 0);
+    assert.equal(page.timers.size, 0);
+    assert.equal(page.audio.state, 'suspended');
 });
 
 test('edge taps step once without toggling playback or repeating after release', async () => {

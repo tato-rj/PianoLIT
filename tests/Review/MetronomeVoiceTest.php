@@ -234,6 +234,14 @@ class MetronomeVoiceTest extends ReviewTestCase
         $this->assertSame(0, $xpath->query('//*[@data-sound-popup]//*[@data-voice-start]')->length);
         $this->assertSame(1, $xpath->query('//*[@data-sound-popup]/following-sibling::*//button[@data-voice-start]')->length);
         $empty = view('metronome.components.sound-menu', ['canRecord' => true])->render();
+        $emptyDom = new \DOMDocument;
+        @$emptyDom->loadHTML($empty);
+        $emptyXPath = new \DOMXPath($emptyDom);
+        $this->assertSame(0, $emptyXPath->query('//*[@data-sound-empty] | //*[@data-sound-voices]/*[@data-sound-row]')->length);
+        $this->assertSame(1, $emptyXPath->query('//*[@data-sound-voices-label and @hidden]')->length);
+        $this->assertSame(1, $emptyXPath->query('//*[@data-sound-voices and @hidden]')->length);
+        $this->assertSame(1, $emptyXPath->query('//button[@data-voice-start]')->length);
+        // Preserve the hidden select's legacy/internal value, never a fake row.
         $this->assertStringContainsString('value="my-voice"', $empty);
         $this->assertStringNotContainsString('<optgroup', $empty);
         $guest = view('metronome.components.sound-menu', ['canRecord' => false])->render();
