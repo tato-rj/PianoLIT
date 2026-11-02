@@ -54,5 +54,47 @@ module.exports = function () {
     }
     assert.strictEqual(paint.call({}, {width: 600, height: 800, data: new Uint8Array(1)}), false,
         'Ordinary score images retain the original rendering path');
-    console.log('Passed: bounded score image tiles, 1-bit padding, RGB/RGBA channels, placement, immutable source and failure cleanup.');
+
+    // Petite Berceuse (1032) uses a 10,719 x 14,605 stencil mask. It must
+    // be tiled before allocating maskCanvas, not only in the inline painter.
+    const maskStart = source.indexOf('      // PianoLIT: monochrome scans');
+    const maskEnd = source.indexOf("\n      var maskCanvas = this.cachedCanvases.getCanvas('maskCanvas', width, height);", maskStart);
+    assert(maskStart > 0 && maskEnd > maskStart, 'Large stencil masks need their own bounded path');
+    const paintMask = vm.runInNewContext('(function(img, isPatternFill) { var width = img.width, height = img.height, ctx = this.ctx; ' +
+        source.slice(maskStart, maskEnd) + '\nreturn false; })');
+    const width = 10719, height = 14605, stride = Math.ceil(width / 8);
+    const data = Uint8Array.from({length: stride * height}, (_, i) => (i * 37 + Math.floor(i / stride)) % 256);
+    const before = Buffer.from(data), transforms = [], tiles = [];
+    let depth = 0;
+    const maskRenderer = {
+        save() { depth++; }, restore() { depth--; },
+        ctx: {translate(x, y) { transforms.push([x, y]); }, scale(x, y) { transforms.push([x, y]); }},
+        paintImageMaskXObject(tile) { tiles.push(tile); assert.strictEqual(depth, 1); }
+    };
+    paintMask.call(maskRenderer, {width, height, data}, false);
+    assert.strictEqual(tiles.length, 48);
+    assert.strictEqual(depth, 0);
+    assert(before.equals(Buffer.from(data)), 'Tiling cannot alter cached mask polarity or source bytes');
+    tiles.forEach((tile, index) => {
+        const x = index % 6 * 2048, y = Math.floor(index / 6) * 2048;
+        assert.strictEqual(tile.width, Math.min(2048, width - x));
+        assert.strictEqual(tile.height, Math.min(2048, height - y));
+        assert(tile.width * tile.height <= 4194304, 'Stencil canvases stay bounded before coloring/downscaling');
+        assert.deepStrictEqual(transforms[index * 2], [x / width, (height - y - tile.height) / height]);
+        assert.deepStrictEqual(transforms[index * 2 + 1], [tile.width / width, tile.height / height]);
+        const tileStride = Math.ceil(tile.width / 8);
+        for (let row = 0; row < tile.height; row++) {
+            const offset = (y + row) * stride + x / 8;
+            assert(Buffer.from(tile.data.subarray(row * tileStride, (row + 1) * tileStride)).equals(before.subarray(offset, offset + tileStride)),
+                'Stencil tiles preserve odd-width packed rows, alpha polarity and top-to-bottom order');
+        }
+    });
+    maskRenderer.paintImageMaskXObject = () => { throw new Error('Mask rendering failed'); };
+    assert.throws(() => paintMask.call(maskRenderer, {width, height, data}, false), /Mask rendering failed/);
+    assert.strictEqual(depth, 0, 'A failed stencil tile restores the PDF graphics state');
+    assert.strictEqual(paintMask.call({}, {width: 600, height: 800, data}, false), false,
+        'Ordinary masks retain the original renderer');
+    assert.strictEqual(paintMask.call({}, {width, height, data}, true), false,
+        'Pattern masks retain their original pattern coordinate space');
+    console.log('Passed: bounded score images/stencil masks, packed padding, RGB/RGBA channels, placement, immutable source and failure cleanup.');
 };

@@ -16126,6 +16126,34 @@ var CanvasGraphics = function CanvasGraphicsClosure() {
         return;
       }
 
+      // PianoLIT: monochrome scans may be stencil masks, which allocate a
+      // full-size canvas before reaching the bounded inline-image renderer.
+      // Tile solid-color masks first; retain the original pattern-fill space.
+      if (!isPatternFill && width * height > 5242880) {
+        var stride = Math.ceil(width / 8);
+        for (var y = 0; y < height; y += 2048) {
+          var tileHeight = Math.min(2048, height - y);
+          for (var x = 0; x < width; x += 2048) {
+            var tileWidth = Math.min(2048, width - x);
+            var tileStride = Math.ceil(tileWidth / 8);
+            var tileData = new Uint8Array(tileStride * tileHeight);
+            for (var row = 0; row < tileHeight; row++) {
+              var offset = (y + row) * stride + x / 8;
+              tileData.set(img.data.subarray(offset, offset + tileStride), row * tileStride);
+            }
+            this.save();
+            try {
+              ctx.translate(x / width, (height - y - tileHeight) / height);
+              ctx.scale(tileWidth / width, tileHeight / height);
+              this.paintImageMaskXObject({width: tileWidth, height: tileHeight, data: tileData});
+            } finally {
+              this.restore();
+            }
+          }
+        }
+        return;
+      }
+
       var maskCanvas = this.cachedCanvases.getCanvas('maskCanvas', width, height);
       var maskCtx = maskCanvas.context;
       maskCtx.save();

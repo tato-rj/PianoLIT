@@ -8,9 +8,9 @@ original license notice is retained). Laravel Mix copies it to
 explicitly selects the matching 2.3.200 CDN worker; deploy the view, renderer,
 score-editor JavaScript and Mix manifest together.
 
-This is the same PDF.js release previously loaded from the CDN. It contains one
-local change in `CanvasGraphics.paintInlineImageXObject`, marked `PianoLIT`:
-decoded images above 5,242,880 pixels render as at most 2,048 × 2,048 tiles.
+This is the same PDF.js release previously loaded from the CDN. Its local changes
+are marked `PianoLIT`. In `CanvasGraphics.paintInlineImageXObject`, decoded
+images above 5,242,880 pixels render as at most 2,048 × 2,048 tiles.
 Packed grayscale, RGB and RGBA image data retain their original coordinates and
 resolution. Tile widths are byte aligned for 1-bit scans. The existing renderer
 handles each tile, including downscaling and graphics-state cleanup.
@@ -22,6 +22,16 @@ intermediate canvas despite the editor's smaller final canvas. This exceeds the
 [Mozilla issue 9474](https://github.com/mozilla/pdf.js/issues/9474).
 Reducing the editor's display zoom alone does not avoid this intermediate.
 
+`CanvasGraphics.paintImageMaskXObject` also tiles oversized solid-color stencil
+masks before allocating their coloring canvas. Petite Berceuse in B-flat major
+(piece 1032) contains a single 10,719 × 14,605-pixel stencil mask: the original
+path requested a 156,550,995-pixel canvas (about 597 MiB of RGBA backing memory).
+That allocation occurred before the inline-image fix, leaving the page blank on
+iPhone Safari. The stencil now paints in 48 bounded tiles, retaining its packed
+row padding, transparency, fill color and placement. Small masks and patterned
+mask fills retain their original renderer; grouped/repeated-mask operators are
+unchanged. No broad PDF.js upgrade or source-PDF recompression is involved.
+
 The editor also resets its detached render buffer to zero dimensions after
 success or failure, releasing backing memory between page turns and zooms.
 
@@ -32,9 +42,15 @@ Other PDF.js consumers retain their existing includes. Future library upgrades
 must verify scan rendering under a canvas cap and compatibility with existing
 annotation fingerprints; do not discard this fix without that check.
 
-`tests/js/score-pdf-images.js` covers tile bounds, packed row padding, color
-channels, orientation, source immutability and failure cleanup. The score-editor
+`tests/js/score-pdf-images.js` covers image/stencil tile bounds, packed row padding,
+color channels, orientation, source immutability and failure cleanup. The score-editor
 regressions cover buffer disposal, including failures and queued zoom renders.
 Browser QA used the actual downloaded Brahms PDF and the exact old/new renderer,
 with all remote requests blocked and a simulated 16,777,216-pixel canvas limit.
 A physical iPad check remains necessary after deployment.
+
+The November 2 stencil regression uses the real Petite Berceuse dimensions.
+Browser QA with the downloaded original PDF reproduces a blank page under the
+same simulated canvas cap before the fix and renders the music afterward. The
+fingerprint remains `7a908e12269554525a21b47664b45600`. These browser checks do not
+replace physical iPhone Safari acceptance after deployment.
