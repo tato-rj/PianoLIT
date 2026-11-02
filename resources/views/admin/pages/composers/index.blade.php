@@ -1,5 +1,9 @@
 @extends('admin.layouts.app')
 
+@section('head')
+<link rel="stylesheet" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}">
+@endsection
+
 @section('content')
 <div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', [

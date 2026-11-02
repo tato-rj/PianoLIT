@@ -11,11 +11,11 @@
     @endslot
     <div data-video-rows>
         @foreach($videoRows as $index => $video)
-            @include('admin.pages.pieces.edit.video-row')
+            @include('admin.pages.pieces.fields.video-row')
         @endforeach
     </div>
     <template data-video-template>
-        @include('admin.pages.pieces.edit.video-row', ['index' => '__INDEX__', 'video' => []])
+        @include('admin.pages.pieces.fields.video-row', ['index' => '__INDEX__', 'video' => []])
     </template>
     <div class="border-top mt-3 py-3">
         <button type="button" class="btn btn-sm btn-secondary" data-add-video>@icon('plus')Add video</button>

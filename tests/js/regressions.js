@@ -98,6 +98,7 @@ async function main() {
     require('./video-moments-admin')();
     await require('./admin-pieces')();
     await require('./admin-piece-editor')();
+    await require('./admin-piece-create')();
     await require('./match-tour')();
     const document = {cookie: 'first=one; second=two%20words; third=three'};
     const cookies = load('helpers/cookie.js', {document});

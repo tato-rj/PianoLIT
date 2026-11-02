@@ -5,7 +5,12 @@
         @if($composer->alive_on)<small>{{ $composer->alive_on }}</small>@endif
     </td>
     <td class="text-nowrap">{{ $composer->period ?: 'Not set' }}@if($composer->is_pedagogical)<small>Pedagogical</small>@endif</td>
-    <td>{{ optional($composer->country)->nationality ?: 'Not set' }}</td>
+    <td class="text-nowrap">
+        @if(optional($composer->country)->flag_code)
+            @flag(['code' => $composer->country->flag_code])
+        @endif
+        {{ optional($composer->country)->nationality ?: 'Not set' }}
+    </td>
     <td>
         <form method="POST" class="m-0" action="{{ route('admin.composers.toggle-famous', ['composer' => $composer, 'return_to' => 'directory'] + $returnFilters) }}">
             @csrf

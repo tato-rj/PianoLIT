@@ -1,4 +1,9 @@
 @component('admin.components.editor.section', ['id' => 'piece-tags', 'title' => 'Tags'])
+    @if($warnOnManyTags ?? false)
+    <div data-tag-warning @if(count($selectedTags) <= 7) hidden @endif>
+        @alert(['color' => 'yellow', 'message' => 'Try to keep the selection between 5 and 7 tags.'])
+    </div>
+    @endif
     @foreach($types as $type => $tags)
     <fieldset class="mb-4">
         <legend class="small text-muted mb-2">{{ ucfirst($type) }}</legend>

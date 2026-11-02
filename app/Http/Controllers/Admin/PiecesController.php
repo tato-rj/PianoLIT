@@ -48,11 +48,9 @@ class PiecesController extends Controller
      */
     public function create()
     {
-        $composers = Composer::orderBy('name')->get();
+        $piece = (new Piece(['description' => '']))->setRelation('tags', collect())->setRelation('tutorials', collect());
 
-        $types = Tag::byTypes($except = ['level', 'period', 'length']);
-
-        return view('admin.pages.pieces.create', compact(['composers', 'types']));
+        return view('admin.pages.pieces.create', $this->editorData($piece));
     }
 
     public function alerts()
@@ -175,6 +173,12 @@ class PiecesController extends Controller
     public function edit(Piece $piece)
     {
         $piece->load(['tags', 'tutorials', 'creator']);
+
+        return view('admin.pages.pieces.edit', $this->editorData($piece));
+    }
+
+    protected function editorData(Piece $piece)
+    {
         $composers = Composer::orderBy('name')->get();
         $types = Tag::byTypes($except = ['level', 'period', 'length']);
         $classifications = [];
@@ -184,7 +188,7 @@ class PiecesController extends Controller
         }
         $specialTags = Tag::special()->get()->implode('name', ', ');
 
-        return view('admin.pages.pieces.edit', compact('composers', 'piece', 'types', 'classifications', 'specialTags'));
+        return compact('composers', 'piece', 'types', 'classifications', 'specialTags');
     }
 
     public function testEscore(Piece $piece)

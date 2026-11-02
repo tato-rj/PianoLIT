@@ -12,7 +12,7 @@
     form.addEventListener('input', markChanged);
     form.addEventListener('change', markChanged);
 
-    if (win.SimpleCropper) {
+    if (win.SimpleCropper && form.querySelector('#image-input')) {
         new win.SimpleCropper({
             ratio: 25 / 13,
             imageInput: '#image-input',
@@ -84,13 +84,12 @@
         sample.disabled = true;
         description.readOnly = true;
         error.hidden = true;
-        win.axios.get(form.dataset.descriptionUrl, {params: {piece_id: form.dataset.pieceId}})
+        win.axios.get(form.dataset.descriptionUrl, {params: form.dataset.pieceId ? {piece_id: form.dataset.pieceId} : {}})
             .then(function (response) {
                 description.value = response.data;
                 markChanged();
             })
             .catch(function () {
-                error.textContent = 'The sample could not be loaded. Try again.';
                 error.hidden = false;
             })
             .then(function () {

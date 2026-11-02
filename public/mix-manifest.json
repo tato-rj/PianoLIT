@@ -82,7 +82,7 @@
     "/js/views/admin-playlist-editor.js": "/js/views/admin-playlist-editor.js?id=6e724e3912595c825da7474f1de57deb",
     "/js/views/admin-tags.js": "/js/views/admin-tags.js?id=eb219eb117078ed1af234bed538038f8",
     "/js/views/admin-playlist-tags.js": "/js/views/admin-playlist-tags.js?id=aff9abd32516d68f74ef4fc216ee47bb",
-    "/js/views/admin-piece-editor.js": "/js/views/admin-piece-editor.js?id=e585db9cd884fefe42dd39c44fdd0552",
+    "/js/views/admin-piece-editor.js": "/js/views/admin-piece-editor.js?id=acedca9d98984adb2ff9e6052da151c2",
     "/js/views/admin-freepick-schedule.js": "/js/views/admin-freepick-schedule.js?id=5c4e05b641c1ebd9f5aa5c24b8bb120f",
     "/js/vendor/cropper.min.js": "/js/vendor/cropper.min.js?id=364a22f2716636a7c58a551c8165135b",
     "/js/vendor/pdfjs/pdf.js": "/js/vendor/pdfjs/pdf.js?id=55b6c353cac7a02a4c90c1d47790ac62",
@@ -1756,5 +1756,6 @@
     "/images/emails/welcome/feature-scores.png": "/images/emails/welcome/feature-scores.png?id=66a3158f07a91865d7f4e26d66263c21",
     "/js/components/link-share.js": "/js/components/link-share.js?id=a801334a22891406ef7f62983a653cc4",
     "/js/metronome-voice-worker.js": "/js/metronome-voice-worker.js?id=68413a12663339ceab581115b951c891",
-    "/audio/metronome/spoken/manifest.json": "/audio/metronome/spoken/manifest.json"
+    "/audio/metronome/spoken/manifest.json": "/audio/metronome/spoken/manifest.json",
+    "/js/views/admin-piece-create.js": "/js/views/admin-piece-create.js?id=19bbde2001d1bef50ac84b2cfdb9173c"
 }

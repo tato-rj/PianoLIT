@@ -4,6 +4,7 @@ namespace Tests\Review;
 
 use App\{Admin, Composer, Piece, Tag, Tutorial};
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class AdminPieceEditorTest extends ReviewTestCase
@@ -33,6 +34,62 @@ class AdminPieceEditorTest extends ReviewTestCase
         $dom = new \DOMDocument;
         @$dom->loadHTML($html);
         return new \DOMXPath($dom);
+    }
+
+    public function test_create_uses_shared_sections_and_restores_validation_input_without_saved_media_identity()
+    {
+        $response = $this->get(route('admin.pieces.create'))->assertOk();
+        $xpath = $this->xpath($response->getContent());
+        $this->assertCount(1, $xpath->query('//form[@id="create-piece" and @method="POST" and @action="'.route('admin.pieces.store').'" and @enctype="multipart/form-data"]'));
+        $this->assertCount(1, $xpath->query('//input[@name="is_public" and @checked]'));
+        $this->assertSame('', $xpath->query('//textarea[@name="description"]')[0]->textContent);
+        foreach (['piece-details', 'piece-classification', 'piece-description', 'piece-score', 'piece-videos', 'piece-existing', 'piece-tags'] as $section) {
+            $this->assertCount(1, $xpath->query('//section[@aria-labelledby="'.$section.'-title"]'));
+        }
+        $this->withExceptionHandling()->from(route('admin.pieces.create'))->post(route('admin.pieces.store'), [
+            'name' => 'Restored <piece>', 'description' => '<script>plain text</script>', 'key' => 'G minor',
+            'composer_id' => $this->piece->composer_id, 'period' => [$this->tags['period']->id], 'length' => [$this->tags['length']->id],
+            'tags' => [$this->tags['mood']->id], 'score_url' => 'https://example.test/score', 'is_attributed_to' => 'on',
+            'videos' => [['id' => $this->video->id, 'type' => 'Synthesia', 'category' => 'synthesia', 'description' => 'New clip', 'filename' => 'new-clip.mp4']],
+        ])->assertRedirect(route('admin.pieces.create'))->assertSessionHasErrors('level');
+        $xpath = $this->xpath($this->get(route('admin.pieces.create'))->assertOk()->getContent());
+        $this->assertSame('Restored <piece>', $xpath->query('//input[@name="name"]')[0]->getAttribute('value'));
+        $this->assertSame('<script>plain text</script>', $xpath->query('//textarea[@name="description"]')[0]->textContent);
+        $this->assertCount(0, $xpath->query('//textarea/script'));
+        $this->assertCount(1, $xpath->query('//select[@name="period[]"]/option[@selected and @value="'.$this->tags['period']->id.'"]'));
+        $this->assertCount(1, $xpath->query('//input[@name="tags[]" and @checked and @value="'.$this->tags['mood']->id.'"]'));
+        $this->assertCount(0, $xpath->query('//input[@name="is_public" and @checked]'));
+        $this->assertCount(1, $xpath->query('//input[@name="is_attributed_to" and @checked]'));
+        $this->assertCount(0, $xpath->query('//input[@name="videos[0][id]"]'));
+        $this->assertSame('new-clip.mp4', $xpath->query('//input[@name="videos[0][filename]"]')[0]->getAttribute('value'));
+        $ids = [];
+        foreach ($xpath->query('//*[@id]') as $element) $ids[] = $element->getAttribute('id');
+        $this->assertCount(count(array_unique($ids)), $ids);
+        $this->actingAs(create(Admin::class, ['role' => 'editor']), 'admin');
+        $this->get(route('admin.pieces.create'))->assertOk()->assertDontSee('name="audio"', false)->assertDontSee('data-add-video', false)->assertSee('Add piece');
+    }
+
+    public function test_create_keeps_the_store_contract_for_classification_audio_and_videos()
+    {
+        $payload = ['name' => 'New sonatina', 'key' => 'C major', 'composer_id' => $this->piece->composer_id,
+            'period' => [$this->tags['period']->id], 'length' => [$this->tags['length']->id], 'level' => [$this->tags['level']->id],
+            'tags' => [$this->tags['mood']->id], 'is_public' => 'on', 'is_attributed_to' => 'on', 'show_on_tour' => 'on',
+            'score_editor' => 'Editor', 'score_publisher' => 'Publisher', 'description' => 'New description',
+            'audio' => UploadedFile::fake()->create('recording.mp3', 1, 'audio/mpeg'),
+            'videos' => [['type' => 'Synthesia', 'category' => 'synthesia', 'description' => 'New clip', 'filename' => 'new-clip.mp4']]];
+        Model::withoutEvents(function () use ($payload) {
+            $this->from(route('admin.pieces.create'))->post(route('admin.pieces.store'), $payload)
+                ->assertRedirect(route('admin.pieces.create'))->assertSessionHas('status');
+        });
+        $piece = Piece::where('name', 'New sonatina')->firstOrFail();
+        $this->assertSame(auth('admin')->id(), $piece->creator_id);
+        $this->assertSame('Public Domain', $piece->score_copyright);
+        $this->assertTrue((bool) $piece->is_attributed_to);
+        $this->assertTrue((bool) $piece->show_on_tour);
+        $this->assertEqualsCanonicalizing($this->tags->pluck('id')->all(), $piece->tags->pluck('id')->all());
+        Storage::disk('public')->assertExists($piece->audio_path);
+        $this->assertSame('new-clip.mp4', $piece->tutorials->sole()->filename);
+        $this->assertSame('old-video.mp4', $this->video->fresh()->filename);
     }
 
     public function test_labeled_options_are_separate_from_the_editor_and_leave_the_directory()

@@ -6,7 +6,6 @@
             @method('PATCH')
             <button type="submit" class="btn btn-sm btn-dark">@icon('calendar-days')Set creation date to today</button>
         </form>
-        <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#abrsm-modal">ABRSM levels</button>
-        <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#rcm-modal">RCM levels</button>
+        @include('admin.pages.pieces.fields.rankings')
     </div>
 @endcomponent

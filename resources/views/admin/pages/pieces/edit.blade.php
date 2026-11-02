@@ -27,25 +27,19 @@
             <legend class="visually-hidden">Piece editor</legend>
             <div class="admin-editor-grid">
                 <div class="admin-editor-stack">
-                    @include('admin.pages.pieces.edit.details')
-                    @include('admin.pages.pieces.edit.classification')
-                    @component('admin.components.editor.section', ['id' => 'piece-description', 'title' => 'Description'])
-                        @slot('actions')
-                            <button type="button" class="btn btn-sm btn-dark" data-sample-description>@icon('wand-sparkles')Use a sample</button>
-                        @endslot
-                        @textarea(['bag' => 'default', 'id' => 'piece-description-input', 'name' => 'description', 'label' => 'About this piece', 'value' => $piece->description, 'rows' => 5, 'required' => false, 'placeholder' => 'Enter a description'])
-                        <p class="small text-danger mb-0" role="status" data-description-error hidden></p>
-                    @endcomponent
+                    @include('admin.pages.pieces.fields.details')
+                    @include('admin.pages.pieces.fields.classification')
+                    @include('admin.pages.pieces.fields.description')
                     @manager
-                        @include('admin.pages.pieces.edit.score')
-                        @include('admin.pages.pieces.edit.videos')
+                        @include('admin.pages.pieces.fields.score')
+                        @include('admin.pages.pieces.fields.videos')
                     @endmanager
                 </div>
                 <div class="admin-editor-stack">
                     @component('admin.components.editor.section', ['id' => 'piece-artwork', 'title' => 'Cover image'])
                         @image(['name' => '', 'image' => $piece->cover_image() ?? asset('images/misc/placeholder-image-wide.png'), 'empty' => false, 'alt' => 'Cover image for '.$piece->name])
                     @endcomponent
-                    @include('admin.pages.pieces.edit.tags')
+                    @include('admin.pages.pieces.fields.tags')
                 </div>
             </div>
         </fieldset>

@@ -49,5 +49,18 @@ module.exports = async function () {
     assert.strictEqual(error.hidden, true);
     assert.strictEqual(description.value, 'Sample description');
     assert.strictEqual(status.textContent, 'Unsaved changes');
-    console.log('Passed: piece editor crop cancellation, scoped save controls and description failure/retry.');
+    // Creation has no saved piece ID or cover-crop controls.
+    nodes['#image-input'] = null;
+    delete form.dataset.pieceId;
+    cropperOptions = null;
+    window.axios.get = function (url, options) {
+        assert.strictEqual(Object.keys(options.params).length, 0, 'Creation must not send an empty saved-piece ID.');
+        return Promise.resolve({data: 'New piece sample'});
+    };
+    vm.runInNewContext(fs.readFileSync('resources/js/views/admin-piece-editor.js', 'utf8'), {document: {querySelector() { return form; }}, window});
+    assert.strictEqual(cropperOptions, null, 'Creation initializes without cover-crop controls.');
+    sample.listeners.click();
+    await new Promise(resolve => setImmediate(resolve));
+    assert.strictEqual(description.value, 'New piece sample');
+    console.log('Passed: piece editor crop cancellation, scoped save controls, description failure/retry and create-page reuse.');
 };
