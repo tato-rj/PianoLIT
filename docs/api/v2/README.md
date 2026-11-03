@@ -1,9 +1,12 @@
 # PianoLIT iOS v2 connection
 
-Revision **2026-10-29.2** adds American, Italian, Russian and Ukrainian composers
-to Discover's shared composer-feature choice, alongside women, Black and Latin
-American composers. These additions are implemented locally; production
-deployment remains pending. Login, Discover and confirmed piece-open history
+Revision **2026-11-03.1** adds the five-step **Find my match** contract, API and
+synthetic fixtures, reusing the web tour draw and ranking. The new endpoints are
+implemented locally, disabled by default and **not deployed or production verified**.
+Keep the completed native steps 1–4 unchanged; replace their data/calculations and
+connect mood/result using [the integration guide](examples/find-my-match.md).
+The expanded composer-feature choices from 2026-10-29 also await deployment.
+Login, Discover and confirmed piece-open history
 were verified in production in **2026-10-28.1**. Check `manifest.yaml` for deployment verification and the
 verified runtime base URL. The handoff URL is documentation; it is never a feed
 or a credential. Native/staging acceptance remains pending, so the handoff stays
@@ -108,6 +111,10 @@ A feed request/image prefetch never writes history. This is separate from analyt
 
 ## Deployment and acceptance
 
+The following instructions cover the existing login/Discover release.
+Find my match additionally requires its own migration, private sample preparation,
+activation flag and HTTPS checks; follow [its deployment procedure](examples/find-my-match.md#deploy-and-verify).
+
 Deploy code through Git. Run
 `2026_10_28_230000_create_api_v2_tokens.php` before exposing the routes; existing
 Free Pick/history schema must already be installed. Refresh configuration/routes
@@ -147,7 +154,7 @@ The Swift developer can fetch hash-verified files with:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-10-29.2 --output /path/to/ios-repository/BackendHandoff
+  --revision 2026-11-03.1 --output /path/to/ios-repository/BackendHandoff
 ```
 
 This fetch copies documentation/examples, not an installed network connection.

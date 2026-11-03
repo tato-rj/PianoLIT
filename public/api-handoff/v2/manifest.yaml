@@ -1,6 +1,6 @@
 schema_version: 1
-revision: 2026-10-29.2
-updated_on: '2026-10-29'
+revision: 2026-11-03.1
+updated_on: '2026-11-03'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -11,12 +11,11 @@ runtime:
   production_base_url: https://pianolit.com/api/v2
   existing_api: unchanged
   deployment_target: https://pianolit.com/api/v2
-  verification: 'Production verified on 2026-10-28: existing-password login, authenticated
-    Discover matching the shared web builder, owned history, logout/revoked-401, no
-    legacy cache mutation. Synthetic SQL writes rolled back and personal cache removed.
-    External HTTPS Discover/invalid-login return 401 JSON. The 2026-10-29.1 Latin
-    American addition and 2026-10-29.2 country-based composer-feature additions are
-    implemented locally and await deployment. Staging/native acceptance pending.'
+  verification: Login, Discover and confirmed piece-open history were production verified
+    on 2026-10-28. Expanded composer groups and Find my match are implemented locally
+    and await deployment. Match tours are disabled by default until the tour migration,
+    private sample preparation, HTTPS delivery and synthetic production checks are
+    completed. No staging URL or native acceptance is verified.
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -25,10 +24,12 @@ entrypoints:
   design: design.yaml
   references: references.yaml
   swift_example: examples/PianoLITV2Client.swift
+  match_tour: screens/find-my-match.yaml
+  match_examples: examples/find-my-match.md
 files:
 - path: README.md
-  bytes: 9314
-  sha256: 2ddb832a62a7b74a1e94c2a840242c6522d7414f095f63cec90d9078cb22d235
+  bytes: 9809
+  sha256: d17461373e02adb4bd692eafc909d1eac07b6c4cc5d23d9637031c2684e29652
 - path: foundations.yaml
   bytes: 5703
   sha256: b3f156ec96aa8b0e32ebae302a5422181c6e8a5059d688c40ba628fbcf87d977
@@ -36,8 +37,8 @@ files:
   bytes: 10384
   sha256: 3a26ddf1df6e7fdc7e992d2d629b57cd6ae7a16cd75763c7f20291165a28ebe0
 - path: openapi.yaml
-  bytes: 17710
-  sha256: 6b32710c81c2b0af9d60562df1d155fa4b9c60fc3e9bdea4fb6069b82a4f8227
+  bytes: 45955
+  sha256: a1155eed31d08abcf1efda52191f6dee1bfc8eff9aea7b1c0f3827d9728152fa
 - path: design.yaml
   bytes: 2740
   sha256: 094fef76502c95677b0f36acb9045d3930633257ee93192184b02ce896dbe330
@@ -56,6 +57,18 @@ files:
 - path: examples/PianoLITV2Client.swift
   bytes: 10759
   sha256: f47c8f1e4fa8e40628050cf0116c423a4d546587e572343874ebd4c7bffe1b52
+- path: screens/find-my-match.yaml
+  bytes: 4284
+  sha256: f673b463d8b521c1a5e225c5904fa9b914444b1753c82de8d2bcd802e90a11c2
+- path: examples/find-my-match.md
+  bytes: 15011
+  sha256: 5396ab797b061d42eb829ca4a5ef6cc9d6d7303a22a4b50f00208f1fe1d57ddd
+- path: fixtures/find-my-match-flow.json
+  bytes: 139912
+  sha256: b23b7fa9e05c5915f4b87c5118cbc2db732c4d90db29656d5f7cf14a5d499df2
+- path: fixtures/find-my-match-errors.json
+  bytes: 5928
+  sha256: 58cbef35113e5af7ed0022aec1e5fdf1f34211feea84d9f9c841138da1a0eb14
 features:
 - id: foundations
   document: foundations.yaml
@@ -68,6 +81,13 @@ features:
   status: draft
   backend_status: implemented_locally
   ios_status: pending_integration
+  depends_on:
+  - foundations
+- id: find_my_match
+  document: screens/find-my-match.yaml
+  status: draft
+  backend_status: implemented_locally
+  ios_status: pending_data_integration_existing_steps_1_to_4_design_unchanged
   depends_on:
   - foundations
 consumer_rules:
@@ -89,7 +109,20 @@ consumer_rules:
   Use the documented target/fallback boundary.
 - Record consumed revision, native commit/build, device checks and unresolved destinations
   in the iOS repository.
+- Find my match endpoints in this revision are implemented locally, not production
+  verified. Preserve the completed native steps 1–4 and replace their data/calculations
+  only; connect mood and the native piece target after deployment verification.
 changelog:
+- revision: 2026-11-03.1
+  changes:
+  - Added bearer-authenticated account-owned Find my match tours with shared web draws,
+    adaptive reading, mood and MatchQuiz result selection.
+  - Added revisions, dependent-answer invalidation, retry receipts, exact/estimated
+    progress, bounded signed preview media, error contracts and synthetic complete-flow
+    fixtures.
+  - Added migration and offline sample preparation/cleanup deployment steps. Implemented
+    locally only; new routes disabled until deployment/media verification. Native
+    design for steps 1–4 remains unchanged; prior published revisions remain immutable.
 - revision: 2026-10-29.2
   changes:
   - Expanded the shared composer-feature pool to seven groups with American, Italian,
@@ -132,4 +165,4 @@ changelog:
   - Established the handoff format, shared API proposals and compatibility boundaries.
   - Inventoried Discover against the current web implementation.
   - No runtime endpoints, migrations, Swift changes or deployment in this revision.
-base_path: revisions/2026-10-29.2/
+base_path: revisions/2026-11-03.1/

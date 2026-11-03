@@ -1,19 +1,21 @@
 openapi: 3.0.3
 info:
-  title: PianoLIT mobile API v2 — Discover
-  version: 1.0.0
+  title: PianoLIT mobile API v2 — Discover and Find my match
+  version: 1.1.0
   description: Independent v2 login and Discover. Web and v2 share App\Services\Discover\Feed.
-    Legacy /api routes remain supported indefinitely. Deployment/native verification
-    is recorded in the manifest; downloading this specification does not authenticate
-    an app.
+    Legacy /api routes remain supported indefinitely. Deployment/native verification is recorded
+    in the manifest; downloading this specification does not authenticate an app. Find my
+    match reuses the web tour draw and ranking. The completed native steps 1–4 keep their
+    existing design; replace only their data/calculations. New match operations are implemented
+    locally and disabled until media preparation and deployment verification.
 servers:
 - url: https://pianolit.com/api/v2
-  description: Live base backend verified 2026-10-28; the expanded composer-feature
-    pool awaits deployment. Native acceptance remains pending.
+  description: Existing base backend verified 2026-10-28. New match-tour operations and expanded
+    composer pools await deployment; native/staging acceptance pending.
 security:
 - MobileBearer: []
 x-handoff:
-  revision: 2026-10-29.2
+  revision: 2026-11-03.1
   status: draft
   implemented: true
   native_integration: pending
@@ -24,11 +26,11 @@ paths:
       summary: Sign in with the existing account email and password
       security: []
       description: Use the current native sign-in form. This endpoint checks the existing
-        users provider/password hash and issues a separate opaque 30-day credential.
-        Does not alter browser/legacy login, send email or mutate billing. A stored
-        legacy user ID cannot be exchanged for a token. Missing token after upgrade
-        requires one sign-in. No refresh token; repeat login on expiry. Password changes/deletion
-        invalidate tokens. Login is limited to 5 attempts/minute/IP.
+        users provider/password hash and issues a separate opaque 30-day credential. Does
+        not alter browser/legacy login, send email or mutate billing. A stored legacy user
+        ID cannot be exchanged for a token. Missing token after upgrade requires one sign-in.
+        No refresh token; repeat login on expiry. Password changes/deletion invalidate tokens.
+        Login is limited to 5 attempts/minute/IP.
       requestBody:
         required: true
         content:
@@ -123,12 +125,12 @@ paths:
     get:
       operationId: getDiscover
       summary: Fetch the same Discover content as the webapp for this account
-      description: 'One ordered sections array; no analytics/history write. Content
-        uses the same catalogue cache, recommendation IDs, Free Pick clock, past highlights,
-        artwork and level grouping as web Discover. Empty sections are omitted. No
-        native media entitlement is granted. The browser-specific Access Limits matrix
-        is not used by native. Submitted user_id and query tokens cannot establish
-        identity. Read requests: 120/minute/IP, no-store/private.'
+      description: 'One ordered sections array; no analytics/history write. Content uses the
+        same catalogue cache, recommendation IDs, Free Pick clock, past highlights, artwork
+        and level grouping as web Discover. Empty sections are omitted. No native media entitlement
+        is granted. The browser-specific Access Limits matrix is not used by native. Submitted
+        user_id and query tokens cannot establish identity. Read requests: 120/minute/IP,
+        no-store/private.'
       responses:
         '401':
           description: Missing/invalid/expired/revoked credential, or incorrect email/password.
@@ -175,10 +177,10 @@ paths:
     post:
       operationId: recordPieceViewV2
       summary: Record a confirmed piece open for the authenticated account
-      description: Call only after a piece opens successfully, never for feed/image
-        prefetch. No request body is required. Repeated calls update one account/piece
-        row. Existing analytics exclusions apply. Does not implement piece detail,
-        playback, favorites or analytics.
+      description: Call only after a piece opens successfully, never for feed/image prefetch.
+        No request body is required. Repeated calls update one account/piece row. Existing
+        analytics exclusions apply. Does not implement piece detail, playback, favorites or
+        analytics.
       parameters:
       - name: piece
         in: path
@@ -223,15 +225,485 @@ paths:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '204':
           description: History updated, or excluded account intentionally skipped.
+  /match-tours:
+    post:
+      operationId: startMatchTourV2
+      summary: Start or reload an account-owned Find my match tour
+      description: 'Bearer required. Shared web draw: four distinct level examples, four listening
+        pieces and two contrasting taste pairs. Two-hour absolute expiry; no sliding extension.
+        Same account/start request_id returns the same tour. A new UUID deliberately restarts
+        without invalidating other tours. Limit 10 starts/minute/IP in addition to the overall
+        120 requests/minute/IP.'
+      x-deployment:
+        backend_status: implemented_locally
+        production_verified: false
+      responses:
+        '401':
+          description: 'unauthenticated: account credential invalid/missing/expired/revoked.
+            Only this error requires signing in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do not sign
+            out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: stale_tour, idempotency_conflict, incomplete_tour or tour_limit. Reload;
+            see the error code and match-tour guide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '410':
+          description: 'tour_expired: two-hour tour lifetime elapsed. Start with a new UUID,
+            retaining the account bearer.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request or invalid_answer: malformed fields or a choice not
+            served for this question.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body; no internal
+            details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account signed
+            in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Complete current tour snapshot. All JSON responses are private/no-store;
+            no cookies. New signed sample URLs are issued on each load.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchTourResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TourStartRequest'
+            example:
+              request_id: 11111111-1111-4111-8111-111111111111
+  /match-tours/{tour}:
+    get:
+      operationId: loadMatchTourV2
+      summary: Load choices, answers and progress
+      description: 'No advancement or recommendation reroll. Return all fixed choices and
+        accepted answers for back navigation. reading-2 is null until reading-1 is answered,
+        then follows the website: easy → advanced; difficult → beginner, with elementary fallback
+        if no beginner sample. GET refreshes signed media URLs without extending tour expiry.'
+      x-deployment:
+        backend_status: implemented_locally
+        production_verified: false
+      responses:
+        '401':
+          description: 'unauthenticated: account credential invalid/missing/expired/revoked.
+            Only this error requires signing in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do not sign
+            out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: stale_tour, idempotency_conflict, incomplete_tour or tour_limit. Reload;
+            see the error code and match-tour guide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '410':
+          description: 'tour_expired: two-hour tour lifetime elapsed. Start with a new UUID,
+            retaining the account bearer.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request or invalid_answer: malformed fields or a choice not
+            served for this question.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body; no internal
+            details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account signed
+            in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Complete current tour snapshot. All JSON responses are private/no-store;
+            no cookies. New signed sample URLs are issued on each load.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchTourResponse'
+      parameters:
+      - name: tour
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /match-tours/{tour}/answers/{slot}:
+    put:
+      operationId: answerMatchTourV2
+      summary: Submit or replace one answer
+      description: Send a fresh request_id and the latest integer revision for each deliberate
+        edit. Slots must be answered in sequence but any earlier answer can be edited. A changed
+        answer clears every later answer and the pinned match; an identical value preserves
+        later state and revision. Exact request retries return the latest snapshot without
+        repeating the mutation, even after further edits. Reusing a UUID with a different
+        body/slot returns 409. Row locking and revisions prevent concurrent double advancement.
+        Maximum 256 accepted distinct request IDs per tour; restart after tour_limit. JSON
+        null explicitly skips taste-1/taste-2 only. IDs must belong to that tour and round;
+        user_id, local level calculations and client estimates cannot select results.
+      x-deployment:
+        backend_status: implemented_locally
+        production_verified: false
+      responses:
+        '401':
+          description: 'unauthenticated: account credential invalid/missing/expired/revoked.
+            Only this error requires signing in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do not sign
+            out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: stale_tour, idempotency_conflict, incomplete_tour or tour_limit. Reload;
+            see the error code and match-tour guide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '410':
+          description: 'tour_expired: two-hour tour lifetime elapsed. Start with a new UUID,
+            retaining the account bearer.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request or invalid_answer: malformed fields or a choice not
+            served for this question.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body; no internal
+            details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account signed
+            in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Complete current tour snapshot. All JSON responses are private/no-store;
+            no cookies. New signed sample URLs are issued on each load.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchTourResponse'
+      parameters:
+      - name: tour
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: slot
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - level
+          - listening
+          - reading-1
+          - reading-2
+          - taste-1
+          - taste-2
+          - mood
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TourAnswerRequest'
+            example:
+              request_id: 22222222-2222-4222-8222-222222222222
+              revision: 0
+              value: beginner
+  /match-tours/{tour}/result:
+    get:
+      operationId: getMatchTourResultV2
+      summary: Obtain one stable match after all five steps
+      description: After mood, tour status is ready and result remains null. This endpoint
+        uses the shared MatchTour keywords and MatchQuiz ranking/fallback/media eligibility,
+        pins one match and increments revision once. Repeats do not reroll. No eligible result
+        returns 503 no_match, never a false count of one. If a pinned piece is withdrawn,
+        return no_match rather than replacing it silently. The result reuses PieceSummary;
+        open the existing native piece page using result.piece.target.id. This operation grants
+        no full-media entitlement and never writes piece-open history. Call the existing pieces/{piece}/view
+        operation only after actual native piece opening.
+      x-deployment:
+        backend_status: implemented_locally
+        production_verified: false
+      responses:
+        '401':
+          description: 'unauthenticated: account credential invalid/missing/expired/revoked.
+            Only this error requires signing in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do not sign
+            out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: stale_tour, idempotency_conflict, incomplete_tour or tour_limit. Reload;
+            see the error code and match-tour guide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '410':
+          description: 'tour_expired: two-hour tour lifetime elapsed. Start with a new UUID,
+            retaining the account bearer.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request or invalid_answer: malformed fields or a choice not
+            served for this question.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body; no internal
+            details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account signed
+            in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Complete current tour snapshot. All JSON responses are private/no-store;
+            no cookies. New signed sample URLs are issued on each load.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchTourResponse'
+      parameters:
+      - name: tour
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /match-tour-media/{asset}/{kind}:
+    get:
+      operationId: getMatchTourSampleV2
+      summary: Fetch a bounded tour sample using its signed capability URL
+      security: []
+      description: Use the supplied URL verbatim without an Authorization header or cookies.
+        Signature covers the path and query. Expires at the earlier of 15 minutes after issuance
+        or tour expiry. Native HTTP Range requests may read only these bounded MP3/PNG files.
+        Missing/tampered/expired signatures return 403, never 401. Images/artwork/portraits
+        use public HTTPS URLs without a defined expiry and may later change or disappear.
+        Reload the bearer-authenticated tour to refresh sample URLs. The server never redirects
+        to original recordings, PDFs or third-party media. All responses use private/no-store.
+        Overall 120 requests/minute/IP includes media requests.
+      parameters:
+      - name: asset
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      - name: kind
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - audio
+          - excerpt
+          - sample
+      - name: expires
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: signature
+        in: query
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      responses:
+        '200':
+          description: Bounded sample bytes; never original media.
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '206':
+          description: Byte range of the same bounded sample.
+        '403':
+          description: 'media_url_expired: missing/invalid/expired capability. Reload tour;
+            do not sign out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do not sign
+            out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body; no internal
+            details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account signed
+            in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
 components:
   securitySchemes:
     MobileBearer:
       type: http
       scheme: bearer
-      description: 'POST /auth/login with the existing email/password obtains this
-        credential. Only Authorization: Bearer <access_token> is accepted. Store in
-        Keychain; send only to the fixed v2 origin. Legacy account IDs, cookies and
-        downloaded YAML are not credentials.'
+      description: 'POST /auth/login with the existing email/password obtains this credential.
+        Only Authorization: Bearer <access_token> is accepted. Store in Keychain; send only
+        to the fixed v2 origin. Legacy account IDs, cookies and downloaded YAML are not credentials.'
   schemas:
     Identifier:
       type: string
@@ -345,8 +817,7 @@ components:
             access_token:
               type: string
               pattern: ^[a-f0-9]{64}$
-              description: Returned only at issuance. Store in Keychain; never in
-                logs/UserDefaults.
+              description: Returned only at issuance. Store in Keychain; never in logs/UserDefaults.
             token_type:
               type: string
               enum:
@@ -653,5 +1124,403 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/ContentSection'
                 - $ref: '#/components/schemas/LevelsSection'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    TourStartRequest:
+      type: object
+      required:
+      - request_id
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: Generate once per deliberate start. Retry the same UUID to load that
+            account-owned tour; a new UUID starts a separate tour.
+    TourAnswerRequest:
+      type: object
+      required:
+      - request_id
+      - revision
+      - value
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: Generate once per intended update; reuse the exact body for network
+            retries.
+        revision:
+          type: integer
+          minimum: 0
+        value:
+          type: string
+          nullable: true
+          maxLength: 64
+          description: 'level: choice value; listening/taste: served piece ID; reading: easy
+            or difficult; mood: choice value. JSON null explicitly skips a taste round only.
+            Missing/empty values and reading skips are invalid.'
+    TourComposer:
+      type: object
+      required:
+      - id
+      - name
+      - short_name
+      - portrait_url
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        name:
+          type: string
+        short_name:
+          type: string
+        portrait_url:
+          type: string
+          format: uri
+          pattern: ^https://
+    TourAudioPreview:
+      type: object
+      required:
+      - audio_url
+      - expires_at
+      - duration_seconds
+      properties:
+        audio_url:
+          type: string
+          format: uri
+          pattern: ^https://
+        expires_at:
+          $ref: '#/components/schemas/UtcInstant'
+        duration_seconds:
+          type: number
+          exclusiveMinimum: true
+          minimum: 0
+          maximum: 60.15
+          description: Actual MP3 sample duration. Configured preview cap defaults to 60 seconds,
+            with up to 150ms encoder padding; shorter recordings may return less. Only bounded
+            sample bytes are delivered.
+    TourPreviewPiece:
+      type: object
+      required:
+      - id
+      - title
+      - composer
+      - artwork_url
+      - audio_preview
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        composer:
+          $ref: '#/components/schemas/TourComposer'
+        artwork_url:
+          type: string
+          format: uri
+          pattern: ^https://
+        audio_preview:
+          $ref: '#/components/schemas/TourAudioPreview'
+    TourLevelChoice:
+      type: object
+      required:
+      - value
+      - label
+      - description
+      - piece
+      properties:
+        value:
+          type: string
+          enum:
+          - elementary
+          - beginner
+          - intermediate
+          - advanced
+        label:
+          type: string
+        description:
+          type: string
+        piece:
+          $ref: '#/components/schemas/TourPreviewPiece'
+    TourScoreMedia:
+      type: object
+      required:
+      - expires_at
+      - excerpt_url
+      - sample_url
+      properties:
+        expires_at:
+          $ref: '#/components/schemas/UtcInstant'
+        excerpt_url:
+          type: string
+          format: uri
+          pattern: ^https://
+          description: 900px-wide PNG, middle strip of page one, height approximately 40%
+            of width.
+        sample_url:
+          type: string
+          format: uri
+          pattern: ^https://
+          description: 1800px-wide PNG of the same strip for native pinch zoom. No full PDF/page
+            is returned.
+    TourReadingSample:
+      type: object
+      required:
+      - id
+      - title
+      - composer
+      - score_sample
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        composer:
+          type: string
+        score_sample:
+          $ref: '#/components/schemas/TourScoreMedia'
+    TourNullableReadingSample:
+      type: object
+      required:
+      - id
+      - title
+      - composer
+      - score_sample
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        composer:
+          type: string
+        score_sample:
+          $ref: '#/components/schemas/TourScoreMedia'
+      nullable: true
+    TourMoodChoice:
+      type: object
+      required:
+      - value
+      - label
+      - icon
+      properties:
+        value:
+          type: string
+          enum:
+          - calm
+          - energetic
+          - romantic
+          - joyful
+          - dramatic
+          - mysterious
+          - playful
+          - reflective
+          - open
+        label:
+          type: string
+        icon:
+          type: string
+    TourQuestions:
+      type: object
+      required:
+      - level
+      - listening
+      - reading-1
+      - reading-2
+      - taste-1
+      - taste-2
+      - mood
+      properties:
+        level:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 4
+              maxItems: 4
+              items:
+                $ref: '#/components/schemas/TourLevelChoice'
+        listening:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 4
+              maxItems: 4
+              items:
+                $ref: '#/components/schemas/TourPreviewPiece'
+        reading-1:
+          $ref: '#/components/schemas/TourReadingSample'
+        reading-2:
+          $ref: '#/components/schemas/TourNullableReadingSample'
+        taste-1:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 2
+              maxItems: 2
+              items:
+                $ref: '#/components/schemas/TourPreviewPiece'
+        taste-2:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 2
+              maxItems: 2
+              items:
+                $ref: '#/components/schemas/TourPreviewPiece'
+        mood:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 9
+              maxItems: 9
+              items:
+                $ref: '#/components/schemas/TourMoodChoice'
+    TourAnswers:
+      type: object
+      properties:
+        level:
+          type: string
+          enum:
+          - elementary
+          - beginner
+          - intermediate
+          - advanced
+        listening:
+          $ref: '#/components/schemas/Identifier'
+        reading-1:
+          type: string
+          enum:
+          - easy
+          - difficult
+        reading-2:
+          type: string
+          enum:
+          - easy
+          - difficult
+        taste-1:
+          type: string
+          nullable: true
+          pattern: ^[1-9][0-9]*$
+        taste-2:
+          type: string
+          nullable: true
+          pattern: ^[1-9][0-9]*$
+        mood:
+          type: string
+    TourCount:
+      type: object
+      required:
+      - value
+      - accuracy
+      properties:
+        value:
+          type: integer
+          minimum: 0
+        accuracy:
+          type: string
+          enum:
+          - exact
+          - estimated
+    TourProgress:
+      type: object
+      required:
+      - current_step
+      - round
+      - current_question
+      - initial_library_total
+      - remaining_pieces
+      properties:
+        current_step:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        round:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - null
+          nullable: true
+        current_question:
+          type: string
+          enum:
+          - level
+          - listening
+          - reading-1
+          - reading-2
+          - taste-1
+          - taste-2
+          - mood
+          - null
+          nullable: true
+        initial_library_total:
+          $ref: '#/components/schemas/TourCount'
+        remaining_pieces:
+          $ref: '#/components/schemas/TourCount'
+    TourResult:
+      type: object
+      required:
+      - piece
+      - explanation
+      properties:
+        piece:
+          $ref: '#/components/schemas/PieceSummary'
+        explanation:
+          type: string
+      nullable: true
+    MatchTour:
+      type: object
+      required:
+      - id
+      - expires_at
+      - revision
+      - status
+      - progress
+      - answers
+      - questions
+      - result
+      properties:
+        id:
+          type: string
+          format: uuid
+        expires_at:
+          $ref: '#/components/schemas/UtcInstant'
+        revision:
+          type: integer
+          minimum: 0
+        status:
+          type: string
+          enum:
+          - in_progress
+          - ready
+          - matched
+        progress:
+          $ref: '#/components/schemas/TourProgress'
+        answers:
+          $ref: '#/components/schemas/TourAnswers'
+        questions:
+          $ref: '#/components/schemas/TourQuestions'
+        result:
+          $ref: '#/components/schemas/TourResult'
+    MatchTourResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/MatchTour'
         meta:
           $ref: '#/components/schemas/ResponseMeta'

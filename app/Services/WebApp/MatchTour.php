@@ -6,7 +6,7 @@ use App\Piece;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 
-/** Web-only presentation and adapter for the existing FindYourMatch Quiz. */
+/** Shared questionnaire selection and adapter for the existing FindYourMatch Quiz. */
 class MatchTour
 {
     const LEVELS = [
@@ -100,7 +100,7 @@ class MatchTour
             ->orderBy('pieces.id')->limit(4)->get();
     }
 
-    private function listeningPool()
+    public function listeningPool()
     {
         return Piece::freePicks(false)->whereNotNull('audio_path')->where('audio_path', '!=', '')
             ->whereHas('tags', function ($q) { $q->where('type', 'level'); });
@@ -212,6 +212,19 @@ class MatchTour
             $previous = $winner;
         }
         $cards = $selected->map(function ($piece) { return $this->questionCard($piece); })->values()->all();
+        $scores = $this->scoreChoices();
+        $ready = $levelPieces->count() === 4 && count($cards) === 8 && !in_array(null, \Illuminate\Support\Arr::except($scores, 'beginner'), true);
+        return [
+            'draw' => $ready ? Crypt::encryptString(json_encode(['version' => 3, 'levels' => $levelPieces->map(function ($piece) { return $piece['id']; })->all(), 'ids' => array_column($cards, 'id'), 'expires' => now()->addHours(2)->timestamp])) : null,
+            'levelPieces' => $levelPieces->values()->all(), 'levels' => self::LEVELS,
+            'total' => Piece::count(), 'pieces' => $cards, 'scores' => $scores,
+            'intents' => self::INTENTS, 'moods' => collect(self::MOODS)->map(function ($mood) { return \Illuminate\Support\Arr::except($mood, 'tags'); })->all(), 'previewSeconds' => config('webapp.match_tour_audio_seconds', 60),
+            'ready' => $ready,
+        ];
+    }
+
+    public function scoreChoices(): array
+    {
         $scores = [];
         foreach (['easy' => 'elementary', 'beginner' => 'beginner', 'middle' => 'intermediate', 'hard' => 'advanced'] as $key => $level) {
             $piece = Piece::freePicks(false)->select(['pieces.id', 'composer_id', 'name', 'score_path'])
@@ -228,14 +241,12 @@ class MatchTour
                 'composer' => $piece->composer->short_name, 'url' => storage($piece->score_path),
             ] : null;
         }
-        $ready = $levelPieces->count() === 4 && count($cards) === 8 && !in_array(null, \Illuminate\Support\Arr::except($scores, 'beginner'), true);
-        return [
-            'draw' => $ready ? Crypt::encryptString(json_encode(['version' => 3, 'levels' => $levelPieces->map(function ($piece) { return $piece['id']; })->all(), 'ids' => array_column($cards, 'id'), 'expires' => now()->addHours(2)->timestamp])) : null,
-            'levelPieces' => $levelPieces->values()->all(), 'levels' => self::LEVELS,
-            'total' => Piece::count(), 'pieces' => $cards, 'scores' => $scores,
-            'intents' => self::INTENTS, 'moods' => collect(self::MOODS)->map(function ($mood) { return \Illuminate\Support\Arr::except($mood, 'tags'); })->all(), 'previewSeconds' => config('webapp.match_tour_audio_seconds', 60),
-            'ready' => $ready,
-        ];
+        return $scores;
+    }
+
+    public function readingScore(array $scores, array $reading, int $round): ?array
+    {
+        return $round === 1 ? $scores['middle'] : ($reading[0] ? $scores['hard'] : ($scores['beginner'] ?? $scores['easy']));
     }
 
     public function level(array $reading, $fallback = 'intermediate', $playingLevel = null)

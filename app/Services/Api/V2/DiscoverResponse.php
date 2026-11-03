@@ -54,7 +54,7 @@ class DiscoverResponse
         return ['sections' => $sections];
     }
 
-    private function piece(Piece $piece): array
+    public function piece(Piece $piece): array
     {
         return ['kind' => 'piece', 'id' => (string) $piece->id, 'title' => $piece->name,
             'featured_title' => $piece->collection_name === 'Sonata' ? $piece->getRawOriginal('name') : ($piece->nickname ?: $piece->getRawOriginal('name')),

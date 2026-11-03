@@ -5,7 +5,7 @@ namespace App\Services\WebApp;
 use App\{Piece, Tag};
 use App\Resources\FindYourMatch\Quiz;
 
-/** Web-only ranking; the public funnel and mobile engines remain unchanged. */
+/** Web/v2 tour ranking; the public funnel and legacy mobile engines remain unchanged. */
 class MatchQuiz extends Quiz
 {
     public function getKeywords($input)

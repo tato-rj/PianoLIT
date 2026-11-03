@@ -6,6 +6,9 @@ class Response
 {
     public static function exception(\Throwable $error)
     {
+        if ($error instanceof MatchTourFailure) {
+            return self::error($error->errorCode, $error->getMessage(), $error->status);
+        }
         if ($error instanceof \Illuminate\Validation\ValidationException) {
             return self::error('invalid_request', 'Please check the highlighted fields.', 422, $error->errors());
         }
