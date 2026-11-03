@@ -3,12 +3,35 @@
 namespace App\Services\Api\V2;
 
 use Illuminate\Support\Facades\{File, Storage, URL};
-use Symfony\Component\Process\Process;
+use Symfony\Component\Process\{ExecutableFinder, Process};
+use Symfony\Component\Process\Exception\{ProcessFailedException, ProcessTimedOutException};
 
 /** Private, prebuilt samples only. Never redirects to original audio or scores. */
 class MatchTourMedia
 {
     const FILES = ['audio' => 'audio.mp3', 'excerpt' => 'excerpt.png', 'sample' => 'sample.png'];
+
+    /** Read-only CLI checks: fail once for deployment prerequisites, before the catalogue. */
+    public function preparationErrors(): array
+    {
+        $errors = [];
+        if (!function_exists('proc_open')) $errors[] = 'PHP proc_open is unavailable; enable process execution for the CLI user.';
+        if (!extension_loaded('gd') || !function_exists('imagecreatefrompng')) $errors[] = 'PHP GD with PNG support is unavailable; install/enable it for CLI PHP.';
+        $finder = new ExecutableFinder;
+        foreach (['ffmpeg', 'ffprobe', 'pdftoppm'] as $tool) {
+            $configured = config('match-tour.'.$tool);
+            if (!is_string($configured) || trim($configured) === '') {
+                $errors[] = 'Missing match-tour.'.$tool.' configuration; rebuild Laravel configuration with php artisan config:cache.';
+            } elseif (!(strpos($configured, DIRECTORY_SEPARATOR) !== false
+                ? is_file($configured) && is_executable($configured) : $finder->find($configured))) {
+                $errors[] = $tool.' executable was not found. Install it or set MATCH_TOUR_'.strtoupper($tool).' to its executable path, then rebuild configuration.';
+            }
+        }
+        if (!is_string(config('match-tour.media_root')) || config('match-tour.media_root') === '') {
+            $errors[] = 'Missing match-tour.media_root configuration; rebuild Laravel configuration with php artisan config:cache.';
+        }
+        return $errors;
+    }
 
     public static function https(?string $url): ?string
     {
@@ -79,7 +102,11 @@ class MatchTourMedia
     /** Explicit offline command only; never invoked by an HTTP request. */
     public function prepare(string $path, string $type): void
     {
-        $descriptor = $this->descriptor($path, $type);
+        try { $descriptor = $this->descriptor($path, $type); }
+        catch (MatchTourFailure $error) {
+            throw new MatchTourPreparationFailure('Source file is missing or outside the configured public disk. Check the saved media file and its permissions.', 0, $error);
+        }
+        if (!is_readable($descriptor['source'])) throw new MatchTourPreparationFailure('The deploy user cannot read the source file. Check its permissions.');
         $destination = config('match-tour.media_root').'/'.$descriptor['key'];
         if (is_file($destination.'/manifest.json')) {
             try { $this->asset($path, $type); return; }
@@ -91,24 +118,20 @@ class MatchTourMedia
         try {
             $duration = null;
             if ($type === 'audio') {
-                $probe = new Process([config('match-tour.ffprobe'), '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', $descriptor['source']]);
-                $probe->setTimeout(30)->mustRun();
+                $probe = $this->run([config('match-tour.ffprobe'), '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', $descriptor['source']], 30, 'Source audio probe', [$descriptor['source'], $temporary]);
                 $length = (float) trim($probe->getOutput());
-                if (!is_finite($length) || $length <= 0) throw new \RuntimeException('Unreadable tour audio duration.');
-                $process = new Process([config('match-tour.ffmpeg'), '-nostdin', '-v', 'error', '-ss', (string) ($length * 0.4), '-i', $descriptor['source'],
-                    '-t', (string) $descriptor['seconds'], '-map', '0:a:0', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-b:a', '128k', $temporary.'/audio.mp3']);
-                $process->setTimeout(120)->mustRun();
+                if (!is_finite($length) || $length <= 0) throw new MatchTourPreparationFailure('Source audio has no readable positive duration. Check its encoding.');
+                $this->run([config('match-tour.ffmpeg'), '-nostdin', '-v', 'error', '-ss', (string) ($length * 0.4), '-i', $descriptor['source'],
+                    '-t', (string) $descriptor['seconds'], '-map', '0:a:0', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-b:a', '128k', $temporary.'/audio.mp3'], 120, 'Audio encoding', [$descriptor['source'], $temporary]);
                 // Reprobe the encoded sample; duration includes at most MP3 frame padding.
-                $probe = new Process([config('match-tour.ffprobe'), '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', $temporary.'/audio.mp3']);
-                $probe->setTimeout(30)->mustRun();
+                $probe = $this->run([config('match-tour.ffprobe'), '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', $temporary.'/audio.mp3'], 30, 'Encoded audio probe', [$descriptor['source'], $temporary]);
                 $duration = round((float) trim($probe->getOutput()), 3);
-                if ($duration <= 0 || $duration > $descriptor['seconds'] + 0.15) throw new \RuntimeException('Invalid tour sample duration.');
+                if ($duration <= 0 || $duration > $descriptor['seconds'] + 0.15) throw new MatchTourPreparationFailure('Encoded preview duration is outside its permitted bounds.');
             } else {
                 // The same center strip of page one as the website, at two resolutions.
-                $process = new Process([config('match-tour.pdftoppm'), '-f', '1', '-singlefile', '-scale-to', '2400', '-png', $descriptor['source'], $temporary.'/page']);
-                $process->setTimeout(60)->mustRun();
+                $this->run([config('match-tour.pdftoppm'), '-f', '1', '-singlefile', '-scale-to', '2400', '-png', $descriptor['source'], $temporary.'/page'], 60, 'Score rendering', [$descriptor['source'], $temporary]);
                 $page = imagecreatefrompng($temporary.'/page.png');
-                if (!$page) throw new \RuntimeException('Unreadable tour score.');
+                if (!$page) throw new MatchTourPreparationFailure('Rendered score image could not be read.');
                 try {
                     $width = imagesx($page); $height = min(imagesy($page), (int) round($width * 0.4));
                     $top = (int) floor((imagesy($page) - $height) / 2);
@@ -126,9 +149,28 @@ class MatchTourMedia
                 // Replace each bounded file atomically and publish metadata last.
                 File::ensureDirectoryExists($destination, 0750);
                 foreach ($type === 'audio' ? ['audio.mp3', 'manifest.json'] : ['excerpt.png', 'sample.png', 'manifest.json'] as $file) {
-                    if (!rename($temporary.'/'.$file, $destination.'/'.$file)) throw new \RuntimeException('Could not publish tour samples.');
+                    if (!rename($temporary.'/'.$file, $destination.'/'.$file)) throw new MatchTourPreparationFailure('Could not publish preview files. Check free disk space and private sample-directory permissions.');
                 }
             }
         } finally { if (is_dir($temporary)) File::deleteDirectory($temporary); }
+    }
+
+    private function run(array $command, int $timeout, string $stage, array $privatePaths): Process
+    {
+        $process = new Process($command);
+        try { $process->setTimeout($timeout)->mustRun(); }
+        catch (ProcessTimedOutException $error) {
+            throw new MatchTourPreparationFailure($stage.' timed out after '.$timeout.' seconds.', 0, $error);
+        } catch (ProcessFailedException $error) {
+            $detail = str_replace($privatePaths, '[file]', $process->getErrorOutput());
+            // Tool output can include paths or URLs embedded in malformed input.
+            // Keep useful codec/format errors without publishing those locations.
+            $detail = preg_replace('#https?://[^\s<>]+#i', '[URL]', $detail);
+            $detail = preg_replace('#(?:/[A-Za-z0-9_.-]+){2,}#', '[path]', $detail);
+            $detail = preg_replace('/[\x00-\x1f\x7f]+/', ' ', $detail);
+            $detail = substr(trim($detail), 0, 700);
+            throw new MatchTourPreparationFailure($stage.' failed (exit '.$process->getExitCode().').'.($detail ? ' '.$detail : ''), 0, $error);
+        }
+        return $process;
     }
 }

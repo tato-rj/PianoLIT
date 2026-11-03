@@ -302,15 +302,109 @@ class ApiV2MatchTourTest extends ReviewTestCase
     public function test_preparation_command_uses_the_shared_pools_and_reports_failures_without_sources()
     {
         $media = \Mockery::mock(MatchTourMedia::class);
+        $media->shouldReceive('preparationErrors')->once()->andReturn([]);
         $media->shouldReceive('prepare')->with('fixture.mp3', 'audio')->times(16);
         $media->shouldReceive('prepare')->with('fixture.pdf', 'score')->times(4);
         $this->instance(MatchTourMedia::class, $media);
         $this->artisan('api-v2:prepare-match-media')->assertExitCode(0);
         $failed = \Mockery::mock(MatchTourMedia::class);
+        $failed->shouldReceive('preparationErrors')->once()->andReturn([]);
         $failed->shouldReceive('prepare')->with('fixture.mp3', 'audio')->times(16)->andThrow(new \RuntimeException('private source diagnostic'));
         $failed->shouldReceive('prepare')->with('fixture.pdf', 'score')->times(4);
         $this->instance(MatchTourMedia::class, $failed);
         $this->artisan('api-v2:prepare-match-media')->expectsOutput('Preparation incomplete; keep native tours disabled.')->assertExitCode(1);
+    }
+
+    public function test_preparation_names_missing_tools_and_stops_before_the_catalogue_or_writes()
+    {
+        foreach (['ffmpeg', 'ffprobe', 'pdftoppm'] as $tool) config(['match-tour.'.$tool => '/missing-match-tools/'.$tool]);
+        $this->instance(MatchTour::class, \Mockery::mock(MatchTour::class));
+        $before = File::allFiles($this->root);
+        $command = $this->artisan('api-v2:prepare-match-media');
+        foreach (['ffmpeg', 'ffprobe', 'pdftoppm'] as $tool) {
+            $command->expectsOutput($tool.' executable was not found. Install it or set MATCH_TOUR_'.strtoupper($tool).' to its executable path, then rebuild configuration.');
+        }
+        $command->expectsOutput('Preparation prerequisites failed; keep native tours disabled.')->assertExitCode(1);
+        $this->assertSame(count($before), count(File::allFiles($this->root)));
+        $this->assertDatabaseCount('api_v2_match_tours', 0);
+    }
+
+    public function test_preparation_shows_progress_and_can_retry_one_eligible_audio_without_other_samples()
+    {
+        $id = $this->pieces->first()->id;
+        $media = \Mockery::mock(MatchTourMedia::class);
+        $media->shouldReceive('preparationErrors')->once()->andReturn([]);
+        $media->shouldReceive('prepare')->once()->with('fixture.mp3', 'audio');
+        $this->instance(MatchTourMedia::class, $media);
+        $this->artisan('api-v2:prepare-match-media', ['--piece' => (string) $id, '--type' => 'audio'])
+            ->expectsOutput('Checking 1 samples. Existing valid samples are reused.')
+            ->expectsOutput('[1/1] Preparing audio for piece '.$id.'...')
+            ->expectsOutput('Finished: 1 ready, 0 failed.')
+            ->expectsOutput('Selected samples prepared. Run the full preparation check before enabling native tours.')
+            ->assertExitCode(0);
+    }
+
+    public function test_preparation_retries_only_selected_score_and_rejects_non_tour_pieces()
+    {
+        $id = app(MatchTour::class)->scoreChoices()['middle']['id'];
+        $media = \Mockery::mock(MatchTourMedia::class);
+        $media->shouldReceive('preparationErrors')->twice()->andReturn([]);
+        $media->shouldReceive('prepare')->once()->with('fixture.pdf', 'score');
+        $this->instance(MatchTourMedia::class, $media);
+        $this->artisan('api-v2:prepare-match-media', ['--piece' => (string) $id, '--type' => 'score'])
+            ->expectsOutput('[1/1] Preparing score for piece '.$id.'...')->assertExitCode(0);
+        $this->artisan('api-v2:prepare-match-media', ['--piece' => '999999', '--type' => 'audio'])
+            ->expectsOutput('No eligible tour media selected. The piece must belong to the shared tour pools.')->assertExitCode(1);
+    }
+
+    public function test_preparation_bad_options_do_not_read_catalogue_or_start_encoders()
+    {
+        $this->instance(MatchTour::class, \Mockery::mock(MatchTour::class));
+        $this->instance(MatchTourMedia::class, \Mockery::mock(MatchTourMedia::class));
+        $this->artisan('api-v2:prepare-match-media', ['--piece' => '../61'])->assertExitCode(1);
+        $this->artisan('api-v2:prepare-match-media', ['--type' => 'unknown'])->assertExitCode(1);
+    }
+
+    public function test_preparation_explains_missing_source_without_exposing_a_private_path()
+    {
+        try {
+            app(MatchTourMedia::class)->prepare('missing-tour-file.mp3', 'audio');
+            $this->fail('Missing source must fail preparation.');
+        } catch (\App\Services\Api\V2\MatchTourPreparationFailure $error) {
+            $this->assertStringContainsString('Source file is missing', $error->getMessage());
+            $this->assertStringNotContainsString('missing-tour-file', $error->getMessage());
+            $this->assertStringNotContainsString(storage_path(), $error->getMessage());
+        }
+    }
+
+    public function test_preparation_reports_corrupt_audio_probe_error_and_redacts_source_location()
+    {
+        $binary = (new \Symfony\Component\Process\ExecutableFinder)->find('ffprobe');
+        if (!$binary) $this->markTestSkipped('ffprobe is required for the real failure diagnostic.');
+        config(['match-tour.ffprobe' => $binary]);
+        Storage::disk('public')->put('corrupt-tour-audio.mp3', 'not a media file');
+        try {
+            app(MatchTourMedia::class)->prepare('corrupt-tour-audio.mp3', 'audio');
+            $this->fail('Corrupt audio must fail preparation.');
+        } catch (\App\Services\Api\V2\MatchTourPreparationFailure $error) {
+            $this->assertStringContainsString('Source audio probe failed (exit', $error->getMessage());
+            $this->assertStringNotContainsString('corrupt-tour-audio', $error->getMessage());
+            $this->assertStringNotContainsString(storage_path(), $error->getMessage());
+            $this->assertStringContainsString('[file]', $error->getMessage());
+        }
+        $this->assertSame('not a media file', Storage::disk('public')->get('corrupt-tour-audio.mp3'));
+    }
+
+    public function test_check_only_preparation_accepts_configured_absolute_paths_and_detects_stale_configuration()
+    {
+        foreach (['ffmpeg', 'ffprobe', 'pdftoppm'] as $tool) config(['match-tour.'.$tool => PHP_BINARY]);
+        $this->instance(MatchTour::class, \Mockery::mock(MatchTour::class));
+        $this->artisan('api-v2:prepare-match-media --check')->expectsOutput('Preparation prerequisites found. No catalogue or sample files were changed.')->assertExitCode(0);
+        config(['match-tour.ffmpeg' => null, 'match-tour.media_root' => null]);
+        $this->artisan('api-v2:prepare-match-media --check')
+            ->expectsOutput('Missing match-tour.ffmpeg configuration; rebuild Laravel configuration with php artisan config:cache.')
+            ->expectsOutput('Missing match-tour.media_root configuration; rebuild Laravel configuration with php artisan config:cache.')
+            ->assertExitCode(1);
     }
 
     public function test_unavailable_media_catalogue_no_match_gate_rate_limit_and_server_errors_are_json()
