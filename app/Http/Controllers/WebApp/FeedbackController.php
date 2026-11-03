@@ -5,6 +5,7 @@ namespace App\Http\Controllers\WebApp;
 use App\{Admin, FeedbackSubmission};
 use App\Http\Controllers\Controller;
 use App\Notifications\FeedbackSubmittedNotification;
+use App\Rules\FeedbackMessage;
 use App\Services\FeedbackContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,9 +17,12 @@ class FeedbackController extends Controller
     {
         $data = $request->validate([
             'rating' => ['required', 'string', Rule::in(array_keys(FeedbackSubmission::RATINGS))],
-            'message' => ['nullable', 'string', 'max:2000'],
+            'message' => ['bail', 'nullable', 'string', 'max:2000', new FeedbackMessage],
+            'website' => ['bail', 'nullable', 'string', 'size:0'],
             'page_context' => ['nullable', 'string', 'max:4096'],
             'device_type' => ['nullable', 'string', Rule::in(['desktop', 'tablet', 'mobile'])],
+        ], [
+            'website.*' => 'Unable to send feedback. Refresh the page and try again.',
         ]);
 
         DB::transaction(function () use ($request, $data) {

@@ -22,7 +22,7 @@ class Element {
 function fixture() {
     const map = {}, frames = new Map(), pending = [], notifications = [], hidden = [];
     let nextFrame = 0;
-    const selectors = ['[data-feedback-form]', '[data-feedback-range]', '[name="message"]', '[name="rating"]', '[name="_token"]', '[name="page_context"]',
+    const selectors = ['[data-feedback-form]', '[data-feedback-range]', '[name="message"]', '[name="rating"]', '[name="_token"]', '[name="page_context"]', '[name="website"]',
         '[data-feedback-labels]', '[data-feedback-thumb]', '[data-feedback-handle-mouth]', '[data-feedback-note]', '[data-feedback-error]',
         '.feedback-submit', '[data-feedback-submit-label]', '[data-feedback-add-note]', '[data-feedback-note-back]', '.modal-content', '[data-feedback-swipe]'];
     selectors.forEach(selector => { map[selector] = new Element(); });
@@ -65,7 +65,7 @@ module.exports = async function () {
     const first = c.submit({preventDefault() {}});
     c.submit({preventDefault() {}});
     assert.strictEqual(f.pending.length, 1, 'Repeated submit while busy sends exactly one request');
-    assert.deepStrictEqual(f.pending[0].payload, {rating: 'bad', message: null, _token: 'session-csrf', page_context: 'page-token', device_type: 'mobile'});
+    assert.deepStrictEqual(f.pending[0].payload, {rating: 'bad', message: null, _token: 'session-csrf', page_context: 'page-token', website: '', device_type: 'mobile'});
     assert.strictEqual(f.pending[0].options.timeout, 15000, 'An unreachable server cannot leave controls locked forever');
     assert(c.busy); assert(map['[name="message"]'].disabled);
     f.pending[0].reject({response: {status: 500}}); await first;
@@ -109,6 +109,29 @@ module.exports = async function () {
     c.modal.fire('hidden.bs.modal');
     assert.deepStrictEqual(f.notifications, ['feedback:submitted']);
     assert.strictEqual(c.message.value, ''); assert.strictEqual(c.rating.value, 'good'); assert(!c.form.hidden);
+
+    const spam = fixture();
+    spam.map['[name="website"]'].value = 'bot-filled';
+    spam.controller.message.value = 'Visit example.com';
+    const spamRejected = spam.controller.submit({preventDefault() {}});
+    assert.strictEqual(spam.pending[0].payload.website, 'bot-filled', 'The bot trap must reach server validation');
+    spam.pending[0].reject({response: {status: 422, data: {errors: {message: ['Please send your feedback as plain text without website links or HTML.']}}}});
+    await spamRejected;
+    assert.strictEqual(spam.controller.error.textContent, 'Please send your feedback as plain text without website links or HTML.');
+    assert.strictEqual(spam.controller.message.value, 'Visit example.com', 'Visitors can edit and resend a rejected note');
+    assert(!spam.controller.busy); assert(!spam.controller.sent);
+    assert.strictEqual(spam.hidden.length, 0); assert.strictEqual(spam.notifications.length, 0);
+    const trap = spam.controller.submit({preventDefault() {}});
+    spam.pending[1].reject({response: {status: 422, data: {errors: {website: ['Unable to send feedback. Refresh the page and try again.']}}}});
+    await trap;
+    assert.strictEqual(spam.controller.error.textContent, 'Unable to send feedback. Refresh the page and try again.');
+
+    const olderPage = fixture();
+    delete olderPage.map['[name="website"]'];
+    const olderRequest = olderPage.controller.submit({preventDefault() {}});
+    assert.strictEqual(olderPage.pending[0].payload.website, '', 'An already-open form can submit without the new field');
+    olderPage.pending[0].resolve({data: {saved: true}}); await olderRequest;
+    assert(olderPage.controller.sent);
 
     const stale = c.submit({preventDefault() {}});
     c.reset(); c.message.value = 'New draft'; c.select(0);

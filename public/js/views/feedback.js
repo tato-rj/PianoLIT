@@ -134,11 +134,13 @@
             this.paint(selected); this.commit(selected);
             this.error.hidden = true; this.setBusy(true);
             const request = ++this.request;
+            const website = this.form.querySelector('[name="website"]');
             try {
                 const response = await this.http.post(this.form.action, {
                     rating: this.rating.value, message: this.message.value.trim() || null,
                     _token: this.form.querySelector('[name="_token"]').value,
                     page_context: this.form.querySelector('[name="page_context"]').value || null,
+                    website: website ? website.value : '',
                     device_type: this.win.innerWidth < 700 ? 'mobile' : this.win.innerWidth < 1100 ? 'tablet' : 'desktop'
                 }, {timeout: 15000});
                 if (request !== this.request) return;
@@ -151,7 +153,7 @@
                 const response = error.response || {}, errors = response.data && response.data.errors;
                 this.error.textContent = response.status === 419 ? 'Your session has expired. Refresh the page to send your feedback.' :
                     response.status === 429 ? 'Please wait a minute before sending more feedback.' :
-                    errors && (errors.message || errors.rating || errors.page_context) ? (errors.message || errors.rating || errors.page_context)[0] :
+                    errors && (errors.message || errors.rating || errors.page_context || errors.website) ? (errors.message || errors.rating || errors.page_context || errors.website)[0] :
                     'Your feedback could not be sent. Please try again.';
                 this.error.hidden = false;
             }

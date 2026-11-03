@@ -4,6 +4,10 @@
     @endcomponent
     <form class="feedback-form" action="{{ route('webapp.feedback.store') }}" method="POST" data-feedback-form>
         @csrf
+        <div class="d-none" aria-hidden="true">
+            <label for="feedback-website">Leave this field empty</label>
+            <input type="text" id="feedback-website" name="website" value="" tabindex="-1" autocomplete="off">
+        </div>
         <input type="hidden" name="rating" value="good">
         <input type="hidden" name="page_context" value="{{ app(\App\Services\FeedbackContext::class)->forPage(request()) }}">
         <div class="feedback-stage" data-feedback-swipe>

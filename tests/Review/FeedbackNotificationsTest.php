@@ -99,7 +99,7 @@ class FeedbackNotificationsTest extends ReviewTestCase
     {
         $admin = create(Admin::class);
         $member = $this->member(['first_name' => '<img src=x onerror=alert(1)>', 'last_name' => 'A&B']);
-        $note = '<script>alert("private note")</script>';
+        $note = 'The score stops at bar 3 < 4 & I cannot continue.';
         $this->actingAs($member, 'web')->postJson(route('webapp.feedback.store'), [
             'rating' => 'good', 'message' => $note,
         ])->assertCreated();
