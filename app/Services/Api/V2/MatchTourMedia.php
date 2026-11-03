@@ -53,8 +53,12 @@ class MatchTourMedia
     private function source(string $path): string
     {
         // Only local public-disk files selected by the shared tour. No remote inputs.
+        // Older upload() records are relative to the local disk and start with
+        // public/. Laravel's existing storage URL helper removes that prefix.
+        // Resolve the same file here without rewriting stored/legacy paths.
+        $relative = strpos($path, 'public/') === 0 ? substr($path, 7) : $path;
         $root = realpath(Storage::disk('public')->path(''));
-        $source = realpath(Storage::disk('public')->path($path));
+        $source = realpath(Storage::disk('public')->path($relative));
         if (!$root || !$source || strpos($source, $root.DIRECTORY_SEPARATOR) !== 0 || !is_file($source)) {
             throw new MatchTourFailure('media_unavailable', 'A tour sample is unavailable. Please try again later.', 503);
         }

@@ -377,6 +377,72 @@ class ApiV2MatchTourTest extends ReviewTestCase
         }
     }
 
+    public function test_legacy_public_prefix_resolves_audio_and_score_without_changing_source_files()
+    {
+        $media = app(MatchTourMedia::class);
+        foreach (['audio' => 'app/audio/historical.mp3', 'score' => 'app/score/historical.pdf'] as $type => $path) {
+            Storage::disk('public')->put($path, 'original '.$type);
+            $canonical = $media->descriptor($path, $type);
+            $legacy = $media->descriptor('public/'.$path, $type);
+            $this->assertSame(realpath(Storage::disk('public')->path($path)), $legacy['source']);
+            $this->assertSame($canonical['source'], $legacy['source']);
+            $this->assertSame($canonical, $media->descriptor($path, $type), 'Existing canonical generation keys stay unchanged.');
+            $this->assertSame('original '.$type, Storage::disk('public')->get($path));
+            $this->assertFalse(Storage::disk('public')->exists('public/'.$path));
+        }
+    }
+
+    public function test_legacy_resolution_matches_existing_storage_url_even_if_a_duplicate_nested_file_exists()
+    {
+        Storage::disk('public')->put('app/audio/historical.mp3', 'correct source');
+        Storage::disk('public')->put('public/app/audio/historical.mp3', 'wrong duplicate');
+        $media = app(MatchTourMedia::class);
+        $this->assertSame(realpath(Storage::disk('public')->path('app/audio/historical.mp3')),
+            $media->descriptor('public/app/audio/historical.mp3', 'audio')['source']);
+        $this->assertSame('correct source', Storage::disk('public')->get('app/audio/historical.mp3'));
+        $this->assertSame('wrong duplicate', Storage::disk('public')->get('public/app/audio/historical.mp3'));
+    }
+
+    public function test_legacy_prefix_cannot_escape_public_disk_through_traversal_or_symlinks()
+    {
+        $root = realpath(Storage::disk('public')->path(''));
+        $outside = dirname($root).'/outside-tour-'.Str::uuid().'.mp3';
+        $link = $root.'/escaped-tour.mp3';
+        file_put_contents($outside, 'private file must not be read');
+        symlink($outside, $link);
+        try {
+            foreach (['public/../'.basename($outside), 'public/escaped-tour.mp3', 'escaped-tour.mp3'] as $path) {
+                try {
+                    app(MatchTourMedia::class)->descriptor($path, 'audio');
+                    $this->fail('The resolved source must stay inside the public disk.');
+                } catch (\App\Services\Api\V2\MatchTourFailure $error) {
+                    $this->assertSame('media_unavailable', $error->errorCode);
+                    $this->assertSame(503, $error->status);
+                }
+            }
+            $this->assertSame('private file must not be read', file_get_contents($outside));
+        } finally { unlink($link); unlink($outside); }
+    }
+
+    public function test_complete_native_tour_accepts_legacy_paths_and_preserves_database_and_media_bytes()
+    {
+        $media = app(MatchTourMedia::class);
+        foreach (['audio' => 'fixture.mp3', 'score' => 'fixture.pdf'] as $type => $path) {
+            $canonical = $media->descriptor($path, $type);
+            $legacy = $media->descriptor('public/'.$path, $type);
+            File::copyDirectory($this->root.'/'.$canonical['key'], $this->root.'/'.$legacy['key']);
+        }
+        DB::table('pieces')->update(['audio_path' => 'public/fixture.mp3', 'score_path' => 'public/fixture.pdf']);
+        $tour = $this->complete();
+        $this->result($tour)->assertOk()->assertJsonPath('data.status', 'matched');
+        $this->get($tour['questions']['listening']['choices'][0]['audio_preview']['audio_url'])->assertOk();
+        $this->get($tour['questions']['reading-1']['score_sample']['sample_url'])->assertOk();
+        $this->assertSame(16, DB::table('pieces')->where('audio_path', 'public/fixture.mp3')->where('score_path', 'public/fixture.pdf')->count());
+        $this->assertSame('original audio must not be served', Storage::disk('public')->get('fixture.mp3'));
+        $this->assertSame('original score must not be served', Storage::disk('public')->get('fixture.pdf'));
+        $this->assertDatabaseCount('recently_viewed_pieces', 0);
+    }
+
     public function test_preparation_reports_corrupt_audio_probe_error_and_redacts_source_location()
     {
         $binary = (new \Symfony\Component\Process\ExecutableFinder)->find('ffprobe');

@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-03 — Legacy public-prefixed match-media sources (P2, fixed locally; production retry pending)
+
+- **Evidence / cause:** Arthur's server inspection shows piece 61 retains an older `public/app/audio/...mp3` value. Its original file exists and is readable under the public disk's `app/audio` directory, but the new preview resolver incorrectly looked under `public/public/app/audio`. Historical `upload()` uses the local disk with a `public/` prefix; Laravel's existing local storage URL builder removes that prefix when serving media.
+- **Change / compatibility:** `MatchTourMedia::source` now removes exactly one leading `public/` before resolving against the public disk, matching the existing delivery convention. Database values, original files/URLs, shared serialization and browser/legacy delivery are untouched. The raw saved path remains the generation-key input, and previously valid canonical generations keep their keys. Existing realpath containment checks still reject traversal and symlinks outside the public disk. No migration, source rewrite or public exposure of originals is added.
+- **Verification / remaining work:** Isolated native-tour regressions pass **22 tests / 320 assertions**, including normal/legacy audio and scores, duplicate nested-path precedence, preservation of source bytes and saved paths, traversal/symlink rejection and a complete native tour using legacy paths. Syntax/whitespace checks pass. Deploy the committed Git change, retry piece 61, then run full preparation using the already completed samples before enabling and verifying the native flow. The original source's existence was confirmed by Arthur; server encoding after this fix is not yet verified.
+
 ### 2026-11-03 — Match-media preparation progress and focused retries (P2, complete locally; server piece 61 unresolved)
 
 - **Evidence / cause:** After installing the media packages, Arthur reported a silent long-running preparation with an audio failure for piece 61. His read-only process snapshot shows no new PHP/encoder process for that run, while 322 sample manifests exist; the run appears finished or stopped, with successful derivatives retained. The prior command printed only errors, obscuring progress and the remaining source/tool failure.
