@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-04 — Remove the redundant quiz progress caption (P3, complete locally)
+
+- **Change:** Removed the visible Your progress/count row and its JavaScript label updates. The segmented header retains its accessible answered-question value, and streak feedback appears only when active without reserving an empty row. Updated the standalone script copy and only its manifest hash; unrelated CSS/tab edits are preserved.
+- **Verification:** Existing isolated quiz checks pass **10 tests / 250 assertions**, focused quiz JavaScript and workspace asset checks pass, and whitespace checks pass. The rendered browser fixture confirms the question follows the progress segments without the removed caption. No scoring, endpoint or mobile/API changes; no production deployment.
+
 ### 2026-11-04 — Make the quiz cover clickable and soften question typography (P3, complete locally)
 
 - **Change:** The quiz opts into `media/play-button`’s new `stretched` option, using Bootstrap’s existing stretched-link hit area across the positioned cover. The circle and caption retain their placement; the whole cover launches/resumes through the same native button and existing listener, with one keyboard focus target. The shared Design System specimen demonstrates the same behavior. Question headings now use `h4 fw-semibold` (24px / 600) while retaining their semantic h2, IDs and focus behavior.

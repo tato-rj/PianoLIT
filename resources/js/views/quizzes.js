@@ -16,7 +16,6 @@
     const retry = root.querySelector('[data-quiz-retry]');
     const progress = root.querySelector('[role="progressbar"]');
     const progressSteps = Array.from(root.querySelectorAll('[data-quiz-progress-step]'));
-    const progressLabel = root.querySelector('[data-quiz-progress-label]');
     const streakLabel = root.querySelector('[data-quiz-streak]');
     const modal = root.querySelector('[data-quiz-modal]');
     const reveal = root.querySelector('[data-quiz-reveal]');
@@ -99,7 +98,6 @@
             step.classList.toggle('is-complete', answers[index] !== null);
             step.classList.toggle('is-current', index === currentQuestion && !content.hidden);
         });
-        progressLabel.textContent = completed + ' / ' + questions.length;
         streakLabel.hidden = streak < 2;
         streakLabel.textContent = '🔥 ' + streak + ' in a row';
     }

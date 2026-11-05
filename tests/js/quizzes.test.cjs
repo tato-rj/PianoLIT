@@ -30,7 +30,7 @@ module.exports = async function () {
     }
     const root = node(), requests = [];
     root.dataset.url = 'https://learn.example.test/quizzes/piano/feedback';
-    const selectors = ['introduction', 'content', 'start', 'start-label', 'back', 'results', 'feedback', 'result-status', 'result-actions', 'retry', 'review', 'reset', 'next', 'streak', 'progress-label', 'modal', 'reveal', 'show-result'];
+    const selectors = ['introduction', 'content', 'start', 'start-label', 'back', 'results', 'feedback', 'result-status', 'result-actions', 'retry', 'review', 'reset', 'next', 'streak', 'modal', 'reveal', 'show-result'];
     const elements = {};
     selectors.forEach(key => { elements[key] = root.one['[data-quiz-' + key + ']'] = node(); });
     const progress = root.one['[role="progressbar"]'] = node();

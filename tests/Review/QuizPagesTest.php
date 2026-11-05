@@ -89,7 +89,7 @@ class QuizPagesTest extends ReviewTestCase
             ['Q' => 'Name this note [storage/quiz/images/note.png]', 'A' => ['C', 'D[x]']],
         ])]);
         $response = $this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk()
-            ->assertSee('Discover the piano')->assertDontSee('Test your knowledge')->assertSee('Answer each question, then see your score.')->assertSee('Start quiz')->assertSee('Your progress')->assertSee('Review answers')
+            ->assertSee('Discover the piano')->assertDontSee('Test your knowledge')->assertSee('Answer each question, then see your score.')->assertSee('Start quiz')->assertDontSee('Your progress')->assertSee('Review answers')
             ->assertSee('Created')->assertSee('Times answered')->assertSee('Average score')->assertSee('No scores yet')
             ->assertSee('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback', false)
             ->assertDontSee('game-results')->assertDontSee('pinterest.com')->assertDontSee('DISCLAIMER');

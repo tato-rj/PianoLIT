@@ -68,10 +68,7 @@
             @endslot
             @slot('body')
                 <div id="quiz-content" hidden data-quiz-content>
-                    <div class="d-flex justify-content-between align-items-center gap-3 small text-muted mb-4">
-                        <span>Your progress <span data-quiz-progress-label>0 / {{ count($quiz->questions) }}</span></span>
-                        <strong class="quiz-streak" data-quiz-streak hidden></strong>
-                    </div>
+                    <strong class="quiz-streak small align-self-end mb-4" data-quiz-streak hidden></strong>
                     @include('games.quizzes.questions')
                     <div class="quiz-next d-flex justify-content-end gap-2 mt-auto pt-3">
                         <button type="button" class="btn btn-secondary" data-quiz-back disabled>Back</button>
