@@ -310,6 +310,13 @@ It shares the standard Dropzone field tokens and stages files for the owning
 multipart form. Its native file input supports keyboard selection; the shared
 `file-dropzone.js` adds drag feedback, selected filenames and per-field count/size
 validation. Use `maxFiles`, `maxBytes`, `hint` and `showErrors` when needed.
+Selected JPG/PNG/WebP files appear as contained previews inside the same area,
+for both dropped files and picker selections. Multiple files use a wrapping
+thumbnail grid; a single image gets a larger preview. Replacing/resetting a
+selection releases its local object URLs, as does leaving the page; browser
+back/forward restoration rebuilds retained previews. Filenames stay plain text,
+failed images leave the picker usable, and selection still requires form
+submission to upload.
 The Design System includes the same component. It does not instantiate the
 legacy automatic-upload Dropzone library.
 

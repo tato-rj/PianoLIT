@@ -19,6 +19,7 @@
             <span>{{ ($multiple ?? false) ? 'Drag and drop images here' : 'Drag and drop an image here' }}</span>
             <span class="small text-muted">or click to select from your computer</span>
         </div>
+        <div class="file-dropzone__previews" data-file-previews aria-label="Selected images" hidden></div>
     </div>
     <p class="small text-muted mt-2 mb-1" id="{{ $id }}-hint">{{ $hint ?? 'JPG, PNG or WebP · up to 10 MB per image' }}</p>
     <p class="small mb-0 text-break" id="{{ $id }}-selection" data-file-selection role="status" aria-live="polite">No files selected</p>
