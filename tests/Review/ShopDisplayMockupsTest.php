@@ -147,7 +147,7 @@ class ShopDisplayMockupsTest extends ReviewTestCase
             Storage::disk('public')->assertExists($path);
             DB::rollBack();
             Storage::disk('public')->assertExists($path);
-            $digital->fresh()->delete();
+            $digital->newQuery()->findOrFail($digital->getKey())->delete();
             Storage::disk('public')->assertMissing($path);
         }
     }
