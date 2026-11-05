@@ -36,6 +36,15 @@
         &:not(.collapsed) .accordion-toggle-icon {
             transform: rotate(45deg);
         }
+
+        .accordion-toggle-icon--minus {
+            display: none;
+        }
+
+        &:not(.collapsed) {
+            .accordion-toggle-icon--plus { display: none; }
+            .accordion-toggle-icon--minus { display: inline-block; transform: none; }
+        }
     }
 
     .accordion-body {

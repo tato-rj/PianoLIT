@@ -47,7 +47,7 @@
         </div>
         <section class="mt-4" aria-labelledby="{{ $id }}-fitting">
             <h3 class="h6 mb-3" id="{{ $id }}-fitting">Fitting</h3>
-            <p class="mb-0">This is a unisex fit. Men can go one size up and women one size down from their usual size.</p>
+            @include('shop.storefront.components.fitting', ['sizeChartId' => null])
         </section>
         <section class="mt-4" aria-labelledby="{{ $id }}-measure">
             <h3 class="h6 mb-3" id="{{ $id }}-measure">How to measure</h3>

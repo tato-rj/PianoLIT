@@ -3,7 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Merchandise\{MerchandiseImage, MerchandiseProduct};
-use App\Services\Shop\{MerchandiseColors, MerchandiseImages, Printful, PrintfulException, ProductNames};
+use App\Services\Shop\{MerchandiseColors, MerchandiseImages, MerchandiseMaterials, Printful, PrintfulException, ProductNames};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -24,11 +24,13 @@ class MerchandiseCatalog
             $revision = $found->revision;
         }
         $remote = $api->product($id);
-        $name = $remote['sync_product']['name'] ?? null;
-        if ((string) ($remote['sync_product']['id'] ?? '') !== (string) $id || !is_string($name) || trim($name) === ''
-            || mb_strlen($name) > 255 || !isset($remote['sync_variants']) || !is_array($remote['sync_variants']) || count($remote['sync_variants']) > 1000) {
+        $providerName = $remote['sync_product']['name'] ?? null;
+        if ((string) ($remote['sync_product']['id'] ?? '') !== (string) $id || !is_string($providerName) || trim($providerName) === ''
+            || mb_strlen($providerName) > 255 || !isset($remote['sync_variants']) || !is_array($remote['sync_variants']) || count($remote['sync_variants']) > 1000) {
             throw new PrintfulException('Printful returned incomplete product details. Nothing was changed.');
         }
+        $providerName = trim($providerName);
+        $name = $existing && $existing->name_override !== null ? $existing->name_override : $providerName;
         try {
             $name = app(ProductNames::class)->validate($name, $existing, $storeId, 'name', 'merchandise');
         } catch (ValidationException $exception) {
@@ -36,7 +38,7 @@ class MerchandiseCatalog
         }
         $slug = $existing && $existing->slug ? $existing->slug : ProductNames::slug($name);
         $variants = $this->variants($remote['sync_variants']);
-        [$variants, $colorWarnings] = app(MerchandiseColors::class)->enrich($variants, $existing ? ($existing->variants ?? []) : []);
+        [$variants, $colorWarnings, $catalogRows] = app(MerchandiseColors::class)->enrich($variants, $existing ? ($existing->variants ?? []) : []);
         $candidates = $this->mockups($remote);
         $known = $existing ? $existing->images()->withTrashed()->whereNotNull('source_key')->pluck('source_key')->all() : [];
         $assets = [];
@@ -54,10 +56,10 @@ class MerchandiseCatalog
                 }
             }
             $usedPaths = [];
-            $product = DB::transaction(function () use ($existing, $revision, $id, $storeId, $name, $slug, $variants, $assets, &$usedPaths, &$warnings) {
+            $product = DB::transaction(function () use ($existing, $revision, $id, $storeId, $name, $providerName, $slug, $variants, $catalogRows, $assets, &$usedPaths, &$warnings) {
                 if (!$existing) {
                     $inserted = DB::table('merchandise_products')->insertOrIgnore([
-                        'printful_store_id' => $storeId, 'printful_product_id' => $id, 'name' => $name, 'slug' => $slug,
+                        'printful_store_id' => $storeId, 'printful_product_id' => $id, 'name' => $name, 'printful_name' => $providerName, 'slug' => $slug,
                         'variants' => json_encode($variants), 'revision' => 1, 'created_at' => now(), 'updated_at' => now(),
                     ]);
                 }
@@ -78,7 +80,8 @@ class MerchandiseCatalog
                     $usedPaths[] = $asset['path'];
                     $activeCount++;
                 }
-                $product->fill(['name' => $name, 'variants' => $variants, 'synced_at' => now(), 'revision' => $product->revision + 1])->save();
+                $product->fill(['name' => $name, 'printful_name' => $providerName, 'variants' => $variants, 'synced_at' => now(), 'revision' => $product->revision + 1])->save();
+                app(MerchandiseMaterials::class)->sync($product, $variants, $catalogRows);
                 return $product;
             });
         } catch (\Throwable $exception) {
@@ -87,6 +90,22 @@ class MerchandiseCatalog
         }
         $images->discard(array_filter($assets, fn ($asset) => !in_array($asset['path'], $usedPaths, true)));
         return [$product, $warnings, $colorWarnings];
+    }
+
+    public function updateDetails(MerchandiseProduct $product, int $revision, array $details): MerchandiseProduct
+    {
+        return $this->change($product, $revision, function ($locked) use ($details) {
+            $storeId = app(\App\Services\Shop\Storefront::class)->storeId();
+            abort_unless((string) $locked->printful_store_id === $storeId, 404);
+            $name = app(ProductNames::class)->validate($details['name'], $locked, $storeId, 'name', 'product_details');
+            $providerName = $locked->printful_name ?? $locked->name;
+            $locked->fill([
+                'name' => $name, 'printful_name' => $providerName,
+                'name_override' => $name === $providerName ? null : $name,
+                'subtitle' => $details['subtitle'] ?? null,
+                'description' => $details['description'] ?? null,
+            ]);
+        }, 'product_details');
     }
 
     private function variants(array $variants): array
@@ -127,11 +146,11 @@ class MerchandiseCatalog
         return array_values(array_unique($urls));
     }
 
-    public function change(MerchandiseProduct $product, int $revision, callable $change): MerchandiseProduct
+    public function change(MerchandiseProduct $product, int $revision, callable $change, string $bag = 'merchandise'): MerchandiseProduct
     {
-        return DB::transaction(function () use ($product, $revision, $change) {
+        return DB::transaction(function () use ($product, $revision, $change, $bag) {
             $locked = MerchandiseProduct::whereKey($product->id)->lockForUpdate()->firstOrFail();
-            $this->checkRevision($locked, $revision);
+            $this->checkRevision($locked, $revision, $bag);
             $change($locked);
             $locked->revision++;
             $locked->save();
@@ -139,10 +158,10 @@ class MerchandiseCatalog
         });
     }
 
-    private function checkRevision(MerchandiseProduct $product, ?int $revision): void
+    private function checkRevision(MerchandiseProduct $product, ?int $revision, string $bag = 'merchandise'): void
     {
         if ($product->revision !== $revision) {
-            throw ValidationException::withMessages(['revision' => 'This product changed in another tab. Reload the page and try again.'])->errorBag('merchandise');
+            throw ValidationException::withMessages(['revision' => 'This product changed in another tab. Reload the page and try again.'])->errorBag($bag);
         }
     }
 

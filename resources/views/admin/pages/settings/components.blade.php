@@ -83,6 +83,11 @@
         @include('shop.storefront.components.size-chart', ['id' => 'ds-shop-size-chart'])
       @endpush
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Shop product details', 'usage' => 'shop.storefront.components.product-details · fictional material example with one section open at a time', 'properties' => 'font-size,padding,color,border'])
+      <div class="shop-storefront" data-ds-preview>
+        @include('shop.storefront.components.product-details', ['product' => ['name' => 'Sample piano T-shirt', 'category' => 't-shirts', 'materials' => [['label' => null, 'text' => '100% cotton']]], 'digitalProduct' => null, 'detailsId' => 'ds-shop-product-details', 'sizeChartId' => 'ds-shop-size-chart'])
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Account and hubs menu', 'usage' => 'components.account.menu · account and hubs offcanvas', 'properties' => 'width,padding,color,border-radius,box-shadow'])
       <span id="ds-account-menu-label" class="visually-hidden">Account menu preview</span>
       @include('components.account.menu', ['account' => (object) ['first_name' => 'Alex', 'last_name' => 'Morgan', 'email' => 'alex@example.test'], 'menuId' => 'ds-account-menu-label', 'designSystemPreview' => true])

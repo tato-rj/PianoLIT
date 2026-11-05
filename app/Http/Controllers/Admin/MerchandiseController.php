@@ -103,6 +103,18 @@ class MerchandiseController extends Controller
         return view('admin.pages.merchandise.edit', compact('product', 'removed', 'variants', 'returnFilters', 'galleryColors', 'galleryGroups'));
     }
 
+    public function update(Request $request, MerchandiseProduct $merchandise, MerchandiseCatalog $catalog)
+    {
+        abort_unless((string) $merchandise->printful_store_id === app(\App\Services\Shop\Storefront::class)->storeId(), 404);
+        $data = $request->validateWithBag('product_details', [
+            'revision' => 'required|integer|min:1', 'name' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255', 'description' => 'nullable|string|max:10000',
+        ]);
+        $catalog->updateDetails($merchandise, (int) $data['revision'], $data);
+        return redirect()->route('admin.merchandise.edit', ['merchandise' => $merchandise] + $this->returnFilters())
+            ->withFragment('product-details')->with('status', 'Product details saved.');
+    }
+
     public function refresh(Request $request, MerchandiseProduct $merchandise, MerchandiseCatalog $catalog)
     {
         $revision = $this->revision($request);

@@ -212,6 +212,7 @@
   height: 100%;
   -o-object-fit: contain;
      object-fit: contain;
+  border-radius: var(--radius-sm);
 }
 .shop-storefront .shop-options {
   min-width: 0;

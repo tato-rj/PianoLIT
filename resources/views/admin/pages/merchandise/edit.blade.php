@@ -20,13 +20,14 @@
 @endphp
 <div class="content-wrapper"><div class="container-fluid">
     @component('admin.components.page.title', [
-        'title' => 'Manage product images', 'subtitle' => $product->name,
+        'title' => 'Edit', 'subtitle' => $product->name,
         'breadcrumbs' => [['label' => 'Merchandise', 'url' => route('admin.merchandise.index', $returnFilters)]],
     ])@endcomponent
     @if($errors->getBag('merchandise')->any())
         <div class="alert alert-red" role="alert"><ul class="mb-0">@foreach($errors->getBag('merchandise')->all() as $message)<li>{{ $message }}</li>@endforeach</ul></div>
     @endif
     @if(session('merchandise_notice'))<div class="alert alert-grey" role="status">{{ session('merchandise_notice') }}</div>@endif
+    @include('admin.pages.merchandise.details')
     <div id="images">
         <div class="row g-4 mb-4 align-items-start">
             <div class="col-lg-8">

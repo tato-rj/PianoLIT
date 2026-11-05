@@ -126,7 +126,7 @@ class Storefront
     {
         $names = implode(' ', array_filter(array_column($product->variants ?? [], 'product_name')));
         // Prefer the provider type, then support older imports with explicit names.
-        foreach ([$names, $product->name] as $name) {
+        foreach ([$names, $product->printful_name ?? $product->name] as $name) {
             if (preg_match('/\bstickers?\b/i', $name)) return 'stickers';
             if (preg_match('/\b(t[ -]?shirts?|tees?)\b/i', $name)) return 't-shirts';
         }
@@ -141,7 +141,8 @@ class Storefront
         $price = count($currencies) === 1 ? min(array_column($variants, 'cents')) : null;
         $category = $this->category($product);
         return [
-            'id' => $product->id, 'name' => $product->name, 'category' => $category,
+            'id' => $product->id, 'name' => $product->name, 'subtitle' => $product->subtitle,
+            'description' => $product->description, 'category' => $category,
             'label' => ['t-shirts' => 'T-shirt', 'stickers' => 'Sticker', 'merchandise' => 'Merchandise'][$category],
             'url' => $this->productUrl($product), 'images' => $images, 'image' => $images->first(),
             'imageUrl' => optional($images->first())->url, 'digital' => false,

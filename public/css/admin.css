@@ -29055,6 +29055,16 @@ button.bg-primary:focus {
 .accordion.accordion--minimal .accordion-button:not(.collapsed) .accordion-toggle-icon {
   transform: rotate(45deg);
 }
+.accordion.accordion--minimal .accordion-button .accordion-toggle-icon--minus {
+  display: none;
+}
+.accordion.accordion--minimal .accordion-button:not(.collapsed) .accordion-toggle-icon--plus {
+  display: none;
+}
+.accordion.accordion--minimal .accordion-button:not(.collapsed) .accordion-toggle-icon--minus {
+  display: inline-block;
+  transform: none;
+}
 .accordion.accordion--minimal .accordion-body {
   padding: 0 2rem 1.25rem 0;
   font-size: var(--font-size-sm);

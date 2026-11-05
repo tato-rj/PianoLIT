@@ -25,19 +25,21 @@ class MerchandiseColors
         })->all();
     }
 
+    /** Return variants, color warnings and identity-checked rows for the material import. */
     public function enrich(array $variants, array $previous = []): array
     {
         $api = app(Printful::class);
         $known = collect($previous)->keyBy('id');
         $products = [];
         $singleVariants = [];
+        $catalogRows = [];
         $requests = 0;
         $warnings = 0;
         $deadline = microtime(true) + 10;
 
         foreach ($variants as &$variant) {
             $codes = self::codes([]);
-            if (!$variant['synced'] || !$variant['color'] || $variant['variant_id'] < 1) {
+            if (!$variant['synced'] || $variant['variant_id'] < 1) {
                 $variant = array_merge($variant, $codes);
                 continue;
             }
@@ -79,6 +81,10 @@ class MerchandiseColors
             } catch (PrintfulException $exception) {
                 // A catalog failure is not a deleted store product, and must not erase saved colors.
             }
+            if (is_array($catalog)) {
+                $catalogRows[$variant['id']] = $catalog;
+                $variant['catalog_product_id'] = $catalog['product_id'];
+            }
             $valid = is_array($catalog) && array_key_exists('color_code', $catalog) && array_key_exists('color_code2', $catalog);
             if ($valid) {
                 $codes = self::codes($catalog);
@@ -87,7 +93,7 @@ class MerchandiseColors
                 }
             }
             if (!$valid) {
-                $warnings++;
+                if ($variant['color']) $warnings++;
                 $old = $known->get($variant['id']);
                 $codes = $old && ($old['variant_id'] ?? null) === $variantId && ($old['color'] ?? null) === $variant['color']
                     ? self::codes($old) : self::codes([]);
@@ -97,6 +103,6 @@ class MerchandiseColors
             $variant = array_merge($variant, $codes);
         }
         unset($variant);
-        return [$variants, $warnings];
+        return [$variants, $warnings, $catalogRows];
     }
 }

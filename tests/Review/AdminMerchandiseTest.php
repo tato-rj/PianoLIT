@@ -125,9 +125,112 @@ class AdminMerchandiseTest extends ReviewTestCase
         $this->assertSame('piano-t-shirt', $product->fresh()->slug);
     }
 
+    public function test_local_product_details_survive_refresh_while_the_default_title_stays_provider_owned()
+    {
+        $product = $this->imported();
+        $slug = $product->slug;
+        $this->patch($this->action('update', $product), ['revision' => $product->revision, 'name' => $product->name,
+            'subtitle' => 'Local subtitle', 'description' => "Local description\nSecond line"])->assertRedirect();
+        $this->assertNull($product->fresh()->name_override);
+        $this->remote['sync_product']['name'] = 'Updated provider T-shirt';
+        $this->post($this->action('refresh', $product), ['revision' => $product->fresh()->revision])->assertRedirect()->assertSessionHas('status');
+        $this->assertSame('Updated provider T-shirt', $product->fresh()->name);
+        $this->patch($this->action('update', $product), ['revision' => $product->fresh()->revision, 'name' => 'Local title',
+            'subtitle' => 'Local subtitle', 'description' => "Local description\nSecond line"])->assertRedirect();
+        $this->remote['sync_product']['name'] = 'Another provider T-shirt';
+        $this->post($this->action('refresh', $product), ['revision' => $product->fresh()->revision])->assertRedirect()->assertSessionHas('status');
+        $saved = $product->fresh();
+        $this->assertSame('Local title', $saved->name);
+        $this->assertSame('Another provider T-shirt', $saved->printful_name);
+        $this->assertSame('Local subtitle', $saved->subtitle);
+        $this->assertSame("Local description\nSecond line", $saved->description);
+        $this->assertSame($slug, $saved->slug);
+        $this->patch($this->action('update', $saved), ['revision' => $saved->revision, 'name' => $saved->printful_name])->assertRedirect();
+        $this->assertNull($saved->fresh()->name_override, 'Returning to the provider title restores automatic title updates');
+    }
+
     private function action(string $action, MerchandiseProduct $product, $image = null): string
     {
         return route('admin.merchandise.'.$action, array_filter(['merchandise' => $product, 'image' => $image]));
+    }
+
+    public function test_catalog_materials_use_exact_variant_ids_and_stay_out_of_shared_product_json()
+    {
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 100]];
+        $this->remote['sync_variants'][] = array_replace($this->remote['sync_variants'][0], ['id' => 92, 'variant_id' => 4012, 'color' => 'Heather', 'size' => 'L']);
+        $this->catalog['variants'][] = ['id' => 4012, 'product_id' => 71, 'color_code' => '#999999', 'color_code2' => null,
+            'material' => [['name' => 'polyester', 'percentage' => 48], ['name' => 'cotton', 'percentage' => 52]]];
+        $product = $this->imported();
+        $rows = DB::table('merchandise_materials')->where('product_id', $product->id)->get()->keyBy('sync_variant_id');
+        $this->assertCount(2, $rows);
+        $this->assertSame(4011, (int) $rows[91]->catalog_variant_id);
+        $this->assertSame([['name' => 'cotton', 'percentage' => 100]], json_decode($rows[91]->composition, true));
+        $this->assertSame([['name' => 'cotton', 'percentage' => 52], ['name' => 'polyester', 'percentage' => 48]], json_decode($rows[92]->composition, true));
+        $this->assertSame(1, Http::recorded(fn ($request) => $request->url() === 'https://api.printful.com/products/71')->count());
+        $this->assertStringNotContainsString('composition', $product->toJson());
+        foreach ($product->toArray()['variants'] as $variant) $this->assertArrayNotHasKey('material', $variant);
+
+        Http::swap(new \Illuminate\Http\Client\Factory);
+        Http::fake();
+        $url = app(\App\Services\Shop\Storefront::class)->productUrl($product);
+        $response = $this->get($url)->assertOk()->assertSee('Material')->assertSee('100% cotton')->assertSee('52% cotton, 48% polyester');
+        $this->assertSame([
+            ['label' => 'Black', 'text' => '100% cotton'],
+            ['label' => 'Heather', 'text' => '52% cotton, 48% polyester'],
+        ], $response->viewData('product')['materials']);
+        Http::assertNothingSent();
+    }
+
+    public function test_materials_survive_lookup_failures_only_for_the_same_variant_and_options()
+    {
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 100]];
+        $product = $this->imported();
+        $this->catalogStatus = 500;
+        $product = app(MerchandiseCatalog::class)->import(77, $product, $product->revision)[0]->fresh();
+        $this->assertDatabaseHas('merchandise_materials', ['product_id' => $product->id, 'catalog_variant_id' => 4011]);
+        $this->remote['sync_variants'][0]['variant_id'] = 4012;
+        app(MerchandiseCatalog::class)->import(77, $product, $product->revision);
+        $this->assertDatabaseCount('merchandise_materials', 0);
+        $this->assertNull($product->fresh()->deleted_at);
+        $this->assertCount(2, $product->fresh()->images);
+    }
+
+    public function test_materials_do_not_require_a_color_and_confirmed_empty_materials_clear_old_values()
+    {
+        $this->remote['sync_variants'][0]['color'] = null;
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 100]];
+        $product = $this->imported();
+        $this->assertDatabaseHas('merchandise_materials', ['product_id' => $product->id, 'color' => null]);
+        $this->catalog['variants'][0]['material'] = [];
+        $product = app(MerchandiseCatalog::class)->import(77, $product, $product->revision)[0]->fresh();
+        $this->assertDatabaseCount('merchandise_materials', 0);
+        $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()
+            ->assertViewHas('product', fn ($data) => $data['materials'] === [])->assertSee('About')->assertDontSee('100% cotton');
+    }
+
+    public function test_materials_from_another_catalog_product_are_rejected()
+    {
+        $this->catalog['variants'][0]['product_id'] = 99;
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 100]];
+        $this->imported();
+        $this->assertDatabaseCount('merchandise_materials', 0);
+    }
+
+    public function test_material_refresh_shares_revision_checks_and_preserves_values_on_malformed_metadata()
+    {
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 100]];
+        $product = $this->imported();
+        $revision = $product->revision;
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 60], ['name' => 'polyester', 'percentage' => 40]];
+        $product = app(MerchandiseCatalog::class)->import(77, $product, $revision)[0]->fresh();
+        $expected = json_decode(DB::table('merchandise_materials')->where('product_id', $product->id)->value('composition'), true);
+        $this->assertSame([['name' => 'cotton', 'percentage' => 60], ['name' => 'polyester', 'percentage' => 40]], $expected);
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 30]];
+        app(MerchandiseCatalog::class)->import(77, $product, $product->revision);
+        $this->assertSame($expected, json_decode(DB::table('merchandise_materials')->where('product_id', $product->id)->value('composition'), true));
+        $this->withExceptionHandling()->from($this->action('edit', $product))->post($this->action('refresh', $product), ['revision' => $revision])
+            ->assertRedirect()->assertSessionHasErrors('revision', null, 'merchandise');
+        $this->assertSame($expected, json_decode(DB::table('merchandise_materials')->where('product_id', $product->id)->value('composition'), true));
     }
 
     public function test_discovery_and_import_copy_only_product_mockups_into_a_separate_catalog()
@@ -152,7 +255,7 @@ class AdminMerchandiseTest extends ReviewTestCase
         }
         Http::assertNotSent(fn ($request) => strpos($request->url(), 'artwork') !== false || strpos($request->url(), 'private-print') !== false);
         $this->get($this->action('edit', $product))->assertOk()->assertSee('Printful mockups (2)')->assertSee('Download')->assertDontSee('aria-label="Use gallery image', false)->assertSee('Product variants')->assertSee('multiple', false);
-        $this->get(route('admin.merchandise.index'))->assertOk()->assertSee('Piano T-shirt')->assertSee('Manage images');
+        $this->get(route('admin.merchandise.index'))->assertOk()->assertSee('Piano T-shirt')->assertSee('Edit')->assertDontSee('Manage images');
     }
 
     public function test_repeated_import_is_idempotent_without_more_network_or_files()

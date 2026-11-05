@@ -25,7 +25,7 @@
                 <td>{{ $remote['variants'] }}</td>
                 <td>
                     @if($local = $imported->get($remote['id']))
-                        @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'label' => 'Manage images', 'url' => route('admin.merchandise.edit', $local)]])
+                        @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'label' => 'Edit', 'url' => route('admin.merchandise.edit', $local)]])
                     @else
                         <form method="POST" action="{{ route('admin.merchandise.import') }}">
                             @csrf

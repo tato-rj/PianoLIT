@@ -29,7 +29,7 @@
             <td>{{ count($product->variants) }}</td>
             <td>{{ $product->images_count }}</td>
             <td>{{ optional($product->synced_at)->format('M j, Y · g:ia') ?: 'Not refreshed' }}</td>
-            <td>@include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'label' => 'Manage images', 'url' => route('admin.merchandise.edit', ['merchandise' => $product] + $returnFilters)]])</td>
+            <td>@include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'label' => 'Edit', 'url' => route('admin.merchandise.edit', ['merchandise' => $product] + $returnFilters)]])</td>
         </tr>
         @endforeach
     @endcomponent

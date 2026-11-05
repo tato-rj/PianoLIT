@@ -16,7 +16,7 @@ class ProductPage
         if (!$digital && !$item instanceof MerchandiseProduct) throw new \InvalidArgumentException('Unsupported shop product.');
         $product = $digital ? $catalog->presentDigital($item) : $catalog->present($item);
         $product['name'] = rtrim($product['name'], '. ');
-        $product['subtitle'] = $digital ? $item->subtitle : null;
+        $product['subtitle'] = $item->subtitle;
         $product['hasPreview'] = $digital && count($item->previews) > 0;
         $product['originalPrice'] = null;
         $product['gallery'] = $digital
@@ -24,6 +24,7 @@ class ProductPage
                 ->map(fn ($url) => ['url' => $url, 'alt' => $product['name'].' cover'])
             : collect();
         if (!$digital) $product = array_replace($product, app(MerchandiseGallery::class)->present($item, $product['variants'], $product['images']));
+        $product['materials'] = $digital ? [] : app(MerchandiseMaterials::class)->forProduct($item, $product['variants']);
         $breadcrumbs = [['label' => 'Home', 'url' => route('home')], ['label' => 'Shop', 'url' => route('shop.home')]];
         if (isset(Storefront::SECTIONS[$product['category']])) {
             $breadcrumbs[] = ['label' => Storefront::SECTIONS[$product['category']], 'url' => $catalog->categoryUrl($product['category'])];
