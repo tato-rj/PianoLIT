@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-05 — Restore the piece suitability section and rename grading (P3, complete locally)
+
+- **Request / change:** Arthur's screenshot showed a redundant Difficulty level block where the previous next-piece section had been. `resources/views/webapp/piece/tabs/about.blade.php` now restores **Is this your next piece?** using the existing `Piece::for_who` content supplied by v2 as `about.for_whom`, with the same period/level metadata guard. Removed the separate difficulty heading/value and renamed Ranking to **Level guide** as requested. Existing grading labels, logos, spacing and recommendations remain unchanged; the heading is browser presentation, not a new API field.
+- **Compatibility / verification:** No shared getter, editorial text, mobile/API payload, route or asset change. All 21 isolated `ApiV2PieceTest` / `PieceRecommendationsTest` cases pass (438 assertions). Direct rendered checks confirm both headings, the matching suitability text and absence of the removed headings for guests and signed-in accounts; missing period/level metadata safely omits suitability text. Whitespace checks pass. No deployment performed.
+
 ### 2026-11-05 — Product sharing, compact options and price placement (P3, complete locally)
 
 - **Request / change:** Updated the common product page with Share above the title, labeled color buttons using saved circular swatches, smaller size buttons and the price below merchandise options. Options reuse shared secondary buttons and a primary-colored selected border. The common price uses the shared 24px utility, bold current price and an actual muted struck-through original price first when discounted. Product Add to bag sends one item through a hidden field; repeated confirmed additions retain the existing variant count. Removed its visible quantity picker, preserving bag editing. Updated the Design System option/discount examples and current guidance.

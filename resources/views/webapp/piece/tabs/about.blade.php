@@ -42,8 +42,10 @@
 				<div>To learn more about {{$piece->composer->last_name}} <a href="{{route('webapp.composers.show', $piece->composer)}}">click here</a>.</div>
 			</div>
 			@endif
-				<h5 class="mb-2">Difficulty level</h5>
-				<div>{{ ucfirst($piece->extended_level_name ?: $piece->level_name) }}</div>
+			@if($piece->period && $piece->extended_level_name)
+				<h5 class="mb-2">Is this your next piece?</h5>
+				<div>{{$piece->for_who}}</div>
+			@endif
 		</div>
 	</div>
 	<div class="">
@@ -68,7 +70,7 @@
 		</div> --}}
 
 		<div class="" style="margin-bottom: 2rem;">
-			<h5 class="mb-3">Ranking</h5>
+			<h5 class="mb-3">Level guide</h5>
 			@foreach($piece->rankings as $ranking => $label)
 			@if($label)
 			<div class="d-flex align-items-center mb-2">
