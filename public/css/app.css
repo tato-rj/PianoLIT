@@ -21752,6 +21752,17 @@ input.input-center:-ms-input-placeholder {
   font-weight: bold;
 }
 
+.tab-navigation__swatch {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 8px;
+  vertical-align: -2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-circle);
+  background: linear-gradient(135deg, var(--swatch-color) 50%, var(--swatch-color-secondary) 50%);
+}
+
 .nav-tabs.tab-navigation--neutral .nav-link {
   color: var(--color-grey) !important;
   font-weight: 400;

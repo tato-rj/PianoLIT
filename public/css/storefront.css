@@ -119,7 +119,6 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
 }
 .shop-storefront .shop-card__title {
   font-family: var(--font-family-body);

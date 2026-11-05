@@ -150,6 +150,42 @@ class MerchandiseGalleryTest extends ReviewTestCase
         }
     }
 
+    public function test_color_tabs_use_saved_unambiguous_hex_codes_without_provider_requests()
+    {
+        $product = $this->product();
+        $variants = $product->variants;
+        $variants[0]['color_code'] = '#FFD6E1';
+        $variants[1]['color_code'] = '#D5F1FB';
+        $variants[1]['color_code2'] = '#FFFFFF';
+        $variants[] = array_merge($variants[0], ['id' => 94, 'color' => 'Mixed', 'color_code' => '#abcdef']);
+        $variants[] = array_merge($variants[0], ['id' => 95, 'color' => 'Mixed', 'color_code' => '#102030']);
+        $variants[] = array_merge($variants[0], ['id' => 96, 'color' => 'Invalid', 'color_code' => '#fff; background:url(https://evil.test)']);
+        $product->update(['variants' => $variants]);
+        $before = $product->fresh()->toArray();
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $response = $this->get(route('admin.merchandise.edit', $product))->assertOk()->assertDontSee('evil.test');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $gallery = app(\App\Services\Shop\MerchandiseGallery::class);
+        $swatches = fn ($color) => $xpath->query('//*[@role="tab" and @aria-controls="'.$gallery->tabId($color).'"]/span[@class="tab-navigation__swatch"]');
+        $this->assertSame('--swatch-color: #ffd6e1; --swatch-color-secondary: #ffd6e1', $swatches('Pink')->item(0)->getAttribute('style'));
+        $this->assertSame('--swatch-color: #d5f1fb; --swatch-color-secondary: #ffffff', $swatches('Blue')->item(0)->getAttribute('style'));
+        foreach (['Ivory', 'Mixed', 'Invalid'] as $color) {
+            $this->assertCount(1, $xpath->query('//*[@role="tab" and @aria-controls="'.$gallery->tabId($color).'"]'));
+            $this->assertCount(0, $swatches($color));
+        }
+        $this->assertCount(2, $xpath->query('//*[@id="merchandise-color-tabs"]//span[@aria-hidden="true"]'));
+        $this->assertSame($before, $product->fresh()->toArray());
+        Http::assertNothingSent();
+        if ($directory = getenv('PIANOLIT_GALLERY_BROWSER_FIXTURES')) {
+            if (!is_dir($directory)) mkdir($directory, 0700, true);
+            $html = str_replace(['http://localhost/', 'http://admin.localhost/', 'href="/css/', 'src="/js/'],
+                ['http://shop.pianolit.test/', 'http://shop.pianolit.test/', 'href="http://shop.pianolit.test/css/', 'src="http://shop.pianolit.test/js/'], $response->getContent());
+            file_put_contents($directory.'/admin-swatches.html', $html);
+        }
+    }
+
     public function test_batch_duplicate_and_restored_uploads_use_the_target_color_and_current_product_name()
     {
         Storage::fake('public');
