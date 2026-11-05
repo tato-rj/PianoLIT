@@ -65,10 +65,10 @@
                         <span class="quiz-progress-step" data-quiz-progress-step aria-hidden="true"></span>
                     @endforeach
                 </div>
+                <strong class="quiz-streak small d-block text-start mt-2" data-quiz-streak hidden></strong>
             @endslot
             @slot('body')
                 <div id="quiz-content" hidden data-quiz-content>
-                    <strong class="quiz-streak small align-self-end mb-4" data-quiz-streak hidden></strong>
                     @include('games.quizzes.questions')
                     <div class="quiz-next d-flex justify-content-end gap-2 mt-auto pt-3">
                         <button type="button" class="btn btn-secondary" data-quiz-back disabled>Back</button>

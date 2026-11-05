@@ -14,7 +14,10 @@
             <button type="button" class="btn btn-secondary quiz-answer text-start w-100" data-quiz-answer="{{ $loop->index }}" aria-pressed="false" {{ strhas($answer, '[x]') ? 'correct' : '' }}>
                 <span class="quiz-answer-letter" aria-hidden="true">{{ chr(65 + $loop->index) }}</span>
                 <span class="quiz-answer-copy">{{ str_replace('[x]', '', $answer) }}</span>
-                <span class="quiz-answer-outcome small" data-quiz-answer-outcome hidden></span>
+                <span class="quiz-answer-outcome small" data-quiz-answer-outcome hidden>
+                    <span data-quiz-outcome-symbol aria-hidden="true"></span>
+                    <span class="quiz-answer-outcome-label" data-quiz-outcome-label></span>
+                </span>
             </button>
         @endforeach
     </div>

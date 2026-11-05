@@ -98,7 +98,7 @@
             step.classList.toggle('is-complete', answers[index] !== null);
             step.classList.toggle('is-current', index === currentQuestion && !content.hidden);
         });
-        streakLabel.hidden = streak < 2;
+        streakLabel.hidden = streak < 2 || content.hidden;
         streakLabel.textContent = '🔥 ' + streak + ' in a row';
     }
 
@@ -321,14 +321,12 @@
                     answer.disabled = true;
                     answer.setAttribute('aria-pressed', answer === button ? 'true' : 'false');
                     const outcome = answer.querySelector('[data-quiz-answer-outcome]');
-                    if (answer === correct) {
-                        answer.classList.add('is-correct');
+                    if (answer === correct || answer === button) {
+                        const isCorrect = answer === correct;
+                        answer.classList.add(isCorrect ? 'is-correct' : 'is-incorrect');
                         outcome.hidden = false;
-                        outcome.textContent = '✓ Correct';
-                    } else if (answer === button) {
-                        answer.classList.add('is-incorrect');
-                        outcome.hidden = false;
-                        outcome.textContent = '✕ Oops';
+                        outcome.querySelector('[data-quiz-outcome-symbol]').textContent = isCorrect ? '✓' : '✕';
+                        outcome.querySelector('[data-quiz-outcome-label]').textContent = isCorrect ? 'Correct' : 'Oops';
                     }
                 });
                 const reaction = question.querySelector('[data-quiz-question-feedback]');

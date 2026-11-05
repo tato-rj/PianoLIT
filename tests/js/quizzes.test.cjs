@@ -46,7 +46,9 @@ module.exports = async function () {
         question.many['[data-quiz-answer]'] = [0, 1, 2].map(index => {
             const button = node();
             button.dataset.quizAnswer = String(index);
-            button.one['[data-quiz-answer-outcome]'] = node();
+            const outcome = button.one['[data-quiz-answer-outcome]'] = node();
+            outcome.one['[data-quiz-outcome-symbol]'] = node();
+            outcome.one['[data-quiz-outcome-label]'] = node();
             button.one['.quiz-answer-copy'] = node();
             button.one['.quiz-answer-copy'].textContent = 'Choice ' + index;
             if (correct === index) button.attributes.correct = '';

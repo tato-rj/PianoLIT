@@ -1,5 +1,15 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-04 — Move the quiz streak into its header (P3, complete locally)
+
+- **Change:** Moved the streak from the question body’s right-aligned row into the shared dialog’s existing header slot, left-aligned eight pixels below the progress segments. Removed the body’s 24px streak margin so the question starts higher. The progress updater hides this header-only streak during the result screen and restores it for answer review. Existing Bootstrap utilities supply the layout; only the quiz script copy and its manifest hash change.
+- **Verification:** Existing isolated quiz checks pass **10 tests / 250 assertions**, and focused quiz JavaScript, workspace asset and whitespace checks pass. The 390px rendered-fixture preview confirms compact placement, retained one-row answer icons and no streak on the result screen. No scoring, media, route or mobile/API changes; no production deployment.
+
+### 2026-11-04 — Keep mobile quiz feedback at the right edge (P3, complete locally)
+
+- **Change:** Removed mobile answer-row wrapping and the separate feedback-line padding. `games/quizzes/questions` now separates each outcome’s decorative check/X from its text; `views/quizzes.js` fills both nodes. At phone widths `_quizzes.scss` visually hides only the text through Bootstrap’s accessibility mixin, leaving the symbol at the right edge and the answer/status on one flex row. Desktop retains its symbol and label; assistive technology retains the status words at every width.
+- **Verification / compatibility:** Existing isolated quiz PHP checks pass **10 tests / 250 assertions**, and focused quiz JavaScript checks pass after adapting the existing DOM mock to the two outcome nodes. Node 24 production, CSS, workspace asset and whitespace checks pass. Browser checks at 390px and 320px confirm both correct/incorrect symbols share the letter’s vertical center, no feedback row wraps, and the modal has no horizontal overflow. Desktop labels remain visible. Updated app CSS, the standalone quiz script and their manifest hashes. Scoring, answer locking, media, routes and mobile/API contracts are unchanged; no production deployment.
+
 ### 2026-11-04 — Remove the redundant quiz progress caption (P3, complete locally)
 
 - **Change:** Removed the visible Your progress/count row and its JavaScript label updates. The segmented header retains its accessible answered-question value, and streak feedback appears only when active without reserving an empty row. Updated the standalone script copy and only its manifest hash; unrelated CSS/tab edits are preserved.
