@@ -23,6 +23,7 @@
     </div>
     <p class="small text-muted mt-2 mb-1" id="{{ $id }}-hint">{{ $hint ?? 'JPG, PNG or WebP · up to 10 MB per image' }}</p>
     <p class="small mb-0 text-break" id="{{ $id }}-selection" data-file-selection role="status" aria-live="polite">No files selected</p>
+    <button type="button" class="btn btn-secondary btn-sm mt-2" data-file-clear hidden @if($disabled ?? false) disabled @endif>Clear selection</button>
     @if($uploadInvalid)
         <span class="invalid-feedback d-block" role="alert">{{ $uploadErrors->first($uploadField) ?: $uploadErrors->first($uploadField.'.*') }}</span>
     @endif

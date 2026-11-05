@@ -317,6 +317,13 @@ selection releases its local object URLs, as does leaving the page; browser
 back/forward restoration rebuilds retained previews. Filenames stay plain text,
 failed images leave the picker usable, and selection still requires form
 submission to upload.
+Multi-image fields append later drops and picker selections to the earlier
+files, including when another batch is added. The actual native file input is
+updated with the same combined list used by previews, so every image is included
+in the multipart submission. Repeated selections of the same name/size/modified
+file are deduplicated. Clear selection empties only that field; single-image
+fields continue to replace the previous image. Existing total count/size limits
+still apply to the combined selection.
 The Design System includes the same component. It does not instantiate the
 legacy automatic-upload Dropzone library.
 

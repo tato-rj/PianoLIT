@@ -33,15 +33,15 @@
     "/images/dart-left.svg?6538a8c547acee232dfedf4f5f7378a0": "/images/dart-left.svg?6538a8c547acee232dfedf4f5f7378a0",
     "/css/metronome.css": "/css/metronome.css?id=5b4bf710de0c179b2c21d2db8d1c251f",
     "/css/storefront.css": "/css/storefront.css?id=5e775981c0cbf38b99e90e543e349138",
-    "/css/shared.css": "/css/shared.css?id=933fea8ead88d19ce81182066d6a4a09",
+    "/css/shared.css": "/css/shared.css?id=8b7c3ab5cc5eac3f425df96cad7ecb29",
     "/js/views/downloads.js": "/js/views/downloads.js?id=533a6e3f8d5641de8b371d2aed41482b",
     "/js/views/merchandise-checkout.js": "/js/views/merchandise-checkout.js?id=91d866b5f733681f0bd62d0194b6f19f",
     "/js/components/express-checkout.js": "/js/components/express-checkout.js?id=87b9d0317d508964bc8a695e2957dac8",
     "/js/views/storefront.js": "/js/views/storefront.js?id=e670526127f0075ae270b212fe405ae1",
     "/js/app.js": "/js/app.js?id=597619b4298ee72eeeb87582031e794c",
     "/js/admin.js": "/js/admin.js?id=4c92e43825c0d12249bcdf9a14f34091",
-    "/css/app.css": "/css/app.css?id=3350d8d62dcede2a2389aa6e4470ba8a",
-    "/css/admin.css": "/css/admin.css?id=eb6d8c8d9526bbfb6f8b723409a2bd90",
+    "/css/app.css": "/css/app.css?id=82c6f0cd0bd4028721fa70c74a28199e",
+    "/css/admin.css": "/css/admin.css?id=626fe9a8fe7a4e26d0c6a3ba8fa18a49",
     "/js/views/quizzes.js": "/js/views/quizzes.js?id=1c6d83a6c38c686f70a6a3f2bbb1bcba",
     "/js/views/pianists.js": "/js/views/pianists.js?id=f88d1c92fa9718b848a5ff9144fe6f69",
     "/js/views/admin-notifications.js": "/js/views/admin-notifications.js?id=df6c7c7717b57d47d9ece89afaac3bd6",
@@ -1763,5 +1763,5 @@
     "/images/shop/categories/stickers.webp": "/images/shop/categories/stickers.webp?id=e0d542b3d9fc6a45bf597dd3d98595ef",
     "/images/shop/categories/ebooks.webp": "/images/shop/categories/ebooks.webp?id=ce63240991afe7783e26472fa3e801f4",
     "/images/shop/categories/escores.webp": "/images/shop/categories/escores.webp?id=9425da96c90d4df98c017e966fc0e2ea",
-    "/js/components/file-dropzone.js": "/js/components/file-dropzone.js?id=7776ea3bafa4f00db1ad8408611bb9e8"
+    "/js/components/file-dropzone.js": "/js/components/file-dropzone.js?id=32f84d53608acfb6d5f166aec94a3c88"
 }

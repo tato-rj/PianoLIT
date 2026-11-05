@@ -340,6 +340,8 @@ input[type='range'] {
     [hidden] { display: none; }
 }
 
+[data-file-clear][hidden] { display: none; }
+
 #search-form .input-icon {
     > i {
         top: 50%;

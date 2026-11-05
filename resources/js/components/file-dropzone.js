@@ -6,11 +6,13 @@
         var selection = root.querySelector('[data-file-selection]');
         var previews = root.querySelector('[data-file-previews]');
         var message = root.querySelector('.file-dropzone__message');
+        var clear = root.querySelector('[data-file-clear]');
         if (!input || input.dataset.dropzoneBound) return;
         input.dataset.dropzoneBound = 'true';
         var depth = 0;
         var previewUrls = [];
         var previewGeneration = 0;
+        var selectedFiles = [];
         function clearPreviews() {
             previewGeneration++;
             previewUrls.forEach(function (url) { URL.revokeObjectURL(url); });
@@ -45,16 +47,40 @@
         }
         function showSelection() {
             var files = Array.from(input.files || []);
+            selectedFiles = files;
             input.setCustomValidity('');
             var maxFiles = Number(input.dataset.maxFiles);
             var maxBytes = Number(input.dataset.maxBytes);
             if (files.length > maxFiles) input.setCustomValidity('Choose up to ' + maxFiles + (maxFiles === 1 ? ' image.' : ' images.'));
             else if (files.some(function (file) { return file.size > maxBytes; })) input.setCustomValidity('Choose images up to ' + Math.floor(maxBytes / 1048576) + ' MB each.');
             selection.textContent = files.length ? files.map(function (file) { return file.name; }).join(', ') : 'No files selected';
+            if (clear) clear.hidden = !files.length;
             showPreviews(files);
             if (input.validationMessage && files.length) input.reportValidity();
         }
-        input.addEventListener('change', showSelection);
+        input.addEventListener('change', function () {
+            var incoming = Array.from(input.files || []);
+            if (input.multiple && selectedFiles.length && incoming.length) {
+                try {
+                    var combined = new DataTransfer();
+                    var known = new Set();
+                    selectedFiles.concat(incoming).forEach(function (file) {
+                        var key = JSON.stringify([file.name, file.size, file.lastModified]);
+                        if (known.has(key)) return;
+                        known.add(key);
+                        combined.items.add(file);
+                    });
+                    input.files = combined.files;
+                } catch (failure) {
+                    // Keep the real input and its previews consistent if FileList assignment is unavailable.
+                }
+            }
+            showSelection();
+        });
+        if (clear) clear.addEventListener('click', function () {
+            input.value = '';
+            showSelection();
+        });
         root.addEventListener('dragenter', function (event) {
             if (input.disabled || !Array.from(event.dataTransfer.types || []).includes('Files')) return;
             event.preventDefault();
@@ -86,6 +112,8 @@
         if (input.form) input.form.addEventListener('reset', function () {
             input.setCustomValidity('');
             selection.textContent = 'No files selected';
+            selectedFiles = [];
+            if (clear) clear.hidden = true;
             depth = 0;
             area.classList.remove('is-dragging');
             clearPreviews();
