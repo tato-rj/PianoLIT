@@ -281,6 +281,10 @@ removes the class while fullscreen is open and restores it on exit.
 square utility precedence is retained. Custom score tools, Match cards, decorative
 shapes, email templates and standalone policy documents keep their own layouts.
 
+Use `.border-0` to remove a border and `.rounded-0` to remove corner rounding.
+The shared corner rules keep `.rounded-0` after the button and container defaults
+so it overrides their radius, including on `.btn`.
+
 ## Admin table actions
 
 Render row actions through `admin.components.table-action`. Edit uses the shared

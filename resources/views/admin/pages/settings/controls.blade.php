@@ -15,6 +15,15 @@
       @endcomponent
     @endforeach
   </div>
+  <h3 class="design-system__group-title">Borders & corners</h3>
+  <div class="design-system__grid">
+    @component('admin.pages.settings.sample', ['label' => 'Borderless', 'usage' => '.btn .btn-secondary .border-0', 'properties' => 'border,border-radius'])
+      <button type="button" class="btn btn-secondary border-0" data-ds-preview>Borderless</button>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Square', 'usage' => '.btn .btn-secondary .border-0 .rounded-0', 'properties' => 'border,border-radius'])
+      <button type="button" class="btn btn-secondary border-0 rounded-0" data-ds-preview>Square</button>
+    @endcomponent
+  </div>
   <h3 class="design-system__group-title">States & icon actions</h3>
   <div class="design-system__grid">
     @component('admin.pages.settings.sample', ['label' => 'Active', 'usage' => '.btn .btn-primary .active'])

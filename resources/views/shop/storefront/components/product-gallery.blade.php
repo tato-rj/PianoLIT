@@ -7,7 +7,7 @@
     $thumbnailViews = [];
 @endphp
 <div data-shop-gallery @if($usesColorGallery) data-gallery-product="{{ $product['id'] }}" data-gallery-selected-color="{{ $product['galleryColor'] }}" @endif aria-label="Product images">
-    <div class="shop-gallery border rounded-sm overflow-hidden">
+    <div class="shop-gallery border overflow-hidden">
         @foreach($galleryImages as $image)
             <div data-gallery-slide @if($usesColorGallery) data-gallery-color="{{ $image['color'] }}" @endif @if($loop->index !== $firstGalleryIndex) hidden @endif>
                 @if($product['hasPreview'])
@@ -27,7 +27,7 @@
                 $thumbnailViews[$thumbnailColor] = ($thumbnailViews[$thumbnailColor] ?? 0) + 1;
                 $thumbnailSelected = $loop->index === $firstGalleryIndex;
             @endphp
-            <button type="button" class="shop-gallery__thumbnail btn btn-secondary rounded-sm p-1 shadow-none {{ $thumbnailSelected ? 'border-dark' : '' }}" data-gallery-thumb="{{ $loop->index }}" aria-label="View image {{ $thumbnailViews[$thumbnailColor] }}" aria-pressed="{{ $thumbnailSelected ? 'true' : 'false' }}" @if($usesColorGallery && $image['color'] !== $product['galleryColor']) hidden @endif>
+            <button type="button" class="shop-gallery__thumbnail btn btn-secondary p-1 shadow-none border-0 rounded-0 {{ $thumbnailSelected ? 'border-dark' : '' }}" data-gallery-thumb="{{ $loop->index }}" aria-label="View image {{ $thumbnailViews[$thumbnailColor] }}" aria-pressed="{{ $thumbnailSelected ? 'true' : 'false' }}" @if($usesColorGallery && $image['color'] !== $product['galleryColor']) hidden @endif>
                 <img src="{{ $image['url'] }}" alt="" width="64" height="64" loading="lazy">
             </button>
         @endforeach
