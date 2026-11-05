@@ -333,19 +333,26 @@ class ShopOrderTrackingTest extends ReviewTestCase
         Mail::assertNothingSent(); Http::assertNothingSent();
     }
 
-    public function test_explicit_webhook_configuration_saves_keys_privately_and_never_replaces_other_events()
+    public static function webhookConfigurationEnvelopes(): array
+    {
+        return ['legacy result' => ['result'], 'current data' => ['data']];
+    }
+
+    /** @dataProvider webhookConfigurationEnvelopes */
+    public function test_explicit_webhook_configuration_saves_keys_privately_and_never_replaces_other_events(string $envelope)
     {
         config(['app.url' => 'pianolit.example']);
         $configuration = null;
+        $wrap = fn (array $data) => $envelope === 'data' ? ['data' => $data, 'extra' => []] : ['code' => 200, 'result' => $data];
         Http::swap(new \Illuminate\Http\Client\Factory);
-        Http::fake(function ($request) use (&$configuration) {
+        Http::fake(function ($request) use (&$configuration, $wrap) {
             if ($request->method() === 'POST') {
                 $this->assertSame('https://api.printful.com/v2/webhooks', $request->url());
                 $this->assertSame('https://pianolit.example/webhooks/printful', $request['default_url']);
                 $configuration = $request->data() + ['public_key' => 'new-review-public-key'];
-                return Http::response(['code' => 200, 'result' => $configuration + ['secret_key' => $this->secret]]);
+                return Http::response($wrap($configuration + ['secret_key' => $this->secret]));
             }
-            return $configuration ? Http::response(['code' => 200, 'result' => $configuration]) : Http::response([], 404);
+            return $configuration ? Http::response($wrap($configuration)) : Http::response([], 404);
         });
         $this->artisan('printful:webhooks', ['--configure' => true])->assertExitCode(0);
         $this->assertSame('new-review-public-key', app(PrintfulWebhooks::class)->keys()['public_key']);

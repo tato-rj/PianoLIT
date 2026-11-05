@@ -33,7 +33,7 @@ class PrintfulWebhooks extends Printful
     {
         $this->production();
         $response = $this->request('GET', 'v2/webhooks', [], 15, true);
-        return $response['result'] ?? null;
+        return $response['result'] ?? $response['data'] ?? null;
     }
 
     public function configure(): void
@@ -59,7 +59,8 @@ class PrintfulWebhooks extends Printful
         if (!$temporary) throw new CheckoutException('Private webhook keys could not be staged.');
         chmod($temporary, 0600);
         try {
-            $result = $this->request('POST', 'v2/webhooks', ['default_url' => $url, 'events' => array_map(fn ($type) => ['type' => $type], self::EVENTS)])['result'];
+            $response = $this->request('POST', 'v2/webhooks', ['default_url' => $url, 'events' => array_map(fn ($type) => ['type' => $type], self::EVENTS)]);
+            $result = $response['result'] ?? $response['data'] ?? [];
             if (empty($result['public_key']) || !preg_match('/^[a-f0-9]{64,128}$/iD', $result['secret_key'] ?? '')) throw new CheckoutException('Printful did not return signing keys.');
             if (file_put_contents($temporary, json_encode(['public_key' => $result['public_key'], 'secret_key' => $result['secret_key'], 'store_id' => $this->storeId()], JSON_THROW_ON_ERROR), LOCK_EX) === false
                 || !rename($temporary, $path)) throw new CheckoutException('Printful signing keys could not be installed. Review the configuration before retrying.');
