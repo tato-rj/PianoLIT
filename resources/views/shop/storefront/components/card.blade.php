@@ -12,7 +12,7 @@
         </a>
     </div>
     <div class="shop-card__copy">
-        <{{ $cardHeading ?? 'h2' }} class="shop-card__title"><a href="{{ $product['url'] }}">{{ $product['name'] }}</a></{{ $cardHeading ?? 'h2' }}>
+        <{{ $cardHeading ?? 'h2' }} class="shop-card__title clamp-1"><a href="{{ $product['url'] }}">{{ $product['name'] }}</a></{{ $cardHeading ?? 'h2' }}>
         @include('shop.components.reviews.summary', ['reviewUrl' => $product['url'].'#reviews', 'reviewCount' => $product['reviewCount'] ?? 0, 'averageRating' => $product['averageRating'] ?? 0, 'compact' => true])
         <p class="shop-card__price mb-0">@if($product['price']){{ $product['priceVaries'] ? 'From ' : '' }}{{ $product['price'] }}@else {{ $product['variants'] ? 'Choose an option' : 'Currently unavailable' }} @endif</p>
 {{--         @if($product['digital'])
