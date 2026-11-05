@@ -88,7 +88,7 @@ class ShopMerchandiseReviewsTest extends ReviewTestCase
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
         $this->assertCount(1, $xpath->query('//article//h2/../a[@href="'.$this->url($shirt).'#reviews"]'));
-        $response->assertSeeInOrder([$shirt->name, '4.5 (2)', '$28.00 USD']);
+        $response->assertSeeInOrder([$shirt->name, '(2)', '$28.00 USD']);
         foreach ([$shirt, $book, $score] as $product) {
             $this->assertArrayNotHasKey('averageRating', $product->fresh()->toArray());
             $this->assertArrayNotHasKey('reviewCount', $product->fresh()->toArray());
@@ -112,16 +112,26 @@ class ShopMerchandiseReviewsTest extends ReviewTestCase
         $user = $this->user();
         $this->actingAs($user, 'web')->from($url)->post($shirt->reviewRoute(), [
             'rating' => 5, 'title' => 'Lovely shirt', 'content' => 'A comfortable shirt', 'reviewer' => 'A pianist', 'user_id' => 999,
-        ])->assertRedirect($url)->assertSessionHasNoErrors();
+        ])->assertRedirect($url)->assertSessionHasNoErrors()
+            ->assertSessionHas('status', 'Thanks for your review. It will appear after moderation.');
         $review = $shirt->reviews()->firstOrFail();
         $this->assertSame($user->id, $review->user_id);
         $this->assertNull($review->published_at);
         $this->assertTrue($user->reviewed($shirt));
         $this->assertTrue($user->reviewFor($shirt)->is($review));
         $this->post($shirt->reviewRoute(), ['rating' => 4])->assertForbidden();
-        $this->get($url)->assertOk()->assertSee('We are reviewing your review')->assertDontSee('A comfortable shirt');
+        $this->get($url)->assertOk()->assertDontSee('Thanks for your feedback!')
+            ->assertDontSee('We are reviewing your review')->assertDontSee('A comfortable shirt');
         $review->update(['published_at' => now()]);
-        $this->get($url)->assertOk()->assertSee('Based on 1 review')->assertSee('Lovely shirt')->assertSee('A comfortable shirt')->assertSee('Delete my review');
+        $response = $this->get($url)->assertOk()->assertSee('Based on 1 review')->assertSee('Lovely shirt')
+            ->assertSee('A comfortable shirt')->assertSee('Delete my review')->assertDontSee('You submitted a review on');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@id="reviews"]//article//button[@aria-label="Delete my review" and contains(@class,"btn-red")]'));
+        $this->assertSame('(1)', trim($xpath->query('//a[@href="#reviews"]')->item(0)->textContent));
+        $this->browserFixture('reviews', $response->getContent(), $url);
+        $this->actingAs($this->user(), 'web')->get($url)->assertOk()->assertDontSee('aria-label="Delete my review"', false);
         $this->actingAs($this->user(), 'web')->delete(route('reviews.destroy', $review))->assertForbidden();
         $this->actingAs($user, 'web')->from($url)->delete(route('reviews.destroy', $review))->assertRedirect($url);
         $this->assertDatabaseMissing('reviews', ['id' => $review->id]);

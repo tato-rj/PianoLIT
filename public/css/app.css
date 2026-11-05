@@ -22367,10 +22367,6 @@ i.spinner-border {
   z-index: 1040;
 }
 
-.bs-tooltip-top, .bs-tooltip-auto[data-popper-placement^=top] {
-  top: -20px !important;
-}
-
 .save-to-panel {
   display: flex;
   flex: 1;
@@ -34558,7 +34554,8 @@ a:focus,
   border-color: #9aa9b7;
 }
 
-.btn-grey:hover {
+.btn-grey:hover,
+.btn-grey:focus-visible {
   color: #fff !important;
   background-color: #8999aa;
   border-color: #8999aa;
@@ -34575,7 +34572,8 @@ a:focus,
   border-color: #e3342f;
 }
 
-.btn-red:hover {
+.btn-red:hover,
+.btn-red:focus-visible {
   color: #fff !important;
   background-color: #c51f1a;
   border-color: #c51f1a;
@@ -34592,7 +34590,8 @@ a:focus,
   border-color: #f6993f;
 }
 
-.btn-orange:hover {
+.btn-orange:hover,
+.btn-orange:focus-visible {
   color: #fff !important;
   background-color: #d9700a;
   border-color: #d9700a;
@@ -34609,7 +34608,8 @@ a:focus,
   border-color: #f2da00;
 }
 
-.btn-yellow:hover {
+.btn-yellow:hover,
+.btn-yellow:focus-visible {
   color: #fff !important;
   background-color: #d4bf00;
   border-color: #d4bf00;
@@ -34626,7 +34626,8 @@ a:focus,
   border-color: #38c172;
 }
 
-.btn-green:hover {
+.btn-green:hover,
+.btn-green:focus-visible {
   color: #fff !important;
   background-color: #2d995b;
   border-color: #2d995b;
@@ -34643,7 +34644,8 @@ a:focus,
   border-color: #4dc0b5;
 }
 
-.btn-teal:hover {
+.btn-teal:hover,
+.btn-teal:focus-visible {
   color: #fff !important;
   background-color: #389d94;
   border-color: #389d94;
@@ -34660,7 +34662,8 @@ a:focus,
   border-color: #3490dc;
 }
 
-.btn-blue:hover {
+.btn-blue:hover,
+.btn-blue:focus-visible {
   color: #fff !important;
   background-color: #1f70b4;
   border-color: #1f70b4;
@@ -34677,7 +34680,8 @@ a:focus,
   border-color: #6574cd;
 }
 
-.btn-indigo:hover {
+.btn-indigo:hover,
+.btn-indigo:focus-visible {
   color: #fff !important;
   background-color: #3c4eb9;
   border-color: #3c4eb9;
@@ -34694,7 +34698,8 @@ a:focus,
   border-color: #9561e2;
 }
 
-.btn-purple:hover {
+.btn-purple:hover,
+.btn-purple:focus-visible {
   color: #fff !important;
   background-color: #7836da;
   border-color: #7836da;
@@ -34711,7 +34716,8 @@ a:focus,
   border-color: #f44781;
 }
 
-.btn-pink:hover {
+.btn-pink:hover,
+.btn-pink:focus-visible {
   color: #fff !important;
   background-color: #f22a6d;
   border-color: #f22a6d;

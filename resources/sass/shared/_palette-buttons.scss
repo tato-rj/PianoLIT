@@ -74,7 +74,8 @@ $palette-buttons: (
         border-color: nth($colors, 1);
     }
 
-    .btn-#{$name}:hover {
+    .btn-#{$name}:hover,
+    .btn-#{$name}:focus-visible {
         color: #fff !important;
         background-color: nth($colors, 2);
         border-color: nth($colors, 2);

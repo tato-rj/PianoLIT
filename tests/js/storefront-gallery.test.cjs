@@ -24,7 +24,7 @@ module.exports = async function () {
     const colorGallery = gallery(['Pink', 'Blue', 'Pink', 'Ivory'], '1');
     const digital = gallery([undefined, undefined]);
     const variants = [['91', 'Pink', 'M'], ['92', 'Pink', 'L'], ['93', 'Blue', 'M'], ['94', 'Ivory', 'M'], ['95', 'White', 'M']]
-        .map(([value, color, size]) => ({value, dataset: {color, size, price: color === 'Blue' ? '$27.00' : '$25.00', inBag: '0'}}));
+        .map(([value, color, size]) => ({value, disabled: color === 'White', dataset: {color, size, price: color === 'Blue' ? '$27.00' : '$25.00', inBag: '0'}}));
     const select = element({options: variants, value: '91'});
     Object.defineProperty(select, 'selectedOptions', {get() { return variants.filter(option => option.value === this.value); }});
     function group(key) {
@@ -75,11 +75,11 @@ module.exports = async function () {
     assert.equal(colorGallery.row.hidden, true);
     assert.equal(colorGallery.count.hidden, true);
     thumbnail(2); assert.deepEqual(shown(), [1], 'A single view cannot reveal another color');
-    choose(colors, 'White'); assert.deepEqual(shown(), []);
-    assert.equal(colorGallery.empty.hidden, false, 'A missing color gallery never falls back to another color');
-    assert.equal(colorGallery.count.textContent, 'Image 0 of 0');
-    assert.equal(colorGallery.row.hidden, true);
-    assert.equal(colorGallery.thumbnails.every(button => button.hidden), true);
+    assert.equal(colors.buttons.find(button => button.dataset.optionValue === 'White').disabled, true);
+    choose(colors, 'White'); assert.deepEqual(shown(), [1], 'A color without uploaded mockups cannot change the selected variant or gallery');
+    assert.equal(select.value, '93');
+    select.value = '95'; select.events.change();
+    assert.equal(select.value, '93', 'The native selection cannot activate an unavailable color');
     choose(colors, 'Pink'); assert.deepEqual(shown(), [0], 'A color change starts at that color’s first view');
     assert.equal(colorGallery.empty.hidden, true);
     assert.equal(colorGallery.row.hidden, false);
@@ -90,5 +90,11 @@ module.exports = async function () {
     assert.equal(digital.slides[1].hidden, false, 'Digital galleries retain their full sequence');
     assert.equal(digital.count.textContent, 'Image 2 of 2');
     assert.equal(colorGallery.count.textContent, 'Image 1 of 1', 'Counters belong to their own galleries');
+    const emptyGallery = gallery([], '1');
+    variants.forEach(variant => { variant.disabled = true; });
+    run([emptyGallery.node], [form]);
+    assert.equal(colors.buttons.every(button => button.disabled && button.attrs['aria-pressed'] === 'false'), true);
+    assert.equal(sizes.buttons.every(button => button.disabled), true);
+    assert.equal(emptyGallery.empty.hidden, false, 'A product without uploaded galleries has no selectable colors');
     console.log('Passed: color-filtered thumbnail selection, active state, keyboard focus, missing/single views, size preservation and digital galleries.');
 };

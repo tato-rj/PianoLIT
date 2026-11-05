@@ -85,9 +85,10 @@ class ShopProductPageTest extends ReviewTestCase
         }
     }
 
-    public function test_unpublished_and_other_product_reviews_never_appear_and_ratings_without_text_count()
+    /** @dataProvider products */
+    public function test_unpublished_and_other_product_reviews_never_appear_and_ratings_without_text_count($class)
     {
-        $product = $this->product();
+        $product = $this->product($class);
         $other = $this->product();
         $user = $this->user();
         $product->reviews()->create(['user_id' => $user->id, 'rating' => 4, 'published_at' => now()]);
@@ -95,7 +96,14 @@ class ShopProductPageTest extends ReviewTestCase
         $product->reviews()->create(['rating' => 1, 'content' => 'Pending review']);
         $this->get($product->showRoute())->assertOk()->assertSee('Customer reviews')
             ->assertSee('Based on 1 review')->assertSee('4.0')
-            ->assertDontSee('Other product review')->assertDontSee('Pending review');
+            ->assertDontSee('Other product review')->assertDontSee('Pending review')
+            ->assertDontSee('aria-label="Delete my review"', false);
+        $response = $this->actingAs($user, 'web')->get($product->showRoute())->assertOk();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@id="reviews"]//article//button[@aria-label="Delete my review" and contains(@class,"btn-red")]'));
+        $this->assertSame('(1)', trim($xpath->query('//a[@href="#reviews"]')->item(0)->textContent));
     }
 
     /** @dataProvider products */

@@ -477,6 +477,8 @@ warning, info and secondary). Their base text/background/border utilities use
 colors still use their existing styles; further consolidation can happen when
 those components are redesigned. The palette's `blue` default is its existing
 rendered `#3490dc`; PianoLIT's brand blue is `#0055fe`.
+Filled palette buttons use their hover background and border on keyboard focus,
+so Bootstrap's default transparent focus surface cannot hide their white icons.
 
 Use `--color-text`, `--color-text-muted`, `--color-surface`,
 `--color-surface-subtle` and `--color-border` for new shared styles.
@@ -1109,6 +1111,8 @@ See `PIANISTS.md` for controls, data states and the editing map.
 
 
 ## Shop storefront
+
+Color options without uploaded public mockups use the native shared disabled-button finish and the reusable `components.feedback.tooltip` wrapper. Pass `unavailable => true` to the Shop option component: the button is disabled, its pointer events go to the wrapper, and “This will be available soon” appears only on hover (`data-bs-trigger="hover"`). It is not a persistent status label or a focus/click tooltip; the disabled button retains an accessible unavailable description. Printful references and unassigned/retired-color images do not enable choices. The web DTO selects an available color initially, native select options agree with the buttons, and the JS controller preserves availability during size changes. If no colors have mockups, all detail color/size choices and Add to bag stay disabled. The Design System’s Shop storefront specimen includes the same unavailable option.
 
 `shop.storefront.components.product-row` is the shared **You may also like** row above product reviews, also shown in the Design System. It reuses the product card without a separate visual finish. Four cards fit on desktop and two on phones; extra cards stay in one native horizontal scroller, with shared previous/next buttons shown only for overflow and disabled at the ends. Its `components/product-row.js` controller respects reduced motion and tracks scrolling, resizing and page restoration. The row remains usable without JavaScript. `Storefront::related` supplies at most twelve other current-category products using the catalog’s store, publication and stable-order rules. Hide the entire section when none exist; digital pages use this row before reviews rather than a duplicate section afterward.
 

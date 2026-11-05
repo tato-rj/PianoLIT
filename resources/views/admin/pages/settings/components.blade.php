@@ -19,6 +19,7 @@
         <div class="d-flex flex-wrap gap-2 mt-4">
           @include('shop.storefront.components.option', ['option' => 'Mint', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#b9d8d1']), 'selected' => true])
           @include('shop.storefront.components.option', ['option' => 'Two-tone', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#14191e', 'color_code2' => '#ffffff']), 'selected' => false])
+          @include('shop.storefront.components.option', ['option' => 'Blue', 'swatch' => [], 'selected' => false, 'unavailable' => true])
         </div>
         <div class="d-flex flex-wrap gap-2 mt-3">
           @include('shop.storefront.components.option', ['option' => 'M', 'swatch' => [], 'selected' => true, 'small' => true])

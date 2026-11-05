@@ -107,33 +107,40 @@
 
     root.querySelectorAll('[data-product-options]').forEach(function (form) {
         var select = form.querySelector('[name="variant_id"]');
-        var variants = Array.from(select.options);
+        var variants = Array.from(select.options).filter(function (variant) { return !variant.disabled; });
         var colors = form.querySelector('[data-option-group="color"]');
         var sizes = form.querySelector('[data-option-group="size"]');
         var selected = select.selectedOptions[0];
+        if (!variants.includes(selected)) selected = variants[0];
         function render() {
-            select.value = selected.value;
-            renderBagButton(form);
-            galleries.forEach(function (gallery) {
-                if (gallery.dataset.galleryProduct === form.querySelector('[name="product_id"]').value) gallery.showColor(selected.dataset.color);
-            });
-            var price = root.querySelector('[data-product-price]');
-            if (price) price.textContent = selected.dataset.price;
+            if (selected) {
+                select.value = selected.value;
+                renderBagButton(form);
+                galleries.forEach(function (gallery) {
+                    if (gallery.dataset.galleryProduct === form.querySelector('[name="product_id"]').value) gallery.showColor(selected.dataset.color);
+                });
+                var price = root.querySelector('[data-product-price]');
+                if (price) price.textContent = selected.dataset.price;
+            }
             [colors, sizes].forEach(function (group) {
                 var key = group.dataset.optionGroup;
                 group.querySelectorAll('[data-option-value]').forEach(function (button) {
-                    var active = button.dataset.optionValue === selected.dataset[key];
+                    button.disabled = key === 'color'
+                        ? !variants.some(function (variant) { return variant.dataset.color === button.dataset.optionValue; })
+                        : !selected || !variants.some(function (variant) { return variant.dataset.color === selected.dataset.color && variant.dataset.size === button.dataset.optionValue; });
+                    var active = Boolean(!button.disabled && selected && button.dataset.optionValue === selected.dataset[key]);
                     button.setAttribute('aria-pressed', String(active));
                     button.classList.toggle('border-primary', active);
-                    button.disabled = key === 'size' && !variants.some(function (variant) { return variant.dataset.color === selected.dataset.color && variant.dataset.size === button.dataset.optionValue; });
                 });
             });
         }
         [colors, sizes].forEach(function (group) {
             group.querySelectorAll('[data-option-value]').forEach(function (button) {
                 button.addEventListener('click', function () {
+                    if (button.disabled) return;
                     var key = group.dataset.optionGroup;
                     var matches = variants.filter(function (variant) { return variant.dataset[key] === button.dataset.optionValue; });
+                    if (!matches.length) return;
                     var next = matches.find(function (variant) { return key === 'color' ? variant.dataset.size === selected.dataset.size : variant.dataset.color === selected.dataset.color; });
                     selected = next || matches[0];
                     render();
@@ -141,14 +148,13 @@
             });
         });
         select.addEventListener('change', function () {
-            selected = select.selectedOptions[0];
-            if (selected) render();
-        });
-        if (selected) {
-            form.querySelector('[data-variant-fallback]').hidden = true;
-            form.querySelector('[data-option-pickers]').hidden = false;
+            var next = select.selectedOptions[0];
+            if (variants.includes(next)) selected = next;
             render();
-        }
+        });
+        form.querySelector('[data-variant-fallback]').hidden = true;
+        form.querySelector('[data-option-pickers]').hidden = false;
+        render();
     });
 
     root.querySelectorAll('[data-add-to-bag]').forEach(function (form) {
@@ -159,6 +165,7 @@
             var button = form.querySelector('[type="submit"]');
             root.dataset.pending = 'true';
             var submitters = root.querySelectorAll('[data-add-to-bag] [type="submit"]');
+            var submitterStates = Array.from(submitters, function (submitter) { return Boolean(submitter.disabled); });
             submitters.forEach(function (submitter) { submitter.disabled = true; });
             button.setAttribute('aria-busy', 'true');
             try {
@@ -183,7 +190,7 @@
                 notify('error', failure.message || 'Your bag could not be updated. Please try again.');
             } finally {
                 root.dataset.pending = 'false';
-                submitters.forEach(function (submitter) { submitter.disabled = false; });
+                submitters.forEach(function (submitter, index) { submitter.disabled = submitterStates[index]; });
                 button.removeAttribute('aria-busy');
             }
         });

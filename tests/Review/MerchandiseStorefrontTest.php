@@ -272,6 +272,7 @@ class MerchandiseStorefrontTest extends ReviewTestCase
             $this->variant(['color_code' => '#14191e']),
             $this->variant(['id' => 92, 'size' => 'L', 'color_code' => '#14191e']),
         ]]);
+        $this->image($product, 'shop/black-option.png', 1)->update(['gallery_color' => 'Black']);
         $url = app(Storefront::class)->productUrl($product);
         $html = $this->get($url.'?utm_source=sample')->assertOk()->getContent();
         $dom = new \DOMDocument;

@@ -43,7 +43,12 @@ class MerchandiseGallery
                 $views[$key] = ($views[$key] ?? 0) + 1;
                 return ['url' => $image->url, 'alt' => $this->description($product, $image->gallery_color, $views[$key]), 'color' => $image->gallery_color ?? $color];
             });
-        return ['gallery' => $gallery, 'galleryColor' => $color, 'selectedVariant' => $selected];
+        $galleryColors = $gallery->pluck('color')->intersect(array_column($variants, 'color'))->unique()->values()->all();
+        if (!$selected || !in_array($selected['color'], $galleryColors, true)) {
+            $selected = collect($variants)->first(fn ($variant) => in_array($variant['color'], $galleryColors, true));
+        }
+        if ($selected) $color = $selected['color'];
+        return ['gallery' => $gallery, 'galleryColor' => $color, 'galleryColors' => $galleryColors, 'selectedVariant' => $selected];
     }
 
     public function description(MerchandiseProduct $product, ?string $color, int $view): string

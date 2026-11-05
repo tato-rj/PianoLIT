@@ -67,7 +67,7 @@ class LocalMerchandiseTest extends ReviewTestCase
         $this->get(route('shop.bag'))->assertOk()->assertSee('My edited local sample');
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
         $this->get(route('admin.merchandise.index'))->assertOk()->assertSee('Printful is disconnected on this machine')->assertDontSee('Import from Printful');
-        $this->get(route('admin.merchandise.edit', $product))->assertOk()->assertDontSee('Refresh from Printful')->assertSee('Upload images');
+        $this->get(route('admin.merchandise.edit', $product))->assertOk()->assertDontSee('Refresh product from Printful')->assertSee('Upload images');
         Http::assertNothingSent();
     }
 

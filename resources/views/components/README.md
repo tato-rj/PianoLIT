@@ -45,6 +45,7 @@ Frequently edited files:
 - Account and Game player dropdown surface: `account/menu-panel.blade.php`
 - Web-app logo header: `webapp/layouts/header.blade.php` (under `resources/views/`). Its bottom account tab lives in `webapp/layouts/menu.blade.php`, reusing `layouts/menu/user.blade.php`, the `webapp-navigation` variant of `account/account-circle.blade.php`, `account/menu.blade.php` and `navigation/hub-menu/`; other sites keep their header control. At every viewport width, the tab stays in place and the panel reuses the same `account/account-circle.blade.php` close state as public pages (`closeControl => true`) with offcanvas dismissal in a stationary corner host. Its 44px circle, 21px neutral X, white surface, thin border and shadow have one shared style in `_account-circle.scss`
 - Newsletter popup: `promotions/popups/newsletter-subscription.blade.php`
+- Tooltip wrappers: `feedback/tooltip.blade.php` uses Bootstrap’s shared tooltip, with `text` and optional `trigger` (default `hover focus`). Use `trigger => hover` for hover-only help on a disabled control, and put `.pe-none` on the disabled button so its wrapper receives pointer events. Shop’s unavailable-color example renders this component.
 
 ## Components belonging to a section
 

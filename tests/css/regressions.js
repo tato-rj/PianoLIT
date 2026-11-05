@@ -92,6 +92,10 @@ for (const entry of ['app', 'admin']) {
         assert.strictEqual(ruleValue(builtStylesheet, selector, property), expected, entry + ': missing required ' + selector + ' ' + property);
     }
     console.log('Passed: ' + entry + ' keeps required layout, palette and interaction helpers.');
+    for (const property of ['background-color', 'border-color']) {
+        assert.strictEqual(ruleValue(builtStylesheet, '.btn-red:focus-visible', property),
+            ruleValue(builtStylesheet, '.btn-red:hover', property), entry + ': focused red actions must remain visible');
+    }
 
     // A focused URL tab panel must never acquire the browser's default outline.
     // Reject custom outlines too, so component-specific !important rules cannot revive it.

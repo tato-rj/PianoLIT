@@ -77,6 +77,36 @@ class MerchandiseGalleryTest extends ReviewTestCase
         $this->get(app(Storefront::class)->productUrl($product))->assertOk()->assertSee('data-gallery-slide', false);
     }
 
+    public function test_only_uploaded_color_galleries_enable_options_with_hover_only_tooltips()
+    {
+        $product = $this->product();
+        $this->image($product, 'Pink reference', 'Pink', 'printful');
+        $unassigned = $this->image($product, 'Unassigned upload', null);
+        $blue = $this->image($product, 'Blue upload', 'Blue');
+        $product->update(['main_image_id' => $unassigned->id]);
+        $url = app(Storefront::class)->productUrl($product);
+        $response = $this->get($url)->assertOk()->assertViewHas('product', function ($data) {
+            $this->assertSame(['Blue'], $data['galleryColors']);
+            $this->assertSame(92, $data['selectedVariant']['id']);
+            $this->assertSame('Blue', $data['galleryColor']);
+            return true;
+        });
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@data-option-group="color"]//button[not(@disabled) and @data-option-value="Blue" and @aria-pressed="true"]'));
+        $this->assertCount(2, $xpath->query('//*[@data-option-group="color"]//*[@data-feedback-tooltip and @data-bs-trigger="hover" and @data-bs-title="This will be available soon"]/button[@disabled and @aria-pressed="false"]'));
+        $this->assertCount(2, $xpath->query('//select[@name="variant_id"]/option[@disabled]'));
+        $this->assertCount(0, $xpath->query('//*[@data-product-options]//button[@type="submit" and @disabled]'));
+        $blue->delete();
+        $html = $this->get($url)->assertOk()->getContent();
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(3, $xpath->query('//*[@data-option-group="color"]//button[@disabled and @aria-pressed="false"]'));
+        $this->assertCount(1, $xpath->query('//*[@data-product-options]//button[@type="submit" and @disabled]'));
+        Http::assertNothingSent();
+    }
+
     public function test_managers_can_assign_upload_reassign_and_order_views_within_each_color()
     {
         Storage::fake('public');

@@ -125,6 +125,35 @@ class AdminMerchandiseTest extends ReviewTestCase
         $this->assertSame('piano-t-shirt', $product->fresh()->slug);
     }
 
+    public function test_whole_product_refresh_is_visible_in_product_details_and_exposes_saved_materials()
+    {
+        $product = $this->imported();
+        $url = $this->action('edit', $product);
+        $response = $this->get($url)->assertOk()->assertSee('Refresh product from Printful')
+            ->assertSee('No material details saved from Printful.');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $refresh = $xpath->query('//*[@id="product-details"]//form[@action="'.$this->action('refresh', $product).'"]');
+        $this->assertCount(1, $refresh);
+        $this->assertCount(1, $xpath->query('.//input[@name="_token"]', $refresh->item(0)));
+        $this->assertSame((string) $product->revision, $xpath->query('.//input[@name="revision"]', $refresh->item(0))->item(0)->getAttribute('value'));
+        $this->assertCount(0, $xpath->query('//*[@id="printful-mockups"]//form'));
+        $this->assertSame(1, substr_count($response->getContent(), 'Refresh product from Printful'));
+
+        $this->remote['sync_product']['name'] = 'Updated provider T-shirt';
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 100]];
+        $this->post(route('admin.merchandise.refresh', ['merchandise' => $product, 'search' => 'Piano', 'sort' => 'name_asc']), ['revision' => $product->revision])
+            ->assertRedirect(route('admin.merchandise.edit', ['merchandise' => $product, 'search' => 'Piano', 'sort' => 'name_asc']).'#product-details')
+            ->assertSessionHas('status', 'Product data refreshed from Printful. Your local edits and gallery choices have been kept.');
+        $this->assertSame('Updated provider T-shirt', $product->fresh()->name);
+        Http::swap(new \Illuminate\Http\Client\Factory);
+        Http::fake();
+        $this->get($url)->assertOk()->assertSee('Materials from Printful')->assertSee('100% cotton')
+            ->assertDontSee('No material details saved from Printful.');
+        Http::assertNothingSent();
+    }
+
     public function test_local_product_details_survive_refresh_while_the_default_title_stays_provider_owned()
     {
         $product = $this->imported();
