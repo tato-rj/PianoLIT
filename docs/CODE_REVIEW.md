@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-04 — Label the quiz play button and illustrate its stats (P3, complete locally)
+
+- **Change:** The shared `media/play-button` now supports an optional visible caption using existing Bootstrap utilities. The quiz opts in to bold white uppercase START QUIZ directly below the centered circle; its existing controller updates the same accessible/clickable label to RESUME QUIZ or VIEW RESULT. The Design System previews the caption on a dark surface. Calendar, list, clock, people, trophy and difficulty icons now accompany the six statistics through the shared icon renderer.
+- **Verification / compatibility:** Isolated quiz PHP checks pass **10 tests / 250 assertions**, and focused quiz JavaScript and whitespace checks pass. Existing stat selectors now normalize whitespace introduced by SVG paths. Desktop/390px browser checks confirm the caption’s white/700-weight/uppercase styling, all six icons and that clicking the caption opens the existing dialog. Templates and documentation only; no CSS/JavaScript rebuild, scoring/data changes, mobile/API changes or production deployment.
+
 ### 2026-11-04 — Start quizzes from their cover and show concise statistics (P3, complete locally)
 
 - **Request / change:** Replaced the separate emoji/start panel with a darkened quiz cover and one centered circular play control. `games/quizzes/show` moves metadata under the image in a responsive definition list: creation date, question count, estimated time, times answered, average score and difficulty. `_quizzes.scss` owns only the cover geometry/veil; its explicit width keeps the minimum-height mobile cover inside the content column. Missing cover paths reuse Learn’s native quiz artwork. The shared `components/media/play-button` uses standard primary-button states, an accessible changing label and circular sizing, with a Design System specimen and component-map entry.

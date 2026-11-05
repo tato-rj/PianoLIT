@@ -164,8 +164,8 @@ class QuizPagesTest extends ReviewTestCase
         foreach ([0, 1, 2] as $score) $quiz->results()->create(['score' => $score]);
         $overview = $this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk();
         $overviewXpath = $this->xpath($overview);
-        $this->assertCount(1, $overviewXpath->query('//dl/div[dt="Times answered"]/dd[text()="3"]'));
-        $this->assertCount(1, $overviewXpath->query('//dl/div[dt="Average score"]/dd[text()="1 / 2"]'));
+        $this->assertCount(1, $overviewXpath->query('//dl/div[normalize-space(dt)="Times answered"]/dd[text()="3"]'));
+        $this->assertCount(1, $overviewXpath->query('//dl/div[normalize-space(dt)="Average score"]/dd[text()="1 / 2"]'));
         $this->preview($overview, 'statistics');
         $other = $this->quiz('Another quiz');
         $other->results()->create(['score' => 2]);

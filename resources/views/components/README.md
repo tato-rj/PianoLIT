@@ -34,7 +34,7 @@ Frequently edited files:
 - Public editorial page columns: `layout/editorial.blade.php`
 - Resource cards and sidebar promotion cards: `cards/resource.blade.php`, `cards/promotion.blade.php`
 - Inputs and switches: `forms/input.blade.php`, `forms/toggle.blade.php`
-- Circular play/start control: `media/play-button.blade.php`, using the shared primary button finish and responsive circular sizing; also previewed in the Design System. Pass `label`, optional `id`/`modalId`/`descriptionId`, and `data`/`labelData` maps for the calling controller.
+- Circular play/start control: `media/play-button.blade.php`, using the shared primary button finish and responsive circular sizing; also previewed in the Design System. Pass `label`, optional `id`/`modalId`/`descriptionId`, and `data`/`labelData` maps for the calling controller. `caption => true` displays that same accessible label below the circle in bold uppercase white text for dark media covers; leave room beneath the button for it.
 - Link-sharing modal: `media/link-share.blade.php` and its reusable `media/link-share-options.blade.php` body, `resources/js/components/link-share.js` and `resources/sass/components/_link-share.scss`; the Design System renders the same dialog. The entire readonly URL field and copy icon copy the canonical link, with a brief Bootstrap Copied! tooltip. Pass `useOldInput => false` for this generated URL.
 - Profile/Support section menu: `navigation/section-navigation.blade.php`
 - Discover and piece recommendation buttons: `navigation/pill-tabs.blade.php`, sharing `.pill-filters` and native Bootstrap tab behavior

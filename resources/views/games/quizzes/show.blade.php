@@ -40,7 +40,7 @@
                 @if(count($quiz->questions))
                     <span class="visually-hidden" id="quiz-start-description">Answer each question, then see your score.</span>
                     @include('components.media.play-button', [
-                        'id' => 'start-quiz', 'label' => 'Start quiz', 'modalId' => 'quiz-result-modal',
+                        'id' => 'start-quiz', 'label' => 'Start quiz', 'caption' => true, 'modalId' => 'quiz-result-modal',
                         'descriptionId' => 'quiz-start-description', 'data' => ['quiz-start' => ''], 'labelData' => ['quiz-start-label' => ''],
                     ])
                 @else
@@ -49,12 +49,12 @@
             </div>
             <noscript><p class="small text-muted mt-3 mb-0">Enable JavaScript to answer this quiz.</p></noscript>
             <dl class="row row-cols-2 row-cols-md-3 g-3 mt-2 mb-0" aria-label="Quiz statistics">
-                <div class="col"><dt class="small text-muted fw-normal">Created</dt><dd class="mb-0">@if($quiz->created_at)<time datetime="{{ $quiz->created_at->toDateString() }}">{{ $quiz->created_at->format('M j, Y') }}</time>@else Not recorded @endif</dd></div>
-                <div class="col"><dt class="small text-muted fw-normal">Questions</dt><dd class="mb-0">{{ count($quiz->questions) }}</dd></div>
-                <div class="col"><dt class="small text-muted fw-normal">Time</dt><dd class="mb-0">About {{ $quiz->duration }}</dd></div>
-                <div class="col"><dt class="small text-muted fw-normal">Times answered</dt><dd class="mb-0">{{ number_format($statistics['plays']) }}</dd></div>
-                <div class="col"><dt class="small text-muted fw-normal">Average score</dt><dd class="mb-0">{{ $statistics['average_label'] !== null ? $statistics['average_label'].' / '.count($quiz->questions) : ($statistics['plays'] ? 'Not available' : 'No scores yet') }}</dd></div>
-                @if($quiz->level)<div class="col"><dt class="small text-muted fw-normal">Difficulty</dt><dd class="mb-0">{{ ucfirst($quiz->level->name) }}</dd></div>@endif
+                <div class="col"><dt class="small text-muted fw-normal">@icon('calendar')Created</dt><dd class="mb-0">@if($quiz->created_at)<time datetime="{{ $quiz->created_at->toDateString() }}">{{ $quiz->created_at->format('M j, Y') }}</time>@else Not recorded @endif</dd></div>
+                <div class="col"><dt class="small text-muted fw-normal">@icon('list')Questions</dt><dd class="mb-0">{{ count($quiz->questions) }}</dd></div>
+                <div class="col"><dt class="small text-muted fw-normal">@icon('clock')Time</dt><dd class="mb-0">About {{ $quiz->duration }}</dd></div>
+                <div class="col"><dt class="small text-muted fw-normal">@icon('users')Times answered</dt><dd class="mb-0">{{ number_format($statistics['plays']) }}</dd></div>
+                <div class="col"><dt class="small text-muted fw-normal">@icon('trophy')Average score</dt><dd class="mb-0">{{ $statistics['average_label'] !== null ? $statistics['average_label'].' / '.count($quiz->questions) : ($statistics['plays'] ? 'Not available' : 'No scores yet') }}</dd></div>
+                @if($quiz->level)<div class="col"><dt class="small text-muted fw-normal">@icon('chart-no-axes-column-increasing')Difficulty</dt><dd class="mb-0">{{ ucfirst($quiz->level->name) }}</dd></div>@endif
             </dl>
 
             @component('components.dialogs.modal', ['id' => 'quiz-result-modal', 'titleId' => 'quiz-dialog-title', 'centered' => true, 'data' => ['quiz-modal' => ''], 'options' => ['size' => 'lg', 'header' => ['raw' => true], 'body' => ['padding' => 0]]])
