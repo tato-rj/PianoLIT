@@ -36,6 +36,19 @@
         </div>
       </div>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Shop best deals', 'usage' => 'shop.storefront.components.best-deals · desktop mosaic and swipeable mobile row', 'properties' => 'gap,border-radius,overflow-x'])
+      <div class="shop-storefront" data-ds-preview>
+        @include('shop.storefront.components.best-deals', [
+          'dealsId' => 'ds-shop-best-deals',
+          'bestDeals' => collect([
+            ['category' => 't-shirts', 'name' => 'Piano rainbow T-shirt', 'price' => '$28.00 USD', 'imageUrl' => asset('images/shop/demo/shirt-mint.png')],
+            ['category' => 'stickers', 'name' => 'More piano sticker', 'price' => '$5.00 USD', 'imageUrl' => asset('images/shop/demo/piano-sticker.svg')],
+            ['category' => 'ebooks', 'name' => 'A guide to piano practice', 'price' => '$10.00 USD', 'imageUrl' => asset('images/mockup/crashcourse.png')],
+            ['category' => 'escores', 'name' => 'Piano solos', 'price' => '$5.00 USD', 'imageUrl' => asset('images/misc/score1.png')],
+          ])->map(fn ($deal) => $deal + ['url' => '#ds-components', 'priceVaries' => false]),
+        ])
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Shop category row', 'usage' => 'shop.storefront.components.category-row · single row with scroll arrows', 'properties' => 'font-size,gap,overflow-x'])
       <div class="shop-storefront" data-storefront data-ds-preview>
         <div class="row">

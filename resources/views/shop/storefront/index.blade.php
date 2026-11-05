@@ -2,7 +2,7 @@
 
 @section('shop-content')
 @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
-<form method="GET" action="{{ $catalogUrl }}" class="border-bottom">
+<form method="GET" action="{{ $catalogUrl }}">
     <div class="row align-items-end justify-content-between g-4 mb-4">
         <div class="col-12 col-md-7">
             @component('components.layout.hub-header', ['heading' => $category ? $categories[$category] : 'PianoLIT Shop', 'spacing' => 'mb-0'])
@@ -22,6 +22,9 @@
         @if($search || $topics)<a class="d-inline-block mt-4" href="{{ $catalogUrl }}">Clear filters @icon('x')</a>@endif
     </div>
 </form>
+@if($bestDeals->isNotEmpty())
+    @include('shop.storefront.components.best-deals')
+@endif
 @if($hasProducts)
     @if($category)
         <div class="row g-3 g-md-4 mt-2" aria-label="Products">

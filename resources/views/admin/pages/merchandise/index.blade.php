@@ -19,7 +19,6 @@
         ],
         'emptyTitle' => $filters['search'] !== '' ? 'No matching products' : 'No merchandise yet',
         'emptyDescription' => $filters['search'] !== '' ? 'Try another product name or clear the search.' : 'Publish a product to your PianoLIT store in Printful, then import it here.',
-        'emptyAction' => app(\App\Services\Shop\Printful::class)->enabled() ? ['label' => 'Import from Printful', 'url' => route('admin.merchandise.discover')] : null,
     ])
         @foreach($products as $product)
         <tr>

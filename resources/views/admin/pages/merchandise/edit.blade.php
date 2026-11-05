@@ -55,6 +55,9 @@
             @endif
         </div>
         <div class="col-lg-4 order-1 order-lg-2">
+            <div class="mb-4">
+                @include('admin.components.shop.display-mockup', ['mockupProduct' => $product, 'mockupAction' => route('admin.merchandise.display-mockup', ['merchandise' => $product] + $returnFilters)])
+            </div>
             @component('admin.components.editor.section', ['id' => 'merchandise-upload', 'title' => 'Upload your own images', 'description' => 'Add your own mockups, product photos or additional Printful views.'])
                 <form method="POST" action="{{ route('admin.merchandise.images.upload', ['merchandise' => $product] + $returnFilters) }}" enctype="multipart/form-data">
                     @csrf

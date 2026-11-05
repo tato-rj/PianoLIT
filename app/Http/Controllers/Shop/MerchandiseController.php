@@ -29,6 +29,7 @@ class MerchandiseController extends Controller
         $breadcrumbs = [['label' => 'Home', 'url' => route('home')], ['label' => 'Shop', 'url' => $category ? route('shop.home') : null]];
         if ($category) $breadcrumbs[] = ['label' => $categories[$category]];
         return view('shop.storefront.index', ['products' => $products, 'productGroups' => $productGroups,
+            'bestDeals' => !$category && $search === '' ? $catalog->bestDeals($productGroups) : collect(),
             'hasProducts' => $category ? $products->count() > 0 : $productGroups->sum(fn ($group) => $group->count()) > 0,
             'sectionLabels' => Storefront::SECTIONS, 'search' => $search, 'category' => $category, 'topics' => $topics,
             'categories' => $categories, 'categoryUrls' => $categoryUrls, 'catalogUrl' => $catalog->categoryUrl($category),

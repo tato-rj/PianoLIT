@@ -23,6 +23,7 @@ Route::prefix('escores')->name('escores.')->group(function() {
 	Route::get('{escore}', 'Admin\eScoresController@show')->name('show');
 
 	Route::get('{escore}/edit', 'Admin\eScoresController@edit')->name('edit');
+	Route::post('{escore}/display-mockup', 'Admin\ShopMockupsController@escore')->name('display-mockup');
 
 	Route::patch('{escore}/status', 'Admin\eScoresController@updateStatus')->name('update-status');
 

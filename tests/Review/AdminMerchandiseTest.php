@@ -107,6 +107,8 @@ class AdminMerchandiseTest extends ReviewTestCase
     public function test_refresh_checks_names_but_preserves_the_existing_permalink()
     {
         $product = $this->imported();
+        $displayMockup = 'shop/display-mockups/12345678-1234-1234-1234-123456789abc.png';
+        $product->forceFill(['display_mockup_path' => $displayMockup])->save();
         MerchandiseProduct::create(['printful_store_id' => 12345, 'printful_product_id' => 80, 'name' => 'Reserved T-shirt', 'variants' => []]);
         $this->remote['sync_product']['name'] = 'Reserved T-shirt';
         $this->post($this->action('refresh', $product), ['revision' => $product->revision])
@@ -116,6 +118,7 @@ class AdminMerchandiseTest extends ReviewTestCase
         $this->post($this->action('refresh', $product), ['revision' => $product->revision])->assertRedirect()->assertSessionHas('status');
         $this->assertSame('Renamed piano T-shirt', $product->fresh()->name);
         $this->assertSame('piano-t-shirt', $product->fresh()->slug);
+        $this->assertSame($displayMockup, $product->fresh()->display_mockup_path);
     }
 
     private function action(string $action, MerchandiseProduct $product, $image = null): string

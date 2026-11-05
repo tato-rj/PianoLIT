@@ -35,6 +35,17 @@ class Storefront
         return collect(self::SECTIONS)->map(fn ($label, $category) => $groups->get($category, collect()));
     }
 
+    /** One affordable, available product per category, using the already-loaded public catalog. */
+    public function bestDeals(Collection $groups): Collection
+    {
+        return collect(['t-shirts', 'stickers', 'ebooks', 'escores'])->map(function ($category) use ($groups) {
+            $products = $groups->get($category, collect())->filter(fn ($product) => $product['priceCents'] !== null);
+            // Compare like currencies only; the spotlight does not perform currency conversion.
+            $currency = $products->contains('currency', 'USD') ? 'USD' : ($products->first()['currency'] ?? null);
+            return $products->where('currency', $currency)->sortBy('priceCents')->first();
+        })->filter()->values();
+    }
+
     private function matches(string $search, ?string $category, array $topics = []): Collection
     {
         // Keep model types distinct: numeric IDs can overlap between all three tables.
@@ -78,7 +89,9 @@ class Storefront
             'category' => $category, 'digital' => true,
             'label' => $category === 'ebooks' ? 'eBook' : 'eScore', 'url' => $product->showRoute(),
             'imageUrl' => $product->mockup_image() ?: ($product->cover_path ? $product->cover_image() : null),
+            'displayMockupUrl' => $product->displayMockupUrl(),
             'variants' => [], 'price' => $product->isFree() ? 'Free' : $this->money((int) $product->finalPrice(true), 'USD'),
+            'priceCents' => $product->isFree() ? 0 : (int) $product->finalPrice(true), 'currency' => 'USD',
             'priceVaries' => false,
         ];
     }
@@ -126,7 +139,9 @@ class Storefront
             'label' => ['t-shirts' => 'T-shirt', 'stickers' => 'Sticker', 'merchandise' => 'Merchandise'][$category],
             'url' => $this->productUrl($product), 'images' => $images, 'image' => $images->first(),
             'imageUrl' => optional($images->first())->url, 'digital' => false,
+            'displayMockupUrl' => $product->displayMockupUrl(),
             'variants' => $variants, 'colors' => MerchandiseColors::options($variants), 'price' => $price === null ? null : $this->money($price, reset($currencies)),
+            'priceCents' => $price, 'currency' => count($currencies) === 1 ? reset($currencies) : null,
             'priceVaries' => count(array_unique(array_column($variants, 'cents'))) > 1,
         ];
     }

@@ -72,6 +72,33 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $this->assertDatabaseCount('purchases', 0);
     }
 
+    public function test_best_deals_selects_one_available_product_per_category_from_the_public_catalog()
+    {
+        $shirt = $this->product(['name' => 'Affordable T-shirt', 'variants' => [$this->variant(['retail_price' => '20.00'])]]);
+        $this->product(['name' => 'Premium T-shirt']);
+        $this->product(['name' => 'Unavailable T-shirt', 'variants' => [$this->variant(['retail_price' => '1.00', 'out_of_stock' => true])]]);
+        $this->product(['name' => 'Other store T-shirt', 'printful_store_id' => 777, 'variants' => [$this->variant(['retail_price' => '1.00'])]]);
+        $sticker = $this->product(['name' => 'Piano sticker']);
+        $ebook = $this->digitalProduct(eBook::class, ['title' => 'Affordable guide']);
+        $this->digitalProduct(eBook::class, ['title' => 'Premium guide', 'price' => 40]);
+        $this->digitalProduct(eBook::class, ['title' => 'Draft guide', 'published_at' => null, 'discount' => 100]);
+        $score = $this->digitalProduct(eScore::class, ['title' => 'Free score', 'discount' => 100]);
+
+        $response = $this->get(route('shop.home'))->assertOk()->assertSee('Best deals');
+        $deals = $response->viewData('bestDeals');
+        $this->assertSame([$shirt->name, $sticker->name, $ebook->title, $score->title], $deals->pluck('name')->all());
+        $this->assertSame([2000, 2850, 1500, 0], $deals->pluck('priceCents')->all());
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame(4, $xpath->query('//section[@aria-labelledby="shop-best-deals-title"]//a')->length);
+        $this->get(route('shop.category', ['category' => 't-shirts']))->assertOk()->assertDontSee('id="shop-best-deals-title"', false);
+        $this->get(route('shop.home', ['q' => 'Piano']))->assertOk()->assertDontSee('id="shop-best-deals-title"', false);
+        $this->assertTrue(app(Storefront::class)->bestDeals(collect())->isEmpty());
+        Http::assertNothingSent();
+        Mail::assertNothingSent();
+    }
+
     public function test_all_categories_render_one_scroll_row_and_selected_categories_render_every_matching_product()
     {
         $shirt = $this->product();

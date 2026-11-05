@@ -123,6 +123,9 @@
         <button type="submit" id="submit-button" class="btn btn-default">Update eBook</button>
       </div>
     </form>
+    <div class="my-4">
+      @include('admin.components.shop.display-mockup', ['mockupProduct' => $ebook, 'mockupAction' => route('admin.ebooks.display-mockup', $ebook)])
+    </div>
     @include('admin.pages.reviews.fake', ['product' => $ebook])
 
   </div>

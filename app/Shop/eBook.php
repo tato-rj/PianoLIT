@@ -10,7 +10,7 @@ use Illuminate\Http\UploadedFile;
 
 class eBook extends Product implements Merchandise
 {
-	use FindBySlug;
+	use FindBySlug, \App\Traits\HasDisplayMockup;
 
     protected $withCount = ['purchases'];
     protected $successRoute = 'ebooks.success';

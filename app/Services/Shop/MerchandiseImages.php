@@ -54,7 +54,12 @@ class MerchandiseImages
         return $this->store(file_get_contents($file->getRealPath()), $alt, 'upload');
     }
 
-    private function store(string $bytes, string $alt, string $source, ?string $sourceKey = null): array
+    public function fromDisplayUpload(UploadedFile $file, string $alt): array
+    {
+        return $this->store(file_get_contents($file->getRealPath()), $alt, 'upload', null, 'shop/display-mockups');
+    }
+
+    private function store(string $bytes, string $alt, string $source, ?string $sourceKey = null, string $directory = 'shop/merchandise'): array
     {
         $size = @getimagesizefromstring($bytes);
         if (strlen($bytes) > self::MAX_BYTES || !$size || !in_array($size['mime'], ['image/jpeg', 'image/png', 'image/webp'], true)
@@ -73,7 +78,7 @@ class MerchandiseImages
             throw new PrintfulException('This image could not be processed. Choose another JPG, PNG or WebP file.');
         }
         if (strlen($encoded) > self::MAX_BYTES) throw new PrintfulException('The processed image exceeds 10 MB. Choose a smaller image.');
-        $path = 'shop/merchandise/'.Str::uuid().'.'.$extension;
+        $path = $directory.'/'.Str::uuid().'.'.$extension;
         $disk = 'public';
         try {
             if (!Storage::disk($disk)->put($path, $encoded)) throw new \RuntimeException('Image storage failed');
