@@ -1,0 +1,46 @@
+id: piece
+status: draft
+backend_status: production_verified
+ios_status: pending_integration
+depends_on: [foundations]
+objective: Supply the new native piece page with the same catalogue content sources as the web page, behind existing v2 sign-in.
+operation:
+  method: GET
+  path: /api/v2/pieces/{piece}
+  operation_id: getPieceV2
+  authentication: Existing Authorization bearer from v2 email/password login; no new sign-in flow, browser cookie or user_id proof.
+  response: PieceDetailResponse in openapi.yaml, with data/meta envelopes, decimal string entity IDs and explicit nulls/arrays.
+  side_effects: No history, analytics, favorite, annotation, membership, billing, mail or provider mutation. Confirmed-open history remains a separate POST.
+source_of_truth:
+  page_content: app/Services/Pieces/PageContent.php
+  web_consumer: app/Http/Controllers/WebApp/PiecesController.php
+  native_consumer: app/Http/Controllers/Api/V2/PiecesController.php
+  metadata: Existing Piece/Composer getters and saved tags; no duplicated editorial descriptions or shared serialization changes.
+  videos: Existing Piece.media and Tutorial.listeningMoments, including performance, synthesia and grouped lessons.
+  timeline: App\Services\Timeline\WebTimeline, retaining curated events, piece/composer milestones, dates, image credits and sources.
+  recommendations: Existing App\Services\WebApp\PieceRecommendations and SimilarPieces ranking; collections and five recommendation categories retain their current bounds/ordering.
+  releases: Existing Tutorial.synthesia draw, bounded to twelve. Recommendations/releases retain existing per-request random choices; native has no separately curated pool or ranking.
+response_sections:
+  piece: Display title, catalogue, shared artwork, current Free Pick identity and full composer biography/lifespan/country plus the existing summary fields.
+  metadata: Raw/short/long names, nickname, key, collection/movement, period, difficulty, saved composition/publication years, tags and the existing estimated page-count label.
+  about: Existing piece description or explicit composer-biography fallback, for-whom copy and RCM/ABRSM/Suzuki labels. Missing data stays null.
+  account: Favorite state only for the verified account and existing folder-owned favorites. Favorite/annotation writes are explicitly unsupported. history_path is origin-relative /api/v2/pieces/{id}/view.
+  access: Native full_media boolean and basis, independent of browser Access Limits and of row position.
+  media: Nullable performance/synthesia, lesson groups, audio full/right/left tracks, listening moments and PDF/external purchase information.
+  timeline: Nullable composer period plus an events array; date-only precision is preserved, and absent years/dates are not invented.
+  recommendations: Current shared collection/best-match/mood/difficulty/period/composer rows with bounded piece summaries and public View all links.
+  synthesia_releases: Up to twelve tutorial identities, thumbnails and piece summaries; load that piece's detail to obtain its access and playback resource.
+  share_url: Public browser piece URL with no account/token.
+native_media:
+  rule: Existing local active membership/trial/grace state or unconditional super_user grant, plus the current scheduled Free Pick for any verified account. No Apple/Stripe calls or subscription refresh occur during GET.
+  ordinary_nonmember: Page content remains available; full media modes are blocked and original source URLs are null. Do not import the browser ten-second preview rule.
+  free_pick: Grant by current scheduled piece identity only; re-fetch when access changes. Never by first-row position or cached/default membership text.
+  missing: Null video objects, empty lessons/tracks, unavailable modes and nullable metadata as appropriate.
+  copyright: Externally purchased scores use external mode and a purchase URL; no internal PDF URL is returned for that score.
+  transport: Full-resource URLs retain the existing original delivery. Use plain media requests, never forwarded API bearers, cookies or user_id. Returned availability is not a new export/annotation permission.
+  vocabulary: full, blocked and unavailable; scores additionally support external. Unknown modes must remain disabled.
+  compatibility: Existing legacy app routes, response shapes, score/audio/video URLs, memberships and billing remain unchanged indefinitely.
+acceptance:
+  local: ApiV2PieceTest covers bearer-only identity, account isolation, local membership states, free-pick rotation, null metadata, blocked/copyrighted media, shared page sources, legacy JSON snapshots and side-effect-free reads.
+  production: Record actual deployment and synthetic checks before identifying the new endpoint as live.
+  native_pending: Connect the current native page to the typed detail model; verify player/PDFKit integration, markers, empty/locked/retry states, account changes and iPhone/iPad UI. Native source remains outside this workspace.

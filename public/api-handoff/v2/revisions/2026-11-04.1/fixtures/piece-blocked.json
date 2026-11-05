@@ -1,0 +1,347 @@
+{
+    "data": {
+        "piece": {
+            "kind": "piece",
+            "id": "1",
+            "title": "Native detail fixture Hob 67 No.9",
+            "featured_title": "Native detail fixture",
+            "subtitle": "C. Schumann",
+            "catalogue": "Hob 67 No.9",
+            "composer": {
+                "kind": "composer",
+                "id": "1",
+                "name": "Clara Schumann",
+                "short_name": "C. Schumann",
+                "portrait_url": "http://localhost/storage/fixtures/composer.jpg",
+                "biography": "Shared composer biography.",
+                "piece_count": 1,
+                "target": {
+                    "kind": "composer_pieces",
+                    "id": "1",
+                    "query": null,
+                    "web_url": "http://my.localhost/search?search=Clara%20Schumann&model=App%5CComposer"
+                },
+                "lifespan": "Sep 13, 1819 - May 20, 1896",
+                "born_year": 1819,
+                "died_year": 1896,
+                "country": {
+                    "id": "1",
+                    "name": "natus",
+                    "flag_code": null
+                }
+            },
+            "artwork_url": "http://localhost/storage/fixtures/piece.jpg",
+            "difficulty": "intermediate",
+            "is_new": true,
+            "is_free_pick": false,
+            "media": {
+                "performance": false,
+                "synthesia": true,
+                "tutorial": true,
+                "audio": true,
+                "score": true
+            },
+            "target": {
+                "kind": "piece",
+                "id": "1",
+                "query": null,
+                "web_url": "http://my.localhost/pieces/1"
+            }
+        },
+        "metadata": {
+            "name": "Native detail fixture",
+            "short_name": "Native detail fixture Hob 67 No.9",
+            "long_name": "Native detail fixture in C minor from Sit Hob 67 No.9",
+            "nickname": null,
+            "key": "C minor",
+            "collection_name": "Sit",
+            "collection_number": "9",
+            "movement_number": null,
+            "period": "romantic",
+            "level": "intermediate",
+            "page_count_label": "1-2 pages",
+            "composed_year": 1841,
+            "published_year": 1842,
+            "tags": [
+                {
+                    "id": "1",
+                    "name": "intermediate",
+                    "type": "level"
+                },
+                {
+                    "id": "2",
+                    "name": "romantic",
+                    "type": "period"
+                },
+                {
+                    "id": "3",
+                    "name": "short",
+                    "type": "length"
+                },
+                {
+                    "id": "4",
+                    "name": "dreamy",
+                    "type": "mood"
+                }
+            ]
+        },
+        "about": {
+            "description": "A shared piece description.",
+            "description_fallback": null,
+            "for_whom": "This could be a good next step if you're a intermediate pianist polishing your technique and expanding your repertoire.",
+            "rankings": {
+                "rcm": "No RCM ranking available yet",
+                "abrsm": "No ABRSM ranking available yet",
+                "suzuki": null
+            }
+        },
+        "account": {
+            "is_favorited": false,
+            "favorite_writes_supported": false,
+            "annotations_supported": false,
+            "history_path": "/api/v2/pieces/1/view"
+        },
+        "access": {
+            "full_media": false,
+            "basis": "membership_required"
+        },
+        "media": {
+            "performance": {
+                "id": "1",
+                "title": "Performance",
+                "category": "performance",
+                "mode": "blocked",
+                "url": null,
+                "moments": [
+                    {
+                        "id": "1",
+                        "start_seconds": 12.25,
+                        "end_seconds": 19.5,
+                        "title": "Opening theme",
+                        "comment": "Listen to the shared melody."
+                    }
+                ]
+            },
+            "synthesia": {
+                "id": "2",
+                "title": "Synthesia",
+                "category": "synthesia",
+                "mode": "blocked",
+                "url": null,
+                "moments": []
+            },
+            "lessons": [
+                {
+                    "title": "Harmony",
+                    "videos": [
+                        {
+                            "id": "3",
+                            "title": "Harmonic analysis",
+                            "category": "lesson",
+                            "mode": "blocked",
+                            "url": null,
+                            "moments": []
+                        }
+                    ]
+                }
+            ],
+            "audio": {
+                "mode": "blocked",
+                "tracks": [
+                    {
+                        "kind": "full",
+                        "url": null
+                    },
+                    {
+                        "kind": "right_hand",
+                        "url": null
+                    },
+                    {
+                        "kind": "left_hand",
+                        "url": null
+                    }
+                ],
+                "moments": [
+                    {
+                        "id": "1",
+                        "start_seconds": 12.25,
+                        "end_seconds": 19.5,
+                        "title": "Opening theme",
+                        "comment": null
+                    }
+                ]
+            },
+            "score": {
+                "mode": "blocked",
+                "is_public_domain": true,
+                "pdf_url": null,
+                "purchase_url": null,
+                "version": "c95f0c8283e90dbf2eb8fe8fa6b8fe6e4243ce3ff827adf9a116adda2dd5fb6a",
+                "editor": "No information available",
+                "publisher": "No information available",
+                "copyright": "This work is protected by copyright"
+            }
+        },
+        "timeline": {
+            "period": {
+                "born": 1819,
+                "died": 1896,
+                "start_year": 1819,
+                "end_year": 1896
+            },
+            "events": [
+                {
+                    "id": "milestone-0",
+                    "year": 1819,
+                    "date": "1819-09-13",
+                    "title": "Clara Schumann was born",
+                    "description": "Beginning of the composer\u2019s lifetime.",
+                    "is_piece_milestone": false,
+                    "composer_milestone": "birth",
+                    "image_url": null,
+                    "source_url": null,
+                    "attribution": null,
+                    "image_credit": null,
+                    "image_source_url": null,
+                    "image_license": null,
+                    "image_license_url": null
+                },
+                {
+                    "id": "milestone-1",
+                    "year": 1841,
+                    "date": null,
+                    "title": "Sit Hob 67 was composed",
+                    "description": "Clara Schumann was 22 years old",
+                    "is_piece_milestone": true,
+                    "composer_milestone": null,
+                    "image_url": null,
+                    "source_url": null,
+                    "attribution": null,
+                    "image_credit": null,
+                    "image_source_url": null,
+                    "image_license": null,
+                    "image_license_url": null
+                },
+                {
+                    "id": "milestone-2",
+                    "year": 1842,
+                    "date": null,
+                    "title": "Sit Hob 67 was published",
+                    "description": "Clara Schumann was 23 years old",
+                    "is_piece_milestone": true,
+                    "composer_milestone": null,
+                    "image_url": null,
+                    "source_url": null,
+                    "attribution": null,
+                    "image_credit": null,
+                    "image_source_url": null,
+                    "image_license": null,
+                    "image_license_url": null
+                },
+                {
+                    "id": "milestone-3",
+                    "year": 1896,
+                    "date": "1896-05-20",
+                    "title": "Clara Schumann died",
+                    "description": "End of the composer\u2019s lifetime.",
+                    "is_piece_milestone": false,
+                    "composer_milestone": "death",
+                    "image_url": null,
+                    "source_url": null,
+                    "attribution": null,
+                    "image_credit": null,
+                    "image_source_url": null,
+                    "image_license": null,
+                    "image_license_url": null
+                }
+            ]
+        },
+        "recommendations": [
+            {
+                "id": "best-matches",
+                "title": "Best matches",
+                "query": null,
+                "web_url": "http://my.localhost/pieces/1/similar",
+                "items": []
+            },
+            {
+                "id": "similar-mood",
+                "title": "Similar mood",
+                "query": "dreamy",
+                "web_url": "http://my.localhost/search?search=dreamy&model=App%5CTag",
+                "items": []
+            },
+            {
+                "id": "similar-difficulty",
+                "title": "Similar difficulty",
+                "query": "intermediate",
+                "web_url": "http://my.localhost/search?search=intermediate&model=App%5CTag",
+                "items": []
+            },
+            {
+                "id": "same-period",
+                "title": "Same period",
+                "query": "romantic",
+                "web_url": "http://my.localhost/search?search=romantic&model=App%5CTag",
+                "items": []
+            },
+            {
+                "id": "same-composer",
+                "title": "Same composer",
+                "query": null,
+                "web_url": "http://my.localhost/composers/1",
+                "items": []
+            }
+        ],
+        "synthesia_releases": [
+            {
+                "id": "2",
+                "thumbnail_url": "http://localhost/images/webapp/synthesia-thumbnails/thumb-0.jpg",
+                "piece": {
+                    "kind": "piece",
+                    "id": "1",
+                    "title": "Native detail fixture",
+                    "featured_title": "Native detail fixture",
+                    "subtitle": "C. Schumann",
+                    "catalogue": "Hob 67 No.9",
+                    "composer": {
+                        "kind": "composer",
+                        "id": "1",
+                        "name": "Clara Schumann",
+                        "short_name": "C. Schumann",
+                        "portrait_url": "http://localhost/storage/fixtures/composer.jpg",
+                        "biography": "Shared composer biography.",
+                        "piece_count": 1,
+                        "target": {
+                            "kind": "composer_pieces",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "http://my.localhost/search?search=Clara%20Schumann&model=App%5CComposer"
+                        }
+                    },
+                    "artwork_url": "http://localhost/storage/fixtures/piece.jpg",
+                    "difficulty": "intermediate",
+                    "is_new": true,
+                    "is_free_pick": false,
+                    "media": {
+                        "performance": false,
+                        "synthesia": true,
+                        "tutorial": true,
+                        "audio": true,
+                        "score": true
+                    },
+                    "target": {
+                        "kind": "piece",
+                        "id": "1",
+                        "query": null,
+                        "web_url": "http://my.localhost/pieces/1"
+                    }
+                }
+            }
+        ],
+        "share_url": "http://my.localhost/pieces/1"
+    },
+    "meta": {
+        "request_id": "d77f7f9e-dc38-4333-9441-fada41f937e9"
+    }
+}

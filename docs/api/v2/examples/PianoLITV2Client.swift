@@ -44,6 +44,11 @@ struct V2Target: Decodable, Sendable {
 }
 
 struct V2Composer: Decodable, Sendable {
+    struct Country: Decodable, Sendable {
+        let id: String
+        let name: String
+        let flag_code: String?
+    }
     let id: String
     let name: String
     let short_name: String
@@ -51,6 +56,10 @@ struct V2Composer: Decodable, Sendable {
     let biography: String
     let piece_count: Int
     let target: V2Target
+    let lifespan: String?
+    let born_year: Int?
+    let died_year: Int?
+    let country: Country?
 }
 
 struct V2Piece: Decodable, Sendable {
@@ -218,11 +227,21 @@ actor PianoLITV2Client {
         return try JSONDecoder().decode(V2Envelope<V2Discover>.self, from: bytes).data
     }
 
+    func piece(id: String) async throws -> V2PieceDetail {
+        try validatePieceID(id)
+        let bytes = try await authenticated("pieces/\(id)", method: "GET")
+        return try JSONDecoder().decode(V2Envelope<V2PieceDetail>.self, from: bytes).data
+    }
+
     func recordConfirmedOpen(pieceID: String) async throws {
-        guard !pieceID.isEmpty, pieceID.utf8.allSatisfy({ $0 >= 48 && $0 <= 57 }), pieceID.first != "0" else {
+        try validatePieceID(pieceID)
+        _ = try await authenticated("pieces/\(pieceID)/view", method: "POST")
+    }
+
+    private func validatePieceID(_ id: String) throws {
+        guard !id.isEmpty, id.utf8.allSatisfy({ $0 >= 48 && $0 <= 57 }), id.first != "0" else {
             throw V2ClientError.invalidResponse
         }
-        _ = try await authenticated("pieces/\(pieceID)/view", method: "POST")
     }
 
     func signOut() async throws {
@@ -277,4 +296,141 @@ private final class V2NoRedirects: NSObject, URLSessionTaskDelegate, @unchecked 
                     completionHandler: @escaping (URLRequest?) -> Void) {
         completionHandler(nil)
     }
+}
+
+// New piece page: let detail = try await client.piece(id: discoverCard.id)
+// Render metadata for every authenticated account. Play/read a resource only
+// when its mode == "full" AND its URL is non-nil. Never forward the API bearer
+// to a media, purchase, timeline-source or public web URL.
+struct V2PieceDetail: Decodable, Sendable {
+    struct Metadata: Decodable, Sendable {
+        struct Tag: Decodable, Sendable {
+            let id: String
+            let name: String
+            let type: String?
+        }
+        let name: String
+        let short_name: String
+        let long_name: String
+        let nickname: String?
+        let key: String?
+        let collection_name: String?
+        let collection_number: String?
+        let movement_number: String?
+        let period: String?
+        let level: String?
+        let page_count_label: String?
+        let composed_year: Int?
+        let published_year: Int?
+        let tags: [Tag]
+    }
+    struct About: Decodable, Sendable {
+        let description: String?
+        let description_fallback: String?
+        let for_whom: String?
+        let rankings: [String: String?]
+    }
+    struct Account: Decodable, Sendable {
+        let is_favorited: Bool
+        let favorite_writes_supported: Bool
+        let annotations_supported: Bool
+        let history_path: String
+    }
+    struct Access: Decodable, Sendable {
+        let full_media: Bool
+        let basis: String
+    }
+    struct Moment: Decodable, Sendable {
+        let id: String
+        let start_seconds: Double
+        let end_seconds: Double?
+        let title: String
+        let comment: String?
+    }
+    struct Video: Decodable, Sendable {
+        let id: String
+        let title: String
+        let category: String?
+        let mode: String
+        let url: URL?
+        let moments: [Moment]
+    }
+    struct Media: Decodable, Sendable {
+        struct Lesson: Decodable, Sendable {
+            let title: String
+            let videos: [Video]
+        }
+        struct Audio: Decodable, Sendable {
+            struct Track: Decodable, Sendable {
+                let kind: String
+                let url: URL?
+            }
+            let mode: String
+            let tracks: [Track]
+            let moments: [Moment]
+        }
+        struct Score: Decodable, Sendable {
+            let mode: String
+            let is_public_domain: Bool
+            let pdf_url: URL?
+            let purchase_url: URL?
+            let version: String?
+            let editor: String?
+            let publisher: String?
+            let copyright: String?
+        }
+        let performance: Video?
+        let synthesia: Video?
+        let lessons: [Lesson]
+        let audio: Audio
+        let score: Score
+    }
+    struct Timeline: Decodable, Sendable {
+        struct Period: Decodable, Sendable {
+            let born: Int?
+            let died: Int?
+            let start_year: Int
+            let end_year: Int
+        }
+        struct Event: Decodable, Sendable {
+            let id: String
+            let year: Int
+            let date: String?
+            let title: String
+            let description: String
+            let is_piece_milestone: Bool
+            let composer_milestone: String?
+            let image_url: URL?
+            let source_url: URL?
+            let attribution: String?
+            let image_credit: String?
+            let image_source_url: URL?
+            let image_license: String?
+            let image_license_url: URL?
+        }
+        let period: Period?
+        let events: [Event]
+    }
+    struct Recommendation: Decodable, Sendable {
+        let id: String
+        let title: String
+        let query: String?
+        let web_url: URL?
+        let items: [V2Piece]
+    }
+    struct Release: Decodable, Sendable {
+        let id: String
+        let thumbnail_url: URL?
+        let piece: V2Piece
+    }
+    let piece: V2Piece
+    let metadata: Metadata
+    let about: About
+    let account: Account
+    let access: Access
+    let media: Media
+    let timeline: Timeline
+    let recommendations: [Recommendation]
+    let synthesia_releases: [Release]
+    let share_url: URL
 }

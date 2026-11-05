@@ -1,16 +1,17 @@
 # PianoLIT iOS v2 connection
 
-Revision **2026-11-03.1** adds the five-step **Find my match** contract, API and
-synthetic fixtures, reusing the web tour draw and ranking. The new endpoints are
-implemented locally, disabled by default and **not deployed or production verified**.
-Keep the completed native steps 1–4 unchanged; replace their data/calculations and
-connect mood/result using [the integration guide](examples/find-my-match.md).
-The expanded composer-feature choices from 2026-10-29 also await deployment.
-Login, Discover and confirmed piece-open history
-were verified in production in **2026-10-28.1**. Check `manifest.yaml` for deployment verification and the
-verified runtime base URL. The handoff URL is documentation; it is never a feed
-or a credential. Native/staging acceptance remains pending, so the handoff stays
-`draft` even after the backend is verified in production.
+Revision **2026-11-04.1** adds the **live, production-verified** native piece page
+at `GET /api/v2/pieces/{id}`, using the existing v2 sign-in and shared web content
+sources. See [piece integration](examples/piece.md), the full/blocked synthetic
+fixtures and `piece(id:)` / `V2PieceDetail` in the Swift connection example.
+
+Login, Discover and confirmed-open history remain available. Find my match from
+2026-11-03 is still disabled by default and awaits its separate media preparation,
+activation and production verification; preserve its completed native steps 1–4.
+The expanded composer-pool acceptance status is unchanged. Check each feature in
+`manifest.yaml`; the overall draft status denotes pending staging/native
+acceptance, rather than an unavailable verified backend operation. The handoff
+URL supplies documentation, not an API response or credential.
 
 ## Connect the existing sign-in screen
 
@@ -38,8 +39,8 @@ The new app changes its network adapter, not the user's account or password:
 
 `examples/PianoLITV2Client.swift` is a concrete URLSession/Keychain adapter with
 Codable models, HTTP/error handling, redirect refusal and account-switch guards.
-Add it to the **new app** target and call `signIn(email:password:)`, `discover()`
-and `signOut()` from the existing controllers. It has been type-checked in Swift 5
+Add it to the **new app** target and call `signIn(email:password:)`, `discover()`,
+`piece(id:)` and `signOut()` from the existing controllers. It has been type-checked in Swift 5
 language mode; it has not been integrated into the unavailable iOS repository or
 verified on an iPhone/iPad. Keep the existing iOS deployment target.
 
@@ -98,8 +99,9 @@ while native detail/search adapters are being migrated; it does not share the
 native bearer session with a browser. Never attach a bearer to that URL, artwork,
 legacy `card.source` or arbitrary response-supplied origins.
 
-A card is **not** the full legacy PieceVC model. This change does not claim to
-migrate detail/playback/search/favorites/membership requests. Existing native
+A card is **not** the full legacy PieceVC model. Load `GET /api/v2/pieces/{id}` for the new native detail model and explicit
+media modes described in [the piece guide](examples/piece.md). Search, favorite/annotation
+writes and membership mutations remain separate migrations. Existing native
 screens may retain explicitly identified legacy calls until their v2 replacement
 is verified; do not call them authenticated v2 or derive full access from a row
 position. The old app's row-zero Free Pick bypass must not be copied.
@@ -154,7 +156,7 @@ The Swift developer can fetch hash-verified files with:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-11-03.1 --output /path/to/ios-repository/BackendHandoff
+  --revision 2026-11-04.1 --output /path/to/ios-repository/BackendHandoff
 ```
 
 This fetch copies documentation/examples, not an installed network connection.

@@ -68,7 +68,7 @@ native_connection:
   parsing: Typed section IDs/kinds and card types, never aligned arrays/title dispatch or row-zero Free Pick bypass.
   session: Keychain credential, one reauthentication after upgrade if only legacy local identity exists; cancel/discard stale account responses.
   navigation: Typed target kinds map to deliberately implemented native adapters. Public web_url is the supported fallback until a destination is migrated; no bearer is sent to that URL.
-  dependency_limit: Discover summaries are not full PieceVC detail models. Legacy destination calls may remain explicitly identified until replaced; they are not authenticated v2.
+  dependency_limit: Discover summaries are not full PieceVC detail models. GET /api/v2/pieces/{id} supplies the new native detail DTO; see screens/piece.yaml. Legacy destination calls may remain explicitly identified until replaced; they are not authenticated v2.
   history: POST /api/v2/pieces/{piece}/view after a successful actual open, using the verified token; never feed/image prefetch.
   entitlements: Media flags and is_free_pick are display facts. Preserve native membership/media decisions pending their own v2 specification; do not import web Access Limits.
 client_states:

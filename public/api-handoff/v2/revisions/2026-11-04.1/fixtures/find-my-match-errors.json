@@ -1,0 +1,250 @@
+{
+  "synthetic": true,
+  "cases": [
+    {
+      "http_status": 401,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "unauthenticated",
+          "message": "Please sign in again.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000001"
+        }
+      }
+    },
+    {
+      "http_status": 403,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "media_url_expired",
+          "message": "Reload the tour for a fresh sample URL.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000002"
+        }
+      }
+    },
+    {
+      "http_status": 404,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "not_found",
+          "message": "This tour is unavailable.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000003"
+        }
+      }
+    },
+    {
+      "http_status": 409,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "stale_tour",
+          "message": "Reload this tour before updating your answer.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000004"
+        }
+      }
+    },
+    {
+      "http_status": 409,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "idempotency_conflict",
+          "message": "Use a new request_id for a different answer.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000005"
+        }
+      }
+    },
+    {
+      "http_status": 409,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "incomplete_tour",
+          "message": "Complete all five steps before requesting a match.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000006"
+        }
+      }
+    },
+    {
+      "http_status": 409,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "tour_limit",
+          "message": "Please start a new tour.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000007"
+        }
+      }
+    },
+    {
+      "http_status": 410,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "tour_expired",
+          "message": "This tour has expired. Start a new tour.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000008"
+        }
+      }
+    },
+    {
+      "http_status": 422,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "invalid_answer",
+          "message": "Choose an answer served for this question.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000009"
+        }
+      }
+    },
+    {
+      "http_status": 422,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "invalid_request",
+          "message": "Please check the highlighted fields.",
+          "fields": {
+            "value": [
+              "The value field must be present."
+            ]
+          }
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000010"
+        }
+      }
+    },
+    {
+      "http_status": 429,
+      "headers": {
+        "Cache-Control": "no-store, private",
+        "Retry-After": "60"
+      },
+      "response": {
+        "error": {
+          "code": "rate_limited",
+          "message": "Too many requests. Please try again later.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000011"
+        }
+      }
+    },
+    {
+      "http_status": 500,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "server_error",
+          "message": "Please try again later.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000012"
+        }
+      }
+    },
+    {
+      "http_status": 503,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "tour_unavailable",
+          "message": "The match tour is unavailable. Please try again later.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000013"
+        }
+      }
+    },
+    {
+      "http_status": 503,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "media_unavailable",
+          "message": "A tour sample is unavailable. Please try again later.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000014"
+        }
+      }
+    },
+    {
+      "http_status": 503,
+      "headers": {
+        "Cache-Control": "no-store, private"
+      },
+      "response": {
+        "error": {
+          "code": "no_match",
+          "message": "No match is available right now. Please try again later.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "bbbbbbbb-bbbb-4bbb-8bbb-000000000015"
+        }
+      }
+    }
+  ]
+}
