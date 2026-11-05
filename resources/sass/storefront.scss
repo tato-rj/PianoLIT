@@ -82,7 +82,7 @@
     .shop-gallery__thumbnail img { display: block; width: 100%; height: 100%; object-fit: contain; }
     .shop-options { min-width: 0; border: 0; padding: 0; }
     .shop-options legend { float: none; width: auto; }
-    .shop-option { display: inline-flex; align-items: center; gap: 8px; shadow: 0 !important}
+    .shop-option { display: inline-flex; align-items: center; gap: 8px; box-shadow: none !important}
     .shop-color-swatch { display: inline-block; flex-shrink: 0; width: 22px; height: 22px; border: 1px solid var(--color-border); border-radius: var(--radius-circle); background: linear-gradient(135deg, var(--swatch-color) 50%, var(--swatch-color-secondary) 50%); }
     .shop-quantity { display: inline-flex; align-items: center; gap: 8px; }
     .shop-quantity input { width: 56px; flex: 0 0 56px; appearance: textfield; text-align: center; padding-left: 0; padding-right: 0; }

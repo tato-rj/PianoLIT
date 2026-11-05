@@ -226,7 +226,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  shadow: 0 !important;
+  box-shadow: none !important;
 }
 .shop-storefront .shop-color-swatch {
   display: inline-block;
