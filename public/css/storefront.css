@@ -145,6 +145,9 @@
 }
 .shop-storefront .shop-card .shop-card__price {
   margin-top: auto;
+  background: var(--color-yellow);
+  border: 1px solid;
+  padding: 1px 3px;
 }
 .shop-storefront .shop-card__action {
   margin: 2px 0 0;

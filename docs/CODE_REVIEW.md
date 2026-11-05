@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-05 — Remove scrolling from merchandise color tabs (P3, complete locally)
+
+- **Evidence / fix:** Arthur's recording shows a vertical scrollbar inside the color-tab strip. The merchandise caller supplied `overflow-auto` and `flex-nowrap`, turning Bootstrap's tab list into a scroll container. Removed those two layout utilities so it uses native Bootstrap wrapping and visible overflow, matching the existing Design System specimen. The shared component, selected/unselected colors, panel selection and fragment restoration are unchanged. Updated current project/component/Printful guidance to require a non-scrolling strip.
+- **Verification / limits:** Eight isolated gallery tests pass (106 assertions). Browser QA of rendered editor HTML confirms visible overflow on both axes, `flex-wrap: wrap`, zero internal scroll offsets and one visible panel after color changes. At 390px, all three colors remain visible over two rows, the last color selects normally, and document width remains 390px. Proof: `admin-color-tabs-no-scroll-desktop.png` and `admin-color-tabs-no-scroll-mobile.png` in `/Users/arthur/.codex/visualizations/2026/11/05/01a1ac75-4602-7ed3-a60b-dc1035ebca5f/`. No CSS/JS changes or rebuild, data/provider writes or deployment; preceding close-up edits are preserved.
+
 ### 2026-11-05 — Put merchandise color galleries in neutral Bootstrap tabs (P3, complete locally)
 
 - **Request / change:** Replaced the vertically stacked color galleries with one visible Bootstrap tab panel. Reused `components.navigation.tab-navigation`, adding the opt-in shared `neutral` tone and a Design System specimen. Selected labels use regular dark text; inactive/hover/focus labels use light gray, with native bordered tabs and horizontal overflow when needed. Existing compact rows, per-color upload forms, close-up panel and secondary reference sections are retained.
