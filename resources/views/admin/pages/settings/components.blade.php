@@ -42,7 +42,7 @@
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Product color tabs', 'usage' => 'components.navigation.tab-navigation · native tabs with neutral text', 'properties' => 'font-size,padding,color,border'])
       @component('components.navigation.tab-navigation', ['id' => 'ds-merchandise-colors', 'label' => 'Sample product colors', 'tone' => 'neutral', 'preview' => true, 'syncHash' => false, 'active' => 'ds-merchandise-ivory', 'items' => [
-        ['target' => 'ds-merchandise-ivory', 'label' => 'Ivory (2)'], ['target' => 'ds-merchandise-blue', 'label' => 'Blue (1)'],
+        ['target' => 'ds-merchandise-ivory', 'label' => 'Ivory (2)', 'swatch' => '#fff3d6'], ['target' => 'ds-merchandise-blue', 'label' => 'Blue (1)', 'swatch' => '#cce5f0'],
       ]])
         <div class="tab-content pt-3">
           <div class="tab-pane show active" id="ds-merchandise-ivory" role="tabpanel" aria-labelledby="ds-merchandise-colors-ds-merchandise-ivory" tabindex="0">Ivory mockups</div>

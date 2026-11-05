@@ -6,7 +6,12 @@
     $draftColor = is_string(old('gallery_color')) ? old('gallery_color') : '';
     $colorGroups = array_values(array_filter($galleryGroups, fn ($group) => $group['color'] !== ''));
     $gallery = app(\App\Services\Shop\MerchandiseGallery::class);
-    $colorTabs = array_map(fn ($group) => ['target' => $gallery->tabId($group['color']), 'label' => $group['label'].' ('.$group['images']->count().')'], $colorGroups);
+    $colorCodes = \App\Services\Shop\MerchandiseColors::options($product->variants ?? []);
+    $colorTabs = array_map(fn ($group) => [
+        'target' => $gallery->tabId($group['color']), 'label' => $group['label'].' ('.$group['images']->count().')',
+        'swatch' => $colorCodes[$group['color']]['color_code'] ?? null,
+        'swatchSecondary' => $colorCodes[$group['color']]['color_code2'] ?? null,
+    ], $colorGroups);
     $activeColorGroup = collect($colorGroups)->firstWhere('color', $draftColor);
     $activeColorTab = $activeColorGroup ? $gallery->tabId($activeColorGroup['color']) : ($colorTabs[0]['target'] ?? null);
     $printfulMockups = $product->images->where('source', 'printful');
