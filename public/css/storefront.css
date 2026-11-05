@@ -202,8 +202,8 @@
   cursor: zoom-in;
 }
 .shop-storefront .shop-gallery__thumbnail {
-  width: 64px;
-  height: 64px;
+  width: 114px;
+  height: 114px;
   flex-shrink: 0;
 }
 .shop-storefront .shop-gallery__thumbnail img {
