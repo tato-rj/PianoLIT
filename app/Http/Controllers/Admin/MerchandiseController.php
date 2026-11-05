@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Merchandise\MerchandiseProduct;
 use App\Services\Admin\{MerchandiseCatalog, PrintfulCatalogSync};
-use App\Services\Shop\{MerchandiseGallery, MerchandiseImages, Printful, PrintfulException, PrintfulProductNotFound};
+use App\Services\Shop\{MerchandiseGallery, MerchandiseImages, MerchandiseMaterials, Printful, PrintfulException, PrintfulProductNotFound};
 use App\Support\{AdminPagination, AdminTableFilters};
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -94,13 +94,14 @@ class MerchandiseController extends Controller
         $product = $merchandise->load('images');
         $galleryColors = app(MerchandiseGallery::class)->colors($product);
         $galleryGroups = app(MerchandiseGallery::class)->groups($product);
+        $materials = app(MerchandiseMaterials::class)->forProduct($product, app(\App\Services\Shop\Storefront::class)->variants($product));
         $removed = $product->images()->onlyTrashed()->get();
         $page = (int) $request->input('variants_page', 1);
         $all = collect($product->variants);
         $variants = new LengthAwarePaginator($all->forPage($page, AdminPagination::PER_PAGE)->values(), $all->count(), AdminPagination::PER_PAGE, $page,
             ['path' => route('admin.merchandise.edit', $product), 'pageName' => 'variants_page', 'fragment' => 'variants']);
         $variants->appends($returnFilters);
-        return view('admin.pages.merchandise.edit', compact('product', 'removed', 'variants', 'returnFilters', 'galleryColors', 'galleryGroups'));
+        return view('admin.pages.merchandise.edit', compact('product', 'removed', 'variants', 'returnFilters', 'galleryColors', 'galleryGroups', 'materials'));
     }
 
     public function update(Request $request, MerchandiseProduct $merchandise, MerchandiseCatalog $catalog)
@@ -130,11 +131,11 @@ class MerchandiseController extends Controller
             } catch (PrintfulException $syncException) {
                 // A failed verification must not remove the product.
             }
-            return $this->backToImages($merchandise)->with('error', 'The product could not be verified in Printful. Your local images have been kept. Try again later.');
+            return $this->backToProductDetails($merchandise)->with('error', 'The product could not be verified in Printful. Your local images have been kept. Try again later.');
         } catch (PrintfulException $exception) {
-            return $this->backToImages($merchandise)->with('error', $exception->getMessage());
+            return $this->backToProductDetails($merchandise)->with('error', $exception->getMessage());
         }
-        return $this->importResult($product, $warnings, $colorWarnings);
+        return $this->importResult($product, $warnings, $colorWarnings, true);
     }
 
     public function upload(Request $request, MerchandiseProduct $merchandise, MerchandiseCatalog $catalog)
@@ -242,9 +243,15 @@ class MerchandiseController extends Controller
         return AdminTableFilters::query(AdminTableFilters::fromRequest($query, self::SORTS));
     }
 
-    private function importResult(MerchandiseProduct $product, int $warnings, int $colorWarnings)
+    private function backToProductDetails(MerchandiseProduct $product)
     {
-        $response = $this->backToImages($product)->with('status', 'Product saved. Your gallery choices have been kept.');
+        return redirect()->route('admin.merchandise.edit', ['merchandise' => $product] + $this->returnFilters())->withFragment('product-details');
+    }
+
+    private function importResult(MerchandiseProduct $product, int $warnings, int $colorWarnings, bool $refreshed = false)
+    {
+        $response = ($refreshed ? $this->backToProductDetails($product) : $this->backToImages($product))
+            ->with('status', $refreshed ? 'Product data refreshed from Printful. Your local edits and gallery choices have been kept.' : 'Product saved. Your gallery choices have been kept.');
         $notices = [];
         if ($warnings) $notices[] = $warnings.' mockup(s) could not be added. Refresh to retry, or upload a downloaded copy.';
         if ($colorWarnings) $notices[] = 'Some color swatches could not be refreshed. Saved colors were kept where the variant still matches; otherwise the option stays neutral. Refresh from Printful to retry.';

@@ -5,7 +5,7 @@
     @endonce
     <section class="mt-5 pt-4 border-top" aria-labelledby="{{ $rowId }}-title" data-product-row>
         <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
-            <h2 id="{{ $rowId }}-title" class="mb-0">You may also like</h2>
+            <h4 id="{{ $rowId }}-title" class="mb-0">You may also like</h4>
             <div class="d-flex gap-2" data-product-row-controls hidden>
                 <button type="button" class="btn btn-secondary btn-sm" data-product-row-scroll="-1" aria-label="Previous products" aria-controls="{{ $rowId }}-track">@icon('chevron-left', ['mr' => 0])</button>
                 <button type="button" class="btn btn-secondary btn-sm" data-product-row-scroll="1" aria-label="Next products" aria-controls="{{ $rowId }}-track">@icon('chevron-right', ['mr' => 0])</button>

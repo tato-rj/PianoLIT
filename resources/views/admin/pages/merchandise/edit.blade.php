@@ -64,16 +64,6 @@
         <details class="admin-editor-section mb-4" id="printful-mockups" @if($printfulMockups->contains('id', (int) $editingImageId)) open @endif>
             <summary class="fw-semibold">Printful mockups ({{ $printfulMockups->count() }})</summary>
             <p class="small text-muted mt-3">Download originals as starting images for your own mockups. Upload finished images in the color galleries above. Manage originals in Printful.</p>
-            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                @if(app(\App\Services\Shop\Printful::class)->enabled() && (int) $product->printful_store_id !== 0)
-                    <form method="POST" action="{{ route('admin.merchandise.refresh', ['merchandise' => $product] + $returnFilters) }}">
-                        @csrf
-                        <input type="hidden" name="revision" value="{{ $product->revision }}">
-                        <button class="btn btn-secondary btn-sm" type="submit">@icon('refresh-cw')Refresh from Printful</button>
-                    </form>
-                @endif
-                <p class="small text-muted mb-0">Printful #{{ $product->printful_product_id }} · Last refreshed {{ optional($product->synced_at)->format('M j, Y · g:ia') ?: 'Not recorded' }}</p>
-            </div>
             <div class="row g-4">
                 @forelse($printfulMockups as $image)
                     @include('admin.pages.merchandise.source-image')
