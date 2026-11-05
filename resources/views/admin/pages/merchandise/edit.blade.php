@@ -5,6 +5,10 @@
     $editingImageId = is_scalar(old('editing_image_id')) ? (string) old('editing_image_id') : '';
     $draftColor = is_string(old('gallery_color')) ? old('gallery_color') : '';
     $colorGroups = array_values(array_filter($galleryGroups, fn ($group) => $group['color'] !== ''));
+    $gallery = app(\App\Services\Shop\MerchandiseGallery::class);
+    $colorTabs = array_map(fn ($group) => ['target' => $gallery->tabId($group['color']), 'label' => $group['label'].' ('.$group['images']->count().')'], $colorGroups);
+    $activeColorGroup = collect($colorGroups)->firstWhere('color', $draftColor);
+    $activeColorTab = $activeColorGroup ? $gallery->tabId($activeColorGroup['color']) : ($colorTabs[0]['target'] ?? null);
     $printfulMockups = $product->images->where('source', 'printful');
     $unassignedUploads = $product->images->where('source', 'upload')->whereNull('gallery_color');
     $removed = $removed->where('source', 'upload');
@@ -22,9 +26,12 @@
         <div class="row g-4 mb-4 align-items-start">
             <div class="col-lg-8">
                 @component('admin.components.editor.section', ['id' => 'merchandise-gallery', 'title' => 'Mockups by color', 'description' => 'Upload the views for each product color and arrange their order. The storefront shows only the views for the selected color.'])
-                    @forelse($colorGroups as $groupIndex => $group)
-                        <section class="mb-4" aria-labelledby="gallery-group-{{ $groupIndex }}">
-                            <h3 class="h5 mb-2" id="gallery-group-{{ $groupIndex }}">{{ $group['label'] }} ({{ $group['images']->count() }})</h3>
+                    @if($colorGroups)
+                    @component('components.navigation.tab-navigation', ['id' => 'merchandise-color-tabs', 'label' => 'Product colors', 'items' => $colorTabs, 'active' => $activeColorTab, 'tone' => 'neutral', 'class' => 'flex-nowrap overflow-auto text-nowrap'])
+                        <div class="tab-content pt-3 mb-3">
+                        @foreach($colorGroups as $groupIndex => $group)
+                        @php($colorTabId = $gallery->tabId($group['color']))
+                        <section class="tab-pane {{ $activeColorTab === $colorTabId ? 'show active' : '' }}" id="{{ $colorTabId }}" role="tabpanel" aria-labelledby="merchandise-color-tabs-{{ $colorTabId }}" tabindex="0">
                             @if(!$group['offered'])<p class="small text-muted">This color is no longer offered. Reassign its images to an available color to use them.</p>@endif
                             <div class="row g-0">
                                 @forelse($group['images'] as $image)
@@ -35,9 +42,12 @@
                             </div>
                             @if($group['offered'])@include('admin.pages.merchandise.upload')@endif
                         </section>
-                    @empty
+                        @endforeach
+                        </div>
+                    @endcomponent
+                    @else
                         <p class="text-muted mb-0">No product colors available. Add variants in Printful, then refresh the product details.</p>
-                    @endforelse
+                    @endif
                     <p class="small text-muted mb-0">The star selects the catalog image. Maximum 40 images per product, 6,000 pixels per side and 24 megapixels.</p>
                 @endcomponent
             </div>

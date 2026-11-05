@@ -141,7 +141,13 @@ class MerchandiseGalleryTest extends ReviewTestCase
         $this->assertCount(0, $xpath->query('//*[@data-mockup-row]//select|//*[@data-mockup-row]//input[@name="alt"]'));
         $this->assertCount(2, $xpath->query('//*[@data-mockup-row]//img[@width="48" and @height="48"]'));
         $this->assertCount(8, $xpath->query('//*[@data-mockup-row]//button[contains(@class,"btn-xs")]'));
-        foreach (['Pink', 'Blue', 'Ivory'] as $color) $this->assertCount(1, $xpath->query('//form[@data-color-upload="'.$color.'"]/input[@name="gallery_color" and @value="'.$color.'"]'));
+        $gallery = app(\App\Services\Shop\MerchandiseGallery::class);
+        $this->assertCount(3, $xpath->query('//*[@id="merchandise-color-tabs"]//*[@role="tab"]'));
+        $this->assertCount(1, $xpath->query('//*[@role="tab" and @aria-selected="true"]'));
+        $this->assertCount(1, $xpath->query('//*[@id="'.$gallery->tabId('Ivory').'" and contains(@class,"active")]'));
+        foreach (['Pink', 'Blue', 'Ivory'] as $color) {
+            $this->assertCount(1, $xpath->query('//*[@id="'.$gallery->tabId($color).'"]//form[@data-color-upload="'.$color.'"]/input[@name="gallery_color" and @value="'.$color.'"]'));
+        }
     }
 
     public function test_batch_duplicate_and_restored_uploads_use_the_target_color_and_current_product_name()
@@ -151,14 +157,14 @@ class MerchandiseGalleryTest extends ReviewTestCase
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
         $url = route('admin.merchandise.images.upload', $product);
         $this->post($url, ['revision' => 1, 'gallery_color' => 'Ivory', 'alt' => 'Not the product name',
-            'images' => [UploadedFile::fake()->image('front.png', 100, 100), UploadedFile::fake()->image('back.png', 120, 100)]])->assertRedirect();
+            'images' => [UploadedFile::fake()->image('front.png', 100, 100), UploadedFile::fake()->image('back.png', 120, 100)]])->assertRedirect(route('admin.merchandise.edit', $product).'#'.app(\App\Services\Shop\MerchandiseGallery::class)->tabId('Ivory'));
         $uploads = $product->images()->get();
         $this->assertCount(2, $uploads);
         $this->assertSame(['Ivory', 'Ivory'], $uploads->pluck('gallery_color')->all());
         $this->assertSame([$product->name, $product->name], $uploads->pluck('alt')->all());
         $front = $uploads->first();
         $this->post($url, ['revision' => $product->fresh()->revision, 'gallery_color' => 'Blue',
-            'images' => [UploadedFile::fake()->image('front.png', 100, 100)]])->assertRedirect();
+            'images' => [UploadedFile::fake()->image('front.png', 100, 100)]])->assertRedirect(route('admin.merchandise.edit', $product).'#'.app(\App\Services\Shop\MerchandiseGallery::class)->tabId('Blue'));
         $this->assertSame('Blue', $front->fresh()->gallery_color);
         $this->assertSame(2, $product->images()->count());
         $this->delete(route('admin.merchandise.images.remove', ['merchandise' => $product, 'image' => $front->id]), ['revision' => $product->fresh()->revision])->assertRedirect();

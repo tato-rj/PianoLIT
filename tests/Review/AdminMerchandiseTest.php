@@ -526,7 +526,7 @@ class AdminMerchandiseTest extends ReviewTestCase
         $editUrl = route('admin.merchandise.edit', ['merchandise' => $product] + $filters);
         $updateUrl = route('admin.merchandise.images.update', ['merchandise' => $product, 'image' => $image->id] + $filters);
         $this->get($editUrl)->assertOk()->assertSee(e(route('admin.merchandise.index', $filters)), false)->assertDontSee('Image description');
-        $this->patch($updateUrl, ['revision' => $product->revision, 'gallery_color' => 'Black', 'alt' => 'Studio <script>view</script>'])->assertRedirect($editUrl.'#images');
+        $this->patch($updateUrl, ['revision' => $product->revision, 'gallery_color' => 'Black', 'alt' => 'Studio <script>view</script>'])->assertRedirect($editUrl.'#'.app(\App\Services\Shop\MerchandiseGallery::class)->tabId('Black'));
         $this->get($editUrl)->assertOk()->assertDontSee('Studio <script>view</script>', false)->assertDontSee('name="alt"', false);
         $this->withExceptionHandling()->from($editUrl)->patch($updateUrl, ['revision' => $product->fresh()->revision, 'gallery_color' => ['invalid'], 'editing_image_id' => ['invalid']])
             ->assertRedirect($editUrl)->assertSessionHasErrors('gallery_color', null, 'merchandise');

@@ -216,7 +216,12 @@ class MerchandiseController extends Controller
 
     private function backToImages(MerchandiseProduct $product)
     {
-        return redirect()->route('admin.merchandise.edit', ['merchandise' => $product] + $this->returnFilters())->withFragment('images');
+        $color = request()->input('gallery_color');
+        if (!is_string($color) && request()->route('image')) {
+            $color = $product->images()->withTrashed()->whereKey((int) request()->route('image'))->value('gallery_color');
+        }
+        $fragment = is_string($color) && $color !== '' ? app(MerchandiseGallery::class)->tabId($color) : 'images';
+        return redirect()->route('admin.merchandise.edit', ['merchandise' => $product] + $this->returnFilters())->withFragment($fragment);
     }
 
     private function returnFilters(): array

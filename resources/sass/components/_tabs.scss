@@ -7,6 +7,20 @@
     font-weight: bold;
 }
 
+// Native bordered tabs with the shared neutral text palette.
+.nav-tabs.tab-navigation--neutral .nav-link {
+    color: var(--color-grey) !important;
+    font-weight: 400;
+    text-decoration: none;
+
+    &:hover,
+    &:focus { color: var(--color-grey) !important; }
+
+    &.active,
+    &.active:hover,
+    &.active:focus { color: var(--color-text-dark) !important; }
+}
+
 // Shared alternative to bordered tabs for a small set of account sections.
 .tab-navigation--segmented,
 .tab-navigation--segmented-bar {

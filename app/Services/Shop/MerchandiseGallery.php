@@ -7,6 +7,11 @@ use App\Merchandise\MerchandiseProduct;
 /** Manual web gallery curation, independent of provider imports and sellable variants. */
 class MerchandiseGallery
 {
+    public function tabId(string $color): string
+    {
+        return 'mockup-color-'.substr(hash('sha256', $color), 0, 12);
+    }
+
     public function colors(MerchandiseProduct $product): array
     {
         return collect($product->variants ?? [])->map(fn ($variant) => ($variant['color'] ?? null) ?: 'Original')->unique()->values()->all();
