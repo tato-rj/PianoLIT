@@ -27,7 +27,7 @@
                         </form>
                         <form action="{{ route('shop.bag.remove', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST">
                             @csrf @method('DELETE')
-                            <button class="btn btn-secondary btn-sm shop-remove" type="submit" aria-label="Remove {{ $line['product']['name'] }} ({{ $line['variant']['color'] }} / {{ $line['variant']['size'] }})">@icon('trash-2', ['mr' => 0])</button>
+                            <button class="btn btn-red btn-sm shop-remove" type="submit" aria-label="Remove {{ $line['product']['name'] }} ({{ $line['variant']['color'] }} / {{ $line['variant']['size'] }})">@icon('trash-2', ['mr' => 0])</button>
                         </form>
                     </div>
                 </article>
