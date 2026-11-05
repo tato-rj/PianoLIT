@@ -304,6 +304,15 @@ Native file fields use `components.forms.upload.file` with `id`, `name`, `label`
 optional `accept` and `currentUrl` / `currentLabel`. Their IDs and labels remain
 unique; existing files open safely in a new tab.
 
+For a drop/click upload area, use `components.forms.upload.dropzone` with the same
+`id`, `name`, `label`, `accept`, `multiple`, `required`, `disabled` and `bag` options.
+It shares the standard Dropzone field tokens and stages files for the owning
+multipart form. Its native file input supports keyboard selection; the shared
+`file-dropzone.js` adds drag feedback, selected filenames and per-field count/size
+validation. Use `maxFiles`, `maxBytes`, `hint` and `showErrors` when needed.
+The Design System includes the same component. It does not instantiate the
+legacy automatic-upload Dropzone library.
+
 Collapsible lists use `components.layout.accordion` and `components.layout.accordion-item`,
 with the native Bootstrap accordion styling and behavior. Pass a unique wrapper
 `id`, then each item's unique `id`, `title` and optional `parentId` to keep one

@@ -68,16 +68,15 @@ class MerchandiseCatalog
                 if ($existing) $this->checkRevision($product, $revision);
                 if ($product->trashed()) $product->restore();
                 $position = (int) $product->images()->withTrashed()->max('position');
-                $activeCount = $product->images()->count();
+                $activeCount = $product->images()->where('source', 'printful')->count();
                 foreach ($assets as $asset) {
-                    if ($product->images()->withTrashed()->where(function ($query) use ($asset) {
+                    if ($product->images()->withTrashed()->where('source', 'printful')->where(function ($query) use ($asset) {
                         $query->where('source_key', $asset['source_key'])->orWhere('checksum', $asset['checksum']);
                     })->exists()) continue;
                     if ($activeCount >= MerchandiseImages::MAX_IMAGES) { $warnings++; continue; }
                     $image = $product->images()->create($asset + ['position' => ++$position]);
                     $usedPaths[] = $asset['path'];
                     $activeCount++;
-                    if (!$product->main_image_id) $product->main_image_id = $image->id;
                 }
                 $product->fill(['name' => $name, 'variants' => $variants, 'synced_at' => now(), 'revision' => $product->revision + 1])->save();
                 return $product;
@@ -159,10 +158,12 @@ class MerchandiseCatalog
                 if ($color !== null && !in_array($color, app(\App\Services\Shop\MerchandiseGallery::class)->colors($locked), true)) {
                     throw ValidationException::withMessages(['gallery_color' => 'Choose a color offered by this product.'])->errorBag('merchandise');
                 }
-                $count = $locked->images()->count();
+                $count = $locked->images()->where('source', 'upload')->count();
+                $main = $locked->images()->whereKey($locked->main_image_id)->first();
+                $needsMain = !$main || $main->source !== 'upload';
                 $position = (int) $locked->images()->withTrashed()->max('position');
                 foreach ($assets as $asset) {
-                    $existing = $locked->images()->withTrashed()->where('checksum', $asset['checksum'])->first();
+                    $existing = $locked->images()->withTrashed()->where('source', 'upload')->where('checksum', $asset['checksum'])->first();
                     if ($existing && !$existing->trashed()) continue;
                     if ($count >= MerchandiseImages::MAX_IMAGES) throw new PrintfulException('A product can have up to 40 gallery images. Remove an image before uploading more.');
                     if ($existing) {
@@ -173,7 +174,7 @@ class MerchandiseCatalog
                         $image = $locked->images()->create($asset + ['position' => ++$position, 'gallery_color' => $color]);
                         $usedPaths[] = $asset['path'];
                     }
-                    if (!$locked->main_image_id) $locked->main_image_id = $image->id;
+                    if ($needsMain) { $locked->main_image_id = $image->id; $needsMain = false; }
                     $count++;
                 }
             });
@@ -187,5 +188,12 @@ class MerchandiseCatalog
     public function image(MerchandiseProduct $product, int $id, bool $removed = false): MerchandiseImage
     {
         return ($removed ? $product->images()->onlyTrashed() : $product->images())->whereKey($id)->firstOrFail();
+    }
+
+    public function editableImage(MerchandiseProduct $product, int $id, bool $removed = false): MerchandiseImage
+    {
+        $image = $this->image($product, $id, $removed);
+        abort_unless($image->source === 'upload', 403, 'Printful mockups are read-only. Upload your own copy to use it in the storefront.');
+        return $image;
     }
 }

@@ -10,6 +10,8 @@
     if (subscribed) {
         try { window.localStorage.setItem(subscribedKey, '1'); } catch (error) {}
     }
+    // Login suppresses this guest invitation without creating newsletter consent.
+    if (state.dataset.authenticated === 'true') return;
     var modal = document.querySelector('[data-shop-welcome]');
     var launcher = document.querySelector('[data-shop-welcome-launcher]');
     if (!modal || !launcher || !window.bootstrap) return;

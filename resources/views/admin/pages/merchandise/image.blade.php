@@ -7,7 +7,12 @@
             <input type="hidden" name="revision" value="{{ $product->revision }}">
             <input type="hidden" name="editing_image_id" value="{{ $image->id }}">
             @input(['id' => 'image-description-'.$image->id, 'name' => 'alt', 'label' => 'Image description', 'limit' => 255, 'bag' => 'merchandise', 'oldInputKey' => 'description-'.$image->id, 'value' => $editingImageId === (string) $image->id ? ($draftAlt ?? $image->alt) : $image->alt])
-            <button class="btn btn-secondary btn-sm" type="submit" aria-label="Save description for gallery image {{ $loop->iteration }}">Save description</button>
+            @php
+                $imageColorChoices = ['' => 'Unassigned mockups'] + array_combine($galleryColors, $galleryColors);
+                if ($image->gallery_color !== null && !isset($imageColorChoices[$image->gallery_color])) $imageColorChoices[$image->gallery_color] = $image->gallery_color.' (no longer offered)';
+            @endphp
+            @select(['id' => 'image-color-'.$image->id, 'name' => 'gallery_color', 'label' => 'Color gallery', 'required' => '', 'bag' => 'merchandise', 'useOldInput' => false, 'value' => $editingImageId === (string) $image->id ? $draftColor : ($image->gallery_color ?? ''), 'choices' => $imageColorChoices])
+            <button class="btn btn-secondary btn-sm" type="submit" aria-label="Save gallery image {{ $loop->iteration }}">Save image</button>
         </form>
         <div class="d-flex flex-wrap gap-2 mt-auto">
             <form method="POST" action="{{ route('admin.merchandise.images.main', ['merchandise' => $product, 'image' => $image->id] + $returnFilters) }}">

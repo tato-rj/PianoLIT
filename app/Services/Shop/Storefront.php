@@ -136,7 +136,7 @@ class Storefront
     public function present(MerchandiseProduct $product): array
     {
         $variants = $this->variants($product);
-        $images = $product->images->sortBy(fn ($image) => $image->id == $product->main_image_id ? -1 : $image->position)->values();
+        $images = $product->images->where('source', 'upload')->sortBy(fn ($image) => $image->id == $product->main_image_id ? -1 : $image->position)->values();
         $currencies = array_unique(array_column($variants, 'currency'));
         $price = count($currencies) === 1 ? min(array_column($variants, 'cents')) : null;
         $category = $this->category($product);

@@ -4,13 +4,13 @@ const vm = require('node:vm');
 
 module.exports = function () {
     const source = fs.readFileSync(require('node:path').join(__dirname, '../../resources/js/views/shop-welcome.js'), 'utf8');
-    function fixture({storage = new Map(), retry = false, blocked = false, unavailable = false, auto = true, subscribed = false} = {}) {
+    function fixture({storage = new Map(), retry = false, blocked = false, unavailable = false, auto = true, subscribed = false, authenticated = false} = {}) {
         function target(extra = {}) {
             return Object.assign({events: {}, addEventListener(name, callback) { this.events[name] = callback; }}, extra);
         }
         let shows = 0, focused = 0, id = 0;
         const timers = new Map();
-        const state = {dataset: {subscribed: String(subscribed)}};
+        const state = {dataset: {subscribed: String(subscribed), authenticated: String(authenticated)}};
         const launcher = target({hidden: true, isConnected: true, focus() { focused++; }});
         const modal = target({dataset: {shopWelcomeRetry: String(retry), shopWelcomeAuto: String(auto)}});
         const doc = target({hidden: false, activeElement: {isConnected: true, focus() { focused++; }},
@@ -35,6 +35,10 @@ module.exports = function () {
     }
     const key = 'pianolit.shop.newsletter.seen';
     const subscribedKey = 'pianolit.shop.newsletter.subscribed';
+    const signedIn = fixture({authenticated: true}); signedIn.flush();
+    assert.equal(signedIn.shows, 0, 'Logged-in visitors never receive the guest prompt');
+    assert.equal(signedIn.launcher.hidden, true);
+    assert.equal(signedIn.storage.has(subscribedKey), false, 'Login is not newsletter consent');
     const first = fixture();
     assert.equal(first.shows, 0);
     assert.equal(first.storage.size, 0, 'Leaving before the delay does not count as seeing the popup');

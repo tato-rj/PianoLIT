@@ -9,6 +9,7 @@ Route::prefix('merchandise')->name('merchandise.')->group(function () {
     Route::delete('{merchandise}/closeup', 'Admin\ShopCloseupsController@destroy')->whereNumber('merchandise')->defaults('closeupKind', 'merchandise')->name('closeup.destroy');
     Route::post('{merchandise}/refresh', 'Admin\MerchandiseController@refresh')->name('refresh');
     Route::post('{merchandise}/images', 'Admin\MerchandiseController@upload')->name('images.upload');
+    Route::get('{merchandise}/images/{image}/download', 'Admin\MerchandiseController@download')->whereNumber('image')->name('images.download');
     Route::patch('{merchandise}/images/{image}', 'Admin\MerchandiseController@updateImage')->whereNumber('image')->name('images.update');
     Route::patch('{merchandise}/images/{image}/main', 'Admin\MerchandiseController@main')->whereNumber('image')->name('images.main');
     Route::patch('{merchandise}/images/{image}/move', 'Admin\MerchandiseController@move')->whereNumber('image')->name('images.move');

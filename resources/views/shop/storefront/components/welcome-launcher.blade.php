@@ -1,4 +1,4 @@
-<button type="button" class="btn btn-primary {{ ($preview ?? false) ? '' : 'shop-welcome-launcher' }}"
+<button type="button" class="btn btn-primary rounded-0 {{ ($preview ?? false) ? '' : 'shop-welcome-launcher' }}" style="--radius-button: 0"
     @if($preview ?? false) data-ds-preview @else data-shop-welcome-launcher hidden aria-haspopup="dialog" aria-controls="modal-newsletter-subscription" @endif>
-    @icon('gift'){{ $offerAvailable ? 'Get 10% off' : 'PianoLIT newsletter' }}
+    @icon('tag')Get 10% off
 </button>

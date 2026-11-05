@@ -95,13 +95,32 @@ class ShopFirstOrderDiscountTest extends ReviewTestCase
         $this->assertSame(0, $this->quote(['email' => 'reader@example.test', 'discount' => 2800, 'first_order_discount_id' => 1])['discount']);
     }
 
-    public function test_unconfigured_checkout_keeps_the_newsletter_signup_available_without_advertising_an_unusable_offer()
+    public function test_checkout_configuration_does_not_replace_the_first_order_offer_with_generic_newsletter_copy()
     {
         config(['shop-checkout.stripe_key' => null, 'shop-checkout.stripe_secret' => null]);
-        $this->get(route('shop.home'))->assertOk()->assertSee('Keep me in the loop')->assertDontSee('10% off your first order');
+        $response = $this->get(route('shop.home'))->assertOk()->assertSee('Get my 10% discount')->assertSee('10% off your first order')
+            ->assertSee('Get 10% off')->assertDontSee('Keep me in the loop')->assertDontSee('PianoLIT newsletter</button>', false);
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//button[@data-shop-welcome-launcher and contains(@class,"rounded-0")]'));
+        $this->assertSame('--radius-button: 0', $xpath->query('//button[@data-shop-welcome-launcher]')->item(0)->getAttribute('style'));
+        $this->assertCount(1, $xpath->query('//button[@data-shop-welcome-launcher]//*[@data-lucide-name="tag"]'));
+        $this->assertCount(0, $xpath->query('//button[@data-shop-welcome-launcher]//*[@data-lucide-name="gift"]'));
         $this->signup();
         $this->assertDatabaseCount('shop_first_order_discounts', 1);
         $this->assertStringContainsString('saved for when Shop checkout is available', session('status'));
+    }
+
+    public function test_logged_in_accounts_without_newsletter_signup_do_not_see_the_guest_offer()
+    {
+        $user = Model::withoutEvents(fn () => create(User::class, ['email' => 'not-subscribed@example.test']));
+        $this->actingAs($user, 'web');
+        foreach ([route('shop.home'), route('shop.bag'), route('ebooks.index')] as $url) {
+            $this->get($url)->assertOk()->assertSee('data-authenticated="true"', false)->assertSee('data-subscribed="false"', false)
+                ->assertDontSee('data-shop-welcome-launcher', false)->assertDontSee('id="modal-newsletter-subscription"', false);
+        }
+        $this->assertDatabaseCount('subscriptions', 0);
+        $this->assertDatabaseCount('shop_first_order_discounts', 0);
+        $this->assertFalse(session()->has('newsletter_subscribed'));
     }
 
     public function test_discount_changes_the_quoted_and_charged_amount_but_not_shipping_or_fulfillment_cost()

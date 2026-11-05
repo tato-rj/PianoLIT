@@ -10,6 +10,7 @@ use App\Support\{AdminPagination, AdminTableFilters};
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class MerchandiseController extends Controller
 {
@@ -143,21 +144,21 @@ class MerchandiseController extends Controller
     public function main(Request $request, MerchandiseProduct $merchandise, int $image, MerchandiseCatalog $catalog)
     {
         $catalog->change($merchandise, $this->revision($request), function ($product) use ($image, $catalog) {
-            $product->main_image_id = $catalog->image($product, $image)->id;
+            $product->main_image_id = $catalog->editableImage($product, $image)->id;
         });
         return $this->backToImages($merchandise)->with('status', 'The main product image has been updated.');
     }
 
     public function updateImage(Request $request, MerchandiseProduct $merchandise, int $image, MerchandiseCatalog $catalog)
     {
-        $current = $catalog->image($merchandise, $image);
+        $current = $catalog->editableImage($merchandise, $image);
         $colors = array_merge(app(MerchandiseGallery::class)->colors($merchandise), [$current->gallery_color]);
         $data = $request->validateWithBag('merchandise', ['revision' => 'required|integer|min:1', 'alt' => 'required|string|max:255',
             'gallery_color' => ['sometimes', 'nullable', 'string', 'max:255', Rule::in($colors)]]);
         $catalog->change($merchandise, (int) $data['revision'], function ($product) use ($image, $catalog, $data) {
             $changes = ['alt' => $data['alt']];
             if (array_key_exists('gallery_color', $data)) $changes['gallery_color'] = $data['gallery_color'];
-            $catalog->image($product, $image)->update($changes);
+            $catalog->editableImage($product, $image)->update($changes);
         });
         return $this->backToImages($merchandise)->with('status', 'The gallery image has been updated.');
     }
@@ -166,8 +167,8 @@ class MerchandiseController extends Controller
     {
         $data = $request->validateWithBag('merchandise', ['revision' => 'required|integer|min:1', 'direction' => 'required|in:up,down']);
         $catalog->change($merchandise, (int) $data['revision'], function ($product) use ($image, $catalog, $data) {
-            $selected = $catalog->image($product, $image);
-            $ordered = $product->images()->where('gallery_color', $selected->gallery_color)->get();
+            $selected = $catalog->editableImage($product, $image);
+            $ordered = $product->images()->where('source', 'upload')->where('gallery_color', $selected->gallery_color)->get();
             $index = $ordered->search(fn ($item) => $item->id === $selected->id);
             $next = $index + ($data['direction'] === 'up' ? -1 : 1);
             if ($next < 0 || $next >= $ordered->count()) return;
@@ -181,8 +182,8 @@ class MerchandiseController extends Controller
     public function remove(Request $request, MerchandiseProduct $merchandise, int $image, MerchandiseCatalog $catalog)
     {
         $catalog->change($merchandise, $this->revision($request), function ($product) use ($image, $catalog) {
-            $catalog->image($product, $image)->delete();
-            if ((int) $product->main_image_id === $image) $product->main_image_id = $product->images()->value('id');
+            $catalog->editableImage($product, $image)->delete();
+            if ((int) $product->main_image_id === $image) $product->main_image_id = $product->images()->where('source', 'upload')->value('id');
         });
         return $this->backToImages($merchandise)->with('status', 'The image has been removed from the gallery. You can restore it below.');
     }
@@ -191,8 +192,8 @@ class MerchandiseController extends Controller
     {
         try {
             $catalog->change($merchandise, $this->revision($request), function ($product) use ($image, $catalog) {
-                if ($product->images()->count() >= MerchandiseImages::MAX_IMAGES) throw new PrintfulException('A product can have up to 40 gallery images.');
-                $restored = $catalog->image($product, $image, true);
+                if ($product->images()->where('source', 'upload')->count() >= MerchandiseImages::MAX_IMAGES) throw new PrintfulException('A product can have up to 40 gallery images.');
+                $restored = $catalog->editableImage($product, $image, true);
                 $restored->position = (int) $product->images()->withTrashed()->max('position') + 1;
                 $restored->restore();
                 if (!$product->main_image_id) $product->main_image_id = $restored->id;
@@ -201,6 +202,14 @@ class MerchandiseController extends Controller
             return $this->backToImages($merchandise)->with('error', $exception->getMessage());
         }
         return $this->backToImages($merchandise)->with('status', 'The image has been restored to the gallery.');
+    }
+
+    public function download(MerchandiseProduct $merchandise, int $image, MerchandiseCatalog $catalog)
+    {
+        abort_unless((string) $merchandise->printful_store_id === app(\App\Services\Shop\Storefront::class)->storeId(), 404);
+        $mockup = $catalog->image($merchandise, $image);
+        abort_unless($mockup->source === 'printful' && Storage::disk($mockup->disk)->exists($mockup->path), 404);
+        return Storage::disk($mockup->disk)->download($mockup->path, 'printful-mockup-'.$mockup->id.'.'.pathinfo($mockup->path, PATHINFO_EXTENSION));
     }
 
     private function revision(Request $request): int

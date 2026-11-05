@@ -89,6 +89,13 @@ class AdminMerchandiseTest extends ReviewTestCase
         return app(MerchandiseCatalog::class)->import(77)[0]->fresh();
     }
 
+    private function uploaded(MerchandiseProduct $product)
+    {
+        app(MerchandiseCatalog::class)->upload($product, $product->revision, [UploadedFile::fake()->image('own-view.png', 100, 80)], 'Uploaded view', 'Black');
+        $product->refresh();
+        return $product->images()->where('source', 'upload')->firstOrFail();
+    }
+
     public function test_import_rejects_duplicate_names_before_copying_images()
     {
         $product = $this->imported();
@@ -132,7 +139,7 @@ class AdminMerchandiseTest extends ReviewTestCase
         $response->assertRedirect($this->action('edit', $product).'#images');
         $this->assertSame(1, MerchandiseProduct::count());
         $this->assertCount(2, $product->images);
-        $this->assertSame($product->images->first()->id, (int) $product->main_image_id);
+        $this->assertNull($product->main_image_id);
         $this->assertSame('25.00', $product->variants[0]['retail_price']);
         $this->assertSame('Unisex cotton t-shirt', $product->variants[0]['product_name']);
         $this->assertSame(71, $product->variants[0]['catalog_product_id']);
@@ -144,7 +151,7 @@ class AdminMerchandiseTest extends ReviewTestCase
             $this->assertSame('image/png', getimagesizefromstring(Storage::disk('public')->get($image->path))['mime']);
         }
         Http::assertNotSent(fn ($request) => strpos($request->url(), 'artwork') !== false || strpos($request->url(), 'private-print') !== false);
-        $this->get($this->action('edit', $product))->assertOk()->assertSee('Main image')->assertSee('Use as main')->assertSee('Product variants')->assertSee('multiple', false);
+        $this->get($this->action('edit', $product))->assertOk()->assertSee('Printful mockups (2)')->assertSee('Download')->assertDontSee('aria-label="Use gallery image', false)->assertSee('Product variants')->assertSee('multiple', false);
         $this->get(route('admin.merchandise.index'))->assertOk()->assertSee('Piano T-shirt')->assertSee('Manage images');
     }
 
@@ -245,12 +252,14 @@ class AdminMerchandiseTest extends ReviewTestCase
     {
         $product = $this->imported();
         $front = $product->images()->first();
+        $this->assertNull($front->gallery_color, 'Imports do not guess a color assignment.');
+        $removedUpload = $this->uploaded($product);
         $this->post($this->action('images.upload', $product), ['revision' => $product->revision,
-            'images' => [UploadedFile::fake()->image('own-mockup.png', 100, 80)], 'alt' => 'My studio photo'])->assertRedirect();
-        $upload = $product->images()->where('source', 'upload')->firstOrFail();
+            'images' => [UploadedFile::fake()->image('own-mockup.png', 120, 80)], 'alt' => 'My studio photo', 'gallery_color' => 'Black'])->assertRedirect();
+        $upload = $product->images()->where('source', 'upload')->reorder('id', 'desc')->firstOrFail();
         $this->patch($this->action('images.main', $product, $upload->id), ['revision' => $product->fresh()->revision])->assertRedirect();
         $this->patch($this->action('images.move', $product, $upload->id), ['revision' => $product->fresh()->revision, 'direction' => 'up'])->assertRedirect();
-        $this->delete($this->action('images.remove', $product, $front->id), ['revision' => $product->fresh()->revision])->assertRedirect();
+        $this->delete($this->action('images.remove', $product, $removedUpload->id), ['revision' => $product->fresh()->revision])->assertRedirect();
         $before = $product->images()->pluck('id')->all();
         $this->remote['sync_product']['name'] = 'Updated Piano T-shirt';
         $this->remote['sync_variants'][0]['retail_price'] = '29.00';
@@ -261,29 +270,32 @@ class AdminMerchandiseTest extends ReviewTestCase
         $this->assertSame($upload->id, (int) $product->main_image_id);
         $this->assertSame($before, $product->images()->pluck('id')->all());
         $this->assertSame('My studio photo', $upload->fresh()->alt);
-        $this->assertTrue(MerchandiseImage::withTrashed()->find($front->id)->trashed());
+        $this->assertTrue(MerchandiseImage::withTrashed()->find($removedUpload->id)->trashed());
+        $this->assertSame('Black', MerchandiseImage::withTrashed()->find($removedUpload->id)->gallery_color);
+        $this->assertFalse($front->fresh()->trashed());
         $this->get($this->action('edit', $product))->assertOk()->assertSee('Removed images (1)')->assertSee('Restore image');
     }
 
     public function test_removing_the_main_image_selects_a_fallback_and_the_last_can_be_restored()
     {
         $product = $this->imported();
-        $images = $product->images;
+        $this->uploaded($product);
+        $images = $product->images()->where('source', 'upload')->get();
         foreach ($images as $image) {
             $this->delete($this->action('images.remove', $product, $image->id), ['revision' => $product->fresh()->revision])->assertRedirect();
         }
         $this->assertNull($product->fresh()->main_image_id);
-        $this->assertSame(0, $product->images()->count());
+        $this->assertSame(0, $product->images()->where('source', 'upload')->count());
         $this->post($this->action('images.restore', $product, $images->first()->id), ['revision' => $product->fresh()->revision])->assertRedirect();
         $this->assertSame($images->first()->id, (int) $product->fresh()->main_image_id);
-        $this->assertSame(1, $product->images()->count());
+        $this->assertSame(1, $product->images()->where('source', 'upload')->count());
     }
 
     public function test_wrong_product_images_and_stale_saves_cannot_change_the_gallery()
     {
         $product = $this->imported();
         $other = MerchandiseProduct::create(['name' => 'Other', 'printful_store_id' => 12345, 'printful_product_id' => 88, 'variants' => []]);
-        $image = $product->images()->first();
+        $image = $this->uploaded($product);
         $this->withExceptionHandling();
         foreach (['images.main', 'images.move', 'images.update'] as $action) {
             $this->patchJson($this->action($action, $other, $image->id), ['revision' => 1, 'direction' => 'up', 'alt' => 'Forged'])->assertNotFound();
@@ -302,14 +314,14 @@ class AdminMerchandiseTest extends ReviewTestCase
     public function test_removed_main_cannot_be_selected_until_restored_and_duplicate_uploads_are_not_added()
     {
         $product = $this->imported();
-        $image = $product->images()->first();
+        $image = $this->uploaded($product);
         $this->delete($this->action('images.remove', $product, $image->id), ['revision' => $product->revision]);
         $this->withExceptionHandling()->patchJson($this->action('images.main', $product, $image->id), ['revision' => $product->fresh()->revision])->assertNotFound();
         for ($i = 0; $i < 2; $i++) {
             $this->post($this->action('images.upload', $product), ['revision' => $product->fresh()->revision, 'images' => [UploadedFile::fake()->image('same.png', 90, 60)]])->assertRedirect();
         }
         $this->assertSame(1, $product->images()->where('source', 'upload')->count());
-        $this->assertCount(3, Storage::disk('public')->allFiles());
+        $this->assertCount(4, Storage::disk('public')->allFiles());
     }
 
     public function test_partial_mockup_failure_keeps_the_product_and_reports_the_missing_image()
@@ -432,14 +444,14 @@ class AdminMerchandiseTest extends ReviewTestCase
     public function test_gallery_limit_is_enforced_without_changing_the_existing_selection()
     {
         $product = $this->imported();
-        for ($i = 2; $i < MerchandiseImages::MAX_IMAGES; $i++) {
+        for ($i = 0; $i < MerchandiseImages::MAX_IMAGES; $i++) {
             $product->images()->create(['disk' => 'public', 'path' => 'review/'.$i.'.png', 'source' => 'upload',
                 'checksum' => hash('sha256', (string) $i), 'alt' => 'Review image', 'width' => 64, 'height' => 64, 'position' => $i + 1]);
         }
         $files = Storage::disk('public')->allFiles();
         $this->post($this->action('images.upload', $product), ['revision' => $product->revision,
             'images' => [UploadedFile::fake()->image('extra.png', 120, 80)]])->assertRedirect()->assertSessionHas('error');
-        $this->assertSame(MerchandiseImages::MAX_IMAGES, $product->images()->count());
+        $this->assertSame(MerchandiseImages::MAX_IMAGES, $product->images()->where('source', 'upload')->count());
         $this->assertSame($files, Storage::disk('public')->allFiles());
         $this->assertSame($product->main_image_id, $product->fresh()->main_image_id);
     }
@@ -491,7 +503,7 @@ class AdminMerchandiseTest extends ReviewTestCase
             };
         });
         $this->post(route('admin.merchandise.import'), ['printful_product_id' => 77])->assertStatus(419);
-        $this->patch($this->action('images.main', $product, $product->main_image_id), ['revision' => $product->revision])->assertStatus(419);
+        $this->patch($this->action('images.main', $product, $product->images()->first()->id), ['revision' => $product->revision])->assertStatus(419);
         $this->assertSame(2, $product->fresh()->revision);
     }
 
@@ -509,7 +521,7 @@ class AdminMerchandiseTest extends ReviewTestCase
     public function test_directory_filters_survive_gallery_actions_and_malformed_drafts_render_safely()
     {
         $product = $this->imported();
-        $image = $product->images()->first();
+        $image = $this->uploaded($product);
         $filters = ['search' => 'Piano', 'sort' => 'name_desc', 'per_page' => 24, 'page' => 2];
         $editUrl = route('admin.merchandise.edit', ['merchandise' => $product] + $filters);
         $updateUrl = route('admin.merchandise.images.update', ['merchandise' => $product, 'image' => $image->id] + $filters);

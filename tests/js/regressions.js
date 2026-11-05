@@ -1,4 +1,5 @@
 require('./project-deck')();
+require('./file-dropzone.test.cjs')();
 require('./home-scroll-hint')();
 require('./metronome.test.cjs');
 require('./metronome-voice.test.cjs');
@@ -42,6 +43,7 @@ async function main() {
     require('./shop-welcome.test.cjs')();
     require('./storefront-closeups.test.cjs')();
     await require('./storefront-bag.test.cjs')();
+    await require('./storefront-gallery.test.cjs')();
     await require('./express-checkout.test.cjs')();
     await require('./merchandise-checkout.test.cjs')();
     await require('./shop-product.test.cjs')();

@@ -4,38 +4,80 @@
 @php
     $editingImageId = is_scalar(old('editing_image_id')) ? (string) old('editing_image_id') : '';
     $draftAlt = is_string(old('alt')) ? old('alt') : null;
+    $draftColor = is_string(old('gallery_color')) ? old('gallery_color') : '';
+    $colorGroups = array_values(array_filter($galleryGroups, fn ($group) => $group['color'] !== ''));
+    $printfulMockups = $product->images->where('source', 'printful');
+    $unassignedUploads = $product->images->where('source', 'upload')->whereNull('gallery_color');
+    $removed = $removed->where('source', 'upload');
 @endphp
 <div class="content-wrapper"><div class="container-fluid">
     @component('admin.components.page.title', [
         'title' => 'Manage product images', 'subtitle' => $product->name,
         'breadcrumbs' => [['label' => 'Merchandise', 'url' => route('admin.merchandise.index', $returnFilters)]],
-    ])
-        @if(app(\App\Services\Shop\Printful::class)->enabled() && (int) $product->printful_store_id !== 0)
-        <form method="POST" action="{{ route('admin.merchandise.refresh', ['merchandise' => $product] + $returnFilters) }}">
-            @csrf
-            <input type="hidden" name="revision" value="{{ $product->revision }}">
-            <button class="btn btn-dark btn-sm" type="submit">@icon('refresh-cw')Refresh from Printful</button>
-        </form>
-        @endif
-    @endcomponent
+    ])@endcomponent
     @if($errors->getBag('merchandise')->any())
         <div class="alert alert-red" role="alert"><ul class="mb-0">@foreach($errors->getBag('merchandise')->all() as $message)<li>{{ $message }}</li>@endforeach</ul></div>
     @endif
     @if(session('merchandise_notice'))<div class="alert alert-grey" role="status">{{ session('merchandise_notice') }}</div>@endif
-    <div class="row g-4 mb-4">
-        <div class="col-lg-8 order-2 order-lg-1" id="images">
-            @include('admin.components.shop.closeup', ['closeupProduct' => $product, 'closeupKind' => 'merchandise'])
-            @component('admin.components.editor.section', ['id' => 'merchandise-gallery', 'title' => 'Product gallery', 'description' => 'Choose the main image and arrange the other views. Refreshing preserves your uploads and main-image choice.'])
-                @if($product->images->isEmpty())
-                    <p class="text-muted mb-0">No images yet. Upload your own mockups, or refresh after Printful finishes generating its previews.</p>
-                @else
-                    <div class="row g-4">
-                        @foreach($product->images as $image)
-                            @include('admin.pages.merchandise.image', ['isMain' => (int) $product->main_image_id === $image->id, 'first' => $loop->first, 'last' => $loop->last])
-                        @endforeach
-                    </div>
+    <div id="images">
+        <div class="row g-4 mb-4 align-items-start">
+            <div class="col-lg-8">
+                @component('admin.components.editor.section', ['id' => 'merchandise-gallery', 'title' => 'Mockups by color', 'description' => 'Upload the views for each product color and arrange their order. The storefront shows only the views for the selected color.'])
+                    @forelse($colorGroups as $groupIndex => $group)
+                        <section class="mb-5" aria-labelledby="gallery-group-{{ $groupIndex }}">
+                            <h3 class="h5 mb-3" id="gallery-group-{{ $groupIndex }}">{{ $group['label'] }} ({{ $group['images']->count() }})</h3>
+                            @if(!$group['offered'])<p class="small text-muted">This color is no longer offered. Reassign its images to an available color to use them.</p>@endif
+                            <div class="row g-3">
+                                @forelse($group['images'] as $image)
+                                    @include('admin.pages.merchandise.image', ['isMain' => (int) $product->main_image_id === $image->id, 'first' => $loop->first, 'last' => $loop->last])
+                                @empty
+                                    <div class="col-12"><p class="text-muted mb-0">No mockups uploaded for this color.</p></div>
+                                @endforelse
+                            </div>
+                            @if($group['offered'])@include('admin.pages.merchandise.upload')@endif
+                        </section>
+                    @empty
+                        <p class="text-muted mb-0">No product colors available. Add variants in Printful, then refresh the product details.</p>
+                    @endforelse
+                    <p class="small text-muted mb-0">Choose Use as main on an image to use it in the catalog. Maximum 40 images per product, 6,000 pixels per side and 24 megapixels.</p>
+                @endcomponent
+            </div>
+            <div class="col-lg-4">
+                @include('admin.components.shop.closeup', ['closeupProduct' => $product, 'closeupKind' => 'merchandise'])
+            </div>
+        </div>
+        <details class="admin-editor-section mb-4" id="printful-mockups" @if($printfulMockups->contains('id', (int) $editingImageId)) open @endif>
+            <summary class="fw-semibold">Printful mockups ({{ $printfulMockups->count() }})</summary>
+            <p class="small text-muted mt-3">Download originals as starting images for your own mockups. Upload finished images in the color galleries above. Manage originals in Printful.</p>
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                @if(app(\App\Services\Shop\Printful::class)->enabled() && (int) $product->printful_store_id !== 0)
+                    <form method="POST" action="{{ route('admin.merchandise.refresh', ['merchandise' => $product] + $returnFilters) }}">
+                        @csrf
+                        <input type="hidden" name="revision" value="{{ $product->revision }}">
+                        <button class="btn btn-secondary btn-sm" type="submit">@icon('refresh-cw')Refresh from Printful</button>
+                    </form>
                 @endif
-            @endcomponent
+                <p class="small text-muted mb-0">Printful #{{ $product->printful_product_id }} · Last refreshed {{ optional($product->synced_at)->format('M j, Y · g:ia') ?: 'Not recorded' }}</p>
+            </div>
+            <div class="row g-4">
+                @forelse($printfulMockups as $image)
+                    @include('admin.pages.merchandise.source-image')
+                @empty
+                    <div class="col-12"><p class="text-muted mb-0">No mockups imported from Printful.</p></div>
+                @endforelse
+            </div>
+        </details>
+        @if($unassignedUploads->isNotEmpty())
+            <details class="admin-editor-section mb-4" @if($unassignedUploads->contains('id', (int) $editingImageId)) open @endif>
+                <summary class="fw-semibold">Unassigned uploads ({{ $unassignedUploads->count() }})</summary>
+                <p class="text-muted mt-3">These earlier uploads have no color assigned. Choose a color to add each image to its gallery.</p>
+                <div class="row g-4">
+                    @foreach($unassignedUploads as $image)
+                        @include('admin.pages.merchandise.image', ['isMain' => (int) $product->main_image_id === $image->id, 'first' => $loop->first, 'last' => $loop->last])
+                    @endforeach
+                </div>
+            </details>
+        @endif
             @if($removed->isNotEmpty())
                 <details class="admin-editor-section mt-4">
                     <summary class="fw-semibold">Removed images ({{ $removed->count() }})</summary>
@@ -54,22 +96,9 @@
                     </div>
                 </details>
             @endif
-        </div>
-        <div class="col-lg-4 order-1 order-lg-2">
-            @component('admin.components.editor.section', ['id' => 'merchandise-upload', 'title' => 'Upload your own images', 'description' => 'Add your own mockups, product photos or additional Printful views.'])
-                <form method="POST" action="{{ route('admin.merchandise.images.upload', ['merchandise' => $product] + $returnFilters) }}" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="revision" value="{{ $product->revision }}">
-                    @include('components.forms.upload.file', ['id' => 'merchandise-images', 'name' => 'images[]', 'label' => 'Choose images', 'accept' => 'image/jpeg,image/png,image/webp', 'multiple' => true, 'required' => true, 'bag' => 'merchandise'])
-                    @input(['id' => 'upload-image-alt', 'name' => 'alt', 'label' => 'Image description', 'required' => '', 'limit' => 255, 'placeholder' => 'For example: black T-shirt, front view', 'bag' => 'merchandise', 'oldInputKey' => 'upload-alt', 'value' => $editingImageId === '' ? ($draftAlt ?? '') : ''])
-                    <p class="small text-muted">JPG, PNG or WebP · up to 10 files per upload, 10 MB each. Maximum 6,000 pixels per side and 24 megapixels. Transparent backgrounds are preserved. Leave the description blank to use the product name.</p>
-                    <button class="btn btn-primary" type="submit">@icon('upload')Upload images</button>
-                </form>
-            @endcomponent
-            <p class="small text-muted mt-3 mb-0">Printful #{{ $product->printful_product_id }} · {{ count($product->variants) }} variants<br>Last refreshed {{ optional($product->synced_at)->format('M j, Y · g:ia') ?: 'Not recorded' }}</p>
-        </div>
     </div>
-    <div id="variants" class="mb-4">
+    <details id="variants" class="admin-editor-section mt-4 mb-4">
+        <summary class="fw-semibold mb-3">Product variants ({{ count($product->variants) }})</summary>
         @component('admin.components.table', [
             'id' => 'merchandise-variants', 'label' => 'Product variants', 'title' => 'Product variants', 'items' => $variants, 'pageSizes' => [],
             'description' => 'Sizes, colors and retail prices imported from Printful.',
@@ -85,6 +114,6 @@
             </tr>
             @endforeach
         @endcomponent
-    </div>
+    </details>
 </div></div>
 @endsection

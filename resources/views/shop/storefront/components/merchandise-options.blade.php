@@ -1,5 +1,8 @@
 @if($product['variants'])
-    @php($inBag = $shoppingBag['lines'][$product['id'].':'.$product['variants'][0]['id']]['quantity'] ?? 0)
+    @php
+        $initialVariant = $product['selectedVariant'] ?? $product['variants'][0];
+        $inBag = $shoppingBag['lines'][$product['id'].':'.$initialVariant['id']]['quantity'] ?? 0;
+    @endphp
     <form action="{{ route('shop.bag.add') }}" method="POST" data-add-to-bag data-product-options>
         @csrf
         <input type="hidden" name="product_id" value="{{ $product['id'] }}">
@@ -7,7 +10,7 @@
             <label for="product-variant" class="shop-eyebrow mb-2">Choose an option</label>
             <select name="variant_id" id="product-variant" class="form-control" required>
                 @foreach($product['variants'] as $variant)
-                    <option value="{{ $variant['id'] }}" data-color="{{ $variant['color'] }}" data-size="{{ $variant['size'] }}" data-price="{{ $variant['price'] }}" data-in-bag="{{ $shoppingBag['lines'][$product['id'].':'.$variant['id']]['quantity'] ?? 0 }}">{{ $variant['color'] }} / {{ $variant['size'] }} — {{ $variant['price'] }}</option>
+                    <option value="{{ $variant['id'] }}" @if($variant['id'] === $initialVariant['id']) selected @endif data-color="{{ $variant['color'] }}" data-size="{{ $variant['size'] }}" data-price="{{ $variant['price'] }}" data-in-bag="{{ $shoppingBag['lines'][$product['id'].':'.$variant['id']]['quantity'] ?? 0 }}">{{ $variant['color'] }} / {{ $variant['size'] }} — {{ $variant['price'] }}</option>
                 @endforeach
             </select>
         </div>

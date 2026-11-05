@@ -282,7 +282,7 @@ input[type='range'] {
         border-color: var(--field-muted);
     }
 }
-.dropzone {
+.dropzone, .file-dropzone {
     border: 1px dashed var(--field-border);
     border-radius: var(--radius-input);
     background-color: var(--field-background);
@@ -292,6 +292,34 @@ input[type='range'] {
     }
     .dz-message {
         color: var(--field-muted);
+    }
+}
+
+.file-dropzone {
+    position: relative;
+    min-height: 150px;
+    padding: 24px;
+    display: grid;
+    place-items: center;
+    &.is-dragging { border-color: var(--color-primary); }
+    &.is-invalid { border-color: var(--color-danger); }
+    &.is-disabled { opacity: .5; }
+    &__input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        &:disabled { cursor: default; }
+    }
+    &__message {
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        text-align: center;
+        pointer-events: none;
+        svg { color: var(--field-muted); }
     }
 }
 

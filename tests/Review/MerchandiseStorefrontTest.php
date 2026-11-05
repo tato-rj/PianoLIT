@@ -226,6 +226,7 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $product = $this->product(['variants' => [$this->variant(), $this->variant(['id' => 92, 'size' => 'L', 'retail_price' => '29.00'])]]);
         $this->image($product, 'shop/front.png', 1);
         $main = $this->image($product, 'shop/back.png', 2);
+        $product->images()->update(['gallery_color' => 'Black']);
         $product->update(['main_image_id' => $main->id]);
         $response = $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()->assertViewIs('shop.storefront.show')->assertSee('Add to bag')
             ->assertSee('data-color="Black"', false)->assertSee('data-size="L"', false)->assertSee('Next image')

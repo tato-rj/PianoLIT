@@ -16,7 +16,10 @@
 		@endisset
 
 		@isset($choices)
-		@php($selectedValue = is_scalar(old($name)) ? old($name) : ($value ?? null))
+		@php
+            $selectOldValue = ($useOldInput ?? true) ? old($oldInputKey ?? $name) : null;
+            $selectedValue = is_scalar($selectOldValue) ? $selectOldValue : ($value ?? null);
+        @endphp
 		@foreach($choices as $optionValue => $optionLabel)
 		<option value="{{$optionValue}}" @if((string) $selectedValue === (string) $optionValue) selected @endif>{{$optionLabel}}</option>
 		@endforeach

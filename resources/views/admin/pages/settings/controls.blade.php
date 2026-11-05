@@ -98,6 +98,10 @@
       @include('components.forms.upload.file', ['id' => 'ds-upload-multiple', 'name' => 'ds_upload_multiple[]', 'label' => 'Choose multiple local files', 'multiple' => true, 'accept' => 'image/jpeg,image/png,image/webp', 'designSystemPreview' => true])
       <small>Sample only. No file is uploaded.</small>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Drag-and-drop upload', 'usage' => 'components.forms.upload.dropzone · shared file field finish'])
+      @include('components.forms.upload.dropzone', ['id' => 'ds-dropzone', 'name' => 'ds_dropzone[]', 'label' => 'Product mockups', 'multiple' => true, 'accept' => 'image/jpeg,image/png,image/webp', 'designSystemPreview' => true])
+      <small>Sample only. Files are selected locally and are not uploaded.</small>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Checkboxes', 'usage' => '.form-check-input', 'properties' => 'width,height,border,border-radius,background-color'])
       @include('components.forms.checkbox', ['id' => 'ds-checkbox', 'name' => 'ds_checkbox', 'label' => 'Save to favorites', 'checked' => true, 'designSystemPreview' => true])
       @include('components.forms.checkbox', ['id' => 'ds-checkbox-disabled', 'name' => 'ds_checkbox_disabled', 'label' => 'Disabled option', 'disabled' => true])

@@ -14,7 +14,7 @@
           ])
         </div>
         <div class="mb-4"><button type="button" class="btn btn-primary">Checkout</button></div>
-        <div class="mb-4">@include('shop.storefront.components.welcome-launcher', ['offerAvailable' => true, 'preview' => true])</div>
+        <div class="mb-4">@include('shop.storefront.components.welcome-launcher', ['preview' => true])</div>
         @include('shop.storefront.components.quantity', ['quantity' => 1])
         <div class="d-flex flex-wrap gap-2 mt-4">
           @include('shop.storefront.components.option', ['option' => 'Mint', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#b9d8d1']), 'selected' => true])

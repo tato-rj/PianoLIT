@@ -15,11 +15,12 @@ class MerchandiseGallery
     public function groups(MerchandiseProduct $product): array
     {
         $colors = $this->colors($product);
-        $keys = array_unique(array_merge([''], $colors, $product->images->pluck('gallery_color')->filter()->all()));
-        return array_map(function ($color) use ($product, $colors) {
+        $uploads = $product->images->where('source', 'upload');
+        $keys = array_unique(array_merge([''], $colors, $uploads->pluck('gallery_color')->filter()->all()));
+        return array_map(function ($color) use ($uploads, $colors) {
             return ['color' => $color, 'label' => $color === '' ? 'Unassigned mockups' : $color,
                 'offered' => $color === '' || in_array($color, $colors, true),
-                'images' => $product->images->filter(fn ($image) => ($image->gallery_color ?? '') === $color)->values()];
+                'images' => $uploads->filter(fn ($image) => ($image->gallery_color ?? '') === $color)->values()];
         }, array_values($keys));
     }
 
