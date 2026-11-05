@@ -14,7 +14,7 @@
     <div class="shop-card__copy">
         <{{ $cardHeading ?? 'h2' }} class="shop-card__title clamp-1"><a href="{{ $product['url'] }}">{{ $product['name'] }}</a></{{ $cardHeading ?? 'h2' }}>
         @include('shop.components.reviews.summary', ['reviewUrl' => $product['url'].'#reviews', 'reviewCount' => $product['reviewCount'] ?? 0, 'averageRating' => $product['averageRating'] ?? 0, 'compact' => true])
-        <p class="shop-card__price mb-0">@if($product['price']){{ $product['priceVaries'] ? 'From ' : '' }}{{ $product['price'] }}@else {{ $product['variants'] ? 'Choose an option' : 'Currently unavailable' }} @endif</p>
+        <p class="mb-0">@if($product['price']){{ $product['priceVaries'] ? 'From ' : '' }}<span class="shop-card__price">{{ $product['price'] }}</span>@else {{ $product['variants'] ? 'Choose an option' : 'Currently unavailable' }} @endif</p>
 {{--         @if($product['digital'])
             <a class="shop-card__action btn btn-primary px-2 w-100" href="{{ $product['url'] }}" aria-label="View {{ $product['name'] }}"><span class="d-sm-none">Details</span><span class="d-none d-sm-inline">View product @icon('arrow-up-right', ['mr' => 0])</span></a>
         @elseif(count($product['variants']) === 1)

@@ -27,7 +27,7 @@
             <div class="col-lg-8">
                 @component('admin.components.editor.section', ['id' => 'merchandise-gallery', 'title' => 'Mockups by color', 'description' => 'Upload the views for each product color and arrange their order. The storefront shows only the views for the selected color.'])
                     @if($colorGroups)
-                    @component('components.navigation.tab-navigation', ['id' => 'merchandise-color-tabs', 'label' => 'Product colors', 'items' => $colorTabs, 'active' => $activeColorTab, 'tone' => 'neutral', 'class' => 'flex-nowrap overflow-auto text-nowrap'])
+                    @component('components.navigation.tab-navigation', ['id' => 'merchandise-color-tabs', 'label' => 'Product colors', 'items' => $colorTabs, 'active' => $activeColorTab, 'tone' => 'neutral', 'class' => 'text-nowrap'])
                         <div class="tab-content pt-3 mb-3">
                         @foreach($colorGroups as $groupIndex => $group)
                         @php($colorTabId = $gallery->tabId($group['color']))

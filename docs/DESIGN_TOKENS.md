@@ -317,6 +317,11 @@ It shares the standard Dropzone field tokens and stages files for the owning
 multipart form. Its native file input supports keyboard selection; the shared
 `file-dropzone.js` adds drag feedback, selected filenames and per-field count/size
 validation. Use `maxFiles`, `maxBytes`, `hint` and `showErrors` when needed.
+Use `compact => true` for a shorter field with one upload instruction and small
+selected-image previews. Optional `currentUrl` / `currentLabel` place a 64px saved
+thumbnail beside the field; hints and selection status use the full width below.
+The shared Hover close-up editor and its Design System specimen use this variant,
+with small Save and Remove actions on one line.
 Selected JPG/PNG/WebP files appear as contained previews inside the same area,
 for both dropped files and picker selections. Multiple files use a wrapping
 thumbnail grid; a single image gets a larger preview. Replacing/resetting a
