@@ -59,7 +59,7 @@
         @include('admin.pages.merchandise.image', ['mockupPreview' => true, 'product' => $sampleMockupProduct, 'image' => $sampleMockup, 'viewNumber' => 1, 'isMain' => true, 'first' => true, 'last' => true, 'canAssign' => false])
       </div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Shop product grid', 'usage' => 'shop.storefront.components.product-grid · one regular grid; compact cards with hover close-ups', 'properties' => 'font-size,font-weight,padding,color'])
+    @component('admin.pages.settings.sample', ['label' => 'Shop product grid', 'usage' => 'shop.storefront.components.product-grid · products fade in once as they enter the viewport', 'properties' => 'font-size,font-weight,padding,color'])
       <div class="shop-storefront" data-ds-preview>
         @php($shopGridPreview = collect([
             ['name' => 'Piano rainbow T-shirt · Mint', 'digital' => false, 'price' => '$28.00 USD', 'imageUrl' => asset('images/shop/demo/shirt-mint.png'), 'reviewCount' => 12, 'averageRating' => '4.5'],

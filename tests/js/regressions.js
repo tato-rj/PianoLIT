@@ -1,5 +1,6 @@
 require('./project-deck')();
 require('./file-dropzone.test.cjs')();
+require('./product-reveal.test.cjs')();
 require('./home-scroll-hint')();
 require('./metronome.test.cjs');
 require('./metronome-voice.test.cjs');

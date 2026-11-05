@@ -79,6 +79,16 @@
 .shop-storefront .shop-card__art {
   position: relative;
 }
+.shop-storefront .shop-product-pending {
+  opacity: 0;
+}
+.shop-storefront .shop-product-revealing {
+  animation: shop-product-enter 650ms ease-out;
+}
+.shop-storefront [data-product-reveal]:focus-within {
+  opacity: 1;
+  animation: none;
+}
 .shop-storefront .shop-card__art > a:first-child {
   position: relative;
   display: block;
@@ -400,5 +410,24 @@
 @media (prefers-reduced-motion: reduce) {
   .shop-storefront .shop-card__art .shop-card__detail {
     transition: none;
+  }
+  .shop-storefront .shop-product-pending, .shop-storefront .shop-product-revealing {
+    opacity: 1;
+    animation: none;
+  }
+}
+@media print {
+  .shop-storefront .shop-product-pending, .shop-storefront .shop-product-revealing {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+@keyframes shop-product-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

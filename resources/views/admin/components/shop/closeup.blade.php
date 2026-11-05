@@ -33,7 +33,7 @@
             <form method="POST" action="{{ route('admin.'.$closeupKind.'.closeup.destroy', $closeupProduct) }}">
                 @csrf @method('DELETE')
                 <input type="hidden" name="closeup_revision" value="{{ $closeupVersion }}">
-                <button type="submit" class="btn btn-secondary btn-sm" title="Remove close-up" aria-label="Remove close-up">@icon('trash-2', ['mr' => 0])</button>
+                <button type="submit" class="btn btn-red btn-sm" title="Remove close-up" aria-label="Remove close-up">@icon('trash-2', ['mr' => 0])</button>
             </form>
         @endif
     </div>

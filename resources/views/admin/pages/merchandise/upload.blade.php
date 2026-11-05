@@ -8,5 +8,5 @@
         'hint' => 'JPG, PNG or WebP · up to 10 images, 10 MB each',
         'showErrors' => $editingImageId === '' && $draftColor === $group['color'],
     ])
-    <button class="btn btn-primary" type="submit" aria-label="Upload mockups for {{ $group['label'] }}">@icon('upload')Upload images</button>
+    <button class="btn btn-primary btn-sm" type="submit" aria-label="Upload mockups for {{ $group['label'] }}">@icon('upload')Upload images</button>
 </form>
