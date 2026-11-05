@@ -1,6 +1,10 @@
 @if($product['variants'])
     @php
         $initialVariant = $product['selectedVariant'] ?? $product['variants'][0];
+        $productOptions = [
+            'color' => array_values(array_unique(array_merge([$initialVariant['color']], array_column($product['variants'], 'color')))),
+            'size' => array_unique(array_column($product['variants'], 'size')),
+        ];
         $inBag = $shoppingBag['lines'][$product['id'].':'.$initialVariant['id']]['quantity'] ?? 0;
     @endphp
     <form action="{{ route('shop.bag.add') }}" method="POST" data-add-to-bag data-product-options>
@@ -20,7 +24,7 @@
                 <fieldset class="shop-options mb-4" data-option-group="{{ $key }}">
                     <legend class="shop-eyebrow mb-2">{{ $label }}</legend>
                     <div class="d-flex flex-wrap gap-2">
-                        @foreach(array_unique(array_column($product['variants'], $key)) as $option)
+                        @foreach($productOptions[$key] as $option)
                             @php($swatch = $key === 'color' ? ($product['colors'][$option] ?? []) : [])
                             @include('shop.storefront.components.option', ['selected' => $option === $initialVariant[$key], 'small' => $key === 'size'])
                         @endforeach

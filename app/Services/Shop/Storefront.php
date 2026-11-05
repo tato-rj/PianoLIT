@@ -14,6 +14,7 @@ class Storefront
 {
     const DEMO_STORE_ID = 0;
     const PER_PAGE = 24;
+    const RELATED_LIMIT = 12;
     const CATEGORIES = ['' => 'All', 't-shirts' => 'T-shirts', 'stickers' => 'Stickers', 'ebooks' => 'eBooks', 'escores' => 'eScores'];
     const SECTIONS = ['t-shirts' => 'T-shirts', 'stickers' => 'Stickers', 'escores' => 'eScores', 'ebooks' => 'eBooks', 'merchandise' => 'Merchandise'];
 
@@ -78,6 +79,15 @@ class Storefront
                 'closeupUrl' => $closeups->get(get_class($product).':'.$product->id),
             ];
         });
+    }
+
+    public function related($product): Collection
+    {
+        $category = $product instanceof MerchandiseProduct ? $this->category($product)
+            : ($product instanceof eBook ? 'ebooks' : 'escores');
+        return $this->cards($this->matches('', $category)
+            ->reject(fn ($candidate) => get_class($candidate) === get_class($product) && $candidate->id === $product->id)
+            ->take(self::RELATED_LIMIT)->values());
     }
 
     private function matching($query, string $column, string $search)

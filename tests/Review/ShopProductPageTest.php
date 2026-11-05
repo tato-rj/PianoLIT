@@ -42,6 +42,20 @@ class ShopProductPageTest extends ReviewTestCase
     }
 
     /** @dataProvider products */
+    public function test_related_digital_products_are_published_same_category_and_before_reviews($class)
+    {
+        $current = $this->product($class);
+        $related = $this->product($class, ['title' => 'Another piano edition']);
+        $this->product($class, ['title' => 'Unpublished edition', 'published_at' => null]);
+        $this->product($class === eBook::class ? eScore::class : eBook::class, ['title' => 'Different category']);
+        $response = $this->get($current->showRoute())->assertOk()->assertSee('You may also like')->assertDontSee('More to explore');
+        $this->assertSame([$related->showRoute()], $response->viewData('relatedProducts')->pluck('url')->all());
+        $html = $response->getContent();
+        $this->assertLessThan(strpos($html, 'id="reviews"'), strpos($html, 'id="product-related-title"'));
+        $this->assertSame(1, substr_count($html, 'data-product-row>'));
+    }
+
+    /** @dataProvider products */
     public function test_both_product_pages_render_previews_without_fetching_remote_image_dimensions($class)
     {
         $product = $this->product($class);

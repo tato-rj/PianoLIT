@@ -36,7 +36,7 @@ class ProductPage
             'reviews' => $reviews, 'reviewCount' => $reviews->count(),
             'averageRating' => $reviews->count() ? number_format($reviews->avg('rating'), 1) : 0,
             'ownedReview' => $user ? $user->reviewFor($item) : null, 'productKind' => $product['label'],
-            'shoppingBag' => app(MerchandiseBag::class)->contents($request)];
+            'shoppingBag' => app(MerchandiseBag::class)->contents($request), 'relatedProducts' => $catalog->related($item)];
         if (!$digital) return $data;
 
         $eligible = $user && $user->isEligibleForFreeMonthlyProduct();
@@ -44,7 +44,6 @@ class ProductPage
         if ($item->price > 0 && ($eligible || $item->hasDiscount())) $data['product']['originalPrice'] = $catalog->money((int) round($item->price * 100), 'USD');
         $data['digitalProduct'] = $item;
         $data['formats'] = implode(' + ', array_keys($item->links()));
-        $data['relatedProducts'] = $catalog->cards($item->suggestions(4)->get());
         $data['shareable'] = ['keywords' => $item->keywords(), 'title' => $item->title, 'description' => $item->subtitle,
             'thumbnail' => $product['imageUrl'], 'created_at' => $item->created_at, 'updated_at' => $item->updated_at];
         return $data;

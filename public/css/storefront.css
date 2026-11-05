@@ -312,6 +312,27 @@
   height: 100%;
   background: var(--color-primary);
 }
+.shop-storefront .shop-product-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 16px) / 2);
+  gap: 16px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  padding-bottom: 12px;
+}
+.shop-storefront .shop-product-row > div {
+  min-width: 0;
+  scroll-snap-align: start;
+}
+@media (min-width: 992px) {
+  .shop-storefront .shop-product-row {
+    grid-auto-columns: calc((100% - 72px) / 4);
+    gap: 24px;
+  }
+}
 .shop-storefront .shop-bag-item {
   padding: 18px;
   display: flex;

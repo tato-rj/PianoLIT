@@ -1,6 +1,6 @@
 <section id="reviews" class="border-top pt-4 mb-5" aria-labelledby="product-reviews-title">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-        <h2 class="{{ ($storefront ?? false) ? '' : 'h5' }} mb-0" id="product-reviews-title">Customer reviews <span class="text-muted">({{ $reviewCount }})</span></h2>
+        <h4 class="{{ ($storefront ?? false) ? '' : 'h5' }} mb-0" id="product-reviews-title">Customer reviews <span class="text-muted">({{ $reviewCount }})</span></h4>
         @if(! $ownedReview)
             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#review-modal">@icon('square-pen')Write a review</button>
         @endif

@@ -77,6 +77,12 @@
         @include('shop.storefront.components.product-grid', ['products' => $shopGridPreview])
       </div>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Related products', 'usage' => 'shop.storefront.components.product-row · same-category products above reviews', 'properties' => 'font-size,gap,padding'])
+      <div class="shop-storefront" data-ds-preview>
+        @php($relatedRowPreview = collect(range(1, 6))->map(fn ($number) => array_replace($shopGridPreview->first(), ['name' => 'Sample T-shirt '.$number])))
+        @include('shop.storefront.components.product-row', ['rowId' => 'ds-related-products', 'products' => $relatedRowPreview])
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Fitting and size chart', 'usage' => 'shop.storefront.components.size-chart · T-shirt measurements in inches and centimeters', 'properties' => 'width,padding,font-size,color'])
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="offcanvas" data-bs-target="#ds-shop-size-chart" aria-controls="ds-shop-size-chart">Fitting and size chart</button>
       @push('scripts')

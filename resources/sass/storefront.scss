@@ -105,6 +105,23 @@
     .shop-review-bar { height: 6px; background: var(--color-surface-subtle); overflow: hidden; }
     .shop-review-bar span { display: block; height: 100%; background: var(--color-primary); }
 
+    .shop-product-row {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - 16px) / 2);
+        gap: 16px;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+        padding-bottom: 12px;
+        > div { min-width: 0; scroll-snap-align: start; }
+        @media (min-width: 992px) {
+            grid-auto-columns: calc((100% - 72px) / 4);
+            gap: 24px;
+        }
+    }
+
     .shop-bag-item { padding: 18px; display: flex; align-items: flex-start; gap: 18px; }
     .shop-bag-item__image { width: 96px; height: 96px; background: var(--color-surface-subtle); flex-shrink: 0; display: grid; place-items: center; }
     .shop-bag-item__image img { width: 100%; height: 100%; object-fit: contain; }

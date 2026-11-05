@@ -46,6 +46,36 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         ]));
     }
 
+    public function test_related_products_are_bounded_same_category_owned_store_and_above_reviews()
+    {
+        $current = $this->product(['name' => 'Current T-shirt']);
+        $expected = collect();
+        for ($i = 0; $i < 14; $i++) $expected->push($this->product(['name' => 'Related T-shirt '.$i, 'created_at' => now()->subMinutes(20 - $i)]));
+        $this->product(['name' => 'Other sticker']);
+        $this->product(['name' => 'Other-store T-shirt', 'printful_store_id' => 99999]);
+        $retired = $this->product(['name' => 'Retired T-shirt']);
+        $retired->delete();
+        $this->digitalProduct(eBook::class);
+        $url = app(Storefront::class)->productUrl($current);
+        $response = $this->get($url)->assertOk()->assertSee('You may also like');
+        $related = $response->viewData('relatedProducts');
+        $this->assertCount(Storefront::RELATED_LIMIT, $related);
+        $this->assertSame($expected->reverse()->take(Storefront::RELATED_LIMIT)->pluck('id')->values()->all(), $related->pluck('id')->all());
+        $this->assertSame(['t-shirts'], $related->pluck('category')->unique()->values()->all());
+        $this->assertFalse($related->pluck('url')->contains($url));
+        $html = $response->getContent();
+        $this->assertLessThan(strpos($html, 'id="reviews"'), strpos($html, 'id="product-related-title"'));
+        Http::assertNothingSent();
+    }
+
+    public function test_related_row_is_omitted_when_no_other_product_in_the_category_exists()
+    {
+        $current = $this->product(['name' => 'Only T-shirt']);
+        $this->product(['name' => 'Other sticker']);
+        $this->get(app(Storefront::class)->productUrl($current))->assertOk()
+            ->assertViewHas('relatedProducts', fn ($products) => $products->isEmpty())->assertDontSee('data-product-row', false);
+    }
+
     public function test_all_includes_published_downloads_without_colliding_ids_or_merchandise_bag_actions()
     {
         $shirt = $this->product();

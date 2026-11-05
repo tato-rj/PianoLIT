@@ -27,6 +27,7 @@
     @if($digitalProduct)
         @include('shop.storefront.components.digital-sections', ['product' => $digitalProduct])
     @else
+        @include('shop.storefront.components.product-row', ['products' => $relatedProducts])
         <div class="mt-5">@include('shop.components.reviews.layout', ['product' => $reviewProduct, 'storefront' => true])</div>
     @endif
 </div>

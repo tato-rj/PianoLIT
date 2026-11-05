@@ -58,6 +58,8 @@ class MerchandiseGalleryTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//*[@data-gallery-thumb and @aria-pressed="true"]'));
         $this->assertCount(1, $xpath->query('//*[@data-gallery-thumbnails and @hidden]'));
         $this->assertSame('92', $xpath->query('//select[@name="variant_id"]/option[@selected]')->item(0)->getAttribute('value'));
+        $this->assertSame(['Blue', 'Pink', 'Ivory'], array_map(fn ($button) => $button->getAttribute('data-option-value'),
+            iterator_to_array($xpath->query('//*[@data-option-group="color"]//button[@data-option-value]'))));
         $this->assertArrayNotHasKey('gallery_color', $main->toArray());
         Http::assertNothingSent();
     }
@@ -96,7 +98,7 @@ class MerchandiseGalleryTest extends ReviewTestCase
             ->assertSee('Ivory (0)')->assertSee('data-mockup-row', false)->assertDontSee('Image description')->assertDontSee('Save image');
         if ($directory = getenv('PIANOLIT_GALLERY_BROWSER_FIXTURES')) {
             if (!is_dir($directory)) mkdir($directory, 0700, true);
-            $product->update(['main_image_id' => $front->id]);
+            $product->update(['main_image_id' => $blue->id]);
             $shopPage = $this->get(app(Storefront::class)->productUrl($product))->assertOk();
             foreach (['admin' => $adminPage, 'shop' => $shopPage] as $name => $page) {
                 $html = str_replace(['http://localhost/', 'http://shop.localhost/', 'http://admin.localhost/', 'href="/css/', 'src="/js/'],

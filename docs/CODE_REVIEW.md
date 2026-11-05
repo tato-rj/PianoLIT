@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-05 — Main product color first in the selector (P3, complete locally)
+
+- **Request / change:** The shared merchandise options view now lists the main image's initial color first, followed by the remaining colors in their original order. Size order, actual variant IDs and native fallback options remain unchanged. The color list stays stable when a visitor selects another color. No JavaScript, styles, data or provider change.
+- **Verification:** 28 focused isolated gallery/storefront tests pass (444 assertions), including a main Blue image whose original variant order starts Pink, plus the expected Blue/Pink/Ivory selector order. Existing gallery and bag JavaScript regressions and whitespace checks pass. Browser QA with sample data confirms Mint appears before Burgundy/Butter and remains first while another color is selected. Proof: `/Users/arthur/.codex/visualizations/2026/11/05/01a1ac75-4602-7ed3-a60b-dc1035ebca5f/shop-main-color-first.png`. Local implementation only; no deployment performed.
+
 ### 2026-11-05 — Merchandise Edit page and local product copy (P2, complete locally)
 
 - **Request / interface:** Renamed Manage product images and both Manage images links to Edit. Added a Product details section with shared Title/Subtitle inputs, multiline Description and Save details, preceding the existing gallery/close-up sections. Title/subtitle share a desktop row and stack on phones. Public detail now shows the saved subtitle below the title and escaped, line-break-preserving description before material/fitting information. Existing digital copy and concurrent materials/fitting/accordion work are retained.
