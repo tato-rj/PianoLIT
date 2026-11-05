@@ -215,7 +215,7 @@ class PieceContentAccessTest extends ReviewTestCase
         $document = new \DOMDocument();
         $document->loadHTML($response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
         $xpath = new \DOMXPath($document);
-        $headerFavorite = $xpath->query('//section[.//*[contains(@class, "piece-header")]]//button[@data-bs-target="#signup-favorites-modal"]');
+        $headerFavorite = $xpath->query('//div[contains(@class, "piece-artwork-toolbar")]//button[@data-bs-target="#signup-favorites-modal"]');
         $this->assertSame(1, $headerFavorite->length);
         $this->assertSame(0, $xpath->query('ancestor::*[contains(@class, "d-none")]', $headerFavorite->item(0))->length);
         foreach (['data-url', 'data-submit', 'data-manage'] as $attribute) $this->assertFalse($headerFavorite->item(0)->hasAttribute($attribute));

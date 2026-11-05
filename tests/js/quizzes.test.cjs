@@ -10,7 +10,7 @@ module.exports = async function () {
         const classes = new Set();
         return {
             hidden: false, disabled: false, textContent: '', innerHTML: '', style: {}, dataset: {}, attributes: {}, events: {}, one: {}, many: {},
-            classList: {add(...items) { items.forEach(x => classes.add(x)); }, remove(...items) { items.forEach(x => classes.delete(x)); }, contains(x) { return classes.has(x); }},
+            classList: {add(...items) { items.forEach(x => classes.add(x)); }, remove(...items) { items.forEach(x => classes.delete(x)); }, toggle(x, value) { if (value) classes.add(x); else classes.delete(x); }, contains(x) { return classes.has(x); }},
             addEventListener(type, fn) { this.events[type] = fn; },
             querySelector(selector) { return this.one[selector] || null; },
             querySelectorAll(selector) { return this.many[selector] || []; },
@@ -30,13 +30,13 @@ module.exports = async function () {
     }
     const root = node(), requests = [];
     root.dataset.url = 'https://learn.example.test/quizzes/piano/feedback';
-    const selectors = ['introduction', 'content', 'start', 'results', 'feedback', 'result-status', 'result-actions', 'retry', 'review', 'reset', 'next', 'streak', 'progress-label', 'modal', 'reveal', 'show-result'];
+    const selectors = ['introduction', 'content', 'start', 'start-label', 'back', 'results', 'feedback', 'result-status', 'result-actions', 'retry', 'review', 'reset', 'next', 'streak', 'progress-label', 'modal', 'reveal', 'show-result'];
     const elements = {};
     selectors.forEach(key => { elements[key] = root.one['[data-quiz-' + key + ']'] = node(); });
     const progress = root.one['[role="progressbar"]'] = node();
-    const bar = progress.one['.progress-bar'] = node();
+    const steps = root.many['[data-quiz-progress-step]'] = [node(), node()];
     elements.content.hidden = elements.results.hidden = elements.reveal.hidden = elements['show-result'].hidden = true;
-    let pauses = 0, shows = 0, opening = false;
+    let pauses = 0, shows = 0;
     const audio = {pause() { pauses++; }, currentTime: 12};
     root.many.audio = [audio];
     const questions = [0, 1].map(correct => {
@@ -59,9 +59,12 @@ module.exports = async function () {
     const motion = {matches: true, addEventListener(type, fn) { this.change = fn; }};
     const doc = {hidden: false, querySelector() { return root; }, createElement() { return node(); }, addEventListener(type, fn) { documentEvents[type] = fn; }};
     const dialog = {
-        show() { shows++; elements.modal.classList.add('show'); },
+        show() {
+            if (elements.modal.classList.contains('show')) return;
+            shows++; elements.modal.classList.add('show'); elements.modal.events['shown.bs.modal']();
+        },
         hide() {
-            if (opening || !elements.modal.classList.contains('show')) return;
+            if (!elements.modal.classList.contains('show')) return;
             elements.modal.events['hide.bs.modal']();
             elements.modal.classList.remove('show');
             elements.modal.events['hidden.bs.modal']();
@@ -97,7 +100,10 @@ module.exports = async function () {
     function answerRound() { choices(questions[0])[0].click(); elements.next.click(); choices(questions[1])[1].click(); }
 
     elements.start.click();
-    assert(elements.introduction.hidden && !elements.content.hidden);
+    assert(!elements.introduction.hidden && !elements.content.hidden);
+    assert(elements.modal.classList.contains('show'), 'Start opens the question overlay.');
+    assert(elements.back.disabled && elements.next.disabled);
+    assert.strictEqual(elements['start-label'].textContent, 'Resume quiz');
     assert.strictEqual(focused, questions[0].one.h2);
     assert.strictEqual(focused.focusOptions.preventScroll, true);
     choices(questions[0])[1].click();
@@ -106,19 +112,26 @@ module.exports = async function () {
     assert(choices(questions[0])[0].classList.contains('is-correct'));
     assert(questions[0].one['[data-quiz-question-feedback]'].attributes['aria-label'].includes('Correct answer: Choice 0'));
     assert.notStrictEqual(focused, elements.next, 'Pointer answers do not transfer focus.');
-    assert.strictEqual(bar.style.width, '50%');
+    assert(steps[0].classList.contains('is-complete') && !steps[1].classList.contains('is-complete'));
+    dialog.hide();
+    assert.strictEqual(focused, elements.start, 'Closing restores focus to the page opener.');
+    elements.start.click();
+    assert(choices(questions[0])[1].classList.contains('is-incorrect'), 'Resume preserves the locked answer.');
     choices(questions[0])[0].events.click();
     assert.strictEqual(requests.length, 0, 'Locked answers cannot submit.');
     elements.next.click();
     assert(questions[0].hidden && !questions[1].hidden);
+    elements.back.click();
+    assert(!questions[0].hidden && questions[1].hidden && !elements.next.disabled);
+    elements.next.click();
     choices(questions[1])[1].click({detail: 0});
     assert(elements.next.hidden, 'The final answer has no extra results button.');
     await tick(349);
     assert.strictEqual(requests.length, 0, 'Let the final reaction land first.');
     await tick(1);
     assert.strictEqual(requests.length, 1, 'The result request starts automatically.');
-    assert.strictEqual(shows, 1);
-    assert(!elements.reveal.hidden && !questions[1].hidden, 'The overlay opens over the unchanged question.');
+    assert.strictEqual(shows, 2, 'The result stays in the already open overlay.');
+    assert(!elements.reveal.hidden && elements.content.hidden && !elements.results.hidden, 'The reveal replaces the question inside the same overlay.');
     assert.strictEqual(elements.results.attributes['aria-busy'], 'true');
     assert.strictEqual(scrollCalls.length, 0, 'Play and automatic reveal do not scroll the page.');
     assert.deepStrictEqual(Array.from(requests[0].options.params.answers), [1,1]);
@@ -159,16 +172,18 @@ module.exports = async function () {
     assert.strictEqual(focused, shareOpen);
     assert.strictEqual(requests.length, 2, 'Opening and closing sharing never re-evaluates the quiz.');
     elements.review.click();
-    assert(!elements.modal.classList.contains('show'));
-    assert(questions.every(question => !question.hidden));
-    assert.strictEqual(focused.scroll.behavior, 'auto', 'Explicit review respects reduced motion.');
+    assert(elements.modal.classList.contains('show'), 'Review stays in the overlay.');
+    assert(!questions[0].hidden && questions[1].hidden, 'Review shows one card at a time.');
+    assert.strictEqual(focused, questions[0].one.h2);
+    elements.next.click();
+    assert(!elements['show-result'].hidden);
+    await tick(2000);
+    assert.strictEqual(requests.length, 2, 'Review never submits another result.');
     assert.strictEqual(gif.src, gif.attributes.src);
     elements['show-result'].click();
     assert.strictEqual(requests.length, 2, 'Reopening an existing result never submits another score.');
-    opening = true;
     elements.reset.click();
-    assert(!elements.results.hidden, 'Replay waits for an opening modal to finish.');
-    opening = false; elements.modal.events['shown.bs.modal']();
+    assert(elements.modal.classList.contains('show'), 'Replay keeps the same overlay open.');
     assert(elements.results.hidden && elements['show-result'].hidden);
     assert.strictEqual(progress.attributes['aria-valuenow'], '0');
     assert(questions.every(question => choices(question).every(button => !button.disabled)));
@@ -211,9 +226,9 @@ module.exports = async function () {
     shareBack.click();
     dialog.hide();
     assert.strictEqual(gif.src, gif.attributes.src);
-    assert.strictEqual(focused, elements['show-result']);
+    assert.strictEqual(focused, elements.start);
 
-    elements.reset.click(); answerRound(); await tick(650);
+    elements.start.click(); elements.reset.click(); answerRound(); await tick(650);
     const hiddenShows = shows;
     dialog.hide();
     requests[3].resolve({data: result}); await flush();
@@ -221,13 +236,15 @@ module.exports = async function () {
     assert.strictEqual(elements.feedback.innerHTML, result, 'The result remains available to reopen.');
     assert.strictEqual(gif.src, gif.attributes.src, 'Dismissed results do not start a hidden GIF.');
 
-    elements.reset.click(); answerRound(); elements.reset.click(); await tick(2000);
+    elements.start.click(); elements.reset.click(); answerRound(); elements.reset.click(); await tick(2000);
     assert.strictEqual(requests.length, 4, 'Replay cancels the scheduled automatic reveal.');
     answerRound(); await tick(650); elements.reset.click();
     requests[4].resolve({data: '<div data-quiz-score>Stale</div>'}); await flush();
     assert(elements.results.hidden && elements.feedback.innerHTML === '', 'An earlier request cannot overwrite a new attempt.');
 
-    answerRound(); doc.hidden = true; documentEvents.visibilitychange(); await tick(2000);
+    answerRound(); dialog.hide(); await tick(2000);
+    assert.strictEqual(requests.length, 5, 'Closing after the last answer cancels automatic submission.');
+    elements.start.click(); doc.hidden = true; documentEvents.visibilitychange(); await tick(2000);
     assert.strictEqual(requests.length, 5, 'No automatic overlay opens in a hidden tab.');
     doc.hidden = false; documentEvents.visibilitychange(); await tick(650);
     assert.strictEqual(requests.length, 6, 'Returning resumes the one pending reveal.');
@@ -240,7 +257,7 @@ module.exports = async function () {
     assert(!elements.modal.classList.contains('show'));
     assert.strictEqual(timers.size, 0, 'Leaving the page clears reveal timers.');
     vm.runInNewContext(source, {document: {querySelector() { return null; }}});
-    console.log('Passed: automatic delayed overlay, suspense timing, reduced motion, stationary play, keyboard focus, score/retry guards, dismissal/reopen, reset/stale/hidden-page cleanup and GIF fallback.');
+    console.log('Passed: question overlay, close/resume, card review, replay without dismissal, automatic delayed finale, suspense timing, reduced motion, stationary play, keyboard focus, score/retry guards, dismissal/reopen, reset/stale/hidden-page cleanup and GIF fallback.');
 };
 
 if (require.main === module) module.exports().catch(error => { console.error(error); process.exitCode = 1; });

@@ -58,8 +58,8 @@ class SimilarPiecesTest extends ReviewTestCase
         $this->assertSame($left->id, $this->matcher->forPiece($right, 16)->first()->id);
         $this->assertCount(21, $this->matcher->forPiece($left), 'View all retains matches beyond the card limit');
         $rows = (new PieceRecommendations)->rows($left)->keyBy('title');
-        $this->assertSame($right->id, $rows['More like this']['pieces']->first()->id);
-        $this->assertCount(16, $rows['More like this']['pieces']);
+        $this->assertSame($right->id, $rows['Best matches']['pieces']->first()->id);
+        $this->assertCount(6, $rows['Best matches']['pieces']);
         $feed = (new \App\Api\Api)->for('webapp')->order(9)->similar("Like today's free pick", $left);
         $this->assertSame($right->id, $feed['content']->first()->id);
         $this->assertSame(route('webapp.pieces.similar', $left), $feed['url']);
@@ -164,7 +164,7 @@ class SimilarPiecesTest extends ReviewTestCase
         }
     }
 
-    public function test_full_web_list_retains_ranked_links_video_badges_and_source_options_for_guests_and_accounts()
+    public function test_full_web_list_retains_ranked_links_and_video_badges_without_options_menu()
     {
         $source = $this->piece('Viewed source', ['beginner', 'gloomy', 'sad', 'romantic']);
         $weak = $this->piece('Weaker same period', ['beginner', 'gloomy', 'romantic']);
@@ -177,10 +177,9 @@ class SimilarPiecesTest extends ReviewTestCase
             $this->assertSame([$best->id, $weak->id], $response->viewData('similar')->pluck('id')->all());
             $response->assertSee('title="Video"', false);
             $this->assertStringContainsString('href="'.route('webapp.pieces.show', $best).'"', $response->getContent());
-            $html = $response->getContent();
-            $panel = substr($html, strpos($html, 'id="options-panel"'));
-            $this->assertStringContainsString('href="'.route('webapp.pieces.similar', $source).'"', $panel);
-            $this->assertStringNotContainsString('href="'.route('webapp.pieces.similar', $weak).'"', $panel);
+            $response->assertDontSee('options-panel', false)
+                ->assertDontSee('aria-label="More options"', false)
+                ->assertSee('data-history-back', false);
         }
     }
 

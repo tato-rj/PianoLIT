@@ -36,10 +36,11 @@ Frequently edited files:
 - Inputs and switches: `forms/input.blade.php`, `forms/toggle.blade.php`
 - Link-sharing modal: `media/link-share.blade.php` and its reusable `media/link-share-options.blade.php` body, `resources/js/components/link-share.js` and `resources/sass/components/_link-share.scss`; the Design System renders the same dialog. The entire readonly URL field and copy icon copy the canonical link, with a brief Bootstrap Copied! tooltip. Pass `useOldInput => false` for this generated URL.
 - Profile/Support section menu: `navigation/section-navigation.blade.php`
+- Discover and piece recommendation buttons: `navigation/pill-tabs.blade.php`, sharing `.pill-filters` and native Bootstrap tab behavior
 - Accordions, including Support's `variant => minimal`: `layout/accordion.blade.php`, `layout/accordion-item.blade.php` and `resources/sass/components/_accordion.scss`
 - Account prompts: `account/access-modal.blade.php`, `account/signup-card.blade.php`
 - Account and Game player dropdown surface: `account/menu-panel.blade.php`
-- Web-app header account and hub controls: `webapp/layouts/header.blade.php` (under `resources/views/`), reusing `account/account-circle.blade.php`, `account/menu.blade.php` and `navigation/hub-menu/`
+- Web-app logo header: `webapp/layouts/header.blade.php` (under `resources/views/`). Its bottom account tab lives in `webapp/layouts/menu.blade.php`, reusing `layouts/menu/user.blade.php`, the `webapp-navigation` variant of `account/account-circle.blade.php`, `account/menu.blade.php` and `navigation/hub-menu/`; other sites keep their header control. At every viewport width, the tab stays in place and the panel reuses the same `account/account-circle.blade.php` close state as public pages (`closeControl => true`) with offcanvas dismissal in a stationary corner host. Its 44px circle, 21px neutral X, white surface, thin border and shadow have one shared style in `_account-circle.scss`
 - Newsletter popup: `promotions/popups/newsletter-subscription.blade.php`
 
 ## Components belonging to a section

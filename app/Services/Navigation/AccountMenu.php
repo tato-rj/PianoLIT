@@ -17,7 +17,7 @@ class AccountMenu
 
         return [
             'membership' => $host === parse_url(route('webapp.discover'), PHP_URL_HOST) || $hasAccess,
-            'membershipUrl' => route($hasMembership ? 'webapp.membership.edit' : ($hasAccess ? 'webapp.settings' : 'webapp.membership.pricing')),
+            'membershipUrl' => $hasMembership ? route('webapp.membership.edit') : ($hasAccess ? null : route('webapp.membership.pricing')),
             'downloads' => $account && ($host === parse_url(route('learn.home'), PHP_URL_HOST) || $account->purchases()->exists()),
             'orders' => $account && ($host === parse_url(route('shop.home'), PHP_URL_HOST)
                 || app(OrderTracking::class)->visible()->where('user_id', $account->id)->exists()),

@@ -70,7 +70,7 @@ class AccountNavigationTest extends ReviewTestCase
         $this->assertFalse($user->relationLoaded('membership'), 'Navigation must not expose new loaded relationships in shared JSON');
     }
 
-    public function test_only_paid_visible_merchandise_counts_and_super_users_keep_a_working_destination()
+    public function test_only_paid_visible_merchandise_counts_and_super_users_keep_their_access_status()
     {
         $user = $this->account();
         $this->order($user, ['paid_at' => null]);
@@ -80,7 +80,10 @@ class AccountNavigationTest extends ReviewTestCase
         $user->super_user = true;
         $links = $this->shortcuts($user);
         $this->assertTrue($links['membership']);
-        $this->assertSame('http://my.localhost/settings', $links['membershipUrl']);
+        $this->assertNull($links['membershipUrl']);
+        $html = view('components.account.menu', ['account' => $user])->render();
+        $this->assertStringContainsString('You have full access', $html);
+        $this->assertStringNotContainsString('http://my.localhost/settings', $html);
         $this->app->instance('env', 'local');
         $this->assertTrue($this->shortcuts($user)['orders']);
         $this->app->instance('env', 'testing');

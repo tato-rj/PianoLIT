@@ -37,10 +37,12 @@ class WebAppGuestAccessTest extends ReviewTestCase
 
     public function test_visitors_can_browse_all_main_pages_without_an_account()
     {
-        foreach (['discover', 'welcome', 'explore', 'highlights', 'playlists', 'composers.index', 'tour', 'settings', 'my-pieces', 'terms', 'privacy', 'membership.pricing', 'search.results'] as $name) {
+        foreach (['discover', 'welcome', 'explore', 'highlights', 'playlists', 'composers.index', 'tour', 'my-pieces', 'terms', 'privacy', 'membership.pricing', 'search.results'] as $name) {
             $this->get(route('webapp.'.$name))->assertOk();
             $this->assertGuest('web');
         }
+        $this->get(route('webapp.settings'))->assertStatus(301)->assertRedirect(route('webapp.discover'));
+        $this->call('HEAD', route('webapp.settings'))->assertStatus(301)->assertRedirect(route('webapp.discover'));
         $this->assertSame(0, User::count());
         $this->assertSame(0, Favorite::count());
         $this->assertSame(0, FavoriteFolder::count());
@@ -83,7 +85,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
         $this->assertSame(1, $xpath->query('//a[@href="'.$url.'"]/img[contains(@class, "piece__composer-image")]')->length);
-        $this->assertSame(3, $xpath->query('//a[@href="'.$url.'"]')->length, 'Portrait, options and biography link to the same composer page.');
+        $this->assertSame(2, $xpath->query('//a[@href="'.$url.'" and not(ancestor::section[@aria-labelledby="piece-recommendations-heading"])]')->length, 'Portrait and biography link to the same composer page.');
 
         $explore = view('webapp.explore.rows.composer', ['row' => ['label' => 'Composer', 'collection' => $composer]])->render();
         $this->assertStringContainsString('href="'.$url.'"', $explore);
@@ -106,13 +108,13 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->withExceptionHandling()->get(route('webapp.pieces.composer', 'missing-piece'))->assertNotFound();
     }
 
-    public function test_piece_options_use_native_offcanvas_for_visitors_and_accounts()
+    public function test_piece_pages_omit_options_menu_and_keep_favorites_and_sharing()
     {
         $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
-            ->assertSee('class="offcanvas offcanvas-end" id="options-panel"', false)
-            ->assertSee('aria-labelledby="options-panel-title"', false)
-            ->assertSee('data-bs-toggle="offcanvas" data-bs-target="#options-panel"', false)
-            ->assertSee('data-bs-dismiss="offcanvas"', false)
+            ->assertDontSee('options-panel', false)
+            ->assertDontSee('aria-label="More options"', false)
+            ->assertSee('data-bs-target="#signup-favorites-modal"', false)
+            ->assertSee('data-bs-toggle="modal" data-bs-target="#piece-share-modal"', false)
             ->assertDontSee('fixed-panel', false)
             ->assertDontSee('panel-overlay', false);
 
@@ -121,7 +123,8 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
             ->assertSee('data-bs-toggle="modal" data-bs-target="#piece-share-modal"', false)
             ->assertSee('data-bs-toggle="offcanvas" data-bs-target="#save-to-offcanvas"', false)
-            ->assertSee('Manage favorites')
+            ->assertDontSee('options-panel', false)
+            ->assertDontSee('aria-label="More options"', false)
             ->assertDontSee('data-dismiss="fixed-panel"', false);
     }
 

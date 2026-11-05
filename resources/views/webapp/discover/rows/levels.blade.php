@@ -10,11 +10,12 @@
 			<h5 id="discover-levels-heading" class="mb-1">Find pieces at your level</h5>
 			<p class="text-muted mb-0">Similar difficulty to RCM, ABRSM or Suzuki books.</p>
 		</div>
-		<div class="discover-levels__tabs pill-filters nav" role="tablist" aria-label="Level system">
-			@foreach($levelSystems as $system)
-			<button class="nav-link {{ $system['key'] === $firstLevelSystem['key'] ? 'active' : '' }}" id="discover-levels-{{ $system['key'] }}-tab" data-bs-toggle="pill" data-bs-target="#discover-levels-{{ $system['key'] }}" type="button" role="tab" aria-controls="discover-levels-{{ $system['key'] }}" aria-selected="{{ $system['key'] === $firstLevelSystem['key'] ? 'true' : 'false' }}" tabindex="{{ $system['key'] === $firstLevelSystem['key'] ? '0' : '-1' }}" @if($system['cards']->isEmpty()) disabled aria-disabled="true" @endif>{{ $system['label'] }}</button>
-			@endforeach
-		</div>
+		@include('components.navigation.pill-tabs', [
+            'id' => 'discover-levels', 'label' => 'Level system', 'active' => $firstLevelSystem['key'], 'class' => 'discover-levels__tabs',
+            'items' => $levelSystems->map(function ($system) {
+                return ['key' => $system['key'], 'label' => $system['label'], 'disabled' => $system['cards']->isEmpty()];
+            }),
+        ])
 	</div>
 	<div class="tab-content">
 		@foreach($levelSystems as $system)

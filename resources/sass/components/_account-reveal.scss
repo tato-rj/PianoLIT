@@ -15,18 +15,15 @@
     display: flex;
     transition: transform 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
 
+    &--stationary { transition: none; }
+
+    &--closing { visibility: hidden; pointer-events: none; }
+
     > .account-circle.btn-raw {
         transition: background-color 240ms ease, border-color 240ms ease;
 
         > * { transition: opacity 240ms ease; }
 
-        .account-circle__close {
-            display: inline-flex;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
     }
 
     &.account-reveal-toggle--revealed {

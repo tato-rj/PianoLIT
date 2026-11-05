@@ -175,6 +175,6 @@ class TabsController extends Controller
 
     public function settings()
     {      
-    	return view('webapp.settings.index');
+        return redirect()->route('webapp.discover', [], 301);
     }
 }

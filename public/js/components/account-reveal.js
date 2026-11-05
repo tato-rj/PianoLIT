@@ -54,27 +54,66 @@
     }
 
     function positionControl(state) {
-        var placeholder = state.control.placeholder.getBoundingClientRect();
+        if (state.control.stationary) {
+            var closeRect = state.control.button.getBoundingClientRect();
+            state.control.width = closeRect.width;
+            state.control.height = closeRect.height;
+        }
         var page = state.page.getBoundingClientRect();
         var layoutWidth = state.page.offsetWidth;
         var scale = page.width / layoutWidth;
         var destinationScale = parseFloat(win.getComputedStyle(state.page).getPropertyValue('--account-reveal-scale')) || 1;
         var width = state.control.width;
-        var left = (placeholder.left - page.left) / scale;
         var strip = Math.max(width + 4, layoutWidth - state.distance);
         var destination = Math.max(2, strip - width - 16);
-        var top = (placeholder.top - page.top) / scale;
         var inset = state.page.offsetHeight * (1 - destinationScale) / 2;
         var destinationTop = Math.max(2, Math.min(inset + 16, win.innerHeight - state.control.height - 2));
+        if (state.control.stationary) {
+            state.control.host.style.setProperty('left', destination + 'px');
+            state.control.host.style.setProperty('top', destinationTop + 'px');
+            return;
+        }
+        var placeholder = state.control.placeholder.getBoundingClientRect();
+        var left = (placeholder.left - page.left) / scale;
+        var top = (placeholder.top - page.top) / scale;
         state.control.host.style.setProperty('left', left + 'px');
         state.control.host.style.setProperty('top', top + 'px');
         state.control.host.style.setProperty('--account-toggle-offset', (destination - left) + 'px');
         state.control.host.style.setProperty('--account-toggle-offset-y', (destinationTop - top) + 'px');
     }
 
+    function ownControl(state, button) {
+        var owns = state.panel.getAttribute('aria-owns');
+        if (button.id) state.panel.setAttribute('aria-owns', ((owns || '') + ' ' + button.id).trim());
+        function allowOutsideFocus(event) { event.stopPropagation(); }
+        button.addEventListener('focusin', allowOutsideFocus);
+        return function () {
+            button.removeEventListener('focusin', allowOutsideFocus);
+            if (owns === null) state.panel.removeAttribute('aria-owns');
+            else state.panel.setAttribute('aria-owns', owns);
+        };
+    }
+
     function prepareControl(state) {
         var button = doc.querySelector('[data-account-navigation-toggle]');
         if (!button) return;
+        var template = doc.querySelector('[data-account-stationary-close]');
+        if (button.classList.contains('account-circle--navigation') && template) {
+            // Web-app tabs stay in the navigation at every viewport width.
+            var close = template.content.firstElementChild.cloneNode(true);
+            var closeHost = doc.createElement('div');
+            closeHost.className = 'account-reveal-toggle account-reveal-toggle--stationary';
+            closeHost.appendChild(close);
+            doc.body.appendChild(closeHost);
+            var closeRect = close.getBoundingClientRect();
+            var releaseClose = ownControl(state, close);
+            state.control = {
+                button: close, host: closeHost, width: closeRect.width, height: closeRect.height, stationary: true,
+                restore: function () { releaseClose(); closeHost.remove(); }
+            };
+            positionControl(state);
+            return;
+        }
         var rect = button.getBoundingClientRect();
         var attributes = ['aria-label', 'title', 'aria-haspopup', 'data-bs-toggle', 'data-bs-dismiss'].map(function (name) {
             return [name, button.getAttribute(name)];
@@ -89,24 +128,19 @@
         host.className = 'account-reveal-toggle';
         doc.body.appendChild(host);
         host.appendChild(button);
-        var owns = state.panel.getAttribute('aria-owns');
-        if (button.id) state.panel.setAttribute('aria-owns', ((owns || '') + ' ' + button.id).trim());
+        var releaseControl = ownControl(state, button);
         button.setAttribute('aria-label', 'Close account menu');
         button.setAttribute('title', 'Close account menu');
         button.removeAttribute('aria-haspopup');
-        function allowOutsideFocus(event) { event.stopPropagation(); }
-        button.addEventListener('focusin', allowOutsideFocus);
         state.control = {
             button: button, placeholder: placeholder, host: host, width: rect.width, height: rect.height,
             restore: function () {
-                button.removeEventListener('focusin', allowOutsideFocus);
+                releaseControl();
                 button.classList.remove('account-circle--close');
                 attributes.forEach(function (attribute) {
                     if (attribute[1] === null) button.removeAttribute(attribute[0]);
                     else button.setAttribute(attribute[0], attribute[1]);
                 });
-                if (owns === null) state.panel.removeAttribute('aria-owns');
-                else state.panel.setAttribute('aria-owns', owns);
                 if (placeholder.parentNode) placeholder.parentNode.replaceChild(button, placeholder);
                 host.remove();
             }
@@ -116,7 +150,10 @@
 
     function reveal(state, opened) {
         state.page.classList.toggle('account-page--revealed', opened);
-        if (state.control) {
+        state.page.classList.toggle('account-page--closing', !opened && !!state.closing);
+        if (state.control && state.control.stationary) {
+            state.control.host.classList.toggle('account-reveal-toggle--closing', !opened);
+        } else if (state.control) {
             state.control.host.classList.toggle('account-reveal-toggle--revealed', opened);
             state.control.button.classList.toggle('account-circle--close', opened);
         }
@@ -128,7 +165,7 @@
         if (state.frame !== null) win.cancelAnimationFrame(state.frame);
         if (state.dismissTimer !== null) win.clearTimeout(state.dismissTimer);
         state.sticky.forEach(function (item) { item.restore(); });
-        state.page.classList.remove('account-page--revealed', 'account-page--prepared');
+        state.page.classList.remove('account-page--revealed', 'account-page--prepared', 'account-page--closing');
         state.page.inert = state.inert;
         if (state.control) state.control.restore();
         state.restorePage();
@@ -173,7 +210,7 @@
             if (event.defaultPrevented) return restore(state, true);
             // Finish the opening click before changing its delegated action;
             // otherwise Bootstrap could also dismiss it during that same click.
-            if (state.control) {
+            if (state.control && !state.control.stationary) {
                 state.dismissTimer = win.setTimeout(function () {
                     state.dismissTimer = null;
                     if (current !== state) return;

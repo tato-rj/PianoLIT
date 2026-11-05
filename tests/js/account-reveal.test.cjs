@@ -2,7 +2,7 @@ const assert = require('assert');
 const initialize = require('../../resources/js/components/account-reveal');
 
 module.exports = async function () {
-    function fixture(reduced = false, withControl = false) {
+    function fixture(reduced = false, withControl = false, navigation = false) {
         const handlers = {}, frames = new Map(), timers = new Map();
         let frameId = 0;
         function style(initial = {}) {
@@ -55,9 +55,17 @@ module.exports = async function () {
         opener.setAttribute('title', 'Alex');
         opener.setAttribute('aria-haspopup', 'dialog');
         opener.setAttribute('data-bs-toggle', 'offcanvas');
+        if (navigation) opener.classList.add('account-circle--navigation');
+        const mobileClose = Object.assign(node(), {id: 'webapp-account-close', clicks: 0,
+            getBoundingClientRect() { return {width: 38, height: 38}; },
+            focus() { doc.activeElement = this; }, click() { this.clicks++; }});
+        const template = {content: {firstElementChild: {cloneNode() { return mobileClose; }}}};
         const originalParent = node(); originalParent.appendChild(opener);
         const doc = {body, activeElement: opener, documentElement: {scrollHeight: 1800},
-            querySelector(selector) { return selector === '[data-account-page]' ? page : (selector === '[data-account-navigation-toggle]' && withControl ? opener : null); },
+            querySelector(selector) {
+                if (selector === '[data-account-stationary-close]') return navigation ? template : null;
+                return selector === '[data-account-page]' ? page : (selector === '[data-account-navigation-toggle]' && withControl ? opener : null);
+            },
             createElement() { return node(); },
             addEventListener(name, handler, capture) { handlers[name] = handler; if (name === 'hidden.bs.offcanvas') assert.strictEqual(capture, true); }};
         const win = {document: doc, scrollX: 0, scrollY: 480, innerWidth: 1280, innerHeight: 720,
@@ -73,7 +81,7 @@ module.exports = async function () {
         win.setTimeout = callback => { timers.set(++frameId, callback); return frameId; };
         win.clearTimeout = id => timers.delete(id);
         initialize(win);
-        return {win, doc, page, body, sticky, panel, opener, originalParent, handlers, frames, backdrops,
+        return {win, doc, page, body, sticky, panel, opener, mobileClose, originalParent, handlers, frames, backdrops,
             event(overrides = {}) { return {target: panel, relatedTarget: opener, defaultPrevented: false, ...overrides}; },
             flushTimers() { [...timers.values()].forEach(callback => callback()); timers.clear(); },
             flushFrames() { [...frames.values()].forEach(callback => callback()); frames.clear(); }};
@@ -184,5 +192,52 @@ module.exports = async function () {
     assert.strictEqual(outside.opener.getAttribute('data-bs-dismiss'), null);
     assert(!outside.opener.classList.contains('account-circle--close'));
     assert.strictEqual(outside.panel.getAttribute('aria-owns'), null);
-    console.log('Passed: account reveal scope, cancelled/rapid transitions, scrollbar/sticky geometry, resize, scroll/focus restoration and reduced motion.');
+    for (const width of [390, 1280]) for (const reduced of [false, true]) {
+        const mobile = fixture(reduced, true, true);
+        mobile.win.innerWidth = width; mobile.win.innerHeight = 844; mobile.body.clientWidth = width;
+        const item = {getClientRects() { return [1]; }, focus() { mobile.doc.activeElement = this; }};
+        mobile.panel.querySelectorAll = () => [item];
+        mobile.handlers['show.bs.offcanvas'](mobile.event());
+        await Promise.resolve(); mobile.flushTimers(); mobile.flushFrames();
+        const closeHost = mobile.mobileClose.parentNode;
+        assert(closeHost.className.includes('account-reveal-toggle--stationary'));
+        assert.strictEqual(mobile.opener.parentNode, mobile.originalParent, 'Web-app tab remains in the bottom navigation at ' + width + 'px');
+        assert.strictEqual(mobile.originalParent.children.length, 1, 'No placeholder replaces the tab');
+        assert.strictEqual(mobile.opener.getAttribute('data-bs-toggle'), 'offcanvas');
+        assert(!mobile.opener.classList.contains('account-circle--close'));
+        assert.strictEqual(closeHost.style.getPropertyValue('--account-toggle-offset'), '', 'The separate close never moves from the tab');
+        assert(!closeHost.classList.contains('account-reveal-toggle--revealed'));
+        assert.strictEqual(mobile.panel.getAttribute('aria-owns'), 'webapp-account-close');
+        mobile.doc.activeElement = mobile.panel;
+        const press = key => mobile.handlers.keydown({key, preventDefault() {}, stopPropagation() {}});
+        press('Tab'); assert.strictEqual(mobile.doc.activeElement, mobile.mobileClose);
+        press('Tab'); assert.strictEqual(mobile.doc.activeElement, item);
+        press('Tab'); assert.strictEqual(mobile.doc.activeElement, mobile.mobileClose);
+        press('Escape'); assert.strictEqual(mobile.mobileClose.clicks, 1);
+        mobile.win.innerWidth = 320; mobile.body.clientWidth = 320; mobile.handlers.resize();
+        assert.strictEqual(closeHost.style.getPropertyValue('left'), '2px', 'Round close fits the narrow strip');
+        mobile.win.innerWidth = 1280; mobile.body.clientWidth = 1264; mobile.handlers.resize();
+        assert.strictEqual(mobile.opener.parentNode, mobile.originalParent, 'Resizing an open drawer cannot change its control mode');
+        const closing = mobile.event();
+        mobile.handlers['hide.bs.offcanvas'](closing);
+        assert(closeHost.classList.contains('account-reveal-toggle--closing'), 'The X hides immediately when closing starts, before hidden');
+        assert(mobile.page.classList.contains('account-page--closing'), 'Artwork controls can fade in during the return movement');
+        closing.defaultPrevented = true;
+        await Promise.resolve();
+        assert(!closeHost.classList.contains('account-reveal-toggle--closing'), 'A cancelled close restores the X');
+        assert(!mobile.page.classList.contains('account-page--closing'), 'A cancelled close keeps artwork controls hidden');
+        mobile.handlers['hide.bs.offcanvas'](mobile.event());
+        assert(closeHost.classList.contains('account-reveal-toggle--closing'));
+        mobile.handlers['hidden.bs.offcanvas'](mobile.event());
+        assert(!mobile.page.classList.contains('account-page--closing'), 'Closing state is cleared after dismissal');
+        assert.strictEqual(closeHost.parentNode, null);
+        assert.strictEqual(mobile.panel.getAttribute('aria-owns'), null);
+        assert.strictEqual(mobile.opener.focuses, 1);
+        mobile.handlers['show.bs.offcanvas'](mobile.event());
+        assert.strictEqual(mobile.opener.parentNode, mobile.originalParent, 'Reopening on desktop keeps the web-app tab in place');
+        assert(!mobile.opener.classList.contains('account-circle--close'));
+        mobile.handlers['hidden.bs.offcanvas'](mobile.event());
+        await Promise.resolve();
+    }
+    console.log('Passed: account reveal scope, cancelled/rapid transitions, scrollbar/sticky geometry, stationary web-app navigation close on desktop/mobile, resize, scroll/focus restoration and reduced motion.');
 };

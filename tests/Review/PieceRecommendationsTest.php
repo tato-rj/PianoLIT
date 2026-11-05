@@ -46,9 +46,8 @@ class PieceRecommendationsTest extends ReviewTestCase
         $more = $this->makePiece('Another happy piece', ['happy']);
 
         $rows = (new PieceRecommendations)->rows($this->piece)->keyBy('title');
-        $this->assertSame(['More like this', 'Similar mood', 'Similar difficulty', 'Same period'], $rows->keys()->all());
-        $this->assertSame(['yellow', 'orange', 'red', 'darkpink'], $rows->pluck('color')->all());
-        $this->assertSame([$more->id], $rows['More like this']['pieces']->pluck('id')->all());
+        $this->assertSame(['Best matches', 'Similar mood', 'Similar difficulty', 'Same period', 'Same composer'], $rows->keys()->all());
+        $this->assertSame([$more->id], $rows['Best matches']['pieces']->pluck('id')->all());
         $mood = $rows['Similar mood'];
         $this->assertContains($mood['term'], ['happy', 'dreamy']);
         $expectedMood = $mood['term'] === 'happy' ? [$happy->id, $more->id] : [$dreamy->id];
@@ -57,6 +56,7 @@ class PieceRecommendationsTest extends ReviewTestCase
         $this->assertEqualsCanonicalizing([$period->id, $more->id], $rows['Same period']['pieces']->pluck('id')->all());
         $this->assertSame('elementary', $rows['Similar difficulty']['term']);
         $this->assertSame('baroque', $rows['Same period']['term']);
+        $this->assertEqualsCanonicalizing([$happy->id, $dreamy->id, $difficulty->id, $period->id, $more->id], $rows['Same composer']['pieces']->pluck('id')->all());
         foreach ($rows as $row) {
             $this->assertNotContains($this->piece->id, $row['pieces']->pluck('id'));
             foreach ($row['pieces'] as $card) {
@@ -68,22 +68,24 @@ class PieceRecommendationsTest extends ReviewTestCase
 
     public function test_galleries_are_bounded_and_queries_do_not_grow_with_card_count()
     {
+        $collection = ['collection_name' => 'Test collection', 'catalogue_name' => 'Op.', 'catalogue_number' => 1];
+        $this->piece->update($collection);
         $counts = [];
         $created = 0;
         foreach ([2, 20] as $size) {
-            for (; $created < $size; $created++) $this->makePiece('Gallery piece '.$created, ['happy', 'dreamy']);
+            for (; $created < $size; $created++) $this->makePiece('Gallery piece '.$created, ['happy', 'dreamy'])->update($collection);
             DB::enableQueryLog();
             DB::flushQueryLog();
             $rows = (new PieceRecommendations)->rows($this->piece->fresh());
             $counts[] = count(DB::getQueryLog());
             DB::disableQueryLog();
-            foreach ($rows as $row) $this->assertCount(min($size, 16), $row['pieces']);
+            foreach ($rows as $row) $this->assertCount(min($size, 6), $row['pieces']);
         }
         $this->assertSame($counts[0], $counts[1]);
-        $this->assertLessThanOrEqual(16, $counts[1]);
+        $this->assertLessThanOrEqual(18, $counts[1]);
     }
 
-    public function test_guest_and_signed_in_pages_render_recommendations_and_working_tag_search_links()
+    public function test_guest_and_signed_in_pages_render_one_recommendation_section_with_five_compact_tabs()
     {
         foreach (['Minuet in G', 'Little prelude', 'Morning song', 'Evening dance'] as $name) {
             $this->makePiece($name, ['happy', 'dreamy']);
@@ -93,16 +95,19 @@ class PieceRecommendationsTest extends ReviewTestCase
             if ($signedIn) $this->actingAs($user, 'web');
             $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk();
             $rows = $response->viewData('recommendationRows');
-            $html = $response->getContent();
-            $dom = new \DOMDocument;
-            @$dom->loadHTML($html);
-            $xpath = new \DOMXPath($dom);
-            $previous = -1;
+            $xpath = $this->xpath($response->getContent());
+            $this->assertSame(0, $xpath->query('//section[@aria-labelledby="piece-collection-heading"]')->length);
+            $this->assertSame(1, $xpath->query('//section[@aria-labelledby="piece-recommendations-heading"]')->length);
+            $tabs = $xpath->query('//div[@role="tablist" and @aria-label="More like this"]/button');
+            $this->assertSame(['Best matches', 'Similar mood', 'Similar difficulty', 'Same period', 'Same composer'], array_map(function ($tab) { return trim($tab->textContent); }, iterator_to_array($tabs)));
+            $this->assertSame('true', $tabs[0]->getAttribute('aria-selected'));
+            $this->assertSame(1, $xpath->query('//div[@aria-label="More like this"]/button[@aria-selected="true"]')->length);
             foreach ($rows as $index => $row) {
-                $position = strpos($html, 'id="piece-recommendations-'.$index.'"');
-                $this->assertGreaterThan($previous, $position);
-                $previous = $position;
-                $links = $xpath->query('//section[@aria-labelledby="piece-recommendations-'.$index.'"]//a[contains(concat(" ",normalize-space(@class)," ")," discover-piece-link ")]');
+                $id = 'piece-recommendations-'.$row['key'];
+                $panel = $xpath->query('//div[@id="'.$id.'"]')->item(0);
+                $this->assertSame($id.'-tab', $panel->getAttribute('aria-labelledby'));
+                $this->assertSame($index === 0 ? 'tab-pane active' : 'tab-pane ', $panel->getAttribute('class'));
+                $links = $xpath->query('//div[@id="'.$id.'"]//a[contains(concat(" ",normalize-space(@class)," ")," discover-compact-card ")]');
                 $this->assertCount($row['pieces']->count(), $links);
                 foreach ($row['pieces'] as $cardIndex => $card) {
                     $this->assertSame(route('webapp.pieces.show', $card), $links[$cardIndex]->getAttribute('href'));
@@ -110,8 +115,8 @@ class PieceRecommendationsTest extends ReviewTestCase
                     $this->assertStringContainsString($card->composer->short_name, $links[$cardIndex]->textContent);
                     $this->assertStringContainsString(ucfirst($card->extended_level_name), $links[$cardIndex]->textContent);
                 }
-                $response->assertSee('href="'.e($row['url']).'"', false);
-                if (! isset($row['term'])) continue;
+                if (! $row['pieces']->isEmpty()) $response->assertSee('href="'.e($row['url']).'"', false);
+                if (empty($row['term'])) continue;
                 $this->get($row['url'])->assertOk()->assertSee('name="search" value="'.$row['term'].'"', false);
                 $results = $this->getJson($row['url'])->assertOk();
                 $this->assertSame($signedIn ? 5 : 3, substr_count($results->getContent(), 'data-sort-name='));
@@ -119,13 +124,64 @@ class PieceRecommendationsTest extends ReviewTestCase
         }
     }
 
-    public function test_missing_mood_and_empty_matches_do_not_render_empty_galleries()
+    public function test_collection_row_requires_actual_siblings_and_uses_large_cards_in_collection_order()
+    {
+        $metadata = ['collection_name' => 'Album for the Young', 'catalogue_name' => 'Op.', 'catalogue_number' => 68];
+        $this->piece->update($metadata);
+        $this->assertNull((new PieceRecommendations)->rows($this->piece)->firstWhere('key', 'collection'));
+        $later = $this->makePiece('Later collection piece', ['happy']);
+        $earlier = $this->makePiece('Earlier collection piece', ['dreamy']);
+        $later->update($metadata + ['collection_number' => 10]);
+        $earlier->update($metadata + ['collection_number' => 2]);
+        $otherComposer = $this->makePiece('Same title different composer', ['happy']);
+        $otherComposer->update($metadata + ['composer_id' => Model::withoutEvents(function () { return create(Composer::class)->id; })]);
+        $otherCatalogue = $this->makePiece('Same title different catalogue', ['happy']);
+        $otherCatalogue->update(array_replace($metadata, ['catalogue_number' => 99]));
+
+        $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk();
+        $collection = $response->viewData('recommendationRows')->firstWhere('key', 'collection');
+        $this->assertSame([$earlier->id, $later->id], $collection['pieces']->pluck('id')->all());
+        $xpath = $this->xpath($response->getContent());
+        $this->assertSame(2, $xpath->query('//section[@aria-labelledby="piece-collection-heading"]//a[contains(@class,"discover-latest-card")]')->length);
+        $this->assertSame(0, $xpath->query('//section[@aria-labelledby="piece-recommendations-heading"]//a[contains(@class,"discover-latest-card")]')->length);
+        $this->assertSame(route('webapp.pieces.collection', $this->piece), $collection['url']);
+    }
+
+    public function test_named_notebook_can_include_other_composers_but_uncollected_pieces_do_not_form_a_collection()
+    {
+        $other = $this->makePiece('Another standalone piece', ['happy']);
+        $empty = ['collection_name' => null, 'catalogue_name' => null, 'catalogue_number' => null];
+        $this->piece->update($empty);
+        $other->update($empty);
+        $this->assertNull((new PieceRecommendations)->rows($this->piece)->firstWhere('key', 'collection'));
+        $this->piece->update(['collection_name' => 'Notebook for Anna Magdalena Bach']);
+        $other->update(['collection_name' => 'Notebook for Anna Magdalena Bach', 'composer_id' => Model::withoutEvents(function () { return create(Composer::class)->id; })]);
+        $row = (new PieceRecommendations)->rows($this->piece)->firstWhere('key', 'collection');
+        $this->assertSame([$other->id], $row['pieces']->pluck('id')->all());
+    }
+
+    public function test_missing_categories_are_disabled_but_best_matches_remains_the_default()
     {
         $this->piece->tags()->detach($this->tags->only(['happy', 'dreamy'])->pluck('id'));
-        $this->assertCount(0, (new PieceRecommendations)->rows($this->piece->fresh()));
-        $match = $this->makePiece('Same difficulty only', [], 'level', 'otherPeriod');
-        $rows = (new PieceRecommendations)->rows($this->piece->fresh());
-        $this->assertSame(['Similar difficulty'], $rows->pluck('title')->all());
-        $this->assertSame([$match->id], $rows->first()['pieces']->pluck('id')->all());
+        $this->makePiece('Same composer only', [], 'otherLevel', 'otherPeriod');
+        $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk();
+        $xpath = $this->xpath($response->getContent());
+        $this->assertSame(1, $xpath->query('//button[@id="piece-recommendations-best-matches-tab" and @aria-selected="true" and not(@disabled)]')->length);
+        $this->assertSame(3, $xpath->query('//div[@aria-label="More like this"]/button[@disabled]')->length);
+        $this->assertSame(1, $xpath->query('//div[@id="piece-recommendations-best-matches"]/p')->length);
+    }
+
+    public function test_no_recommendations_omits_both_sections()
+    {
+        $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk();
+        $xpath = $this->xpath($response->getContent());
+        $this->assertSame(0, $xpath->query('//section[@aria-labelledby="piece-collection-heading" or @aria-labelledby="piece-recommendations-heading"]')->length);
+    }
+
+    private function xpath($html)
+    {
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        return new \DOMXPath($dom);
     }
 }

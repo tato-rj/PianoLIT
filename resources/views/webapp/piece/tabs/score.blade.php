@@ -1,4 +1,4 @@
-<div class="tab-pane fade" id="tab-score">
+<div class="tab-pane fade" id="tab-score" role="tabpanel" aria-labelledby="main-nav-tab-score" tabindex="0">
 	@if($piece->hasAudio() && ! $piece->isPublicDomain)
 	<div class="mb-4">
 		<div class="text-center">

@@ -1,4 +1,4 @@
-<div class="tab-pane fade" id="tab-synthesia">
+<div class="tab-pane fade" id="tab-synthesia" role="tabpanel" aria-labelledby="main-nav-tab-synthesia" tabindex="0">
 	@if($piece->media['synthesia'])
 	<div class="rounded-video video-container" style="    max-width: 520px;
     margin: 0 auto;">

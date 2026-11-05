@@ -42,14 +42,93 @@
     .account-circle__close { display: none; opacity: 0; }
 
     &.account-circle--close {
-        background: transparent;
-        border-color: transparent;
+        background: var(--color-surface);
+        border: 1px solid #e4eaf3;
+        color: var(--color-text);
         > :not(.account-circle__close) { opacity: 0; }
-        .account-circle__close { display: inline-flex; opacity: 1; }
+        .account-circle__close {
+            display: inline-flex;
+            opacity: 1;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     }
 }
 
 .games-player-circle.account-circle.btn-raw {
     background: games.$primary-color;
     color: games.$secondary-color;
+}
+
+// One icon row and label gap for all web-app tabs, including the account control.
+.webapp-menu-icon-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+}
+
+.webapp-menu-label {
+    display: block;
+    margin-top: 4px;
+}
+
+// Opt-in web-app tab; stays styled when the reveal controller lifts it to body.
+.account-circle--navigation.btn-raw {
+    flex-direction: column;
+    width: 44px;
+    height: auto;
+    min-height: 44px;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    color: #969ba0;
+    font-size: 16px;
+    line-height: 1.6;
+
+    .account-circle__visual {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 28px;
+        width: 28px;
+        height: 28px;
+        overflow: hidden;
+        border-radius: 50%;
+        background: var(--color-border);
+        color: var(--color-text-dark);
+        font-size: 14px;
+    }
+
+    .account-circle__visual--guest {
+        color: inherit;
+        background: transparent;
+        .app-icon { width: 22.4px; height: 22.4px; }
+    }
+
+    .account-circle__label {
+        width: max-content;
+        max-width: min(96px, calc(20vw - 12px));
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &:hover,
+    &:focus-visible,
+    &[aria-expanded='true'] { color: var(--color-primary); }
+
+    &:focus-visible .account-circle__label {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+}
+
+@media (max-width: 360px) {
+    .account-circle--navigation .account-circle__label { font-size: 11px; letter-spacing: 0; }
 }

@@ -47,7 +47,10 @@
     @component('components.account.page')
     <div id="webapp" @if(request()->routeIs('webapp.playlists.show')) class="playlist-layout" @endif>
         @if(request()->routeIs('webapp.pieces.show'))
-            @include('webapp.components.artwork-header', ['image' => asset($piece->web_image_background)])
+            <div class="position-relative">
+                @include('webapp.components.artwork-header', ['image' => asset($piece->web_image_background)])
+                @include('webapp.piece.toolbar')
+            </div>
         @elseif(request()->routeIs('webapp.playlists.show'))
             @include('webapp.components.artwork-header', ['image' => $playlist->cover_image ?: asset('images/webapp/collections/featured.webp')])
         @endif

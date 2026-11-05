@@ -29,11 +29,20 @@
     @component('admin.pages.settings.sample', ['label' => 'Guest account', 'usage' => 'components.account.account-circle · .btn-raw + user-round', 'properties' => 'width,height,font-size,color,background-color,border'])
       @include('components.account.account-circle', ['account' => null, 'designSystemPreview' => true])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Account menu close', 'usage' => 'components.account.account-circle · shared close state', 'properties' => 'width,height,color,background-color,border,box-shadow'])
+      @include('components.account.account-circle', ['closeControl' => true, 'designSystemPreview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Youtube link', 'usage' => 'components.navigation.youtube-button · dark pill', 'properties' => 'font-size,padding,color,background-color,border-radius'])
       @include('components.navigation.youtube-button', ['designSystemPreview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Newsletter subscribe', 'usage' => 'components.newsletter.subscribe-button · blue pill', 'properties' => 'font-size,padding,color,background-color,border-radius'])
       @include('components.newsletter.subscribe-button', ['label' => 'Subscribe', 'preview' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Web-app login tab', 'usage' => 'components.account.account-circle · webapp-navigation variant', 'properties' => 'font-size,color'])
+      @include('components.account.account-circle', ['account' => null, 'variant' => 'webapp-navigation', 'designSystemPreview' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Web-app account tab', 'usage' => 'components.account.account-circle · first name, without border or shadow', 'properties' => 'font-size,color'])
+      @include('components.account.account-circle', ['account' => (object) ['first_name' => 'Arthur'], 'variant' => 'webapp-navigation', 'designSystemPreview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Signed-in account', 'usage' => 'components.account.account-circle · first initial', 'properties' => 'width,height,font-size,color,background-color,border'])
       @include('components.account.account-circle', ['account' => (object) ['first_name' => 'Arthur'], 'menuId' => 'ds-account-circle', 'designSystemPreview' => true])

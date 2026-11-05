@@ -53,7 +53,7 @@ class LinkShareTest extends ReviewTestCase
             @$dom->loadHTML($html);
             $xpath = new \DOMXPath($dom);
             $this->assertCount(1, $xpath->query('//button[@aria-label="Share this piece" and @data-bs-target="#piece-share-modal"]'));
-            $this->assertCount(0, $xpath->query('//*[@id="options-panel"]//*[@data-bs-target="#piece-share-modal"]'));
+            $this->assertCount(0, $xpath->query('//*[@id="options-panel"]'));
             $this->assertCount(1, $xpath->query('//*[@id="piece-share-modal"]'));
             $field = $xpath->query('//*[@id="piece-share-modal"]//input[@readonly]')->item(0);
             $this->assertSame(route('webapp.pieces.show', $piece), $field->getAttribute('value'));

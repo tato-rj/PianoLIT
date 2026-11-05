@@ -5,7 +5,7 @@
 			@include('webapp.layouts.menu-item', ['url' => route('webapp.explore'), 'icon' => 'search', 'label' => 'Explore'])
 			@include('webapp.layouts.menu-item', ['url' => route('webapp.playlists'), 'icon' => 'layers', 'label' => 'Collections'])
 			@include('webapp.layouts.menu-item', ['url' => route('webapp.my-pieces'), 'icon' => 'heart', 'label' => 'My pieces'])
-			@include('webapp.layouts.menu-item', ['url' => route('webapp.settings'), 'icon' => 'settings', 'label' => 'Settings'])
+			@include('layouts.menu.user', ['webappNavigation' => true])
 		</div>
 	</div>
 

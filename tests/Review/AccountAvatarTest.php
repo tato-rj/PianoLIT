@@ -61,7 +61,7 @@ class AccountAvatarTest extends ReviewTestCase
             $origin = 'http://127.0.0.1:8767';
             $pages = [
                 'profile' => $response->getContent(),
-                'webapp' => $this->get('http://my.localhost/settings')->assertOk()->getContent(),
+                'webapp' => $this->get('http://my.localhost/composers')->assertOk()->getContent(),
                 'metronome' => $this->get('http://metronome.localhost')->assertOk()->getContent(),
             ];
             foreach ($pages as $name => $html) {

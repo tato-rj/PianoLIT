@@ -16,7 +16,6 @@
 
 .piece-heading {
     --piece-title-size: var(--font-size-h3);
-    --piece-header-indent: 0px;
 }
 
 .piece-header {
@@ -26,13 +25,6 @@
 .piece-header-level {
     display: inline-block;
     margin-bottom: 8px;
-    margin-inline-start: var(--piece-header-indent);
-}
-
-.piece-header-row {
-    display: grid;
-    grid-template-columns: 144px minmax(0, 1fr) 144px;
-    align-items: start;
 }
 
 .piece-header-title {
@@ -43,59 +35,55 @@
     overflow-wrap: anywhere;
 }
 
+.piece-artwork-toolbar {
+    z-index: 2;
+    padding-top: max(20px, env(safe-area-inset-top));
+    opacity: 1;
+    transition: opacity 240ms ease;
+
+    .account-page--prepared:not(.account-page--closing) & {
+        opacity: 0;
+        visibility: hidden;
+        transition: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .piece-artwork-toolbar { transition: none; }
+}
+
+.piece-artwork-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 999px;
+    background: var(--color-surface, #fff);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .12);
+}
+
 .piece-header-back,
-.piece-header-actions {
-    // Center the icons on the first title line, retaining their 44px height.
-    margin-top: calc((var(--piece-title-size) * 1.2 - 44px) / 2);
-}
-
-.piece-header-back {
+.piece-artwork-action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 44px;
-    font-size: 1.44rem;
-}
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 1rem;
 
-.piece-header-actions {
-    justify-self: end;
-    gap: 0;
-}
-
-.piece-header-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 40px;
-    width: 40px;
-    min-width: 40px;
-    min-height: 44px;
-    font-size: 1.2rem;
-
-    // The narrow dots need less visual space than the full-width heart/share.
-    .icon-ellipsis-vertical { transform: translateX(-.375em); }
+    &:hover,
+    &:focus-visible {
+        background-color: var(--color-surface-subtle);
+    }
 }
 
 @media (max-width: 767.98px) {
     .piece-heading {
         --piece-title-size: 1.3rem;
-        --piece-header-indent: 24px;
     }
     .piece-header {
         margin-left: 0 !important;
-    }
-    .piece-header-row {
-        grid-template-columns: 24px minmax(0, 1fr) auto;
-        column-gap: 0;
-    }
-    .piece-header-action {
-        flex-basis: 32px;
-        width: 32px;
-        min-width: 32px;
-    }
-    .piece-header-composer {
-        margin-inline-start: var(--piece-header-indent);
     }
 }
 

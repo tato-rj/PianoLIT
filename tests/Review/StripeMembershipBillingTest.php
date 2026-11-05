@@ -85,7 +85,8 @@ class StripeMembershipBillingTest extends ReviewTestCase
     public function test_ended_membership_settings_keeps_history_and_offers_new_checkout_with_saved_card()
     {
         $this->endedCustomer();
-        $this->get(route('webapp.settings'))->assertOk()->assertSee(route('webapp.membership.edit'), false)->assertSee('My membership');
+        $this->get(route('webapp.settings'))->assertStatus(301)->assertRedirect(route('webapp.discover'));
+        $this->get(route('webapp.my-pieces'))->assertOk()->assertSee(route('webapp.membership.edit'), false)->assertSee('My membership');
         $details = $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('data-saved-card', false)->assertSee('data-checkout-open', false);
         $dom = new \DOMDocument; @$dom->loadHTML($details->getContent()); $xpath = new \DOMXPath($dom);
         $this->assertSame(2, $xpath->query('//*[@id="update-plan-tab"]//a[@data-checkout-open]')->length);

@@ -187,6 +187,12 @@
     @component('admin.pages.settings.sample', ['label' => 'Segmented selection', 'usage' => 'components.forms.segmented-control', 'properties' => 'font-size,padding,color,border,border-radius'])
       @include('components.forms.segmented-control', ['id' => 'ds-beat-count', 'name' => 'ds-beat-count', 'label' => 'Sample beat count', 'options' => [1 => '1', 2 => '2', 3 => '3', 4 => '4'], 'value' => 1, 'preview' => true])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Discover pill tabs', 'usage' => 'components.navigation.pill-tabs · Discover and piece recommendations', 'properties' => 'font-size,padding,color,border,border-radius'])
+      @include('components.navigation.pill-tabs', ['id' => 'ds-discover-tabs', 'label' => 'Sample recommendation groups', 'active' => 'best-matches', 'preview' => true, 'scrollable' => true, 'items' => [
+        ['key' => 'best-matches', 'label' => 'Best matches'], ['key' => 'similar-mood', 'label' => 'Similar mood'], ['key' => 'same-composer', 'label' => 'Same composer', 'disabled' => true],
+      ]])
+      <div class="tab-content pt-3"><div class="tab-pane active" id="ds-discover-tabs-best-matches" role="tabpanel" aria-labelledby="ds-discover-tabs-best-matches-tab" tabindex="0">Pieces matching your current selection.</div><div class="tab-pane" id="ds-discover-tabs-similar-mood" role="tabpanel" aria-labelledby="ds-discover-tabs-similar-mood-tab" tabindex="0">Pieces with a similar mood.</div><div class="tab-pane" id="ds-discover-tabs-same-composer" role="tabpanel" aria-labelledby="ds-discover-tabs-same-composer-tab" tabindex="0"></div></div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Segmented tabs', 'usage' => 'components.navigation.tab-navigation · variant: segmented', 'properties' => 'font-size,padding,color,border,border-radius'])
       @component('components.navigation.tab-navigation', ['id' => 'ds-account-tabs', 'label' => 'Sample account sections', 'variant' => 'segmented', 'preview' => true, 'items' => [
         ['target' => 'ds-account-overview', 'label' => 'Overview'], ['target' => 'ds-account-billing', 'label' => 'Billing'],
@@ -256,12 +262,12 @@
         @alert(['color' => 'red', 'message' => 'Please check the highlighted fields.', 'dismissible' => true])
       </div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Tabs', 'usage' => '.nav .nav-tabs + .tab-content', 'properties' => 'font-size,padding,color,border'])
-      <ul class="nav nav-tabs" role="tablist" aria-label="Sample piece tabs">
-        <li class="nav-item" role="presentation"><button class="nav-link active" id="ds-about-tab" data-bs-toggle="tab" data-bs-target="#ds-about-panel" type="button" role="tab" aria-controls="ds-about-panel" aria-selected="true" data-ds-preview>About</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="ds-score-tab" data-bs-toggle="tab" data-bs-target="#ds-score-panel" type="button" role="tab" aria-controls="ds-score-panel" aria-selected="false" tabindex="-1">Score</button></li>
-      </ul>
+    @component('admin.pages.settings.sample', ['label' => 'Piece segmented tabs', 'usage' => 'components.navigation.tab-navigation · variant: segmented-bar', 'properties' => 'font-size,padding,color,background-color,border-radius,box-shadow'])
+      @component('components.navigation.tab-navigation', ['id' => 'ds-piece-tabs', 'label' => 'Sample piece sections', 'variant' => 'segmented-bar', 'preview' => true, 'syncHash' => false, 'items' => [
+        ['target' => 'ds-about-panel', 'id' => 'ds-about-tab', 'label' => 'About'], ['target' => 'ds-score-panel', 'id' => 'ds-score-tab', 'label' => 'Score'],
+      ]])
       <div class="tab-content pt-3"><div class="tab-pane fade show active" id="ds-about-panel" role="tabpanel" aria-labelledby="ds-about-tab" tabindex="0">Background, listening and practice notes.</div><div class="tab-pane fade" id="ds-score-panel" role="tabpanel" aria-labelledby="ds-score-tab" tabindex="0">The score appears in this panel.</div></div>
+      @endcomponent
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Dropdown', 'usage' => '.dropdown-menu + .dropdown-item', 'properties' => 'padding,border,border-radius,box-shadow'])
       <div class="dropdown-menu show design-system__static-menu" data-ds-preview aria-label="Sample menu"><span class="dropdown-header">Collection actions</span><button type="button" class="dropdown-item">@icon('pencil')Rename collection</button><button type="button" class="dropdown-item">@icon('copy')Duplicate collection</button><div class="dropdown-divider"></div><button type="button" class="dropdown-item text-danger">@icon('trash')Remove collection</button></div>

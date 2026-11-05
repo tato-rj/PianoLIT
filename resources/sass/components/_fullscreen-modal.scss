@@ -1,3 +1,18 @@
+// Shared full-screen modal close geometry.
+.fullscreen-modal-close {
+    width: 48px;
+    height: 48px;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+@media (max-width: 699px) {
+    .fullscreen-modal-close { width: 38px; height: 38px; }
+}
+
 .fullscreen-modal {
     // Include nested scroll containers: touch-action stops at the first scroller.
     // More specific content rules (e.g. the globe canvas's none) still take precedence.
@@ -27,16 +42,6 @@
     }
     .fullscreen-modal-header h1 {
         font-size: 32px;
-    }
-    // Center the icon despite the shared button padding.
-    .fullscreen-modal-close {
-        width: 48px;
-        height: 48px;
-        padding: 0 !important;
-        border-radius: 50% !important;
-        display: grid;
-        place-items: center;
-        flex-shrink: 0;
     }
     .fullscreen-modal-close--floating {
         position: absolute;
@@ -70,10 +75,6 @@
         }
         .fullscreen-modal-header p {
             font-size: 12px;
-        }
-        .fullscreen-modal-close {
-            width: 38px;
-            height: 38px;
         }
         .fullscreen-modal-close--floating { top: 20px; right: 18px; }
     }

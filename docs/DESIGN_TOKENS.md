@@ -82,8 +82,9 @@ Shop. An account's membership record (including expired), full-access override,
 owned purchase history or owned paid merchandise order respectively makes that
 shortcut available across all hubs. Order existence reuses `OrderTracking::visible`
 so test/unpaid/digital orders and another account's records do not qualify.
-Membership links use management for an existing membership, pricing for a new
-account, and Settings for a full-access account without a billing record. These
+Membership links use management for an existing membership and pricing for a new
+account. A full-access account without a billing record instead sees its access
+status directly in the panel. These
 checks do not call billing/Printful or load relationships into shared user JSON.
 
 Only this universal menu reveals underneath the page: the shared
@@ -95,8 +96,10 @@ The menu stays clear. Its original header circle becomes the close X and moves c
 the shifted page's top-right corner (16px inset, constrained to fit narrow strips),
 then travels back and restores its photo/initial on dismissal. Keep this same
 button, rather than hiding it and creating a second close control.
-The close state shows only the X, with transparent background and border for
-both initial and profile-photo accounts; retain its full 44px hit area.
+The shared `components.account.account-circle` close state keeps the PianoLIT
+44px circle, 21px neutral X and original shadow, with a white surface and the
+1px `#e4eaf3` border adopted from the web-app close. Both initial and photo
+accounts use this same state.
 Crossfade the background, border and avatar/X over the same 240ms as the movement
 in both directions. Start restoring the avatar when the return movement begins,
 so it reaches the header fully restored instead of switching at the end.
@@ -112,6 +115,28 @@ Page/control motion is 240ms and respects reduced motion. Other offcanvas panels
 retain their existing presentation. `layouts.menu.user` pushes one panel to the
 body-level script stack. Design System specimens reuse these same components
 with fictitious details and inert actions.
+
+On `my.*` only, the shared account control uses the `webapp-navigation` variant
+in the fifth bottom-navigation slot. The web-app header contains only its logo;
+other sites keep their existing header account control. The tab has no border or
+shadow, shows a login icon and **Log in** for guests, and the verified avatar or
+initial above the first name for signed-in accounts. All five tabs reuse a 28px
+icon row and a 4px label gap, keeping their labels aligned. Long names truncate within
+the slot while the accessible name retains the full first name. Keep the 44px
+button width. At every viewport width, leave this tab in the page; the account
+panel renders `components.account.account-circle` with `closeControl => true` in
+a stationary corner host. It reuses the exact same close state as the moving
+public account control, with no separate size, icon, color or shadow rules. Include
+it in dialog ownership and keyboard focus, and return focus to the original tab
+after dismissal. While the account page is prepared, all bottom-menu labels
+and navigation icons use their normal gray, including the active page and
+expanded account button. Preserve selection state and restore the blue highlight
+when the panel finishes closing. Hide the stationary X immediately when closing starts. While
+opening/open, hide the piece artwork toolbar (Back, favorite and Share) so its
+controls cannot overlap the X. Fade the toolbar in over the 240ms page return,
+using the closing state; skip that fade for reduced motion. Cancelled dismissal
+restores the X and hides the toolbar again. Both account variants are shown in the Design System. The duplicate Settings view is retired;
+`webapp.settings` remains a permanent redirect to Discover for old links.
 
 Games' yellow trophy menu remains an independent dropdown using
 `components.account.menu-panel` and `games.challenges.profile.menu`. Its existing
@@ -494,6 +519,8 @@ stylesheet precedence. Page templates request only their main bundle.
 `components.billing.membership-plan-card` is the single plan card used by Pricing and Change plan. Pass a plan, a unique `headingId`, an optional `monthlyPlan` for yearly savings, and an `action` slot containing a shared button or button link. Optional `trial`, `accessNote`, `context` and `selected` values adapt its content and selection state. Pass `current: true` for the existing membership plan to apply the shared `shadow-none border border-light` utilities. Its gradient panel, shadow and layout live in `components/_membership-plan-card.scss`, imported by both app and admin so the Design System specimen uses the same component and styles. These catalog cards belong to plan selection; the current membership overview uses ordinary `.card.rounded.shadow-light` content cards and saved billing dates, without guessing an existing subscriber’s charge from a catalog price.
 
 `components.navigation.tab-navigation` is a Blade `@component` with its `.tab-content` and panes in the default slot. It provides accessible Bootstrap tab triggers for an `items` array of `target`/`label` pairs, with a unique `id` and accessible `label`. The `segmented` variant is the shared compact account navigation in `components/_tabs.scss`; it uses a compact row on phones and two columns below 360px. Panels use the target as their ID and `aria-labelledby="{id}-{target}"`. Items may supply an explicit `id` and a `data` map when an existing tool needs stable trigger IDs or data attributes; the matching panel must reference that explicit ID. Summary shortcuts activate the matching real tab trigger so keyboard focus and lazy loading remain consistent. It encloses the menu and panes in one frame and embeds its small shared controller once, selecting the URL fragment synchronously before revealing that frame. This avoids a flash of the default tab or a Bootstrap fade while the main bundle loads. With JavaScript disabled, the server default remains visible; an interrupted response reveals that default at DOM ready. Keep the panels inside the component slot, rather than after an `@include`. The navigation automatically marks each instance with `data-tab-navigation`. The shared `components/tab-navigation.js` controller, loaded in both app and admin bundles, saves the selected panel as a URL fragment and restores it on refresh or fragment navigation. It uses `history.replaceState` to preserve query strings and existing Back-button state without adding history entries; ordinary page anchors and unrelated tab implementations keep their own behavior. Both components are demonstrated under Settings → Design System → Components.
+
+The `segmented-bar` variant is the piece-page menu and its Design System specimen. It reuses the shared segmented finish as a full-width light-grey bar with a flat white selected background, regular 400-weight labels and dark selected/muted unselected text. The container and sliding-selection `<li>` both use the standard `.border` class. One persistent white layer slides between tabs over 240ms, including width changes, and has no shadow. `components/segmented-tabs.js` follows Bootstrap selection and realigns the layer after nav/label size changes; reduced-motion preferences remove the transition. Before JavaScript initializes, the selected link supplies the same flat white fallback. Short section menus stay on one row, including small phones; keep the common component and styles rather than adding page-specific markup or overrides. Piece pages pass `syncHash => false` so their existing `#about`, `#score`, `#synthesia` and `#timeline` URLs remain owned by the legacy page/startup handlers. This flag omits the shared fragment controller/frame while retaining native Bootstrap tabs and accessible links/panels; other callers keep the existing default behavior. The previous blue underline variant/controller is retired.
 
 ## Saved payment cards and secure fields
 

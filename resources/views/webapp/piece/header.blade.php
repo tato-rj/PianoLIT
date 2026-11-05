@@ -4,21 +4,7 @@
             @include('webapp.components.piece.level')
         </a>
 
-        <div class="piece-header-row">
-            @include('webapp.components.back', ['inline' => true])
-            <h3 class="piece-header-title mb-1">{{ $piece->medium_name }}</h3>
-            <div class="piece-header-actions d-flex align-items-center">
-                @include('webapp.components.favorite', ['favoriteClasses' => 'piece-header-action', 'favoriteIconMargin' => 0])
-                <button class="btn-raw text-body piece-header-action" type="button" aria-label="Share this piece"
-                    data-bs-toggle="modal" data-bs-target="#piece-share-modal" aria-controls="piece-share-modal">
-                    @icon('share', ['mr' => 0])
-                </button>
-                <button class="btn-raw text-body piece-header-action" type="button" aria-label="More options"
-                    data-bs-toggle="offcanvas" data-bs-target="#options-panel" aria-controls="options-panel">
-                    @icon('ellipsis-vertical', ['mr' => 0])
-                </button>
-            </div>
-        </div>
+        <h3 class="piece-header-title mb-1">{{ $piece->medium_name }}</h3>
         <p class="piece-header-composer text-muted">{{ $piece->attribution }}{{ $piece->composer->name }}</p>
     </div>
 

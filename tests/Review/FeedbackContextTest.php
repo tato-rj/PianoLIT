@@ -25,9 +25,9 @@ class FeedbackContextTest extends ReviewTestCase
         return html_entity_decode($match[1], ENT_QUOTES);
     }
 
-    public function test_standard_guest_pages_share_one_launcher_and_one_modal_without_a_second_settings_entry()
+    public function test_standard_guest_pages_share_one_launcher_and_one_modal_without_a_second_account_menu_entry()
     {
-        foreach (['discover', 'explore', 'search.results', 'playlists', 'my-pieces', 'composers.index', 'settings', 'terms', 'privacy'] as $name) {
+        foreach (['discover', 'explore', 'search.results', 'playlists', 'my-pieces', 'composers.index', 'terms', 'privacy'] as $name) {
             $response = $this->get(route('webapp.'.$name))->assertOk();
             $html = $response->getContent();
             $this->assertSame(1, substr_count($html, 'data-feedback-launcher'), $name);
@@ -37,8 +37,8 @@ class FeedbackContextTest extends ReviewTestCase
             $this->assertStringNotContainsString('GIVE YOUR FEEDBACK', $html);
             $this->contextToken($response);
         }
-        $settings = $this->get(route('webapp.settings'))->assertOk();
-        $dom = new \DOMDocument; @$dom->loadHTML($settings->getContent()); $xpath = new \DOMXPath($dom);
+        $accountPage = $this->get(route('webapp.explore'))->assertOk();
+        $dom = new \DOMDocument; @$dom->loadHTML($accountPage->getContent()); $xpath = new \DOMXPath($dom);
         $this->assertSame(0, $xpath->query('//main//*[contains(@class, "list-group-item") and @data-bs-target="#feedback-modal"]')->length);
         $this->getJson(route('webapp.search.results', ['catalogue' => 1]))->assertOk()
             ->assertDontSee('data-feedback-launcher', false)->assertDontSee('id="feedback-modal"', false);
@@ -65,17 +65,17 @@ class FeedbackContextTest extends ReviewTestCase
     {
         $user = Model::withoutEvents(function () { return create(User::class, ['email' => 'elena.dare@gmail.com']); });
         $this->actingAs($user, 'web');
-        $page = $this->get(route('webapp.settings', ['email' => 'private@example.test', 'token' => 'secret', 'modal' => 'feedback-modal']))->assertOk();
+        $page = $this->get(route('webapp.explore', ['email' => 'private@example.test', 'token' => 'secret', 'modal' => 'feedback-modal']))->assertOk();
         $token = $this->contextToken($page);
         $this->withHeader('User-Agent', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Version/18.0 Mobile/15E148 Safari/604.1')
             ->postJson(route('webapp.feedback.store'), [
-                'rating' => 'not_bad', 'message' => 'Settings feedback', 'page_context' => $token, 'device_type' => 'mobile',
+                'rating' => 'not_bad', 'message' => 'Explore feedback', 'page_context' => $token, 'device_type' => 'mobile',
                 'user_id' => 999999, 'piece_id' => 999999, 'context' => ['url' => 'https://untrusted.example/secret'],
             ])->assertCreated()->assertExactJson(['saved' => true]);
         $submission = FeedbackSubmission::first();
         $this->assertSame($user->id, $submission->user_id);
-        $this->assertSame(route('webapp.settings'), $submission->context['url']);
-        $this->assertSame('webapp.settings', $submission->context['route']);
+        $this->assertSame(route('webapp.explore'), $submission->context['url']);
+        $this->assertSame('webapp.explore', $submission->context['route']);
         $this->assertNull($submission->context['piece_id']);
         $this->assertSame('mobile', $submission->context['device_type']);
         $this->assertSame('Safari', $submission->context['browser']);
@@ -85,7 +85,7 @@ class FeedbackContextTest extends ReviewTestCase
 
         $this->actingAs(create(Admin::class), 'admin');
         $this->get(route('admin.feedback.index'))->assertOk()->assertSee('Context')->assertSee('Safari')->assertSee('iOS')
-            ->assertSee(route('webapp.settings'))->assertSee('webapp.settings');
+            ->assertSee(route('webapp.explore'))->assertSee('webapp.explore');
     }
 
     public function test_piece_and_composer_context_come_from_the_route_bound_models_for_guests()
@@ -110,7 +110,7 @@ class FeedbackContextTest extends ReviewTestCase
 
     public function test_invalid_context_and_tokens_from_other_sessions_or_accounts_are_rejected()
     {
-        $page = $this->get(route('webapp.settings'))->assertOk();
+        $page = $this->get(route('webapp.explore'))->assertOk();
         $token = $this->contextToken($page);
         $this->withExceptionHandling();
         $this->postJson(route('webapp.feedback.store'), ['rating' => 'good', 'page_context' => $token.'tampered'])->assertUnprocessable();

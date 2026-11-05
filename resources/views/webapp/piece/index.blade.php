@@ -15,25 +15,6 @@ video::-webkit-media-controls-enclosure {
      visibility: visible;
 }
 
-#nav-border {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	height: 1px;
-	background-color: #343a40;
-}
-
-.nav-outline {
-	width: 100%;
-	height: 1px;
-	background-color: transparent;
-}
-
-.nav-tabs .active {
-    font-weight: bold !important;
-}
-
 </style>
 @endpush
 
@@ -50,7 +31,6 @@ video::-webkit-media-controls-enclosure {
 	</div>
 </section>
 
-@include('webapp.piece.components.panel')
 @include('webapp.piece.share')
 @if($piece->hasAudio())
 @include('webapp.piece.components.audio-band')
@@ -118,7 +98,11 @@ $('#composer-bio').clamp(4);
 // UPDATE URL WHEN A NEW TAB IS SELECTED
 var url = document.location.toString();
 if (url.match('#')) {
-  $('.nav-tabs a[href="#tab-' + url.split('#')[1] + '"]').tab('show');
+  var pieceTabHash = '#tab-' + url.split('#')[1];
+  var pieceTab = Array.from(document.querySelectorAll('#main-nav a[data-bs-toggle="tab"]')).find(function (link) {
+    return link.getAttribute('href') === pieceTabHash;
+  });
+  if (pieceTab) window.bootstrap.Tab.getOrCreateInstance(pieceTab).show();
 }
 </script>
 

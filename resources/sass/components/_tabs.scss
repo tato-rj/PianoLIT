@@ -8,7 +8,8 @@
 }
 
 // Shared alternative to bordered tabs for a small set of account sections.
-.tab-navigation--segmented {
+.tab-navigation--segmented,
+.tab-navigation--segmented-bar {
     display: flex;
     width: fit-content;
     max-width: 100%;
@@ -51,5 +52,54 @@
 
     @media (max-width: 359px) {
         .nav-item { flex-basis: calc(50% - 0.25rem); }
+    }
+}
+
+// Full-width, regular-text version for short section menus.
+.tab-navigation--segmented-bar {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    flex-wrap: nowrap;
+    padding: 3px;
+    gap: 0;
+    border: 0;
+
+    .nav-item {
+        position: relative;
+        z-index: 1;
+        flex: 1 0 auto;
+    }
+
+    .nav-link {
+        padding-inline: 0.25rem;
+        border-radius: calc(var(--radius-button) - 3px);
+        font-size: var(--font-size-base);
+        font-weight: 400;
+
+        &,
+        &.active { box-shadow: none; }
+    }
+
+    .tab-navigation__selection {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+        visibility: hidden;
+        border-radius: calc(var(--radius-button) - 3px);
+        background: var(--color-surface);
+        box-shadow: none;
+        pointer-events: none;
+        transition: transform 240ms ease, width 240ms ease;
+    }
+
+    &[data-sliding-tabs-ready] {
+        .nav-link.active { background: transparent; }
+        .tab-navigation__selection { visibility: visible; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .tab-navigation__selection { transition: none; }
     }
 }

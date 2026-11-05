@@ -22,7 +22,6 @@
 @endforeach
 </section>
 
-@include('webapp.piece.components.panel')
 @endsection
 
 @push('scripts')

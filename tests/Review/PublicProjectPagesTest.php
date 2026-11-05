@@ -195,11 +195,19 @@ class PublicProjectPagesTest extends ReviewTestCase
                 $this->assertSame(0, $xpath->query('//*[@data-account-page]//*[@id="public-hub-menu"]')->length);
                 $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu" and @data-account-reveal]')->length);
                 $this->assertSame(1, $xpath->query('//script[contains(@src,"js/components/account-reveal.js")]')->length);
-                $this->assertSame(1, $xpath->query('//header//ul/li[last()]/button[@data-bs-toggle="offcanvas" and @data-bs-target="#public-hub-menu" and @aria-controls="public-hub-menu"]')->length);
+                $buttonScope = $prefix === 'my.' ? '//*[@id="menu-account"]' : '//header//ul/li[last()]';
+                $this->assertSame($prefix === 'my.' ? 0 : 1, $xpath->query('//header//button[@data-account-navigation-toggle]')->length);
+                $this->assertSame(1, $xpath->query($buttonScope.'/button[@data-bs-toggle="offcanvas" and @data-bs-target="#public-hub-menu" and @aria-controls="public-hub-menu"]')->length);
+                if ($prefix === 'my.') {
+                    $this->assertSame(1, $xpath->query($buttonScope.'//button[@aria-label="Log in"]//*[contains(@class,"icon-log-in")]')->length);
+                    $this->assertSame(1, $xpath->query($buttonScope.'//small[normalize-space(.)="Log in"]')->length);
+                    $this->assertSame(0, $xpath->query('//*[@id="menu-settings"]')->length);
+                }
                 $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//a[normalize-space(.)="Sign in" and @href="'.$origin.'/login"]')->length);
                 $this->assertSame(1, $xpath->query('//div[@id="public-hub-menu" and contains(@class, "offcanvas-end") and @tabindex="-1" and @aria-labelledby="public-hub-menu-title"]')->length);
                 $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//button[@aria-label="Close account menu"]')->length);
-                $this->assertSame(1, $xpath->query('//header//button[@data-account-navigation-toggle]//*[contains(@class,"account-circle__close")]')->length);
+                $this->assertSame($prefix === 'my.' ? 1 : 0, $xpath->query('//template[@data-account-stationary-close]/button[@id="webapp-account-close" and @data-bs-dismiss="offcanvas" and @data-bs-target="#public-hub-menu" and contains(@class,"account-circle--close") and contains(@class,"rounded-circle") and contains(@class,"shadow")]')->length);
+                $this->assertSame(1, $xpath->query($buttonScope.'/button[@data-account-navigation-toggle]//*[contains(@class,"account-circle__close")]')->length);
                 $this->assertSame(8, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a')->length);
                 $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a[@href="'.$destinations['Web app'].'" and not(@target) and not(@rel)]')->length);
                 foreach ($destinations as $label => $destination) {
@@ -227,13 +235,20 @@ class PublicProjectPagesTest extends ReviewTestCase
             $xpath = $this->xpath($response->getContent());
             $this->assertSame(0, $xpath->query('//header//a[@href="'.$origin.'/login"]')->length);
             $this->assertSame(in_array($prefix, ['', 'learn.', 'blog.'], true) ? 1 : 0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
-            $this->assertSame(1, $xpath->query('//header//button[@id="navbarDropdown" and @data-bs-toggle="offcanvas" and contains(@class, "account-circle")]')->length);
-            $this->assertSame('H', trim($xpath->query('//header//button//span[contains(@class, "account-circle__initial")]')->item(0)->textContent));
+            $buttonScope = $prefix === 'my.' ? '//*[@id="menu-account"]' : '//header';
+            $this->assertSame($prefix === 'my.' ? 0 : 1, $xpath->query('//header//button[@data-account-navigation-toggle]')->length);
+            $this->assertSame(1, $xpath->query($buttonScope.'//button[@id="navbarDropdown" and @data-bs-toggle="offcanvas" and contains(@class, "account-circle")]')->length);
+            if ($prefix === 'my.') {
+                $this->assertSame('Header <Example>', trim($xpath->query($buttonScope.'//small')->item(0)->textContent));
+                $this->assertSame(0, $xpath->query($buttonScope.'//button[contains(concat(" ", normalize-space(@class), " "), " shadow ")]')->length);
+            }
+            $this->assertSame('H', trim($xpath->query($buttonScope.'//button//span[contains(@class, "account-circle__initial")]')->item(0)->textContent));
             $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//a[@href="http://localhost/profile"]')->length);
             $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//form[@action="'.$origin.'/logout" and @method="POST"]//input[@name="_token"]')->length);
             $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//form[@action="'.$origin.'/logout"]//button[@type="submit" and normalize-space(.)="Log out"]')->length);
-            $this->assertSame(1, $xpath->query('//header//button[@data-bs-target="#public-hub-menu"]')->length);
+            $this->assertSame(1, $xpath->query($buttonScope.'//button[@data-bs-target="#public-hub-menu"]')->length);
             $this->assertSame(1, $xpath->query('//div[@id="public-hub-menu"]')->length);
+            $this->assertSame($prefix === 'my.' ? 1 : 0, $xpath->query('//template[@data-account-stationary-close]/button[@aria-label="Close account menu"]')->length);
             $this->assertSame(1, $xpath->query('//script[contains(@src,"js/components/account-menu.js")]')->length);
             $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//div[contains(@class,"offcanvas-body")]//form')->length);
             $this->assertSame(8, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a/*[contains(@class,"hub-menu__arrow")]')->length);

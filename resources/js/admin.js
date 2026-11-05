@@ -30,6 +30,7 @@ require('./components/admin-daily-activity-chart');
 require('./components/checkbox-menu');
 require('./components/admin-back-to-top');
 require('./components/tab-navigation')(window);
+require('./components/segmented-tabs')(window);
 const { BottomSheetDrag } = require('./controls/bottom-sheet-drag');
 document.querySelectorAll('[data-sheet-draggable]').forEach(panel => new BottomSheetDrag(panel, () => window.bootstrap.Offcanvas.getOrCreateInstance(panel).hide()));
 const { FontSelect } = require('./controls/font-select');

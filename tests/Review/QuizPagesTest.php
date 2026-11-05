@@ -102,7 +102,10 @@ class QuizPagesTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//div[@id="quiz-content" and @hidden]'));
         $this->assertCount(1, $xpath->query('//button[@data-quiz-start and @aria-describedby="quiz-start-description"]'));
         $this->assertCount(1, $xpath->query('//section[@data-quiz-results and @hidden]'));
-        $this->assertCount(1, $xpath->query('//div[@id="quiz-result-modal" and @data-quiz-modal and @aria-labelledby="quiz-result-modal-title"]//section[@data-quiz-results]'));
+        $this->assertCount(1, $xpath->query('//div[@id="quiz-result-modal" and @data-quiz-modal and @aria-labelledby="quiz-dialog-title"]//section[@data-quiz-results]'));
+        $this->assertCount(2, $xpath->query('//div[@data-quiz-modal]//section[@data-quiz-question]'));
+        $this->assertCount(2, $xpath->query('//div[@data-quiz-modal]//*[@data-quiz-progress-step]'));
+        $this->assertCount(1, $xpath->query('//div[@data-quiz-modal]//button[@data-quiz-back and @disabled]'));
         $this->assertCount(1, $xpath->query('//div[@data-quiz-reveal and @aria-hidden="true" and @hidden]'));
         $this->assertCount(1, $xpath->query('//div[@id="quiz-result-modal"]//button[@data-bs-dismiss="modal" and @aria-label="Close"]'));
         $this->assertCount(1, $xpath->query('//button[@data-quiz-show-result and @hidden]'));

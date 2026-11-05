@@ -47,9 +47,13 @@
                 </a>
             @endif
             @if($shortcuts['membership'])
+                @if($shortcuts['membershipUrl'])
                 <a class="account-menu__link" href="{{ $shortcuts['membershipUrl'] }}" @if($currentAccountItem === 'membership') aria-current="page" @endif>
                     @icon('credit-card', ['mr' => 0])<span>My membership</span>
                 </a>
+                @else
+                <div class="account-menu__link">@icon('check', ['mr' => 0])<span>You have full access</span></div>
+                @endif
             @endif
             @if($shortcuts['downloads'])
                 <a class="account-menu__link" href="{{ $preview ? '#ds-components' : route('users.purchases') }}" @if($currentAccountItem === 'downloads') aria-current="page" @endif>
@@ -83,5 +87,10 @@
     </div>
 </div>
 @unless($preview)
+    @if($webappNavigation ?? false)
+        <template data-account-stationary-close>
+            @include('components.account.account-circle', ['closeControl' => true, 'menuId' => 'webapp-account-close'])
+        </template>
+    @endif
     @include('components.account.scripts')
 @endunless

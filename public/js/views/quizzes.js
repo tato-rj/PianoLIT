@@ -4,9 +4,10 @@
     if (!root) return;
 
     const questions = Array.from(root.querySelectorAll('[data-quiz-question]'));
-    const introduction = root.querySelector('[data-quiz-introduction]');
     const content = root.querySelector('[data-quiz-content]');
     const start = root.querySelector('[data-quiz-start]');
+    const startLabel = root.querySelector('[data-quiz-start-label]');
+    const back = root.querySelector('[data-quiz-back]');
     const next = root.querySelector('[data-quiz-next]');
     const results = root.querySelector('[data-quiz-results]');
     const feedback = root.querySelector('[data-quiz-feedback]');
@@ -14,6 +15,7 @@
     const actions = root.querySelector('[data-quiz-result-actions]');
     const retry = root.querySelector('[data-quiz-retry]');
     const progress = root.querySelector('[role="progressbar"]');
+    const progressSteps = Array.from(root.querySelectorAll('[data-quiz-progress-step]'));
     const progressLabel = root.querySelector('[data-quiz-progress-label]');
     const streakLabel = root.querySelector('[data-quiz-streak]');
     const modal = root.querySelector('[data-quiz-modal]');
@@ -32,7 +34,7 @@
     let autoRevealTimer = null;
     let revealTimer = null;
     let finishRevealWait = null;
-    let afterClose = null;
+    let resultRequested = false;
 
     function reducedMotion() { return (motion && motion.matches) || document.hidden; }
 
@@ -43,9 +45,8 @@
         return choice;
     }
 
-    function focus(element, scroll) {
+    function focus(element) {
         element.focus({preventScroll: true});
-        if (scroll) element.scrollIntoView({behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start'});
     }
 
     function animate(element, frames, options, cleanup) {
@@ -94,21 +95,37 @@
     function updateProgress() {
         const completed = answers.filter(function (answer) { return answer !== null; }).length;
         progress.setAttribute('aria-valuenow', String(completed));
-        progress.querySelector('.progress-bar').style.width = (questions.length ? completed / questions.length * 100 : 0) + '%';
+        progressSteps.forEach(function (step, index) {
+            step.classList.toggle('is-complete', answers[index] !== null);
+            step.classList.toggle('is-current', index === currentQuestion && !content.hidden);
+        });
         progressLabel.textContent = completed + ' / ' + questions.length;
         streakLabel.hidden = streak < 2;
         streakLabel.textContent = '🔥 ' + streak + ' in a row';
     }
 
     function showQuestion(index) {
+        cancelScheduledReveal();
         currentQuestion = index;
         stopAudio();
+        pauseGif();
         clearEffects();
+        content.hidden = false;
+        results.hidden = true;
+        modal.dataset.quizStage = 'questions';
+        startLabel.textContent = 'Resume quiz';
         questions.forEach(function (question, i) { question.hidden = i !== index; });
-        next.hidden = true;
+        back.disabled = index === 0;
+        next.disabled = answers[index] === null;
+        next.hidden = index === questions.length - 1 && answers[index] !== null;
+        showResult.hidden = !resultRequested || index !== questions.length - 1;
+        updateProgress();
+        modal.scrollTop = 0;
         const question = questions[index];
         animate(question, [{opacity: 0, transform: 'translateY(14px)'}, {opacity: 1, transform: 'translateY(0)'}], {duration: 260, easing: 'ease-out'});
         focus(question.querySelector('h2'));
+        dialog.handleUpdate();
+        scheduleResult();
     }
 
     function cancelScheduledReveal() {
@@ -118,7 +135,7 @@
 
     function scheduleResult() {
         cancelScheduledReveal();
-        if (document.hidden || pending || !results.hidden || answers.includes(null) || !answers.length) return;
+        if (document.hidden || !modal.classList.contains('show') || pending || resultRequested || currentQuestion !== questions.length - 1 || answers.includes(null) || !answers.length) return;
         const currentAttempt = attempt;
         autoRevealTimer = window.setTimeout(function () {
             autoRevealTimer = null;
@@ -144,10 +161,17 @@
         });
     }
 
-    function closeFor(action) {
-        if (!modal.classList.contains('show')) { action(); return; }
-        afterClose = action;
-        dialog.hide();
+    function showResults() {
+        stopAudio();
+        clearEffects();
+        content.hidden = true;
+        results.hidden = false;
+        modal.dataset.quizStage = 'results';
+        startLabel.textContent = 'View result';
+        updateProgress();
+        modal.scrollTop = 0;
+        if (modal.classList.contains('show')) focus(results);
+        dialog.handleUpdate();
     }
 
     function prepareGif() {
@@ -229,10 +253,11 @@
     async function loadResult(suspense) {
         if (pending || !answers.length || answers.includes(null)) return;
         pending = true;
+        resultRequested = true;
         const currentAttempt = attempt;
         next.hidden = true;
         cancelScheduledReveal();
-        results.hidden = false;
+        showResults();
         results.setAttribute('aria-busy', 'true');
         actions.hidden = true;
         retry.hidden = true;
@@ -240,8 +265,6 @@
         status.textContent = 'Cue the drumroll…';
         reveal.hidden = false;
         feedback.innerHTML = '';
-        showResult.hidden = false;
-        dialog.show();
         try {
             const responses = await Promise.all([
                 window.axios.get(root.dataset.url, {params: {answers: answers.slice()}, timeout: 15000}),
@@ -258,6 +281,7 @@
             prepareGif();
             prepareShare();
             if (modal.classList.contains('show')) {
+                focus(results);
                 animate(feedback, [{opacity: 0, transform: 'scale(.9) translateY(18px)'}, {opacity: 1, transform: 'scale(1.025)'}, {opacity: 1, transform: 'scale(1)'}], {duration: 650, easing: 'ease-out'});
                 burst(results, true, results.dataset.quizTier !== 'oops');
                 animateComparison();
@@ -279,16 +303,16 @@
     }
 
     if (start) start.addEventListener('click', function () {
-        introduction.hidden = true;
-        content.hidden = false;
-        if (questions.length) showQuestion(0);
+        if (!questions.length) return;
+        if (content.hidden && results.hidden) showQuestion(0);
+        dialog.show();
     });
 
     questions.forEach(function (question, index) {
         const buttons = Array.from(question.querySelectorAll('[data-quiz-answer]'));
         buttons.forEach(function (button) {
             button.addEventListener('click', function (event) {
-                if (answers[index] !== null || button.disabled || question.hidden) return;
+                if (answers[index] !== null || button.disabled || question.hidden || content.hidden || !modal.classList.contains('show')) return;
                 answers[index] = Number(button.dataset.quizAnswer);
                 stopAudio();
                 const correct = buttons.find(function (answer) { return answer.hasAttribute('correct'); });
@@ -328,6 +352,7 @@
                     scheduleResult();
                 } else {
                     next.hidden = false;
+                    next.disabled = false;
                     // Pointer answers stay in place. Keyboard activation can continue on Next without scrolling.
                     if (event.detail === 0) next.focus({preventScroll: true});
                 }
@@ -339,68 +364,64 @@
         if (answers[currentQuestion] === null || next.hidden) return;
         if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
     });
+    back.addEventListener('click', function () {
+        if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+    });
     retry.addEventListener('click', function () { loadResult(false); });
-    showResult.addEventListener('click', function () { dialog.show(); });
+    showResult.addEventListener('click', showResults);
     modal.addEventListener('shown.bs.modal', function () {
-        // Bootstrap ignores hide() during its opening transition; finish a quick replay/review click afterward.
-        if (afterClose) dialog.hide();
+        if (!content.hidden) {
+            focus(questions[currentQuestion].querySelector('h2'));
+            scheduleResult();
+        } else focus(results);
     });
     modal.addEventListener('hide.bs.modal', function () {
+        cancelScheduledReveal();
         cancelRevealPause();
         clearEffects();
         pauseGif();
+        stopAudio();
     });
     modal.addEventListener('hidden.bs.modal', function () {
-        if (afterClose) {
-            const action = afterClose;
-            afterClose = null;
-            action();
-        } else if (!showResult.hidden) showResult.focus({preventScroll: true});
+        if (start) focus(start);
     });
     root.querySelector('[data-quiz-review]').addEventListener('click', function () {
-        closeFor(function () {
-            stopAudio();
-            pauseGif();
-            clearEffects();
-            questions.forEach(function (question) { question.hidden = false; });
-            if (questions.length) focus(questions[0].querySelector('h2'), true);
-        });
+        if (questions.length) showQuestion(0);
     });
     root.querySelector('[data-quiz-reset]').addEventListener('click', function () {
-        closeFor(function () {
-            attempt += 1;
-            cancelScheduledReveal();
-            cancelRevealPause();
-            pending = false;
-            streak = 0;
-            answers = questions.map(function () { return null; });
-            pauseGif();
-            pauseGif = function () {};
-            clearEffects();
-            questions.forEach(function (question) {
-                delete question.dataset.quizOutcome;
-                const reaction = question.querySelector('[data-quiz-question-feedback]');
-                reaction.textContent = '';
-                reaction.removeAttribute('aria-label');
-                question.querySelectorAll('[data-quiz-answer]').forEach(function (button) {
-                    button.disabled = false;
-                    button.setAttribute('aria-pressed', 'false');
-                    button.classList.remove('is-correct', 'is-incorrect');
-                    button.querySelector('[data-quiz-answer-outcome]').hidden = true;
-                });
+        attempt += 1;
+        cancelScheduledReveal();
+        cancelRevealPause();
+        pending = false;
+        resultRequested = false;
+        streak = 0;
+        answers = questions.map(function () { return null; });
+        pauseGif();
+        pauseGif = function () {};
+        clearEffects();
+        questions.forEach(function (question) {
+            delete question.dataset.quizOutcome;
+            const reaction = question.querySelector('[data-quiz-question-feedback]');
+            reaction.textContent = '';
+            reaction.removeAttribute('aria-label');
+            question.querySelectorAll('[data-quiz-answer]').forEach(function (button) {
+                button.disabled = false;
+                button.setAttribute('aria-pressed', 'false');
+                button.classList.remove('is-correct', 'is-incorrect');
+                button.querySelector('[data-quiz-answer-outcome]').hidden = true;
             });
-            results.hidden = true;
-            reveal.hidden = true;
-            showResult.hidden = true;
-            results.setAttribute('aria-busy', 'false');
-            delete results.dataset.quizTier;
-            feedback.innerHTML = '';
-            status.textContent = '';
-            actions.hidden = true;
-            retry.hidden = true;
-            updateProgress();
-            if (questions.length) showQuestion(0);
         });
+        results.hidden = true;
+        reveal.hidden = true;
+        showResult.hidden = true;
+        results.setAttribute('aria-busy', 'false');
+        delete results.dataset.quizTier;
+        feedback.innerHTML = '';
+        status.textContent = '';
+        actions.hidden = true;
+        retry.hidden = true;
+        updateProgress();
+        if (questions.length) showQuestion(0);
     });
     function suspend() { clearEffects(); pauseGif(); stopAudio(); }
     if (motion && motion.addEventListener) motion.addEventListener('change', function () { if (motion.matches) { suspend(); cancelRevealPause(); } });

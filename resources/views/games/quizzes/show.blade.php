@@ -44,7 +44,7 @@
                     <div class="quiz-start-moments d-flex justify-content-center align-items-center gap-3 mb-4" aria-hidden="true"><span>🧠</span><span>🔥</span><span>🎉</span></div>
                     <h2 class="h3 mb-3" id="quiz-start-title">Test your knowledge</h2>
                     <p class="mb-4" id="quiz-start-description">Answer each question, then see your score.</p>
-                    <button class="btn btn-primary" type="button" id="start-quiz" data-quiz-start aria-describedby="quiz-start-description">@icon('play')Start quiz</button>
+                    <button class="btn btn-primary" type="button" id="start-quiz" data-quiz-start aria-describedby="quiz-start-description" aria-haspopup="dialog" aria-controls="quiz-result-modal">@icon('play')<span data-quiz-start-label>Start quiz</span></button>
                     @if($quiz->results_count > 2)<p class="small text-muted mt-4 mb-0">Average: <strong>{{ $quiz->average_score }} / {{ count($quiz->questions) }}</strong> · {{ number_format($quiz->results_count) }} plays</p>@endif
                     <noscript><p class="small text-muted mt-3 mb-0">Enable JavaScript to answer this quiz.</p></noscript>
                 @else
@@ -53,20 +53,29 @@
                 @endif
             </section>
 
-            <div id="quiz-content" hidden data-quiz-content>
-                <div class="mb-4" data-quiz-progress>
-                    <div class="d-flex justify-content-between gap-3 small mb-2"><span>Your progress <strong class="quiz-streak ml-2" data-quiz-streak hidden></strong></span><span data-quiz-progress-label>0 / {{ count($quiz->questions) }}</span></div>
-                    <div class="progress quiz-progress" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="{{ count($quiz->questions) }}" aria-valuenow="0"><div class="progress-bar" style="width: 0%"></div></div>
+            @component('components.dialogs.modal', ['id' => 'quiz-result-modal', 'titleId' => 'quiz-dialog-title', 'centered' => true, 'data' => ['quiz-modal' => ''], 'options' => ['size' => 'lg', 'header' => ['raw' => true], 'body' => ['padding' => 0]]])
+            @slot('header')
+                <span id="quiz-dialog-title" class="visually-hidden">{{ rtrim($quiz->title, '. ') }}</span>
+                <div class="quiz-progress" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="{{ count($quiz->questions) }}" aria-valuenow="0">
+                    @foreach($quiz->questions as $question)
+                        <span class="quiz-progress-step" data-quiz-progress-step aria-hidden="true"></span>
+                    @endforeach
                 </div>
-                @include('games.quizzes.questions')
-                <div class="quiz-next d-flex justify-content-end mb-4">
-                    <button type="button" class="btn btn-primary" data-quiz-next hidden>Next →</button>
-                    <button type="button" class="btn btn-secondary" data-quiz-show-result hidden>View result</button>
-                </div>
-            </div>
-            @component('components.dialogs.modal', ['id' => 'quiz-result-modal', 'header' => 'Your result', 'centered' => true, 'data' => ['quiz-modal' => ''], 'options' => ['size' => 'lg', 'body' => ['padding' => 0]]])
+            @endslot
             @slot('body')
-                <section class="quiz-results rounded-sm p-4" data-quiz-results hidden tabindex="-1" aria-label="Quiz result" aria-busy="false">
+                <div id="quiz-content" hidden data-quiz-content>
+                    <div class="d-flex justify-content-between align-items-center gap-3 small text-muted mb-4">
+                        <span>Your progress <span data-quiz-progress-label>0 / {{ count($quiz->questions) }}</span></span>
+                        <strong class="quiz-streak" data-quiz-streak hidden></strong>
+                    </div>
+                    @include('games.quizzes.questions')
+                    <div class="quiz-next d-flex justify-content-end gap-2 mt-auto pt-3">
+                        <button type="button" class="btn btn-secondary" data-quiz-back disabled>Back</button>
+                        <button type="button" class="btn btn-primary" data-quiz-next disabled>Next @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>
+                        <button type="button" class="btn btn-primary" data-quiz-show-result hidden>View result</button>
+                    </div>
+                </div>
+                <section class="quiz-results" data-quiz-results hidden tabindex="-1" aria-label="Quiz result" aria-busy="false">
                     <div class="quiz-reveal mx-auto mb-4" data-quiz-reveal hidden aria-hidden="true">
                         <div class="quiz-reveal-orbit"><span>♪</span><span>✦</span><span>♫</span></div>
                         <span class="quiz-reveal-mystery">?</span>

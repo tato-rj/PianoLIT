@@ -9,7 +9,6 @@
 
 @include('webapp.piece.components.timeline')
 
-@include('webapp.piece.components.panel')
 @endsection
 
 @push('scripts')
