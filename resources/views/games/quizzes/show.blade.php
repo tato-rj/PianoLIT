@@ -40,7 +40,7 @@
                 @if(count($quiz->questions))
                     <span class="visually-hidden" id="quiz-start-description">Answer each question, then see your score.</span>
                     @include('components.media.play-button', [
-                        'id' => 'start-quiz', 'label' => 'Start quiz', 'caption' => true, 'modalId' => 'quiz-result-modal',
+                        'id' => 'start-quiz', 'label' => 'Start quiz', 'caption' => true, 'stretched' => true, 'modalId' => 'quiz-result-modal',
                         'descriptionId' => 'quiz-start-description', 'data' => ['quiz-start' => ''], 'labelData' => ['quiz-start-label' => ''],
                     ])
                 @else

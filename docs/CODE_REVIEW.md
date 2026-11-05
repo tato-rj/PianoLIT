@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-04 — Make the quiz cover clickable and soften question typography (P3, complete locally)
+
+- **Change:** The quiz opts into `media/play-button`’s new `stretched` option, using Bootstrap’s existing stretched-link hit area across the positioned cover. The circle and caption retain their placement; the whole cover launches/resumes through the same native button and existing listener, with one keyboard focus target. The shared Design System specimen demonstrates the same behavior. Question headings now use `h4 fw-semibold` (24px / 600) while retaining their semantic h2, IDs and focus behavior.
+- **Verification / compatibility:** The isolated quiz suite passes **10 tests / 250 assertions**, and focused quiz JavaScript/whitespace checks pass. Browser checks confirm clicking the cover away from the play button opens the existing dialog and the heading computes to the shared 1.5rem h4 token and weight 600. Changes use existing Bootstrap utilities, so no CSS/JavaScript build is required. Scoring, media, routes, shared serialization and mobile/API contracts are unchanged; no production deployment.
+
 ### 2026-11-04 — Label the quiz play button and illustrate its stats (P3, complete locally)
 
 - **Change:** The shared `media/play-button` now supports an optional visible caption using existing Bootstrap utilities. The quiz opts in to bold white uppercase START QUIZ directly below the centered circle; its existing controller updates the same accessible/clickable label to RESUME QUIZ or VIEW RESULT. The Design System previews the caption on a dark surface. Calendar, list, clock, people, trophy and difficulty icons now accompany the six statistics through the shared icon renderer.

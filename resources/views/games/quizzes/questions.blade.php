@@ -1,7 +1,7 @@
 @foreach($quiz->questions() as $question)
 <section class="quiz-item" data-quiz-question aria-labelledby="quiz-question-{{ $loop->iteration }}" {{ $loop->first ? '' : 'hidden' }}>
     <p class="quiz-question-number small text-muted mb-3">Question {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }} <span class="visually-hidden">of {{ $loop->count }}</span></p>
-    <h2 class="h3 mb-4" id="quiz-question-{{ $loop->iteration }}" tabindex="-1">{{ rtrim($question['Q'], '. ') }}</h2>
+    <h2 class="h4 fw-semibold mb-4" id="quiz-question-{{ $loop->iteration }}" tabindex="-1">{{ rtrim($question['Q'], '. ') }}</h2>
     @if($question['audio'])
         <audio controls preload="none" class="w-100 d-block mb-4" aria-label="Audio for question {{ $loop->iteration }}"><source src="{{ asset($question['audio']) }}" type="audio/mp3"></audio>
     @endif

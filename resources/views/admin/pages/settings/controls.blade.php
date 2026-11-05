@@ -27,8 +27,8 @@
       <button type="button" class="btn btn-secondary" data-ds-preview>@icon('plus')Add piece</button>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Circular play button', 'usage' => 'components.media.play-button · shared primary finish', 'properties' => 'width,height,color,background-color,border-radius'])
-      <div class="bg-dark rounded text-center p-5">
-        @include('components.media.play-button', ['label' => 'Start quiz', 'caption' => true, 'designSystemPreview' => true])
+      <div class="bg-dark rounded text-center p-5 position-relative">
+        @include('components.media.play-button', ['label' => 'Start quiz', 'caption' => true, 'stretched' => true, 'designSystemPreview' => true])
       </div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Guest account', 'usage' => 'components.account.account-circle · .btn-raw + user-round', 'properties' => 'width,height,font-size,color,background-color,border'])
