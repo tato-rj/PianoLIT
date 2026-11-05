@@ -81,7 +81,14 @@ class ShopCloseupsTest extends ReviewTestCase
         $this->assertSame(1, (int) $first->revision);
         $this->assertSame(256, (int) $first->width);
         Storage::disk('public')->assertExists($first->path);
-        $adminPage = $this->get($editor)->assertOk()->assertSee('Replace close-up')->assertSee('Current hover close-up')->assertSee('Remove close-up');
+        $adminPage = $this->get($editor)->assertOk()->assertSee('Current hover close-up')->assertSee('Remove close-up')
+            ->assertDontSee('Replace close-up')->assertDontSee('name="closeup_image"', false)->assertDontSee('Save close-up');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($adminPage->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@id="hover-closeup"]//img'));
+        $this->assertCount(1, $xpath->query('//*[@id="hover-closeup"]//form'));
+        $this->assertCount(1, $xpath->query('//*[@id="hover-closeup"]//input[@name="_method" and @value="DELETE"]'));
         if ($kind === 'merchandise' && getenv('PIANOLIT_SHOP_CLOSEUP_FIXTURES')) {
             $this->product('merchandise', ['name' => 'Piano T-shirt without close-up']);
             $this->browserFixture('admin-closeup', $adminPage->getContent(), $first);
@@ -103,6 +110,8 @@ class ShopCloseupsTest extends ReviewTestCase
         $removed = app(Closeups::class)->for($product);
         $this->assertNull($removed->path);
         $this->assertSame(3, (int) $removed->revision);
+        $this->get($editor)->assertOk()->assertSee('No close-up uploaded')->assertSee('name="closeup_image"', false)
+            ->assertSee('Save close-up')->assertDontSee('Current hover close-up')->assertDontSee('Remove close-up');
         $this->assertNull(app(Storefront::class)->cards(collect([$product]))[0]['closeupUrl']);
         $html = view('shop.storefront.components.card', ['product' => app(Storefront::class)->cards(collect([$product]))[0]])->render();
         $this->assertStringNotContainsString('data-card-closeup', $html);
@@ -127,6 +136,8 @@ class ShopCloseupsTest extends ReviewTestCase
         $record = app(Closeups::class)->for($shirt);
         Storage::disk('public')->delete($record->path);
         $this->assertNull(app(Storefront::class)->cards(collect([$shirt]))[0]['closeupUrl']);
+        $this->get(route('admin.merchandise.edit', $shirt))->assertOk()->assertSee('Remove it to upload another image.')
+            ->assertSee('Remove close-up')->assertDontSee('name="closeup_image"', false);
         DB::table('shop_product_closeups')->where('product_type', eBook::class)->update(['path' => 'https://example.test/forged.png']);
         $this->assertNull(app(Storefront::class)->cards(collect([$book]))[0]['closeupUrl']);
     }

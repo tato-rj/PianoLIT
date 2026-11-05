@@ -68,7 +68,7 @@
         display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
     }
     // .shop-card__price { font-weight: 600; }
-    .shop-card .shop-card__price { margin-top: auto; background: var(--color-yellow); border: 1px solid; padding: 1px 3px; }
+    .shop-card .shop-card__price, .shop-price-tag { margin-top: auto; background: var(--color-yellow); border: 1px solid; padding: 1px 3px; }
     .shop-card__action { margin: 2px 0 0; }
     .shop-image-placeholder { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; }
     .shop-image-placeholder > svg { width: 40px; height: 40px; }

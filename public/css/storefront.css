@@ -152,7 +152,7 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
-.shop-storefront .shop-card .shop-card__price {
+.shop-storefront .shop-card .shop-card__price, .shop-storefront .shop-price-tag {
   margin-top: auto;
   background: var(--color-yellow);
   border: 1px solid;
