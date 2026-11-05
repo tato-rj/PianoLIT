@@ -5,7 +5,8 @@ Route::prefix('merchandise')->name('merchandise.')->group(function () {
     Route::get('import', 'Admin\MerchandiseController@discover')->name('discover');
     Route::post('import', 'Admin\MerchandiseController@import')->name('import');
     Route::get('{merchandise}/edit', 'Admin\MerchandiseController@edit')->name('edit');
-    Route::post('{merchandise}/display-mockup', 'Admin\ShopMockupsController@merchandise')->name('display-mockup');
+    Route::post('{merchandise}/closeup', 'Admin\ShopCloseupsController@store')->whereNumber('merchandise')->defaults('closeupKind', 'merchandise')->name('closeup.store');
+    Route::delete('{merchandise}/closeup', 'Admin\ShopCloseupsController@destroy')->whereNumber('merchandise')->defaults('closeupKind', 'merchandise')->name('closeup.destroy');
     Route::post('{merchandise}/refresh', 'Admin\MerchandiseController@refresh')->name('refresh');
     Route::post('{merchandise}/images', 'Admin\MerchandiseController@upload')->name('images.upload');
     Route::patch('{merchandise}/images/{image}', 'Admin\MerchandiseController@updateImage')->whereNumber('image')->name('images.update');

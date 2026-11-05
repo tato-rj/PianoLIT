@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-body">
                 <span class="membership-confirmation-icon" aria-hidden="true">@icon('circle-check', ['mr' => 0])</span>
-                <h2 id="membership-confirmation-title">You’re all set!</h2>
+                <h2 id="membership-confirmation-title">Membership confirmed</h2>
                 <p class="membership-confirmation-intro" id="membership-confirmation-description">{{ $membershipConfirmation['trial'] ? 'Your PianoLIT Premium free trial has started.' : 'Your PianoLIT Premium membership is active.' }}<br>Enjoy full access to scores, videos, and recordings.</p>
 
                 <dl class="membership-confirmation-details">

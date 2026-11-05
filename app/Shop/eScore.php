@@ -10,7 +10,7 @@ use Illuminate\Http\UploadedFile;
 
 class eScore extends Product implements Merchandise
 {
-	use FindBySlug, \App\Traits\HasDisplayMockup;
+	use FindBySlug;
 
     protected $withCount = ['purchases'];
     protected $successRoute = 'escores.success';

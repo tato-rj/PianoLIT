@@ -1,9 +1,9 @@
 @if(($variant ?? null) === 'cards')
     @php
         $promotions = [
-            'crashcourse' => ['category' => 'Crash courses', 'color' => 'mint', 'action' => 'Start learning', 'description' => 'A fresh perspective, one lesson at a time. Delivered to your inbox.'],
-            'ebook' => ['category' => 'eBooks', 'color' => 'cream', 'action' => 'Explore eBook', 'description' => 'A little reading to take your piano journey further.'],
-            'escore' => ['category' => 'eScores', 'color' => 'lavender', 'action' => 'Discover eScore', 'description' => 'Find your next piece to bring to the piano.'],
+            'crashcourse' => ['category' => 'Crash courses', 'color' => 'mint', 'action' => 'Start learning', 'description' => 'Short music lessons delivered by email.'],
+            'ebook' => ['category' => 'eBooks', 'color' => 'cream', 'action' => 'Explore eBook', 'description' => 'Read about piano music, theory, and practice.'],
+            'escore' => ['category' => 'eScores', 'color' => 'lavender', 'action' => 'Discover eScore', 'description' => 'Browse piano sheet music in digital editions.'],
         ];
     @endphp
     @foreach($ads as $type)

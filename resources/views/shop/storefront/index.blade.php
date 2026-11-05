@@ -22,35 +22,16 @@
         @if($search || $topics)<a class="d-inline-block mt-4" href="{{ $catalogUrl }}">Clear filters @icon('x')</a>@endif
     </div>
 </form>
-@if($bestDeals->isNotEmpty())
-    @include('shop.storefront.components.best-deals')
-@endif
 @if($hasProducts)
-    @if($category)
-        <div class="row g-3 g-md-4 mt-2" aria-label="Products">
-            @foreach($products as $product)
-                <div class="col-6 col-lg-3">@include('shop.storefront.components.card')</div>
-            @endforeach
-        </div>
-    @else
-        <div class="row g-3 g-md-4 mt-2" aria-label="Products">
-            @foreach($productGroups as $key => $group)
-                @if($group->count())
-                    @include('shop.storefront.components.category-row', [
-                        'categoryKey' => $key, 'categoryLabel' => $sectionLabels[$key], 'categoryProducts' => $group,
-                        'categoryUrl' => ($categoryUrls[$key] ?? app(\App\Services\Shop\Storefront::class)->categoryUrl($key)).($search ? '?'.http_build_query(['q' => $search]) : ''),
-                        'halfWidth' => in_array($key, ['t-shirts', 'stickers'], true),
-                        'offset' => $key === 'stickers' && !$productGroups['t-shirts']->count(),
-                    ])
-                @endif
-            @endforeach
-        </div>
+    @include('shop.storefront.components.product-grid')
+    @if($products->hasPages())
+        <div class="mt-5">@pagination(['collection' => $products->onEachSide(1)])</div>
     @endif
 @else
     <div class="shop-empty py-5 my-md-4">
         <span class="shop-empty__icon bg-light text-muted rounded-circle" aria-hidden="true">@icon($search || $category ? 'search' : 'shopping-bag', ['mr' => 0, 'size' => '2x'])</span>
-        <h2>{{ $search || $category ? 'No products found' : 'Good things are on their way' }}</h2>
-        <p>{{ $search || $category ? 'Try another search or take a look at all products.' : 'T-shirts, stickers, and a little more piano in your everyday.' }}</p>
+        <h2>{{ $search || $category ? 'No products found' : 'No products available' }}</h2>
+        <p>{{ $search || $category ? 'Try another search or browse all products.' : 'There are no products available at the moment.' }}</p>
         <a class="btn btn-primary" href="{{ $search || $category ? route('shop.home') : route('ebooks.index') }}">{{ $search || $category ? 'Browse all products' : 'Explore eBooks' }} @icon('arrow-right')</a>
     </div>
 @endif

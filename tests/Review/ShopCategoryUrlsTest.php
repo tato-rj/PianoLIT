@@ -78,12 +78,14 @@ class ShopCategoryUrlsTest extends ReviewTestCase
         $this->get(route('shop.merchandise.legacy', $product))->assertNotFound();
     }
 
-    public function test_category_search_and_topics_stay_on_the_category_path_without_limiting_the_grid()
+    public function test_category_search_and_topics_stay_on_the_category_path_with_24_product_pagination()
     {
-        for ($i = 0; $i < 13; $i++) $this->product(['name' => 'Mint T-shirt '.$i]);
+        for ($i = 0; $i < 25; $i++) $this->product(['name' => 'Mint T-shirt '.$i]);
         $response = $this->get('http://shop.localhost/t-shirts?q=Mint&page=2')->assertOk();
-        $this->assertCount(13, $response->viewData('products'));
-        $response->assertDontSee('shop-pagination')->assertDontSee('data-category-track');
+        $this->assertCount(1, $response->viewData('products'));
+        $this->assertSame(25, $response->viewData('products')->total());
+        $this->assertSame('http://shop.localhost/t-shirts?q=Mint&page=1', $response->viewData('products')->previousPageUrl());
+        $response->assertSee('id="pagination-links"', false)->assertDontSee('data-category-track');
         $this->assertSame('Mint', $response->viewData('search'));
         $this->withExceptionHandling()->getJson('http://shop.localhost/ebooks?topics=invalid')->assertStatus(422);
     }

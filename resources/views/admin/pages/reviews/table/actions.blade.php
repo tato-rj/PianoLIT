@@ -6,8 +6,8 @@
 @slot('body')
 <div class="text-start">
 	@include('shop.components.reviews.stars', ['rating' => $item->rating])
-	<h6>{!! $item->title ?? '<i class="text-muted">No title</i>' !!}</h6>
-	<p>{!! $item->content ?? '<i class="text-muted">No content</i>' !!}</p>
+	<h6>@if($item->title){{ $item->title }}@else<i class="text-muted">No title</i>@endif</h6>
+	<p>@if($item->content){{ $item->content }}@else<i class="text-muted">No content</i>@endif</p>
 </div>
 @endslot
 @endcomponent

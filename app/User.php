@@ -84,7 +84,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Rating::class);
     }
 
-    public function reviewed(Product $product)
+    public function reviewed(\Illuminate\Database\Eloquent\Model $product)
     {
         return Review::by($this)->for($product)->exists();
     }
@@ -201,7 +201,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->preferred_piece->tags->where('type', 'mood')->pluck('name');        
     }
 
-    public function reviewFor(PianoLit $product)
+    public function reviewFor(\Illuminate\Database\Eloquent\Model $product)
     {
         return Review::where(['user_id' => $this->id, 'reviewable_type' => get_class($product), 'reviewable_id' => $product->id])->first();
     }

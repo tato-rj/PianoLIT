@@ -3,8 +3,8 @@
     $artwork = 'images/home/worlds/'.$project['key'].'.webp';
     $landscapeArtwork = in_array($project['key'], ['learn', 'metronome', 'blog']);
     $icons = ['webapp' => 'pianolit', 'shop' => 'shopping-basket', 'games' => 'trophy', 'learn' => 'graduation-cap', 'metronome' => 'metronome', 'blog' => 'newspaper'];
-    $labels = ['webapp' => 'Discover', 'ios' => 'Take it with you', 'shop' => 'For your piano', 'games' => 'Play', 'learn' => 'Go deeper', 'metronome' => 'Find your rhythm', 'blog' => 'Get inspired'];
-    $actions = ['webapp' => 'Explore pieces', 'ios' => 'Meet the app', 'shop' => 'Visit the shop', 'games' => "Let's play", 'learn' => 'Start learning', 'metronome' => 'Open metronome', 'blog' => 'Read the blog'];
+    $labels = ['webapp' => 'Discover', 'ios' => 'iPhone & iPad', 'shop' => 'Products', 'games' => 'Play', 'learn' => 'Music theory', 'metronome' => 'Practice tool', 'blog' => 'Articles'];
+    $actions = ['webapp' => 'Explore pieces', 'ios' => 'View in App Store', 'shop' => 'Visit the shop', 'games' => 'View games', 'learn' => 'Start learning', 'metronome' => 'Open metronome', 'blog' => 'Read the blog'];
 @endphp
 <a class="project-card card-lift {{ $compact ? 'project-card--compact' : '' }}" data-project="{{ $project['key'] }}" href="{{ $project['url'] }}"
    @if($preview ?? false) data-ds-preview @endif

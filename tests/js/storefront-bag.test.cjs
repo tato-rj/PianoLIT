@@ -6,6 +6,7 @@ const path = require('node:path');
 module.exports = async function () {
     function element(extra = {}) {
         return Object.assign({events: {}, attrs: {}, dataset: {},
+            classList: {toggle() {}},
             addEventListener(name, fn) { this.events[name] = fn; },
             setAttribute(name, value) { this.attrs[name] = value; },
             removeAttribute(name) { delete this.attrs[name]; }

@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="col-lg-8 col-sm-10 col-12 mx-auto text-center">
 			<h1 class="mb-3 fw-bold animate-letters">{{seo()->about('moto')}}</h1>
-			<p class="text-muted mb-4" style="font-size: 110%">Where pianists discover new pieces and find inspiration<br>to play only what they love.</p>
+			<p class="text-muted mb-4" style="font-size: 110%">Browse piano pieces by level, mood, style, and technique.</p>
 		</div>
 	</div>
 </section>

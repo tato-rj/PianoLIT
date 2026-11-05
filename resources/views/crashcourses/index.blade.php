@@ -15,7 +15,7 @@
         ['label' => 'Crash courses'],
     ]])
     @component('components.layout.hub-header', ['heading' => 'Crash courses', 'preview' => false])
-        Make room for a little discovery each day.<br class="d-none d-md-block"> Free music lessons, delivered one at a time to your inbox.
+        Free music courses with one lesson delivered by email each day.
     @endcomponent
 
     @include('components.navigation.topic-navigation', ['items' => $topicLinks, 'label' => 'Course topics'])
@@ -24,7 +24,7 @@
         @if($crashcourses->isNotEmpty())
             <section aria-labelledby="crashcourses-directory-title">
                 <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-4">
-                    <h2 id="crashcourses-directory-title" class="h5 mb-0">Find your next lesson</h2>
+                    <h2 id="crashcourses-directory-title" class="h5 mb-0">Available courses</h2>
                     <p class="small text-muted mb-0">Showing {{ $crashcourses->firstItem() }}–{{ $crashcourses->lastItem() }} of {{ $crashcourses->total() }} {{ Str::plural('course', $crashcourses->total()) }}</p>
                 </div>
                 <div class="row g-4">
@@ -38,8 +38,8 @@
             </section>
         @else
             <section class="py-4" aria-labelledby="crashcourses-empty-title">
-                <h2 id="crashcourses-empty-title" class="h5">{{ $selectedTopics ? 'No courses match these topics' : 'New courses are on their way' }}</h2>
-                <p class="text-muted">{{ $selectedTopics ? 'Try another topic or browse all of our email courses.' : 'Explore our other learning tools while you wait.' }}</p>
+                <h2 id="crashcourses-empty-title" class="h5">{{ $selectedTopics ? 'No courses match these topics' : 'No courses available' }}</h2>
+                <p class="text-muted">{{ $selectedTopics ? 'Try another topic or browse all of our email courses.' : 'Browse the other tools and resources in Learn.' }}</p>
                 <a class="btn btn-secondary" href="{{ $selectedTopics ? route('crashcourses.index') : route('learn.home') }}">{{ $selectedTopics ? 'View all courses' : 'Explore Learn' }} @icon('arrow-right', ['mr' => 0, 'ml' => 2])</a>
             </section>
         @endif

@@ -95,7 +95,7 @@
         @slot('sidebar')
             <div class="mb-4">
                 <h2 class="h5 mb-2">Explore PianoLIT</h2>
-                <p class="text-muted small mb-0">Keep your curiosity playing.</p>
+                <p class="text-muted small mb-0">Music courses, eBooks, and sheet music.</p>
             </div>
             @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot

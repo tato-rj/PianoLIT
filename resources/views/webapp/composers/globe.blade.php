@@ -1,5 +1,5 @@
 @component('components.dialogs.fullscreen.panel', ['id' => 'composer-globe-modal', 'headingId' => 'composer-globe-heading', 'data' => ['globe-library' => mix('js/vendor/globe.gl.min.js'), 'globe-map' => mix('data/composer-globe.geojson'), 'globe-catalogue' => route('webapp.composers.globe')]])
-    @include('components.dialogs.fullscreen.header', ['headingId' => 'composer-globe-heading', 'title' => 'Explore the globe', 'subtitle' => 'A world of piano music, waiting to be discovered.', 'closeLabel' => 'Close Explore the globe'])
+    @include('components.dialogs.fullscreen.header', ['headingId' => 'composer-globe-heading', 'title' => 'Explore the globe', 'subtitle' => 'Browse composers by continent and country.', 'closeLabel' => 'Close Explore the globe'])
     <div class="modal-body composer-globe-layout">
         <section class="composer-globe-stage" aria-label="Interactive world globe">
             <div class="composer-globe-mode"><span class="composer-globe-dot"></span><span data-globe-mode>Continents</span></div>
@@ -26,7 +26,7 @@
             <select class="form-select" id="composer-globe-place" data-globe-place disabled><option value="world">The whole world</option></select>
             <div class="composer-globe-details" aria-live="polite" aria-atomic="true">
                 <p class="composer-globe-eyebrow" data-globe-kind>OUR LIBRARY, WORLDWIDE</p>
-                <h2 data-globe-title>A world of music</h2>
+                <h2 data-globe-title>All countries</h2>
                 <p class="composer-globe-description" data-globe-description>Select a continent, then zoom closer to discover its countries.</p>
                 <div class="composer-globe-stats">
                     <div><strong data-globe-composers>—</strong><span data-globe-composer-label>composers</span></div>

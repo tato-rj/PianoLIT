@@ -18,8 +18,10 @@ class ReviewsForm extends FormRequest
     public function authorize()
     {
         $model = $this->route('model');
-        abort_unless(in_array($model, [\App\Shop\eBook::class, \App\Shop\eScore::class, \App\Infograph\Infograph::class], true), 404);
-        $this->product = $model::findOrFail($this->route('id'));
+        abort_unless(in_array($model, [\App\Shop\eBook::class, \App\Shop\eScore::class, \App\Infograph\Infograph::class, \App\Merchandise\MerchandiseProduct::class], true), 404);
+        $this->product = $model === \App\Merchandise\MerchandiseProduct::class
+            ? app(\App\Services\Shop\Storefront::class)->query()->findOrFail($this->route('id'))
+            : $model::findOrFail($this->route('id'));
 
         return auth()->check() && ! auth()->user()->reviewed($this->product);
     }

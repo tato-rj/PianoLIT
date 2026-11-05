@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 /** Physical merchandise stays independent of legacy digital-product purchases. */
 class MerchandiseProduct extends Model
 {
-    use SoftDeletes, \App\Traits\HasDisplayMockup;
+    use SoftDeletes, \App\Traits\HasProductReviews;
 
     protected $guarded = ['id'];
     protected $casts = ['variants' => 'array', 'synced_at' => 'datetime', 'revision' => 'integer'];

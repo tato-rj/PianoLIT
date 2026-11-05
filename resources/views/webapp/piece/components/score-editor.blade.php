@@ -70,16 +70,16 @@
                 <div class="score-preview-upgrade text-center">
                     @guest('web')
                         @if($accessPolicy->snapshot()['rules'][$piece->is_free ? 'free_pick' : 'regular']['score']['registered'] === 'available')
-                            <p>This score is ready to explore with a <strong>free</strong> PianoLIT account.</p>
+                            <p>Create a <strong>free</strong> PianoLIT account to read this score.</p>
                         @elseif($accessPolicy->snapshot()['rules']['free_pick']['score']['registered'] === 'available')
-                            <p>A <strong>free</strong> account brings you this week’s score and more to explore.</p>
+                            <p>A <strong>free</strong> account includes access to this week’s Free Pick score.</p>
                         @else
-                            <p>There’s more music to explore with a <strong>free</strong> PianoLIT account.</p>
+                            <p>Create a <strong>free</strong> PianoLIT account to save pieces and use account features.</p>
                         @endif
                         <a href="{{ route('register') }}" class="btn btn-primary">@icon('user')Sign up <strong>free</strong></a>
                     @else
                         @if($scorePromptTarget === '#piece-upgrade-modal')
-                            <p>The full score is waiting for you with PianoLIT Premium.</p>
+                            <p>PianoLIT Premium is required to read the full score.</p>
                             <button type="button" {!! $scoreButtonAttributes !!} class="btn btn-primary">@icon('crown')Go Premium</button>
                         @else
                             <p>This score is currently locked.</p>

@@ -2,19 +2,14 @@
 
 namespace App\Merchandise;
 
-use App\{ShareableContent, Review};
-use App\Traits\{Filterable, HasMockup};
+use App\ShareableContent;
+use App\Traits\{Filterable, HasMockup, HasProductReviews};
 
 abstract class Product extends ShareableContent
 {
-	use Filterable, HasMockup;
+	use Filterable, HasMockup, HasProductReviews;
 
 	protected $withCount = ['reviews'];
-
-	public function reviews()
-	{
-		return $this->morphMany(Review::class, 'reviewable');
-	}
 
     public function isFree()
     {
@@ -25,18 +20,6 @@ abstract class Product extends ShareableContent
     {
     	return (bool) $this->discount;
     }
-
-	public function publishedReviews()
-	{
-		return $this->morphMany(Review::class, 'reviewable')->published();
-	}
-
-	public function reviewRoute($prefix = null)
-	{
-		$route = $prefix ? $prefix . '.reviews.store' : 'reviews.store';
-		
-		return route($route, ['model' => get_class($this), 'id' => $this->id]);
-	}
 
 	public function purchaseRoute()
 	{

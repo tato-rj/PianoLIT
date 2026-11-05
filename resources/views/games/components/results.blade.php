@@ -16,7 +16,7 @@
 {{-- @slot('footer')
   <div class="w-100 text-center">
     <p class="mb-1"><strong>Did you like this game?</strong></p>
-    <p>Subscribe and we'll keep you in the loop about the new ones!</p>
+    <p>Subscribe to receive updates about new quizzes.</p>
     @include('components.subscriptions.form')
   </div>
 @endslot --}}

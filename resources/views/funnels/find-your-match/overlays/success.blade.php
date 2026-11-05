@@ -6,7 +6,7 @@
         <h1>
           @icon('circle-check', ['color' => 'green', 'size' => 'lg'])
         </h1>
-        <h4 class="m-0">We found a piece for you!</h4>
+        <h4 class="m-0">Your suggested piece</h4>
       </div>
     </div>
 </div>

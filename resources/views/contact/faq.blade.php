@@ -24,7 +24,7 @@
     <h2 id="using-heading">Using PianoLIT</h2>
     @component('components.layout.accordion', ['id' => 'support-using-faq', 'variant' => 'minimal'])
         @component('components.layout.accordion-item', ['id' => 'support-free-premium', 'title' => 'What can I use for free, and what needs Premium?'])
-            <p>You can browse repertoire and open piece pages in the web app without a membership. An account unlocks personal features; full media, scores, and other Premium features depend on your access. The page will explain when sign-in or Premium is needed. See <a href="{{ route('webapp.membership.pricing') }}">current membership plans</a> for details.</p>
+            <p>You can browse repertoire and open piece pages in the web app without a membership. An account provides personal features; full media, scores, and other Premium features depend on your access. The page will explain when sign-in or Premium is needed. See <a href="{{ route('webapp.membership.pricing') }}">current membership plans</a> for details.</p>
         @endcomponent
         @component('components.layout.accordion-item', ['id' => 'support-free-pick', 'title' => 'How does the Free Pick work?'])
             <p>The current Free Pick gives signed-in web users full access to its performance, Synthesia video, audio, and score, with saved annotations. Guests get previews. Downloading or printing still requires membership. When the Free Pick changes, regular access rules apply again; your saved annotations remain for when you regain access.</p>

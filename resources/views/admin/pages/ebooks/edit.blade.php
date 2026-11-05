@@ -44,6 +44,7 @@
       'breadcrumbs' => [['label' => 'eBooks', 'url' => route('admin.ebooks.index')]]
     ])
 
+    @include('admin.components.shop.closeup', ['closeupProduct' => $ebook, 'closeupKind' => 'ebooks'])
     <div class="row">
       <div class="col-12 mb-3">
         <form action="{{route('admin.ebooks.previews.upload', $ebook)}}" class="dropzone" id="filesDropzone"></form>
@@ -123,9 +124,6 @@
         <button type="submit" id="submit-button" class="btn btn-default">Update eBook</button>
       </div>
     </form>
-    <div class="my-4">
-      @include('admin.components.shop.display-mockup', ['mockupProduct' => $ebook, 'mockupAction' => route('admin.ebooks.display-mockup', $ebook)])
-    </div>
     @include('admin.pages.reviews.fake', ['product' => $ebook])
 
   </div>

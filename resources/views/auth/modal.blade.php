@@ -8,7 +8,7 @@
       <div class="tab-pane fade show" id="panel-login">
         <div class="modal-body text-center px-5">
           <h5 class="mb-4 border-bottom border-primary d-inline-block px-3 pb-2 border-1x">Log in to PianoLIT</h5>
-          <p>Before accessing this resource, just sign in or create an account!</p>
+          <p>Sign in or create an account to access this resource.</p>
           <form method="POST" action="{{ route('login') }}">
               @csrf
               @include('auth.fields.login')
@@ -29,7 +29,7 @@
       <div class="" id="panel-register" style="display: none;">
         <div class="modal-body text-center px-5">
           <h5 class="mb-4 border-bottom border-primary d-inline-block px-3 pb-2 border-1x">Sign up for PianoLIT</h5>
-          <p>Before accessing this resource, just sign in or create an account!</p>
+          <p>Sign in or create an account to access this resource.</p>
             <form method="POST" action="{{ route('register') }}">
                 @csrf
                 @include('auth.fields.register')

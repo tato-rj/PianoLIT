@@ -284,8 +284,8 @@ Keep this structure instead of negative margins or
 positioned layers, which Gmail does not retain; the cover keeps its 240px/170px
 responsive heights and a regular image fallback for Word-based Outlook. This panel is
 white through the end of the resource features; More music to discover returns
-to the shared `#f8f9fa` background with 36px of top padding, matching Keep the
-inspiration going. The logo/title
+to the shared `#f8f9fa` background with 36px of top padding, matching the
+PianoLIT Premium section. The logo/title
 remain above the image. The image uses a centered crop. Native inbox rendering
 remains a release check.
 
@@ -303,7 +303,7 @@ public-domain score downloads/printing. These views never change access rules.
 Freepick's feature icons stay compact at 24px, while regular copy, captions,
 feature headings use at least the default 16px font. Buttons follow the shared
 14.4px email standard above. The
-piece description is left-aligned; the section heading is **Let's dive in**,
+piece description is left-aligned; the section heading is **Available resources**,
 with no period. Account copy omits free, and the Prefer your phone line is
 removed from both HTML and plain text. Shared footer contact and delivery-reason
 copy use the same 14px note style; copyright retains its smaller type. The **More music to discover** row

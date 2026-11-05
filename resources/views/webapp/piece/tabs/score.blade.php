@@ -12,7 +12,7 @@
     @include('webapp.piece.components.score-editor')
 	@else
 	<div class="text-center">
-		<p class="text-muted">This piece is protected by copyrights. Click the button below and we'll show you where you can purchase the score!</p>
+		<p class="text-muted">This score is under copyright. Use the button below to find a purchase link.</p>
 		<a href="{{$piece->score_url}}" target="_blank" class="btn btn-primary">@icon('shopping-basket')Buy score</a>
 	</div>
 	@endif

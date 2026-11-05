@@ -19,7 +19,7 @@
         ['label' => 'Quizzes'],
     ]])
     @component('components.layout.hub-header', ['heading' => 'Quizzes', 'preview' => false])
-        A few questions. A new discovery.<br class="d-none d-md-block"> Test your musical knowledge and learn something along the way.
+        Quizzes about piano music, theory, and music history.
     @endcomponent
 
     @include('components.navigation.topic-navigation', ['items' => $topicLinks, 'label' => 'Quiz topics'])
@@ -27,7 +27,7 @@
     @component('components.layout.editorial')
         <div class="row g-3 align-items-end mb-4">
             <div class="col-md">
-                <h2 class="h5 mb-2" id="quiz-directory-title">Find your next challenge</h2>
+                <h2 class="h5 mb-2" id="quiz-directory-title">Available quizzes</h2>
                 <p class="small text-muted mb-0">{{ $quizzes->isNotEmpty() ? 'Showing '.$quizzes->firstItem().'–'.$quizzes->lastItem().' of '.$quizzes->total() : number_format($quizzes->total()) }} {{ Str::plural('quiz', $quizzes->total()) }}</p>
             </div>
             <div class="col-sm-auto">
@@ -48,8 +48,8 @@
                 @if($quizzes->hasPages())<div class="mt-5">{{ $quizzes->onEachSide(1)->links() }}</div>@endif
             @else
                 <div class="py-4">
-                    <h3 class="h5">{{ $selectedTopics || $selectedLevel ? 'No quizzes match these filters' : 'New quizzes are on their way' }}</h3>
-                    <p class="text-muted">{{ $selectedTopics || $selectedLevel ? 'Try another topic or level, or browse all quizzes.' : 'Explore our other learning resources while you wait.' }}</p>
+                    <h3 class="h5">{{ $selectedTopics || $selectedLevel ? 'No quizzes match these filters' : 'No quizzes available' }}</h3>
+                    <p class="text-muted">{{ $selectedTopics || $selectedLevel ? 'Try another topic or level, or browse all quizzes.' : 'Browse the other tools and resources in Learn.' }}</p>
                     <a class="btn btn-secondary" href="{{ $selectedTopics || $selectedLevel ? route('quizzes.index') : route('learn.home') }}">{{ $selectedTopics || $selectedLevel ? 'View all quizzes' : 'Explore Learn' }} @icon('arrow-right', ['mr' => 0, 'ml' => 2])</a>
                 </div>
             @endif

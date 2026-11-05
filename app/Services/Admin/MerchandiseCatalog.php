@@ -147,7 +147,7 @@ class MerchandiseCatalog
         }
     }
 
-    public function upload(MerchandiseProduct $product, int $revision, array $files, ?string $alt): void
+    public function upload(MerchandiseProduct $product, int $revision, array $files, ?string $alt, ?string $color = null): void
     {
         $this->checkRevision($product, $revision);
         $images = app(MerchandiseImages::class);
@@ -155,7 +155,10 @@ class MerchandiseCatalog
         $usedPaths = [];
         try {
             foreach ($files as $file) $assets[] = $images->fromUpload($file, $alt ?: $product->name);
-            $this->change($product, $revision, function ($locked) use ($assets, &$usedPaths) {
+            $this->change($product, $revision, function ($locked) use ($assets, $color, &$usedPaths) {
+                if ($color !== null && !in_array($color, app(\App\Services\Shop\MerchandiseGallery::class)->colors($locked), true)) {
+                    throw ValidationException::withMessages(['gallery_color' => 'Choose a color offered by this product.'])->errorBag('merchandise');
+                }
                 $count = $locked->images()->count();
                 $position = (int) $locked->images()->withTrashed()->max('position');
                 foreach ($assets as $asset) {
@@ -167,7 +170,7 @@ class MerchandiseCatalog
                         $existing->update(['alt' => $asset['alt'], 'position' => ++$position]);
                         $image = $existing;
                     } else {
-                        $image = $locked->images()->create($asset + ['position' => ++$position]);
+                        $image = $locked->images()->create($asset + ['position' => ++$position, 'gallery_color' => $color]);
                         $usedPaths[] = $asset['path'];
                     }
                     if (!$locked->main_image_id) $locked->main_image_id = $image->id;

@@ -5,7 +5,7 @@
             <div class="save-to-panel__header">
                 <div>
                     <h2 id="search-controls-title">Sort & Filter</h2>
-                    <p>Refine your search to find the perfect pieces.</p>
+                    <p>Filter pieces by level, style, mood, and technique.</p>
                 </div>
                 <button type="button" class="btn-raw text-primary" data-search-reset>Reset</button>
             </div>

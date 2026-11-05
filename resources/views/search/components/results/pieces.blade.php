@@ -31,7 +31,7 @@
 @empty
 <div class="col-12 text-center py-5">
 	<h1>@icon('package-open', ['color' => 'grey'])</h1>
-	<p class="text-muted">Sorry, let's try something else!</p>
+	<p class="text-muted">No pieces found. Try another search.</p>
 </div>
 
 @endforelse

@@ -18,9 +18,9 @@
         <span class="membership-icon" aria-hidden="true">@icon('graduation-cap', ['mr' => 0])</span>
         <div>
             <h2>Bring PianoLIT to your studio or school</h2>
-            <p>Inspiration is even better together. Ask us about institutional memberships.</p>
+            <p>Contact us about memberships for studios and schools.</p>
         </div>
-        <a class="btn btn-secondary" href="mailto:contact@pianolit.com?subject=Institutional%20pricing%20inquiry">Let’s talk @icon('arrow-right', ['mr' => 0])</a>
+        <a class="btn btn-secondary" href="mailto:contact@pianolit.com?subject=Institutional%20pricing%20inquiry">Contact us @icon('arrow-right', ['mr' => 0])</a>
     </aside>
     <p class="membership-help">Have a question? <a href="mailto:contact@pianolit.com">We’re here to help.</a></p>
 </div>

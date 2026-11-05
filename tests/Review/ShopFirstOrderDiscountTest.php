@@ -62,6 +62,9 @@ class ShopFirstOrderDiscountTest extends ReviewTestCase
     public function test_signup_grants_only_the_newsletter_offer_and_prefills_guest_checkout_email()
     {
         $this->signup('Welcome@Example.test');
+        $this->assertTrue(session('newsletter_subscribed'));
+        $this->get(route('shop.home'))->assertOk()->assertSee('data-subscribed="true"', false)
+            ->assertDontSee('data-shop-welcome-launcher', false)->assertDontSee('id="modal-newsletter-subscription"', false);
         $this->assertDatabaseCount('shop_first_order_discounts', 1);
         $this->assertSame([EmailList::NEWSLETTER], DB::table('email_lists')->pluck('name')->all());
         $this->assertDatabaseCount('email_list_subscription', 1);
@@ -70,6 +73,16 @@ class ShopFirstOrderDiscountTest extends ReviewTestCase
         $this->assertNull($row->user_id);
         $this->assertNull($row->redeemed_order_id);
         $this->assertStringContainsString('value="welcome@example.test"', $this->getJson(route('shop.checkout'))->assertOk()->json('html'));
+        Mail::assertNothingSent(); Http::assertNothingSent();
+    }
+
+    public function test_signed_in_newsletter_subscribers_do_not_receive_the_offer_button_on_a_new_browser()
+    {
+        $user = Model::withoutEvents(fn () => create(User::class, ['email' => 'reader@example.test']));
+        app(\App\Services\Newsletter\Subscribers::class)->subscribe('READER@example.test');
+        $this->actingAs($user, 'web')->get(route('shop.home'))->assertOk()
+            ->assertSee('data-subscribed="true"', false)->assertDontSee('data-shop-welcome-launcher', false);
+        $this->assertDatabaseCount('shop_first_order_discounts', 0);
         Mail::assertNothingSent(); Http::assertNothingSent();
     }
 

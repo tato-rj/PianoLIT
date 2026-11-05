@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <title>Ops, something went wrong...</title>
+        <title>Request failed</title>
 
         <!-- Fonts -->
         <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -30,11 +30,11 @@
                     <h1 style="font-size: 9rem" class="m-0 font-nunito">
                         @yield('code')
                     </h1>
-                    <h1 class="font-nunito text-muted">OOPS...</h1>
+                    <h1 class="font-nunito text-muted">Something went wrong</h1>
                 </div>
 
                 <div class="mb-5">
-                    <p>This issue has been reported and it will be fixed soon. If this problem persists, please let us know at <a href="mailto:{{pianolit()->email()}}">{{pianolit()->email()}}</a>.</p>
+                    <p>Please try again. If the problem continues, contact us at <a href="mailto:{{pianolit()->email()}}">{{pianolit()->email()}}</a>.</p>
                 </div>
                 
                 @button([

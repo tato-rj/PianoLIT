@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => 'Discover new and exciting pieces to play'])
+@extends('webapp.layouts.app', ['title' => 'Browse piano pieces'])
 
 @push('header')
 <style>
@@ -9,7 +9,7 @@
 @endpush
 
 @section('content')
-@component('webapp.layouts.header', ['title' => 'Discover', 'subtitle' => 'Take a quick tour to find the perfect piece for you'])
+@component('webapp.layouts.header', ['title' => 'Discover', 'subtitle' => 'Find pieces by level and musical preferences'])
     @include('webapp.tour.button')
 @endcomponent
 

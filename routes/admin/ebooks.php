@@ -23,7 +23,8 @@ Route::prefix('ebooks')->name('ebooks.')->group(function() {
 	Route::get('{ebook}', 'Admin\eBooksController@show')->name('show');
 
 	Route::get('{ebook}/edit', 'Admin\eBooksController@edit')->name('edit');
-	Route::post('{ebook}/display-mockup', 'Admin\ShopMockupsController@ebook')->name('display-mockup');
+    Route::post('{ebook}/closeup', 'Admin\ShopCloseupsController@store')->defaults('closeupKind', 'ebooks')->name('closeup.store');
+    Route::delete('{ebook}/closeup', 'Admin\ShopCloseupsController@destroy')->defaults('closeupKind', 'ebooks')->name('closeup.destroy');
 
 	Route::patch('{ebook}/status', 'Admin\eBooksController@updateStatus')->name('update-status');
 

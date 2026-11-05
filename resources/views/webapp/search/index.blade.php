@@ -76,7 +76,7 @@ function loadResults() {
         .catch(function(error) {
             if (requestId !== window.searchRequestId) return;
             $('#empty').hide();
-            $('#search-feedback strong').text('Sorry, results could not be loaded. Please try again.');
+            $('#search-feedback strong').text('Results could not be loaded. Please try again.');
             $('#search-feedback').show();
         })
         .then(function() {
@@ -97,7 +97,7 @@ function makeUrl() {
 }
 
 function showResultCount(total) {
-    let message = 'We found ' + total.toLocaleString() + (total === 1 ? ' result' : ' results');
+    let message = total.toLocaleString() + (total === 1 ? ' result' : ' results');
 	$('#search-results-count').text(message).show();
 }
 

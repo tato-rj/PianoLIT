@@ -7,7 +7,7 @@
     <div class="mb-1 text-muted"><small>Here's what happened</small></div>
     <div id="error-report"></div>
   </div>
-  <p>Give it another try!</p>
+  <p>Select different notes and try again.</p>
   <button type="button" class="btn btn-primary btn-sm btn-wide mb-3" data-bs-dismiss="modal" aria-label="Close">Try again</button>
 </div>
 @endslot

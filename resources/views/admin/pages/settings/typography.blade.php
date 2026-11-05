@@ -3,14 +3,14 @@
   <div class="design-system__grid">
     @foreach(['body' => ['System sans', '--font-family-body'], 'heading' => ['Poppins', '--font-family-heading'], 'serif' => ['Editorial serif', '--font-family-serif']] as $family => $font)
       @component('admin.pages.settings.sample', ['label' => $font[0], 'usage' => $font[1], 'properties' => 'font-family,font-size,font-weight,line-height,letter-spacing'])
-        <p class="design-system__font-preview" data-ds-font="{{ $family }}" data-ds-preview>Music begins with curiosity.</p>
+        <p class="design-system__font-preview" data-ds-font="{{ $family }}" data-ds-preview>Browse piano pieces and learning resources.</p>
       @endcomponent
     @endforeach
   </div>
   <div class="design-system__type-scale">
     @foreach(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'base', 'sm', 'xs', 'tiny'] as $size)
       @component('admin.pages.settings.sample', ['label' => strtoupper($size), 'usage' => '--font-size-'.$size, 'properties' => 'font-size,line-height,font-weight,letter-spacing'])
-        <p class="design-system__type-preview" data-ds-type="{{ $size }}" data-ds-preview>A world of piano music</p>
+        <p class="design-system__type-preview" data-ds-type="{{ $size }}" data-ds-preview>Piano music and practice</p>
       @endcomponent
     @endforeach
   </div>

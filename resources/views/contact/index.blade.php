@@ -32,7 +32,7 @@
         <div class="col-lg-9">
             <section id="start-here" class="support-section" aria-labelledby="start-heading">
                 <h2 id="start-heading">What is PianoLIT?</h2>
-                <p>PianoLIT helps pianists, teachers, and music lovers discover repertoire, understand music, and enjoy practicing. Our web and iOS apps bring pieces and practice resources together; our other hubs offer learning tools, reading, and more.</p>
+                <p>PianoLIT provides piano pieces and practice resources through its web and iOS apps, along with learning tools, courses, articles, games, and a shop.</p>
                 <div class="row g-3 mt-1">
                     @foreach([
                         ['id' => 'memberships', 'icon' => 'credit-card', 'title' => 'Manage a membership', 'text' => 'Plans, payments & cancellation'],

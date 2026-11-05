@@ -20,7 +20,7 @@
 </div>
 <div id="highlights-empty" class="text-grey text-center pt-5 pb-4" role="status" @if($pieces->isNotEmpty()) hidden @endif>
     @icon('package-open', ['mr' => 0, 'size' => 'lg'])
-    <div><strong>Sorry, nothing to show!</strong></div>
+    <div><strong>No past highlights available</strong></div>
 </div>
 <div id="highlights-error" class="text-center py-4" role="alert" hidden>
     <p>We couldn't load these pieces. Please try again.</p>

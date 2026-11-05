@@ -32,7 +32,7 @@
                 @else
                     <div class="resource-card__art overflow-hidden rounded-sm mb-4">@include('learn.components.artwork', ['kind' => 'courses'])</div>
                 @endif
-                <h2 class="h5 mb-3">A little learning, every day</h2>
+                <h2 class="h5 mb-3">Course details</h2>
                 <ul class="list-unstyled text-muted mb-0">
                     @if($crashcourse->lessons_count)
                         <li class="mb-3 d-flex align-items-start">@icon('layers', ['mr' => 2, 'classes' => 'mt-1'])<span>{{ $crashcourse->lessons_count }} {{ Str::plural('lesson', $crashcourse->lessons_count) }} in this course</span></li>

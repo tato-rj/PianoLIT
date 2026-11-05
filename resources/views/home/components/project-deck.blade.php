@@ -1,4 +1,4 @@
-<section class="project-deck" data-project-deck aria-label="Explore PianoLIT worlds">
+<section class="project-deck" data-project-deck aria-label="PianoLIT sections">
     <div class="row g-2">
         @foreach($projects as $project)
             @php($compact = in_array($project['key'], ['shop', 'metronome', 'blog']))

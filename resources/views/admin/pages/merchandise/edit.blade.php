@@ -24,6 +24,7 @@
     @if(session('merchandise_notice'))<div class="alert alert-grey" role="status">{{ session('merchandise_notice') }}</div>@endif
     <div class="row g-4 mb-4">
         <div class="col-lg-8 order-2 order-lg-1" id="images">
+            @include('admin.components.shop.closeup', ['closeupProduct' => $product, 'closeupKind' => 'merchandise'])
             @component('admin.components.editor.section', ['id' => 'merchandise-gallery', 'title' => 'Product gallery', 'description' => 'Choose the main image and arrange the other views. Refreshing preserves your uploads and main-image choice.'])
                 @if($product->images->isEmpty())
                     <p class="text-muted mb-0">No images yet. Upload your own mockups, or refresh after Printful finishes generating its previews.</p>
@@ -55,9 +56,6 @@
             @endif
         </div>
         <div class="col-lg-4 order-1 order-lg-2">
-            <div class="mb-4">
-                @include('admin.components.shop.display-mockup', ['mockupProduct' => $product, 'mockupAction' => route('admin.merchandise.display-mockup', ['merchandise' => $product] + $returnFilters)])
-            </div>
             @component('admin.components.editor.section', ['id' => 'merchandise-upload', 'title' => 'Upload your own images', 'description' => 'Add your own mockups, product photos or additional Printful views.'])
                 <form method="POST" action="{{ route('admin.merchandise.images.upload', ['merchandise' => $product] + $returnFilters) }}" enctype="multipart/form-data">
                     @csrf

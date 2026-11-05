@@ -1,6 +1,6 @@
 @php($hasRecommendations = collect($recommendations ?? [])->count() >= 2)
 <div data-result-view>
-    <h3 id="match-result-heading" class="visually-hidden" tabindex="-1">We found your perfect match!</h3>
+    <h3 id="match-result-heading" class="visually-hidden" tabindex="-1">Your suggested piece</h3>
     <div data-result-card></div>
     @if(!empty($explanation))
         <div class="match-result-explanation">

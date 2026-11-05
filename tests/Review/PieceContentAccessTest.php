@@ -96,9 +96,9 @@ class PieceContentAccessTest extends ReviewTestCase
             $this->assertSame(route('register'), $signup->getAttribute('href'));
             $this->assertFalse($signup->hasAttribute('data-bs-toggle'), 'The score invitation goes straight to signup.');
             $this->assertSame(0, $xpath->query('.//ul', $upgrade)->length);
-            $this->assertStringContainsString($this->piece->is_free ? 'This score is ready to explore' : 'this week’s score', $upgrade->textContent);
+            $this->assertStringContainsString($this->piece->is_free ? 'Create a free PianoLIT account to read this score' : 'this week’s Free Pick score', $upgrade->textContent);
         } else {
-            $this->assertStringContainsString('The full score is waiting for you', $upgrade->textContent);
+            $this->assertStringContainsString('PianoLIT Premium is required to read the full score', $upgrade->textContent);
         }
         $this->assertSame(auth('web')->guest() ? 1 : 0, $xpath->query('//*[@id="score-preview"]//a')->length);
         $this->assertSame($videoLimit > 0 ? 1 : 0, $xpath->query('//*[@id="score-preview"]//*[@id="launch-audio"]')->length);
@@ -235,7 +235,7 @@ class PieceContentAccessTest extends ReviewTestCase
         if ($directory = getenv('GUEST_SIGNUP_PREVIEW_DIR')) file_put_contents($directory.'/guest-piece.html', $response->getContent());
         $this->actingAs($this->userWithSubscription(), 'web');
         $member = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
-            ->assertSee('Go Premium')->assertSee('The full score is waiting for you')
+            ->assertSee('Go Premium')->assertSee('PianoLIT Premium is required to read the full score')
             ->assertSee('data-bs-target="#piece-upgrade-modal"', false)
             ->assertSee('data-preview-modal="piece-upgrade-modal"', false)
             ->assertDontSee('id="signup-score-modal"', false);
@@ -371,7 +371,7 @@ class PieceContentAccessTest extends ReviewTestCase
         setFreePick($this->piece, true);
         $guestFreePick = $this->assertRestricted()->assertDontSee('data-manage="save-to"', false)
             ->assertSee('data-annotations-url=""', false)
-            ->assertSee('This score is ready to explore')->assertSee('read the full score.')
+            ->assertSee('PianoLIT account to read this score.')->assertSee('read the full score.')
             ->assertDontSee('Sign up to read, mark and download');
         $document = new \DOMDocument();
         $document->loadHTML($guestFreePick->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);

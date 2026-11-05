@@ -24,7 +24,7 @@
 	</div>
 	<div class="text-center">
 		<h5>How are we doing?</h5>
-		<h6><a href="mailto:{{config('app.emails.general')}}?subject=My feedback for the PianoLIT team" target="_blank">Give your feedback</a> on what we can improve, we'll love to hear from you.</h6>
+		<h6><a href="mailto:{{config('app.emails.general')}}?subject=My feedback for the PianoLIT team" target="_blank">Give your feedback</a> to help us improve PianoLIT.</h6>
 	</div>
 </section>
 @endif

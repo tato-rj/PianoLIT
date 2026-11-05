@@ -2,7 +2,7 @@
     'shareable' => [
         'keywords' => '',
         'title' => 'PianoLIT WebApp',
-        'description' => 'Discover new pieces and find inspiration to play only what you love.',
+        'description' => 'Browse piano pieces by level, mood, style, and technique.',
         'thumbnail' => asset('images/webapp/thumbnail.jpg'),
         'created_at' => carbon('5/28/2020')->format(DateTime::ISO8601),
         'updated_at' => carbon('5/28/2020')->format(DateTime::ISO8601)

@@ -157,7 +157,7 @@ class NewsletterSubscriptionsTest extends ReviewTestCase
             $origin = 'http://'.$host;
             $this->get($origin.'/subscriptions/modal?view=newsletter-subscription')->assertOk()
                 ->assertSee('action="'.$origin.'/newsletter/subscribe"', false)
-                ->assertSee('new features, games, tools, stories');
+                ->assertSee('new PianoLIT features, games, tools, and articles');
             $this->from($origin)->post($origin.'/newsletter/subscribe', [
                 'email' => 'hub'.$index.'@example.test', 'started_at' => now()->subSeconds(10)->toDateTimeString(),
             ])->assertRedirect($origin);

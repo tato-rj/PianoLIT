@@ -49,7 +49,7 @@ class SubscriptionsController extends Controller
         if ($request->getHost() === 'blog.'.config('app.short_url') && !$request->gift_url) {
             $request->validate(['email' => 'required|string|email|max:254']);
             app(\App\Services\Newsletter\Subscribers::class)->subscribe($form->email);
-            return back()->with('status', 'You’re on the list! Look out for monthly PianoLIT news, whenever there’s something new to share.');
+            return back()->with('status', 'You are subscribed to PianoLIT News. You will receive monthly updates when there is news to share.');
         }
         $list = EmailList::where('name', EmailList::FREE_PICK)->first();
         if ($list && $list->has($form->email) && ! $request->gift_url)

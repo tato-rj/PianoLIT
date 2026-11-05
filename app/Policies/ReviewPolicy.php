@@ -52,7 +52,7 @@ class ReviewPolicy
      */
     public function update(User $user, Review $review)
     {
-        return $review->user->is($user);
+        return $review->user && $review->user->is($user);
     }
 
     /**

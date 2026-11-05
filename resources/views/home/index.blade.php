@@ -1,4 +1,4 @@
-@extends('layouts.app', ['projectHome' => true, 'bodyClass' => 'project-home', 'title' => 'PianoLIT — Many worlds, one love of music'])
+@extends('layouts.app', ['projectHome' => true, 'bodyClass' => 'project-home', 'title' => 'PianoLIT — Piano music and learning'])
 
 @section('content')
 <div class="project-home__page">
@@ -7,12 +7,12 @@
     <div class="container project-home__content">
         <section class="project-home__hero row align-items-end gy-4 mx-lg-4" aria-labelledby="home-heading">
             <div class="col-12 col-lg-6 col-xxl-5">
-                <p class="project-home__eyebrow">A home for your musical curiosity</p>
-                <h1 id="home-heading" class="text-nowrap">Many worlds.<br>One love of music.</h1>
+                <p class="project-home__eyebrow">Piano pieces, tools, and resources</p>
+                <h1 id="home-heading" class="text-nowrap">Piano music<br>and learning</h1>
             </div>
             <div class="col-12 col-lg-6 col-xxl-7">
-                <p class="project-home__intro">A piece to discover.<br>Something new to learn.<br>A little fun along the way.</p>
-                <p class="project-home__invitation mb-0">Choose a world to begin @icon('arrow-down', ['mr' => 0, 'ml' => 1])</p>
+                <p class="project-home__intro">Find pieces to play.<br>Study music theory.<br>Practice with tools and games.</p>
+                <p class="project-home__invitation mb-0">Choose a section @icon('arrow-down', ['mr' => 0, 'ml' => 1])</p>
             </div>
         </section>
 

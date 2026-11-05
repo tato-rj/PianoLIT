@@ -76,7 +76,7 @@
             </section>
             <section id="email-preferences" class="profile-section" aria-labelledby="email-heading" data-profile-emails>
                 <h2 id="email-heading">Email preferences</h2>
-                <p class="text-muted">More of what you love. Choose the emails you’d like to receive.</p>
+                <p class="text-muted">Choose the emails you want to receive.</p>
                 <div class="profile-panel">
                     <p class="small text-muted mb-0 text-break">Sent to {{ $user->email }} <span data-profile-autosave hidden>· Changes save automatically</span></p>
                     @forelse($lists as $list)

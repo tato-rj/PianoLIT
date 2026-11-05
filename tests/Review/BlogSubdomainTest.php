@@ -196,8 +196,8 @@ class BlogSubdomainTest extends ReviewTestCase
         $this->get(route('posts.index', ['topics' => 'technique', 'page' => 2]))->assertOk()
             ->assertSee($posts[12]->title)->assertSee('Showing 13–13 of 13 stories')->assertDontSee('Latest story')
             ->assertDontSee($posts[0]->title);
-        $this->get(route('posts.index', ['topics' => 'no-such-topic']))->assertOk()->assertSee('No stories here just yet.');
-        $this->get(route('posts.index', ['topics' => 'technique', 'page' => 99]))->assertOk()->assertSee('You’ve reached the end of these stories.');
+        $this->get(route('posts.index', ['topics' => 'no-such-topic']))->assertOk()->assertSee('No articles found');
+        $this->get(route('posts.index', ['topics' => 'technique', 'page' => 99]))->assertOk()->assertSee('No more articles');
     }
 
     public function test_directory_promotions_link_to_published_courses_and_shop_products()

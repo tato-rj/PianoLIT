@@ -263,7 +263,7 @@
     const quizStep = controller => controller.state.step - (controller.data && controller.data.levelPieces && controller.data.levelPieces.length ? 1 : 0);
     function progress(shell, section, suggestions, finding) {
         if (!shell) return;
-        const names = ['Your level', 'Listening', 'Sight-reading', 'Your taste', 'Mood', 'We found your perfect match!'];
+        const names = ['Your level', 'Listening', 'Sight-reading', 'Your taste', 'Mood', 'Your suggested piece'];
         const themes = ['level', 'listening', 'reading', 'duel', 'mood', 'reward'];
         shell.dataset.theme = suggestions ? 'recommendations' : themes[section];
         const number = shell.querySelector('[data-step-number]');
@@ -563,7 +563,7 @@
             this.stage.classList.remove('leaving'); this.stage.setAttribute('aria-busy', 'true');
             this.element.querySelector('.match-count-number').insertAdjacentHTML('beforeend', '<span class="match-finding-orbit" aria-hidden="true"></span>');
             this.stage.innerHTML = '<div class="match-finding is-playing">' +
-                this.heading('Your answers are in!', 'Finding the piece you’ll love…') + this.waveform() + '</div>';
+                this.heading('Answers complete', 'Finding a piece based on your answers…') + this.waveform() + '</div>';
             this.navigation(); this.focus();
             this.element.querySelector('[data-count-announcement]').textContent = 'Your answers are complete. Finding your match.';
         }
@@ -581,15 +581,15 @@
                 this.shell.classList.add('is-celebrating');
                 this.shell.querySelector('[data-step-name]').textContent = 'Your match is ready';
             }
-            this.element.querySelector('[data-count-unit]').textContent = 'perfect match';
+            this.element.querySelector('[data-count-unit]').textContent = 'suggested piece';
             this.element.querySelector('.match-count-number').insertAdjacentHTML('beforeend',
                 '<span class="match-reward-sparks" aria-hidden="true">' + Array.from({length: 12}, (_, i) => {
                     const angle = i * Math.PI / 6;
                     return '<span style="--spark-x:' + Math.round(Math.cos(angle) * 120) + 'px;--spark-y:' + Math.round(Math.sin(angle) * 120) + 'px;--spark-turn:' + (i * 30) + 'deg"></span>';
                 }).join('') + '</span>');
             this.stage.innerHTML = '<div class="match-finding match-reward-heading">' +
-                this.heading('We found your perfect match!', 'One piece, chosen for you.') + '</div>';
-            this.element.querySelector('[data-count-announcement]').textContent = 'One perfect match. Ready to meet your next piece.';
+                this.heading('Your suggested piece', 'Based on your level and preferences.') + '</div>';
+            this.element.querySelector('[data-count-announcement]').textContent = 'One suggested piece is ready.';
         }
         async result(generation) {
             const previous = this.state.count;
@@ -613,7 +613,7 @@
                 if (generation !== this.generation) return;
                 this.finishFinding(); this.stage.innerHTML = response.data; this.mountResult();
                 this.stage.classList.remove('leaving'); this.navigation(); this.focus(); this.busy = false;
-                this.element.querySelector('[data-count-announcement]').textContent = '1 perfect match. Your match is ready.';
+                this.element.querySelector('[data-count-announcement]').textContent = '1 suggested piece is ready.';
             } catch (error) {
                 if (generation !== this.generation) return;
                 this.finishFinding();

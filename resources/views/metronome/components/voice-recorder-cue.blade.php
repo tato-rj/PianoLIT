@@ -1,7 +1,7 @@
 @php
     $cueState = $state ?? 'waiting';
     $cueLabels = ['waiting' => 'Wait', 'speaking' => 'Speak now', 'success' => 'Recorded', 'error' => 'Try again', 'review' => ''];
-    $cuePrompts = ['waiting' => 'Wait for green', 'speaking' => 'Say “one”', 'success' => 'Got it!', 'error' => 'Let’s try one again', 'review' => 'How does it sound?'];
+    $cuePrompts = ['waiting' => 'Wait for green', 'speaking' => 'Say “one”', 'success' => 'Recorded', 'error' => 'Record “one” again', 'review' => 'Review your recording'];
 @endphp
 <div class="voice-recorder__cue text-center mb-3" data-voice-cue data-state="{{ $cueState }}">
     <div class="voice-recorder__label badge rounded-pill mb-3" aria-hidden="true">

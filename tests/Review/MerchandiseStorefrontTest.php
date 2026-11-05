@@ -60,77 +60,85 @@ class MerchandiseStorefrontTest extends ReviewTestCase
             ->assertSee($ebook->title)->assertSee($score->title)->assertSee('$15.00 USD')->assertSee('Free')
             ->assertSee('shop/digital-mockup.jpg')->assertSee('shop/digital-cover.jpg')
             ->assertSee('href="'.$ebook->showRoute().'"', false)->assertSee('href="'.$score->showRoute().'"', false)
-            ->assertDontSee('Unpublished download')->assertDontSee('private-original-never-in-catalog.pdf')
-            ->assertViewHas('productGroups', fn ($groups) => $groups->sum(fn ($products) => $products->count()) === 3);
+            ->assertDontSee('Unpublished download')->assertDontSee('private-original-never-in-catalog.pdf')->assertDontSee('Best deals')
+            ->assertViewHas('products', fn ($products) => $products->total() === 3 && $products->count() === 3);
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
-        $this->assertCount(2, $xpath->query('//section[@id="products-ebooks" or @id="products-escores"]//article'));
-        $this->assertCount(0, $xpath->query('//section[@id="products-ebooks" or @id="products-escores"]//form'));
+        $this->assertCount(3, $xpath->query('//article'));
+        foreach ([$ebook, $score] as $digital) {
+            $this->assertCount(0, $xpath->query('//article[.//a[@href="'.$digital->showRoute().'"]]//form'));
+        }
         Http::assertNothingSent();
         Mail::assertNothingSent();
         $this->assertDatabaseCount('purchases', 0);
     }
 
-    public function test_best_deals_selects_one_available_product_per_category_from_the_public_catalog()
+    public function test_catalog_uses_one_mixed_grid_with_24_products_per_page_and_stable_boundaries()
     {
-        $shirt = $this->product(['name' => 'Affordable T-shirt', 'variants' => [$this->variant(['retail_price' => '20.00'])]]);
-        $this->product(['name' => 'Premium T-shirt']);
-        $this->product(['name' => 'Unavailable T-shirt', 'variants' => [$this->variant(['retail_price' => '1.00', 'out_of_stock' => true])]]);
-        $this->product(['name' => 'Other store T-shirt', 'printful_store_id' => 777, 'variants' => [$this->variant(['retail_price' => '1.00'])]]);
-        $sticker = $this->product(['name' => 'Piano sticker']);
-        $ebook = $this->digitalProduct(eBook::class, ['title' => 'Affordable guide']);
-        $this->digitalProduct(eBook::class, ['title' => 'Premium guide', 'price' => 40]);
-        $this->digitalProduct(eBook::class, ['title' => 'Draft guide', 'published_at' => null, 'discount' => 100]);
-        $score = $this->digitalProduct(eScore::class, ['title' => 'Free score', 'discount' => 100]);
-
-        $response = $this->get(route('shop.home'))->assertOk()->assertSee('Best deals');
-        $deals = $response->viewData('bestDeals');
-        $this->assertSame([$shirt->name, $sticker->name, $ebook->title, $score->title], $deals->pluck('name')->all());
-        $this->assertSame([2000, 2850, 1500, 0], $deals->pluck('priceCents')->all());
-        $dom = new \DOMDocument;
-        @$dom->loadHTML($response->getContent());
-        $xpath = new \DOMXPath($dom);
-        $this->assertSame(4, $xpath->query('//section[@aria-labelledby="shop-best-deals-title"]//a')->length);
-        $this->get(route('shop.category', ['category' => 't-shirts']))->assertOk()->assertDontSee('id="shop-best-deals-title"', false);
-        $this->get(route('shop.home', ['q' => 'Piano']))->assertOk()->assertDontSee('id="shop-best-deals-title"', false);
-        $this->assertTrue(app(Storefront::class)->bestDeals(collect())->isEmpty());
+        $createdAt = now()->subDay();
+        for ($i = 0; $i < 17; $i++) $this->product(['name' => 'Piano T-shirt '.$i, 'created_at' => $createdAt]);
+        for ($i = 0; $i < 16; $i++) $this->digitalProduct(eBook::class, ['title' => 'Piano guide '.$i, 'created_at' => $createdAt]);
+        for ($i = 0; $i < 16; $i++) $this->digitalProduct(eScore::class, ['title' => 'Piano score '.$i, 'created_at' => $createdAt]);
+        $identities = collect();
+        foreach ([1 => 24, 2 => 24, 3 => 1] as $page => $count) {
+            $response = $this->get(route('shop.home', ['page' => $page]))->assertOk()
+                ->assertDontSee('data-category-track')->assertDontSee('data-category-step')->assertDontSee('shop-category-title');
+            $products = $response->viewData('products');
+            $this->assertSame(49, $products->total());
+            $this->assertSame(24, $products->perPage());
+            $this->assertSame($page, $products->currentPage());
+            $this->assertCount($count, $products);
+            $identities = $identities->concat(collect($products->items())->pluck('url'));
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($response->getContent());
+            $xpath = new \DOMXPath($dom);
+            $this->assertCount(1, $xpath->query('//div[@aria-label="Products"]'));
+            $this->assertCount($count, $xpath->query('//article'));
+            $this->assertCount(1, $xpath->query('//*[@id="pagination-links"]'));
+        }
+        $this->assertCount(49, $identities->unique());
+        $this->assertSame($identities->take(24)->all(), collect($this->get(route('shop.home'))->viewData('products')->items())->pluck('url')->all());
+        $this->get(route('shop.home', ['page' => 99]))->assertRedirect(route('shop.home', ['page' => 3]));
         Http::assertNothingSent();
         Mail::assertNothingSent();
     }
 
-    public function test_all_categories_render_one_scroll_row_and_selected_categories_render_every_matching_product()
+    public function test_category_pagination_starts_after_24_and_preserves_search_and_topics()
     {
-        $shirt = $this->product();
-        $sticker = $this->product(['name' => 'Piano sticker']);
-        $score = $this->digitalProduct(eScore::class, ['title' => 'Piano score']);
-        for ($i = 0; $i < 13; $i++) $this->digitalProduct(eBook::class, ['title' => 'Piano guide '.$i]);
-        $response = $this->get(route('shop.home'))->assertOk();
-        $response->assertSeeInOrder(['id="products-t-shirts"', $shirt->name, 'id="products-stickers"', $sticker->name,
-            'id="products-escores"', $score->title, 'id="products-ebooks"'], false);
-        $groups = $response->viewData('productGroups');
-        $this->assertCount(13, $groups['ebooks']);
-        $this->assertCount(13, $groups['ebooks']->pluck('id')->unique());
-        $dom = new \DOMDocument;
-        @$dom->loadHTML($response->getContent());
-        $xpath = new \DOMXPath($dom);
-        $this->assertSame(4, $xpath->query('//*[@data-category-track]')->length);
-        $this->assertSame(8, $xpath->query('//button[@data-category-step and @aria-controls]')->length);
-        $this->assertSame(13, $xpath->query('//*[@id="products-ebooks-list"]/div')->length);
-        $response->assertDontSee('shop-pagination')->assertDontSee('ebooks_page=');
-        $selected = $this->get(route('ebooks.index', ['q' => 'PIANO GUIDE', 'page' => 2]))->assertOk()
-            ->assertSee('Piano guide 0')->assertSee('Piano guide 12')->assertDontSee('Piano score')->assertDontSee('Piano rainbow T-shirt')
-            ->assertDontSee('shop-category-title')->assertDontSee('data-category-track')->assertDontSee('data-category-step');
-        $this->assertCount(13, $selected->viewData('products'));
-        $this->get(route('shop.home', ['q' => 'Piano guide']))->assertOk()
-            ->assertSee('Piano guide 12')->assertDontSee('id="products-t-shirts"', false);
-        foreach (['%', '_', '!'] as $literal) {
-            $this->get(route('shop.home', ['q' => $literal]))->assertOk()->assertSee('No products found');
+        $topic = Model::withoutEvents(fn () => create(\App\Shop\eBookTopic::class, ['name' => 'Practice', 'slug' => 'practice']));
+        for ($i = 0; $i < 24; $i++) {
+            $book = $this->digitalProduct(eBook::class, ['title' => 'Piano guide '.$i]);
+            $book->topics()->attach($topic);
         }
-        $score->update(['published_at' => null]);
-        $this->get(route('escores.index'))->assertOk()->assertSee('No products found')->assertDontSee($score->title);
-        $this->withExceptionHandling()->getJson(route('shop.home', ['ebooks_page' => ['bad']]))->assertStatus(422);
-        $this->getJson(route('shop.home', ['stickers_page' => -1]))->assertStatus(422);
+        $this->digitalProduct(eBook::class, ['title' => 'Other guide']);
+        $this->product(['name' => 'Piano T-shirt']);
+        $filters = ['q' => 'Piano guide', 'topics' => ['practice']];
+        $this->get(route('ebooks.index', $filters))->assertOk()->assertDontSee('id="pagination-links"', false)
+            ->assertViewHas('products', fn ($products) => $products->count() === 24 && $products->total() === 24);
+        $book = $this->digitalProduct(eBook::class, ['title' => 'Piano guide 24']);
+        $book->topics()->attach($topic);
+        $response = $this->get(route('ebooks.index', $filters))->assertOk()
+            ->assertDontSee('Other guide')->assertDontSee('Piano T-shirt')->assertSee('id="pagination-links"', false);
+        $products = $response->viewData('products');
+        $this->assertSame(25, $products->total());
+        $next = $products->nextPageUrl();
+        $this->assertSame('/ebooks', parse_url($next, PHP_URL_PATH));
+        parse_str(parse_url($next, PHP_URL_QUERY), $query);
+        $this->assertSame('Piano guide', $query['q']);
+        $this->assertSame(['practice'], $query['topics']);
+        $this->assertSame('2', $query['page']);
+        $second = $this->get($next)->assertOk()->assertDontSee('Other guide')->assertDontSee('Piano T-shirt');
+        $this->assertCount(1, $second->viewData('products'));
+        $this->assertCount(25, collect($products->items())->concat($second->viewData('products')->items())->pluck('url')->unique());
+        $this->get(route('ebooks.index', $filters + ['page' => 3]))->assertRedirect($next);
+        foreach (['%', '_', '!'] as $literal) {
+            $this->get(route('shop.home', ['q' => $literal]))->assertOk()->assertSee('No products found')->assertDontSee('id="pagination-links"', false);
+        }
+        $this->withExceptionHandling();
+        foreach ([['page' => ['bad']], ['page' => -1], ['page' => 10001], ['ebooks_page' => ['bad']]] as $query) {
+            $this->getJson(route('shop.home', $query))->assertStatus(422);
+        }
     }
 
     public function test_shop_home_reuses_the_newsletter_modal_without_prompting_on_products_or_the_bag()
@@ -144,7 +152,8 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $this->assertSame(1, substr_count($home->getContent(), 'id="modal-newsletter-subscription"'));
         $product = $this->product();
         foreach ([app(Storefront::class)->productUrl($product), route('shop.bag'), route('ebooks.index')] as $url) {
-            $this->get($url)->assertOk()->assertDontSee('data-shop-welcome', false)->assertDontSee('js/views/shop-welcome.js');
+            $this->get($url)->assertOk()->assertSee('data-shop-welcome-auto="false"', false)
+                ->assertSee('data-shop-welcome-launcher', false)->assertSee('js/views/shop-welcome.js');
         }
     }
 
@@ -155,6 +164,7 @@ class MerchandiseStorefrontTest extends ReviewTestCase
             'form_id' => 'shop-newsletter-subscription-form',
         ])->assertRedirect(route('shop.home'))->assertSessionHasErrors(['email'], null, 'storefront');
         $this->assertFalse(session('errors')->getBag('default')->any());
+        $this->assertFalse(session()->has('newsletter_subscribed'));
         $this->get(route('shop.home'))->assertOk()->assertSee('data-shop-welcome-retry="true"', false)
             ->assertSee('aria-invalid="true"', false)->assertSee('value="invalid"', false);
         Mail::assertNothingSent();
@@ -199,14 +209,14 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $this->assertDatabaseCount('purchases', 0);
     }
 
-    public function test_search_and_category_filters_keep_the_complete_category_grid()
+    public function test_search_and_category_filters_keep_the_matching_grid()
     {
         $this->product(['name' => 'Rainbow sticker']);
         for ($i = 0; $i < 13; $i++) $this->product(['name' => 'Piano T-shirt '.$i]);
         $this->get(route('shop.category', ['category' => 'stickers']))->assertOk()->assertSee('Rainbow sticker')->assertDontSee('Piano T-shirt');
         $this->get(route('shop.home', ['q' => 'Rainbow']))->assertOk()->assertSee('Rainbow sticker')->assertDontSee('Piano T-shirt');
         $this->get(route('shop.home', ['q' => '%']))->assertOk()->assertSee('No products found')->assertDontSee('Rainbow sticker');
-        $this->get(route('shop.category', ['category' => 't-shirts', 'page' => 2]))->assertOk()->assertSee('Piano T-shirt 0')->assertDontSee('Rainbow sticker');
+        $this->get(route('shop.category', ['category' => 't-shirts']))->assertOk()->assertSee('Piano T-shirt 0')->assertDontSee('Rainbow sticker');
         $this->withExceptionHandling()->getJson(route('shop.home', ['q' => ['bad']]))->assertStatus(422);
         $this->getJson(route('shop.home', ['category' => 'bad']))->assertStatus(422);
     }
@@ -219,7 +229,7 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $product->update(['main_image_id' => $main->id]);
         $response = $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()->assertViewIs('shop.storefront.show')->assertSee('Add to bag')
             ->assertSee('data-color="Black"', false)->assertSee('data-size="L"', false)->assertSee('Next image')
-            ->assertSee('Checkout is coming soon')->assertDontSee('variant_id&quot;:4011', false);
+            ->assertSee('Checkout is not available yet')->assertDontSee('variant_id&quot;:4011', false);
         $this->assertLessThan(strpos($response->getContent(), 'shop/front.png'), strpos($response->getContent(), 'shop/back.png'));
         Http::assertNothingSent();
     }
@@ -244,11 +254,11 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $payload = ['product_id' => $product->id, 'variant_id' => 91, 'quantity' => 2, 'price' => '0.01', 'user_id' => 999];
         $this->postJson(route('shop.bag.add'), $payload)->assertOk()->assertJson(['count' => 2]);
         $this->assertSame([['product_id' => $product->id, 'variant_id' => 91, 'quantity' => 2]], array_values(session(MerchandiseBag::SESSION_KEY)));
-        $this->get(route('shop.bag'))->assertOk()->assertSee('$57.00 USD')->assertSee('Checkout is coming soon');
+        $this->get(route('shop.bag'))->assertOk()->assertSee('$57.00 USD')->assertSee('Checkout is not available yet');
         $product->update(['variants' => [$this->variant(['retail_price' => '30.00'])]]);
         $this->get(route('shop.bag'))->assertOk()->assertSee('$60.00 USD')->assertDontSee('$57.00 USD');
         $this->flushSession();
-        $this->get(route('shop.bag'))->assertOk()->assertSee('Your bag is waiting')->assertDontSee($product->name);
+        $this->get(route('shop.bag'))->assertOk()->assertSee('Your bag is empty')->assertDontSee($product->name);
         Http::assertNothingSent();
         Mail::assertNothingSent();
         $this->assertDatabaseCount('purchases', 0);
@@ -264,7 +274,7 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $this->patch(route('shop.bag.update', $params), ['quantity' => 3])->assertRedirect(route('shop.bag'));
         $this->get(route('shop.bag'))->assertSee('$85.50 USD');
         $this->delete(route('shop.bag.remove', $params))->assertRedirect(route('shop.bag'))->assertSessionHas('status', 'Removed from your bag');
-        $removed = $this->get(route('shop.bag'))->assertSee('Your bag is waiting')->assertSee('Removed from your bag')->assertDontSee('shop-toast');
+        $removed = $this->get(route('shop.bag'))->assertSee('Your bag is empty')->assertSee('Removed from your bag')->assertDontSee('shop-toast');
         $dom = new \DOMDocument;
         @$dom->loadHTML($removed->getContent());
         $this->assertCount(1, (new \DOMXPath($dom))->query('//div[@role="alert" and contains(@class,"alert-green") and contains(.,"Removed from your bag") and not(ancestor::template)]'));

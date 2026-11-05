@@ -3,6 +3,12 @@
     var root = document.querySelector('[data-storefront]');
     if (!root) return;
 
+    root.querySelectorAll('[data-card-closeup]').forEach(function (image) {
+        function fallback() { image.hidden = true; }
+        image.addEventListener('error', fallback);
+        if (image.complete && !image.naturalWidth) fallback();
+    });
+
     function notify(type, message) {
         var output = root.querySelector('[data-feedback-output]');
         var template = root.querySelector('[data-feedback-template="' + type + '"]');
@@ -14,45 +20,6 @@
             root.shopNoticeTimer = setTimeout(function () { output.replaceChildren(); }, 7000);
         }
     }
-
-    root.querySelectorAll('[data-shop-category]').forEach(function (section) {
-        var track = section.querySelector('[data-category-track]');
-        var controls = section.querySelector('[data-category-controls]');
-        var previous = section.querySelector('[data-category-step="-1"]');
-        var next = section.querySelector('[data-category-step="1"]');
-        var frame = null;
-        function maximum() { return Math.max(0, track.scrollWidth - track.clientWidth); }
-        function sync() {
-            previous.disabled = track.scrollLeft <= 2;
-            next.disabled = track.scrollLeft >= maximum() - 2;
-        }
-        function queueSync() {
-            if (frame !== null) return;
-            frame = requestAnimationFrame(function () { frame = null; sync(); });
-        }
-        function move(direction) {
-            var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-            var left = Math.max(0, Math.min(maximum(), track.scrollLeft + direction * (track.clientWidth + gap)));
-            track.scrollTo({left: left, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
-        }
-        previous.addEventListener('click', function () { move(-1); });
-        next.addEventListener('click', function () { move(1); });
-        track.addEventListener('scroll', queueSync, {passive: true});
-        track.addEventListener('keydown', function (event) {
-            if (event.target !== track) return;
-            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-                event.preventDefault();
-                move(event.key === 'ArrowLeft' ? -1 : 1);
-            } else if (event.key === 'Home' || event.key === 'End') {
-                event.preventDefault();
-                track.scrollTo({left: event.key === 'Home' ? 0 : maximum(), behavior: 'auto'});
-            }
-        });
-        if (window.ResizeObserver) new ResizeObserver(queueSync).observe(track);
-        else window.addEventListener('resize', queueSync);
-        controls.hidden = false;
-        sync();
-    });
 
     root.querySelectorAll('[data-quantity]').forEach(function (control) {
         var input = control.querySelector('input');

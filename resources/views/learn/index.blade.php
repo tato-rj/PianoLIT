@@ -1,30 +1,30 @@
-@extends('layouts.app', ['title' => 'PianoLIT Learn | Tools, courses & discoveries', 'bodyClass' => 'learn-home'])
+@extends('layouts.app', ['title' => 'PianoLIT Learn | Tools, courses & guides', 'bodyClass' => 'learn-home'])
 
 @section('content')
 @php
     $sections = [
         [
             'id' => 'tools', 'label' => 'Interactive tools',
-            'description' => 'See how music works. Explore keys and chords by trying them yourself.',
+            'description' => 'Study keys and chords with interactive tools.',
             'projects' => [
-                ['key' => 'circle', 'title' => 'Circle of fifths', 'format' => 'Explore harmony', 'route' => 'tools.circle-of-fifths', 'description' => 'See how keys connect, explore key signatures, and find your way around harmony.', 'action' => 'Explore the circle'],
-                ['key' => 'chords', 'title' => 'Chord finder', 'format' => 'Find an answer', 'route' => 'tools.chord-finder.index', 'description' => 'Choose notes on a piano keyboard and discover the chords they make.', 'action' => 'Find a chord'],
+                ['key' => 'circle', 'title' => 'Circle of fifths', 'format' => 'Explore harmony', 'route' => 'tools.circle-of-fifths', 'description' => 'Compare keys, key signatures, and scales.', 'action' => 'Explore the circle'],
+                ['key' => 'chords', 'title' => 'Chord finder', 'format' => 'Find an answer', 'route' => 'tools.chord-finder.index', 'description' => 'Choose notes on a piano keyboard to find possible chords.', 'action' => 'Find a chord'],
             ],
         ],
         [
             'id' => 'guides', 'label' => 'Courses & guides',
-            'description' => 'Take it one idea at a time, with lessons to follow and references to keep.',
+            'description' => 'Read email lessons and download visual reference guides.',
             'projects' => [
-                ['key' => 'courses', 'title' => 'Crash courses', 'format' => 'Lessons by email', 'route' => 'crashcourses.index', 'description' => 'Go deeper into a musical topic with a series of short lessons delivered to your inbox.', 'action' => 'Browse courses'],
-                ['key' => 'infographics', 'title' => 'Infographics', 'format' => 'Learn visually', 'route' => 'resources.infographs.index', 'description' => 'Make complex ideas click with clear visual guides you can download and revisit.', 'action' => 'Explore the guides'],
+                ['key' => 'courses', 'title' => 'Crash courses', 'format' => 'Lessons by email', 'route' => 'crashcourses.index', 'description' => 'Study a music topic through short lessons delivered by email.', 'action' => 'Browse courses'],
+                ['key' => 'infographics', 'title' => 'Infographics', 'format' => 'Learn visually', 'route' => 'resources.infographs.index', 'description' => 'Download visual guides to music theory and piano practice.', 'action' => 'Explore the guides'],
             ],
         ],
         [
             'id' => 'discover', 'label' => 'Quizzes & pianists',
-            'description' => 'Follow your curiosity. Challenge what you know or discover someone inspiring.',
+            'description' => 'Test your music knowledge and read about pianists.',
             'projects' => [
-                ['key' => 'quizzes', 'title' => 'Quizzes', 'format' => 'Test your knowledge', 'route' => 'quizzes.index', 'description' => 'Put your musical knowledge to the test and learn something along the way.', 'action' => 'Try a quiz'],
-                ['key' => 'pianists', 'title' => 'Great pianists', 'format' => 'Meet the artists', 'route' => 'resources.pianists.index', 'description' => 'Get to know the remarkable pianists who have shaped the way we hear and play music.', 'action' => 'Discover the pianists'],
+                ['key' => 'quizzes', 'title' => 'Quizzes', 'format' => 'Test your knowledge', 'route' => 'quizzes.index', 'description' => 'Answer questions about music theory, history, and piano.', 'action' => 'Try a quiz'],
+                ['key' => 'pianists', 'title' => 'Great pianists', 'format' => 'Meet the artists', 'route' => 'resources.pianists.index', 'description' => 'Read biographies of pianists and learn about their careers.', 'action' => 'Discover the pianists'],
             ],
         ],
     ];
@@ -36,7 +36,7 @@
     ]])
 
     @component('components.layout.hub-header', ['heading' => 'PianoLIT Learn', 'preview' => false])
-        Find a chord. Explore a key. Take a short course.<br class="d-none d-md-block"> Tools, visual guides, quizzes, and great pianists to learn from.
+        Music theory tools, email courses, visual guides, quizzes, and pianist biographies.
     @endcomponent
 
     @component('components.layout.editorial')

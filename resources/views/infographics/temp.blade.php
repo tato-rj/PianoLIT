@@ -34,7 +34,7 @@
 									<div class="d-flex align-items-center">
 										<div class="me-2"><small><strong>Did you like this?</strong></small></div>
 										<div class="d-flex align-items-center flex-nowrap">
-											<button title="Love it!" data-value="1" data-url class="animate review border-0 bg-transparent text-grey px-1 me-2"><small>Yes</small> @icon('thumbs-up', ['mr' => 0])</button>
+											<button title="Helpful" data-value="1" data-url class="animate review border-0 bg-transparent text-grey px-1 me-2"><small>Yes</small> @icon('thumbs-up', ['mr' => 0])</button>
 											<button title="Not so much..." data-value="0" data-url class="animate review border-0 bg-transparent text-grey px-1">
 												<small>No</small> @icon('thumbs-down', ['mr' => 0])</button>
 										</div>

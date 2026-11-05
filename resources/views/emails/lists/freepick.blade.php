@@ -5,7 +5,7 @@
             && !\App\Activity\ExcludedAccounts::email($subscription->email)
     );
 @endphp
-@component('mail::editorial.message', ['title' => 'Free pick of the week', 'preheader' => $piece->medium_name.' by '.$piece->composer->name.'. Your next piano discovery is here.', 'websiteUrl' => $websiteUrl, 'footerReason' => 'You’re receiving this email because you are subscribed to PianoLIT Free Picks.', 'unsubscribeUrl' => $unsubscribeUrl, 'unsubscribeLabel' => $subscription ? 'Unsubscribe' : 'Unsubscribe / email preferences', 'emailClass' => 'freepick-email'])
+@component('mail::editorial.message', ['title' => 'Free pick of the week', 'preheader' => $piece->medium_name.' by '.$piece->composer->name.'. This week’s Free Pick.', 'websiteUrl' => $websiteUrl, 'footerReason' => 'You’re receiving this email because you are subscribed to PianoLIT Free Picks.', 'unsubscribeUrl' => $unsubscribeUrl, 'unsubscribeLabel' => $subscription ? 'Unsubscribe' : 'Unsubscribe / email preferences', 'emailClass' => 'freepick-email'])
 @component('mail::freepick.header', ['title' => 'Free pick of the week', 'websiteUrl' => $websiteUrl])
 @endcomponent
 
@@ -18,7 +18,7 @@
 @endcomponent
 
 @if($hasScore || $hasPerformance || $hasSynthesia || $hasAudio || $hasVideoComments)
-@component('mail::freepick.features', ['title' => "Let's dive in", 'introduction' => 'Sign in with your PianoLIT account to explore this week’s piece while it’s featured.'])
+@component('mail::freepick.features', ['title' => 'Available resources', 'introduction' => 'Sign in with your PianoLIT account to explore this week’s piece while it’s featured.'])
 @if($hasScore)
 @component('mail::editorial.feature', ['title' => 'Score & annotations', 'image' => $websiteUrl.mix('images/emails/welcome/premium-file-music.png')])
 Read the full score and keep your own practice markings.
@@ -64,9 +64,9 @@ Some of our latest additions. Explore the full library with Premium.
 @endcomponent
 @endif
 
-@component('mail::freepick.premium', ['title' => 'Keep the inspiration going', 'image' => $websiteUrl.mix('images/emails/welcome/app-devices.png'), 'url' => $campaignLinks->url($premiumUrl, 'go_premium'), 'button' => 'Go Premium'])
-This week is just the beginning. With PianoLIT Premium, keep exploring the full library of pieces, available videos and recordings, and public-domain scores.
+@component('mail::freepick.premium', ['title' => 'PianoLIT Premium', 'image' => $websiteUrl.mix('images/emails/welcome/app-devices.png'), 'url' => $campaignLinks->url($premiumUrl, 'go_premium'), 'button' => 'Go Premium'])
+PianoLIT Premium provides full access to the piece library, available videos and recordings, and public-domain scores.
 
-Save your markings, build a repertoire you love, and download or print public-domain scores for your piano. The same account works on the web and in the iOS app.
+Save score markings, organize pieces in folders, and download or print public-domain scores. The same account works on the web and in the iOS app.
 @endcomponent
 @endcomponent

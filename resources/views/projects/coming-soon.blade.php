@@ -2,7 +2,7 @@
 
 @section('content')
 <section class="project-coming-soon__content mx-auto" aria-label="{{ $projectTitle }} coming soon">
-    <h1>Coming up soon!</h1>
+    <h1>Not available yet</h1>
     <a href="{{ route('home') }}">@icon('arrow-left')Back to PianoLIT</a>
 </section>
 @endsection

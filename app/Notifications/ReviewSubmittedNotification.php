@@ -45,7 +45,7 @@ class ReviewSubmittedNotification extends Notification
     {
         return [
             'title' => 'New review',
-            'message' => '<u>' . $this->review->reviewable->title . '</u> got a <strong>'.$this->review->rating.'-star</strong> review.',
+            'message' => '<u>' . e($this->review->reviewable->title ?? $this->review->reviewable->name ?? 'Product unavailable') . '</u> got a <strong>'.$this->review->rating.'-star</strong> review.',
             'url' => route('admin.reviews.index')
         ];
     }

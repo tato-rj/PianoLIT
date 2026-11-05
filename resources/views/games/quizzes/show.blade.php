@@ -95,7 +95,7 @@
         </article>
         @if($suggestions->isNotEmpty())
             <section class="border-top pt-4 mt-5" aria-labelledby="more-quizzes-title">
-                <h2 class="h4 mb-4" id="more-quizzes-title">Keep your curiosity going</h2>
+                <h2 class="h4 mb-4" id="more-quizzes-title">More quizzes</h2>
                 <div class="row g-4">
                     @foreach($suggestions as $suggestion)
                         <div class="col-md-6">@include('games.quizzes.card', ['quiz' => $suggestion, 'cardId' => 'suggested-quiz-'.$suggestion->id])</div>

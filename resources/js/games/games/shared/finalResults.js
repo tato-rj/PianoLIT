@@ -182,48 +182,9 @@ export function renderFinalResultsOverlay({
   const $greeting = $finalOverlay.find("#result-greeting");
   const $greetingTitle = $greeting.find("h1");
   const $settingsBonus = $finalOverlay.find("#settings-bonus-earned");
-  const resultGreetings = {
-    encouraging: [
-      "Keep going!",
-      "Nice try!",
-      "You are learning!",
-      "Getting there!",
-      "Good effort!",
-      "Keep practicing!",
-      "Almost there!",
-      "Let's try that again!",
-      "Try another round!",
-      "You are getting closer!",
-    ],
-    strong: [
-      "Great job!",
-      "Well done!",
-      "Nice work!",
-      "Good one!",
-      "Solid round!",
-      "Looking good!",
-      "You did it!",
-      "That was good!",
-      "Way to go!",
-      "Good progress!",
-    ],
-    excellent: [
-      "You got it!",
-      "Impressive!",
-      "Fantastic!",
-      "Excellent!",
-      "Nailed it!",
-      "Brilliant!",
-      "Outstanding!",
-      "Amazing round!",
-      "That was sharp!",
-      "Top notch!",
-    ],
-  };
-  const randomFrom = (items) => items[Math.floor(Math.random() * items.length)];
   // Keep the existing accuracy bands consistent across every game.
   const tier = accuracy < 50 ? "encouraging" : accuracy <= 80 ? "strong" : "excellent";
-  $greetingTitle.text(accuracy >= 100 ? "Perfect run!" : randomFrom(resultGreetings[tier]));
+  $greetingTitle.text(accuracy >= 100 ? "All answers correct" : "Round complete");
   $finalOverlay.attr("data-result-tier", tier);
   $finalOverlay.attr("data-result-variant", chooseResultVariant(tier));
   $finalOverlay[0]?.style.setProperty("--result-score-digits", String(Math.max(3, String(Math.round(Number(score) || 0)).length)));

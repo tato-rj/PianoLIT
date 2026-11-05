@@ -332,7 +332,7 @@ export class VoiceRecorder {
                 this.cue('speaking', `Say “${WORDS[index]}”`);
                 this.draft[index] = await this.capture.record(level => this.level(level));
                 if (flow !== this.flow) return;
-                this.cue('success', 'Got it!');
+                this.cue('success', 'Recorded');
                 await this.delay(600, flow);
             }
             await this.capture.cancel();
@@ -348,7 +348,7 @@ export class VoiceRecorder {
             if (flow !== this.flow) return;
             this.capture.cancel();
             this.level(0);
-            this.cue('error', `Let’s try ${WORDS[this.nextIndex]} again`);
+            this.cue('error', `Record “${WORDS[this.nextIndex]}” again`);
             this.ui('status').textContent = error.name === 'NotAllowedError' ? 'Allow the microphone in your browser, then try again.'
                 : error.name === 'NotFoundError' ? 'Connect a microphone, then try again.'
                     : error.name === 'NotReadableError' ? 'Your microphone is busy. Close other recording apps and try again.'

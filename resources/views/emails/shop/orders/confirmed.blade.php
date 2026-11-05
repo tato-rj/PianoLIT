@@ -3,7 +3,7 @@
 
 Hi {{ $order->recipient['name'] }},
 
-Your payment is confirmed. Thank you for bringing a little more piano into your day!
+Your payment is confirmed.
 
 **Order reference:** {{ $order->id }}
 
@@ -33,6 +33,6 @@ Keep this private link to check your order on any device. You don’t need an ac
 
 Questions? Reply to this email or contact [contact@pianolit.com](mailto:contact@pianolit.com) with your order reference.
 
-Enjoy the music,<br>
+Thank you,<br>
 The PianoLIT team
 @endcomponent

@@ -44,6 +44,7 @@
       'breadcrumbs' => [['label' => 'eScores', 'url' => route('admin.escores.index')]]
     ])
 
+    @include('admin.components.shop.closeup', ['closeupProduct' => $escore, 'closeupKind' => 'escores'])
     <div class="row">
       <div class="col-12 mb-3">
         <form action="{{route('admin.escores.previews.upload', $escore)}}" class="dropzone" id="filesDropzone"></form>
@@ -124,9 +125,6 @@
         <button type="submit" id="submit-button" class="btn btn-default">Update eScore</button>
       </div>
     </form>
-    <div class="my-4">
-      @include('admin.components.shop.display-mockup', ['mockupProduct' => $escore, 'mockupAction' => route('admin.escores.display-mockup', $escore)])
-    </div>
     @include('admin.pages.reviews.fake', ['product' => $escore])
 
   </div>

@@ -45,7 +45,7 @@ class WebAppCollectionsTest extends ReviewTestCase
         $response = $this->get(route('webapp.playlists', ['user_id' => 123]));
         $response->assertViewHas('inspiration', function ($cards) { return $cards->count() === 3; });
         $response->assertOk()->assertSee('Collections')->assertSee('The PianoLit series')
-            ->assertSee('What would you like to play next?')->assertSee('Coming soon')
+            ->assertSee('Suggested collections')->assertSee('Coming soon')
             ->assertSee('6 pieces')->assertDontSee('7 pieces')->assertDontSee('YOUR PATH')
             ->assertDontSee('Continue')->assertDontSee('THIS WEEK')
             ->assertSee('data-bs-target="#signup-collections-modal"', false)

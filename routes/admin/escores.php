@@ -23,7 +23,8 @@ Route::prefix('escores')->name('escores.')->group(function() {
 	Route::get('{escore}', 'Admin\eScoresController@show')->name('show');
 
 	Route::get('{escore}/edit', 'Admin\eScoresController@edit')->name('edit');
-	Route::post('{escore}/display-mockup', 'Admin\ShopMockupsController@escore')->name('display-mockup');
+    Route::post('{escore}/closeup', 'Admin\ShopCloseupsController@store')->defaults('closeupKind', 'escores')->name('closeup.store');
+    Route::delete('{escore}/closeup', 'Admin\ShopCloseupsController@destroy')->defaults('closeupKind', 'escores')->name('closeup.destroy');
 
 	Route::patch('{escore}/status', 'Admin\eScoresController@updateStatus')->name('update-status');
 

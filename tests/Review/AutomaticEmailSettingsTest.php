@@ -251,7 +251,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $file = $directory.'/emails/welcome/webapp.blade.php';
         $view = file_get_contents(resource_path('views/emails/welcome/webapp.blade.php'));
         file_put_contents($file, str_replace(
-            ['PianoLIT is where pianists discover new pieces and find inspiration', 'Take PianoLIT with you.', 'Get the iOS app'],
+            ['Browse piano pieces by level, mood, style, and technique.', 'Use PianoLIT on iPhone and iPad.', 'Get the iOS app'],
             ['Your edited welcome introduction.', 'Your edited app paragraph.', 'Your edited button'], $view
         ));
         $finder = app('view')->getFinder();

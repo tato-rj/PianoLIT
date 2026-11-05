@@ -21,17 +21,15 @@ class MerchandiseController extends Controller
         }
         $search = trim($filters['q'] ?? '');
         $topics = in_array($category, ['ebooks', 'escores'], true) ? ($filters['topics'] ?? []) : [];
-        $products = $category ? $catalog->products($search, $category, $topics) : null;
-        $productGroups = $category ? collect() : $catalog->grouped($search);
+        $products = $catalog->paginate($search, $category, $topics, (int) ($filters['page'] ?? 1), $catalog->categoryUrl($category))->withQueryString();
+        if ($products->currentPage() > $products->lastPage()) return redirect()->to($products->url($products->lastPage()));
         $categories = Storefront::CATEGORIES;
         if ($category === 'merchandise') $categories[$category] = 'Merchandise';
         $categoryUrls = array_map(fn ($key) => $catalog->categoryUrl($key), array_combine(array_keys($categories), array_keys($categories)));
         $breadcrumbs = [['label' => 'Home', 'url' => route('home')], ['label' => 'Shop', 'url' => $category ? route('shop.home') : null]];
         if ($category) $breadcrumbs[] = ['label' => $categories[$category]];
-        return view('shop.storefront.index', ['products' => $products, 'productGroups' => $productGroups,
-            'bestDeals' => !$category && $search === '' ? $catalog->bestDeals($productGroups) : collect(),
-            'hasProducts' => $category ? $products->count() > 0 : $productGroups->sum(fn ($group) => $group->count()) > 0,
-            'sectionLabels' => Storefront::SECTIONS, 'search' => $search, 'category' => $category, 'topics' => $topics,
+        return view('shop.storefront.index', ['products' => $products, 'hasProducts' => $products->count() > 0,
+            'search' => $search, 'category' => $category, 'topics' => $topics,
             'categories' => $categories, 'categoryUrls' => $categoryUrls, 'catalogUrl' => $catalog->categoryUrl($category),
             'breadcrumbs' => $breadcrumbs, 'shoppingBag' => $bag->contents($request)]);
     }

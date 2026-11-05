@@ -37,7 +37,7 @@
             @forelse($reviews->filter(function ($review) { return $review->hasContent(); }) as $review)
                 @include('shop.components.reviews.review')
             @empty
-                @if($reviewCount)<p class="text-muted">Readers have left ratings for this {{ $productKind }}, with no written reviews yet.</p>@endif
+                @if($reviewCount)<p class="text-muted">{{ ($product instanceof \App\Merchandise\MerchandiseProduct) ? 'Customers' : 'Readers' }} have left ratings for this {{ $productKind }}, with no written reviews yet.</p>@endif
             @endforelse
         </div>
     </div>

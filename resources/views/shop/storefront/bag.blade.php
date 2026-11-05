@@ -44,7 +44,7 @@
                     <a class="btn btn-primary w-100" href="{{ route('shop.checkout') }}" data-checkout-open>Checkout</a>
                 @else
                     <button class="btn btn-primary w-100" type="button" disabled aria-describedby="checkout-status">Checkout</button>
-                    <p class="text-center mt-3 mb-0" id="checkout-status">Checkout is coming soon</p>
+                    <p class="text-center mt-3 mb-0" id="checkout-status">Checkout is not available yet</p>
                 @endif
             </div>
         </aside>
@@ -52,8 +52,8 @@
 @else
     <div class="shop-empty py-5">
         <span class="shop-empty__icon bg-light text-muted rounded-circle" aria-hidden="true">@icon('shopping-bag', ['mr' => 0, 'size' => '2x'])</span>
-        <h2>Your bag is waiting for a little music</h2>
-        <p>Find something that strikes a chord.</p>
+        <h2>Your bag is empty</h2>
+        <p>Products you add will appear here.</p>
         <a class="btn btn-primary" href="{{ route('shop.home') }}">Browse products @icon('arrow-right')</a>
     </div>
 @endif

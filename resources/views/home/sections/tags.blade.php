@@ -3,7 +3,7 @@
 		<div class="col-lg-6 col-sm-8 col-12 mx-auto mb-4">
 			<p class="text-muted"><small>DISCOVER</small></p>
 			<h3 class="accent-bottom mb-4">Finding new pieces has never been so easy</h3>
-			<p class="text-muted">Select below the ideas that match the kind of pieces you would like to find. Let's see what you'll discover!</p>
+			<p class="text-muted">Select the styles, moods, or techniques you want to search for.</p>
 		</div>
 	</div>
 </section>

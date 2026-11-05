@@ -54,12 +54,13 @@ class MerchandiseImages
         return $this->store(file_get_contents($file->getRealPath()), $alt, 'upload');
     }
 
-    public function fromDisplayUpload(UploadedFile $file, string $alt): array
+    public function fromCloseupUpload(UploadedFile $file, string $alt): array
     {
-        return $this->store(file_get_contents($file->getRealPath()), $alt, 'upload', null, 'shop/display-mockups');
+        if ($file->getSize() > self::MAX_BYTES) throw new PrintfulException('Use a close-up image up to 10 MB.');
+        return $this->store(file_get_contents($file->getRealPath()), $alt, 'upload', null, 'shop/closeups', 95);
     }
 
-    private function store(string $bytes, string $alt, string $source, ?string $sourceKey = null, string $directory = 'shop/merchandise'): array
+    private function store(string $bytes, string $alt, string $source, ?string $sourceKey = null, string $directory = 'shop/merchandise', int $quality = 88): array
     {
         $size = @getimagesizefromstring($bytes);
         if (strlen($bytes) > self::MAX_BYTES || !$size || !in_array($size['mime'], ['image/jpeg', 'image/png', 'image/webp'], true)
@@ -70,7 +71,7 @@ class MerchandiseImages
             $image = Image::make($bytes)->orientate();
             // Re-encode raster data; keep transparency for sticker mockups.
             $extension = $size['mime'] === 'image/jpeg' ? 'jpg' : 'png';
-            $encoded = (string) $image->encode($extension, 88);
+            $encoded = (string) $image->encode($extension, $quality);
             $width = $image->width();
             $height = $image->height();
             $image->destroy();

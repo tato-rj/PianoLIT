@@ -18,7 +18,7 @@ Are you sure?
 @endslot
 
 @slot('body')
-<p>You are about to delete your account!</p>
+<p>This will permanently delete your account.</p>
 @include('users.profile.tabs.membership-alert')
 <p class="text-danger m-0">This action cannot be undone</p>
 @endslot

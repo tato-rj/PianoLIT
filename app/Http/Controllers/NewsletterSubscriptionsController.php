@@ -17,6 +17,7 @@ class NewsletterSubscriptionsController extends Controller
             $subscribers->subscribe($request->email);
             if ($shopOffer) app(FirstOrderDiscount::class)->grant($request->email);
         }, 3);
+        $request->session()->put('newsletter_subscribed', true);
 
         if ($shopOffer) {
             $request->session()->put('shop_newsletter_email', mb_strtolower(trim($request->email)));

@@ -61,7 +61,7 @@
                 continent: counts.name, lat: positions[counts.name][0], lng: positions[counts.name][1],
                 composers: counts.composers, pieces: counts.pieces, countries: counts.countries, url: counts.url});
         });
-        var world = {key: 'world', kind: 'World', name: 'A world of music',
+        var world = {key: 'world', kind: 'World', name: 'All countries',
             composers: catalogue.totals.composers, pieces: catalogue.totals.pieces};
         var places = {world: world};
         countries.concat(continents).forEach(function (place) { places[place.key] = place; });

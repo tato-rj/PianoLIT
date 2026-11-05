@@ -9,7 +9,7 @@
 <div class="text-center pt-7 mx-auto" style="width: 90%">
 	<div class="mb-3">
 		<h1 style="font-family: Roboto Condensed,sans-serif;" class="text-uppercase">What should I play next?</h1>
-		<p class="bg-white py-2 px-3 d-inline-block rounded"><strong>Take a quick tour to find out the perfect piano piece for you!</strong></p>
+		<p class="bg-white py-2 px-3 d-inline-block rounded"><strong>Answer questions about your level and preferences to get a suggested piece.</strong></p>
 	</div>
 
 	<div class="w-100" style="background-image: url({{asset('images/misc/piano.svg')}}); height: 129px;"></div>

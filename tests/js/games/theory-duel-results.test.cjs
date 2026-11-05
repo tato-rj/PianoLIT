@@ -67,13 +67,13 @@ test('first finisher waits without announcing a winner and then reveals both sav
     assert.equal(api.root.querySelector('[data-duel-metric="you-time"]').textContent, '01:05');
     assert.equal(api.root.querySelector('[data-duel-metric="opponent-accuracy"]').textContent, '100%');
 });
-test('refresh restores the losing perspective with encouragement and no winner confetti', () => {
+test('refresh restores the losing perspective and no winner confetti', () => {
     const api = setup(); const match = state(); match.role = 'guest';
     api.renderDuelResults(api.root, match);
     assert.equal(api.root.dataset.outcome, 'loss');
     assert.equal(api.root.querySelector('span[name="score"]').textContent, 10);
     assert.match(api.root.querySelector('[data-duel-outcome]').textContent, /Opponent won/);
-    assert.match(api.root.querySelector('[data-duel-result-title]').textContent, /comeback/);
+    assert.match(api.root.querySelector('[data-duel-result-title]').textContent, /Your opponent won/);
     assert.equal(api.bursts(), 0);
     assert.equal(api.sounds(), 0);
 });

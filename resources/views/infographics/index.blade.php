@@ -25,7 +25,7 @@
         ['label' => 'Infographics'],
     ]])
     @component('components.layout.hub-header', ['heading' => 'Infographics', 'preview' => false])
-        A fresh way to see music theory.<br class="d-none d-md-block"> Free visual guides to explore, download, and keep close to your piano.
+        Free visual guides to music theory and piano practice.
     @endcomponent
 
     @include('components.navigation.topic-navigation', ['items' => $topicLinks, 'label' => 'Infographic topics'])
@@ -48,8 +48,8 @@
             </section>
         @else
             <section aria-labelledby="infographics-empty-title" class="py-4">
-                <h2 id="infographics-empty-title" class="h5">{{ $selectedTopics ? 'No infographics match these topics' : 'New visual guides are on their way' }}</h2>
-                <p class="text-muted">{{ $selectedTopics ? 'Try another topic or browse all of our visual guides.' : 'Explore our other learning tools while you wait.' }}</p>
+                <h2 id="infographics-empty-title" class="h5">{{ $selectedTopics ? 'No infographics match these topics' : 'No infographics available' }}</h2>
+                <p class="text-muted">{{ $selectedTopics ? 'Try another topic or browse all of our visual guides.' : 'Browse the other tools and resources in Learn.' }}</p>
                 <a class="btn btn-secondary" href="{{ $selectedTopics ? route('resources.infographs.index') : route('learn.home') }}">{{ $selectedTopics ? 'View all infographics' : 'Explore Learn' }} @icon('arrow-right', ['mr' => 0, 'ml' => 2])</a>
             </section>
         @endif

@@ -14,7 +14,7 @@
     ]])
 
     @component('components.layout.hub-header', ['heading' => 'PianoLIT Blog', 'preview' => false])
-        Stories, ideas, and discoveries from the world of piano.<br class="d-none d-md-block">A little inspiration for wherever music takes you.
+        Articles about piano music, practice, and music history.
     @endcomponent
 
     @php
@@ -46,8 +46,8 @@
             @endif
         @else
             <section class="rounded bg-light p-4 p-md-5" aria-labelledby="blog-empty-title">
-                <h2 id="blog-empty-title" class="h4">{{ $posts->total() ? 'You’ve reached the end of these stories.' : 'No stories here just yet.' }}</h2>
-                <p class="text-muted">{{ $posts->total() ? 'Head back to the beginning for more reading.' : 'Explore another topic or come back soon for something new.' }}</p>
+                <h2 id="blog-empty-title" class="h4">{{ $posts->total() ? 'No more articles' : 'No articles found' }}</h2>
+                <p class="text-muted">{{ $posts->total() ? 'Return to the first page to browse articles.' : 'Try another topic or browse all articles.' }}</p>
                 <a href="{{ route('posts.index') }}" class="btn btn-primary">Browse all stories @icon('arrow-right', ['ml' => 2, 'mr' => 0])</a>
             </section>
         @endif

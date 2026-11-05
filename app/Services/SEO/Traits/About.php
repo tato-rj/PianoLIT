@@ -6,7 +6,7 @@ trait About
 {
 	protected $title = 'PianoLIT - Where pianists discover new pieces';
 
-	protected $moto = 'Find classical piano pieces that inspire you.';
+	protected $moto = 'Find classical piano pieces by level, mood, and style.';
 
-	protected $description = 'PianoLIT is the first search engine for pianists that helps you navigate the repertoire and find pieces that match your level, mood, and interest.';
+	protected $description = 'Browse piano pieces by level, mood, style, and technique, with scores, videos, and recordings.';
 }

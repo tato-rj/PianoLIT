@@ -23,10 +23,10 @@ export function duelDuration(startsAt, finishedAt) {
 }
 
 const greetings = {
-    win: { tier: 'excellent', label: 'Duel champion', title: 'You won!!!', message: 'YES! You did it! Take a bow — that victory is yours! ✨' },
-    loss: { tier: 'encouraging', label: 'Opponent won this round', title: 'Your comeback starts here!', message: 'This one went to your opponent. Keep playing, keep learning — your next win is waiting.' },
-    draw: { tier: 'strong', label: 'A shared victory', title: 'It’s a draw!', message: 'Same points. Same accuracy. Two musicians, one brilliant match!' },
-    waiting: { tier: 'strong', label: 'Your part is done ✓', title: 'Beautiful finish!', message: 'Your opponent is still playing. Stay here for the final results!' },
+    win: { tier: 'excellent', label: 'Duel result', title: 'You won', message: 'Your score ranked above your opponent’s.' },
+    loss: { tier: 'encouraging', label: 'Opponent won this round', title: 'Your opponent won', message: 'Your opponent’s score ranked above yours.' },
+    draw: { tier: 'strong', label: 'Duel result', title: 'Draw', message: 'Both players have the same points and accuracy.' },
+    waiting: { tier: 'strong', label: 'Your game is complete', title: 'Waiting for your opponent', message: 'Your opponent is still playing. The final results will appear when they finish.' },
 };
 
 export function renderDuelResults(root, state) {
@@ -73,7 +73,7 @@ export function renderDuelResults(root, state) {
     const waiting = outcome.kind === 'waiting';
     text('[data-duel-result-rule]', waiting ? 'The winner is revealed when you both finish.' :
         outcome.reason === 'accuracy' ? 'Points tied — higher accuracy wins.' :
-        outcome.reason === 'draw' ? 'Equal points and accuracy. You share the honors!' :
+        outcome.reason === 'draw' ? 'Both players have the same points and accuracy.' :
         'Highest final score wins. Accuracy breaks a tie.');
     root.querySelector('[data-duel-result-home]').hidden = waiting;
     root.querySelector('[data-duel-result-leave]').hidden = !waiting;

@@ -50,8 +50,8 @@
                 @if($pianists->hasPages())<div class="mt-5">{{ $pianists->onEachSide(1)->links() }}</div>@endif
             @else
                 <div class="py-4">
-                    <h3 class="h5">{{ $filters['search'] || $filters['country'] ? 'No pianists match your search' : 'New artist profiles are on their way' }}</h3>
-                    <p class="text-muted">{{ $filters['search'] || $filters['country'] ? 'Try another name or country, or browse all the artists.' : 'Explore our other music resources while you wait.' }}</p>
+                    <h3 class="h5">{{ $filters['search'] || $filters['country'] ? 'No pianists match your search' : 'No pianist profiles available' }}</h3>
+                    <p class="text-muted">{{ $filters['search'] || $filters['country'] ? 'Try another name or country, or browse all the artists.' : 'Browse the other tools and resources in Learn.' }}</p>
                     <a class="btn btn-secondary" href="{{ $filters['search'] || $filters['country'] ? route('resources.pianists.index') : route('learn.home') }}">{{ $filters['search'] || $filters['country'] ? 'View all pianists' : 'Explore Learn' }} @icon('arrow-right', ['mr' => 0, 'ml' => 2])</a>
                 </div>
             @endif

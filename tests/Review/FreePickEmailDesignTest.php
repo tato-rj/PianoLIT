@@ -56,7 +56,7 @@ class FreePickEmailDesignTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//td[@class="freepick-header"]/parent::tr/following-sibling::tr[1]/td[@class="freepick-cover"]'));
         $this->assertCount(4, $xpath->query('//td[@class="editorial-feature-icon"]'));
         $this->assertCount(1, $xpath->query('//span[contains(@class,"freepick-level-advanced")]'));
-        foreach (['Free pick of the week', "Let's dive in", $piece->medium_name, 'Cécile Chaminade', 'annotations',
+        foreach (['Free pick of the week', 'Available resources', $piece->medium_name, 'Cécile Chaminade', 'annotations',
             'Synthesia', 'separate-hand audio', 'PianoLIT account', 'Go Premium'] as $copy) {
             $this->assertStringContainsString($copy, html_entity_decode($html, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
             $this->assertStringContainsString($copy, $text);

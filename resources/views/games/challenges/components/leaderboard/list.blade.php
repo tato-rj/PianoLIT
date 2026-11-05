@@ -1,7 +1,7 @@
 @if($leaderboard->isEmpty())
     <div class="leaderboard-empty">
         <span class="leaderboard-empty__icon" aria-hidden="true">@include('games.challenges.components.icon', ['icon' => 'ranking-star', 'mr' => 0])</span>
-        <p>No scores yet. Be the first!</p>
+        <p>No scores recorded yet.</p>
     </div>
 @else
     <ol class="leaderboard-podium" aria-label="Top three">

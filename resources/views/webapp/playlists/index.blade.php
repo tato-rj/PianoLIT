@@ -1,7 +1,7 @@
 @extends('webapp.layouts.app', ['title' => 'Piano Collections'])
 
 @section('content')
-@component('webapp.layouts.header', ['title' => 'Collections', 'subtitle' => 'Find something beautiful to play.'])
+@component('webapp.layouts.header', ['title' => 'Collections', 'subtitle' => 'Browse piano pieces grouped by theme and level.'])
 @endcomponent
 
 <div class="collections-page" id="collections-page" @if(session('collection_access_prompt')) data-access-prompt="{{ session('collection_access_prompt') }}" @endif>
@@ -13,8 +13,8 @@
         </span>
         <span class="collections-intro__copy">
             <span class="collections-eyebrow pastel-card__tag mb-1">THE PIANOLIT PATH</span>
-            <strong>A little direction. A world of music.</strong>
-            <span>Meet our upcoming Piano Solos series.</span>
+            <strong>Piano Solos books by level</strong>
+            <span>View the upcoming Piano Solos series.</span>
         </span>
         <span class="collections-intro__action pastel-card__action">Discover the series @icon('arrow-right', ['mr' => 0])</span>
     </a>
@@ -25,7 +25,7 @@
         <div class="collections-feature__copy">
             <span class="collections-eyebrow pastel-card__tag">FEATURED COLLECTION</span>
             <h1 id="featured-heading">{{ $featured['playlist']->name }}</h1>
-            <p>{{ $featured['playlist']->subtitle ?: 'Discover something beautiful in the piano repertoire.' }}</p>
+            <p>{{ $featured['playlist']->subtitle ?: 'Browse the pieces in this collection.' }}</p>
             <span class="collections-meta">{{ $featured['playlist']->pieces_count }} pieces</span>
             <a class="btn pastel-card__action" @include('webapp.playlists.link-attributes', ['playlist' => $featured['playlist']])>Explore collection @icon('arrow-right', ['mr' => 0])</a>
         </div>
@@ -38,7 +38,7 @@
         <div class="collections-section__heading">
             <div>
                 <h2 id="path-heading">The PianoLit series</h2>
-                <p>Grow through our Piano Solos series, one book at a time.</p>
+                <p>Piano Solos books arranged by level.</p>
             </div>
             <div class="collections-book-controls" data-book-controls hidden>
                 <button type="button" data-book-previous aria-label="Previous books" aria-controls="piano-solos-books" disabled>@icon('arrow-left', ['mr' => 0])</button>
@@ -68,7 +68,7 @@
     @if($inspiration->isNotEmpty())
     <section class="collections-section" aria-labelledby="inspiration-heading">
         <div class="collections-section__heading">
-            <h2 id="inspiration-heading">What would you like to play next?</h2>
+            <h2 id="inspiration-heading">Suggested collections</h2>
             <a href="#browse-collections">View all collections @icon('arrow-right', ['mr' => 0])</a>
         </div>
         <div class="collections-inspiration">

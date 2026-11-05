@@ -110,13 +110,13 @@ class ProfileDownloadsTest extends ReviewTestCase
         $response->assertSee('Showing 1-8 of 10 resources')->assertSee('source=library&amp;page=2', false)->assertDontSee('>Guide 9<', false);
         $response = $this->get(route('users.purchases').'?source=library&page=2')->assertOk()->assertSee('Guide 9')->assertSee('Guide 10');
         $this->assertCount(2, $response->viewData('purchases'));
-        $this->get(route('users.purchases').'?page=99')->assertOk()->assertSee('Return to your library')->assertDontSee('Your library starts here');
+        $this->get(route('users.purchases').'?page=99')->assertOk()->assertSee('Return to your library')->assertDontSee('No downloads yet');
     }
 
     public function test_empty_and_removed_resources_have_clear_states_and_downloads_stays_out_of_the_profile_menu()
     {
         $user = $this->account();
-        $empty = $this->actingAs($user, 'web')->get(route('users.purchases'))->assertOk()->assertSee('Your library starts here')
+        $empty = $this->actingAs($user, 'web')->get(route('users.purchases'))->assertOk()->assertSee('No downloads yet')
             ->assertSee(route('resources.infographs.index'))->assertDontSee('download-library-grid');
         $emptyLinks = $this->xpath($empty)->query('//section[@aria-labelledby="downloads-empty-title"]//a');
         $this->assertCount(1, $emptyLinks);
@@ -151,7 +151,7 @@ class ProfileDownloadsTest extends ReviewTestCase
         $this->assertCount(2, $this->get($url.'&page=2')->assertOk()->viewData('purchases'));
         $poster = $this->get(route('users.purchases').'?q=poster&type=infographics')->assertOk();
         $this->assertSame(1, $poster->viewData('purchases')->total());
-        $this->get(route('users.purchases').'?q=absent')->assertOk()->assertSee('No downloads found')->assertDontSee('Your library starts here');
+        $this->get(route('users.purchases').'?q=absent')->assertOk()->assertSee('No downloads found')->assertDontSee('No downloads yet');
     }
 
     public function test_search_treats_wildcards_literally_and_rejects_invalid_filter_shapes()

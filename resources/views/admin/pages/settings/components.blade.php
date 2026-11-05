@@ -14,6 +14,7 @@
           ])
         </div>
         <div class="mb-4"><button type="button" class="btn btn-primary">Checkout</button></div>
+        <div class="mb-4">@include('shop.storefront.components.welcome-launcher', ['offerAvailable' => true, 'preview' => true])</div>
         @include('shop.storefront.components.quantity', ['quantity' => 1])
         <div class="d-flex flex-wrap gap-2 mt-4">
           @include('shop.storefront.components.option', ['option' => 'Mint', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#b9d8d1']), 'selected' => true])
@@ -36,45 +37,18 @@
         </div>
       </div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Shop best deals', 'usage' => 'shop.storefront.components.best-deals · desktop mosaic and swipeable mobile row', 'properties' => 'gap,border-radius,overflow-x'])
-      <div class="shop-storefront" data-ds-preview>
-        @include('shop.storefront.components.best-deals', [
-          'dealsId' => 'ds-shop-best-deals',
-          'bestDeals' => collect([
-            ['category' => 't-shirts', 'name' => 'Piano rainbow T-shirt', 'price' => '$28.00 USD', 'imageUrl' => asset('images/shop/demo/shirt-mint.png')],
-            ['category' => 'stickers', 'name' => 'More piano sticker', 'price' => '$5.00 USD', 'imageUrl' => asset('images/shop/demo/piano-sticker.svg')],
-            ['category' => 'ebooks', 'name' => 'A guide to piano practice', 'price' => '$10.00 USD', 'imageUrl' => asset('images/mockup/crashcourse.png')],
-            ['category' => 'escores', 'name' => 'Piano solos', 'price' => '$5.00 USD', 'imageUrl' => asset('images/misc/score1.png')],
-          ])->map(fn ($deal) => $deal + ['url' => '#ds-components', 'priceVaries' => false]),
-        ])
-      </div>
+    @component('admin.pages.settings.sample', ['label' => 'Shop hover close-up upload', 'usage' => 'admin.components.shop.closeup · optional finished hover image', 'properties' => 'font-size,padding,border'])
+      @include('admin.components.shop.closeup', ['preview' => true])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Shop category row', 'usage' => 'shop.storefront.components.category-row · single row with scroll arrows', 'properties' => 'font-size,gap,overflow-x'])
-      <div class="shop-storefront" data-storefront data-ds-preview>
-        <div class="row">
-          @include('shop.storefront.components.category-row', [
-            'sectionId' => 'ds-shop-category', 'categoryKey' => 't-shirts', 'categoryLabel' => 'T-shirts', 'halfWidth' => false,
-            'categoryUrl' => '#ds-components',
-            'categoryProducts' => collect(range(1, 6))->map(fn ($number) => [
-              'name' => 'Piano T-shirt '.$number, 'url' => '#ds-components', 'digital' => false, 'variants' => [],
-              'imageUrl' => asset('images/shop/demo/shirt-mint.png'), 'price' => '$28.00 USD', 'priceVaries' => false,
-            ]),
-          ])
-        </div>
-      </div>
-    @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Shop product cards', 'usage' => 'shop.storefront.components.card · one artwork, title and price treatment for every product type', 'properties' => 'font-size,font-weight,padding,color'])
+    @component('admin.pages.settings.sample', ['label' => 'Shop product grid', 'usage' => 'shop.storefront.components.product-grid · one regular grid; compact cards with hover close-ups', 'properties' => 'font-size,font-weight,padding,color'])
       <div class="shop-storefront" data-ds-preview>
-        <div class="row g-3">
-          @foreach([
-            ['name' => 'Piano rainbow T-shirt · Mint', 'digital' => false, 'price' => '$28.00 USD', 'imageUrl' => asset('images/shop/demo/shirt-mint.png')],
+        @php($shopGridPreview = collect([
+            ['name' => 'Piano rainbow T-shirt · Mint', 'digital' => false, 'price' => '$28.00 USD', 'imageUrl' => asset('images/shop/demo/shirt-mint.png'), 'reviewCount' => 12, 'averageRating' => '4.5'],
             ['name' => 'Piano sticker', 'digital' => false, 'price' => '$5.00 USD', 'imageUrl' => asset('images/shop/demo/piano-sticker.svg')],
-            ['name' => 'Piano solos', 'subtitle' => 'A collection of pieces for your next practice', 'price' => '$12.00 USD', 'imageUrl' => asset('images/misc/score1.png')],
+            ['name' => 'Piano solos', 'subtitle' => 'A collection of pieces for your next practice', 'price' => '$12.00 USD', 'imageUrl' => asset('images/misc/score1.png'), 'reviewCount' => 3, 'averageRating' => '5.0'],
             ['name' => 'A guide to piano practice', 'subtitle' => 'Build a thoughtful daily routine', 'price' => 'Free', 'imageUrl' => asset('images/mockup/crashcourse.png')],
-          ] as $cardPreview)
-            <div class="col-6">@include('shop.storefront.components.card', ['product' => $cardPreview + ['url' => '#ds-components', 'digital' => true, 'variants' => [], 'priceVaries' => false]])</div>
-          @endforeach
-        </div>
+        ])->map(fn ($cardPreview) => $cardPreview + ['url' => '#ds-components', 'digital' => true, 'variants' => [['id' => 0], ['id' => 1]], 'priceVaries' => false]))
+        @include('shop.storefront.components.product-grid', ['products' => $shopGridPreview])
       </div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Account and hubs menu', 'usage' => 'components.account.menu · account and hubs offcanvas', 'properties' => 'width,padding,color,border-radius,box-shadow'])
@@ -139,7 +113,7 @@
     @component('admin.pages.settings.sample', ['label' => 'Full-screen project watermark', 'usage' => 'components.branding.watermark', 'properties' => 'width,height,padding,opacity'])
       <div class="position-relative bg-primary rounded p-5">
         @include('components.branding.watermark', ['preview' => true])
-        <p class="text-white pt-4 mb-0">A quiet home link for full-screen projects. Hover or focus to brighten.</p>
+        <p class="text-white pt-4 mb-0">A home link for full-screen projects. Hover or focus to increase its opacity.</p>
       </div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Accordion', 'usage' => 'components.layout.accordion · components.layout.accordion-item', 'properties' => 'padding,border,border-radius,background-color'])
@@ -172,7 +146,7 @@
       <p class="text-muted mt-3 mb-0">The top bar advances while an admin page opens, then completes and fades after loading.</p>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Content card', 'usage' => '.card .rounded .shadow-light', 'properties' => 'padding,border,border-radius,box-shadow'])
-      <div class="card rounded shadow-light" data-ds-preview><div class="card-body"><h3 class="h5">Discover your next piece</h3><p>Thoughtfully chosen repertoire for every stage of your piano journey.</p><button type="button" class="btn btn-primary btn-sm">Explore pieces</button></div></div>
+      <div class="card rounded shadow-light" data-ds-preview><div class="card-body"><h3 class="h5">Discover your next piece</h3><p>Browse pieces by level, mood, style, and technique.</p><button type="button" class="btn btn-primary btn-sm">Explore pieces</button></div></div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Signup card', 'usage' => 'components.account.signup-card', 'properties' => 'padding,color,background-color,border,border-radius,box-shadow'])
       @include('components.account.signup-card', app(\App\Services\WebApp\AccessPrompts::class)->prompt('favorites') + [
@@ -215,7 +189,7 @@
       @endcomponent
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Pastel feature card · website / web app', 'usage' => '.pastel-card [data-pastel-color=mint]', 'properties' => 'color,background-color,border,border-radius'])
-      <div class="pastel-card rounded p-4" data-pastel-color="mint" data-ds-preview><span class="pastel-card__tag">YOUR COLLECTION</span><h3 class="h5 mt-3">A little music, every day.</h3><p>A softer surface for folders and featured content.</p><button type="button" class="btn pastel-card__action">Open collection @icon('arrow-right', ['mr' => 0])</button></div>
+      <div class="pastel-card rounded p-4" data-pastel-color="mint" data-ds-preview><span class="pastel-card__tag">YOUR COLLECTION</span><h3 class="h5 mt-3">Saved piano pieces</h3><p>A softer surface for folders and featured content.</p><button type="button" class="btn pastel-card__action">Open collection @icon('arrow-right', ['mr' => 0])</button></div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Homepage featured hub', 'usage' => 'home.components.project-card', 'properties' => 'color,background-color,border,border-radius,box-shadow'])
       <div style="max-width: 300px">
@@ -293,7 +267,7 @@
       <div class="modal design-system__modal-preview"><div class="modal-dialog m-0"><div class="modal-content" data-ds-preview><div class="modal-body"><h3 class="h5">A moment of focus</h3><p>Dialogs keep a single task in view.</p><button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#ds-example-modal">Open sample dialog</button></div></div></div></div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Public hub breadcrumbs', 'usage' => 'components.navigation.breadcrumb · items: label / url', 'properties' => 'font-size,color,line-height'])
-      @include('components.navigation.breadcrumb', ['preview' => true, 'items' => [['label' => 'Home', 'url' => route('home')], ['label' => 'Blog', 'url' => route('posts.index')], ['label' => 'A little piano inspiration']]])
+      @include('components.navigation.breadcrumb', ['preview' => true, 'items' => [['label' => 'Home', 'url' => route('home')], ['label' => 'Blog', 'url' => route('posts.index')], ['label' => 'Piano practice tips']]])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Admin breadcrumbs', 'usage' => 'admin.components.breadcrumb · page.title breadcrumbs', 'properties' => 'font-size,color,line-height'])
       @include('admin.components.breadcrumb', ['designSystemPreview' => true, 'items' => [['label' => 'Overview', 'url' => '#ds-components'], ['label' => 'Email lists', 'url' => '#ds-components'], ['label' => 'Free Pick']]])
@@ -406,8 +380,8 @@
 @include('components.promotions.download-offer', [
     'id' => 'ds-download-offer', 'preview' => true,
     'image' => asset('images/misc/thumbnails/infographs.jpg'), 'imageAlt' => 'Music poster preview',
-    'heading' => 'A little inspiration, on us',
-    'description' => 'Make room for more music. Enter your email and we’ll send you this free poster to download and print.',
+    'heading' => 'Free printable poster',
+    'description' => 'Enter your email to receive this free poster to download and print.',
     'giftUrl' => '#', 'actionLabel' => 'Email me the poster',
 ])
 

@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\DB;
 
 class Subscribers
 {
+    public function subscribed(string $email): bool
+    {
+        return Subscription::whereRaw('LOWER(TRIM(email)) = ?', [mb_strtolower(trim($email))])
+            ->whereHas('lists', fn ($query) => $query->where('name', EmailList::NEWSLETTER))->exists();
+    }
+
     public function subscribe($email)
     {
         $email = mb_strtolower(trim($email));

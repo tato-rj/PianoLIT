@@ -51,7 +51,7 @@ class PublicProjectPagesTest extends ReviewTestCase
         });
         \App\FreePick::create(['piece_id' => $piece->id, 'scheduled_at' => now('UTC')->subHour()]);
         $response = $this->get('http://pianolit.test')->assertOk()
-            ->assertSee('Many worlds.', false)->assertSee('One love of music', false)
+            ->assertSee('Piano music<br>and learning', false)->assertSee('Choose a section', false)
             ->assertSee('images/home/worlds/webapp.webp', false)
             ->assertDontSee('images/home/editorial/piano.webp', false)
             ->assertSee('js/components/project-deck.js', false)

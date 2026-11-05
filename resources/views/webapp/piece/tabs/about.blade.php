@@ -29,7 +29,7 @@
 			</div> --}}
 			@if($piece->hasDescription())
 			<div class="piece-description"  style="margin-bottom: 2rem;" data-piece-description>
-				<h5 class="mb-2">A closer look</h5>
+				<h5 class="mb-2">About this piece</h5>
 				<div class="piece-description__content" id="piece-description">{{$piece->description}}</div>
 				<div class="d-flex justify-content-end">
 					<button type="button" class="piece-description__toggle" aria-controls="piece-description" aria-expanded="false" hidden>Read more</button>
@@ -42,8 +42,8 @@
 				<div>To learn more about {{$piece->composer->last_name}} <a href="{{route('webapp.composers.show', $piece->composer)}}">click here</a>.</div>
 			</div>
 			@endif
-				<h5 class="mb-2">Is this your next piece?</h5>
-				<div>{{$piece->for_who}}</div>
+				<h5 class="mb-2">Difficulty level</h5>
+				<div>{{ ucfirst($piece->extended_level_name ?: $piece->level_name) }}</div>
 		</div>
 	</div>
 	<div class="">

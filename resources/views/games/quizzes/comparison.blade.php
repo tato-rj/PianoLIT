@@ -1,10 +1,10 @@
 @php
     $awards = [
-        'above' => ['🏆', 'Beat the average!'],
-        'tied' => ['🎯', 'Right on the beat!'],
-        'below' => ['🚀', 'Comeback time!'],
-        'first' => ['🌟', 'First on stage!'],
-        'unavailable' => ['🎹', 'A score to chase!'],
+        'above' => ['🏆', 'Above the average'],
+        'tied' => ['🎯', 'Equal to the average'],
+        'below' => ['🚀', 'Below the average'],
+        'first' => ['🌟', 'First recorded score'],
+        'unavailable' => ['🎹', 'Comparison unavailable'],
     ];
     [$award, $awardLabel] = $awards[$comparison['standing']];
 @endphp

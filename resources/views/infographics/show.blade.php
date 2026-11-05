@@ -63,7 +63,7 @@
         </div>
         @if($related->isNotEmpty())
             <section class="border-top pt-4" aria-labelledby="related-infographics-title">
-                <h2 id="related-infographics-title" class="h4 mb-4">More visual discoveries</h2>
+                <h2 id="related-infographics-title" class="h4 mb-4">Related infographics</h2>
                 <div class="row g-4">
                     @foreach($related as $item)
                         <div class="col-md-6">@include('infographics.card')</div>
@@ -96,7 +96,7 @@ $(function () {
             .fail(function (response) {
                 $buttons.prop('disabled', false);
                 $feedback.find('.infograph-feedback').text(response.status === 429
-                    ? 'Please wait a little before sending more feedback.'
+                    ? 'Please wait before sending more feedback.'
                     : 'Your feedback could not be saved. Please try again.');
             })
             .always(function () { $feedback.attr('aria-busy', 'false'); });

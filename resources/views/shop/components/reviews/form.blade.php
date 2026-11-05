@@ -1,6 +1,6 @@
 @component('components.dialogs.modal', ['id' => 'review-modal', 'header' => 'Write a review', 'centered' => true])
 @slot('body')
-    <p class="text-muted mb-4">{{ $product->title }}</p>
+    <p class="text-muted mb-4">{{ $product->title ?? $product->name }}</p>
     <form method="POST" action="{{ $product->reviewRoute() }}" data-review-form class="{{ ($storefront ?? false) ? 'shop-field' : '' }}">
         @csrf
         @guest
@@ -8,7 +8,7 @@
         @endguest
         @include('components.forms.rating', ['id' => 'product-review-rating', 'bag' => 'review'])
         @input(['bag' => 'review', 'id' => 'product-review-title', 'name' => 'title', 'label' => 'Review title (optional)', 'placeholder' => 'Sum up your experience', 'limit' => 50, 'required' => false])
-        @textarea(['bag' => 'review', 'id' => 'product-review-content', 'name' => 'content', 'label' => 'Your review (optional)', 'placeholder' => 'What did you enjoy? Who would you recommend it to?', 'limit' => 220, 'rows' => 3, 'required' => false, 'textImprover' => false])
+        @textarea(['bag' => 'review', 'id' => 'product-review-content', 'name' => 'content', 'label' => 'Your review (optional)', 'placeholder' => 'Describe your experience with this product.', 'limit' => 220, 'rows' => 3, 'required' => false, 'textImprover' => false])
         @input(['bag' => 'review', 'id' => 'product-reviewer', 'name' => 'reviewer', 'label' => 'Display name (optional)', 'placeholder' => 'Leave blank to appear as Anonymous', 'limit' => 50, 'required' => false])
         <p class="{{ ($storefront ?? false) ? '' : 'small' }} text-muted mb-3">Reviews appear after moderation.</p>
         <div class="d-flex flex-wrap justify-content-end gap-2">

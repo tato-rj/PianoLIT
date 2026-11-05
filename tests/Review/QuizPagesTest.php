@@ -66,7 +66,7 @@ class QuizPagesTest extends ReviewTestCase
         $draftTopic = Model::withoutEvents(function () { return create(Topic::class, ['name' => 'Draft topic', 'slug' => 'draft-topic']); });
         $draft->topics()->attach($draftTopic);
         $response = $this->get('http://learn.localhost/quizzes?topics=theory&level=beginner')->assertOk()
-            ->assertSee('Find your next challenge')->assertDontSee('Draft challenge')->assertDontSee('Advanced theory')->assertDontSee('Composer challenge')->assertDontSee('Draft topic');
+            ->assertSee('Available quizzes')->assertDontSee('Draft challenge')->assertDontSee('Advanced theory')->assertDontSee('Composer challenge')->assertDontSee('Draft topic');
         $xpath = $this->xpath($response);
         $this->assertCount(12, $xpath->query('//a[contains(@class,"resource-card")]'));
         $this->assertCount(1, $xpath->query('//nav[@aria-label="Breadcrumb"]//li[@aria-current="page"]'));
@@ -191,7 +191,7 @@ class QuizPagesTest extends ReviewTestCase
         $this->assertSame('first', $empty['standing']);
         $this->assertNull($empty['average']);
         $this->assertSame(0, $empty['plays']);
-        $first = $this->get('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback?answers[]=1&answers[]=0')->assertOk()->assertSee('First on stage!')->assertSee('No earlier plays yet.');
+        $first = $this->get('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback?answers[]=1&answers[]=0')->assertOk()->assertSee('First recorded score')->assertSee('No earlier plays yet.');
         $this->assertCount(1, $this->xpath($first)->query('//*[@role="progressbar"]'), 'An unavailable average must not look like a zero score.');
         $zero = $service->beforeCurrentPlay($quiz, 0, 2);
         $this->assertSame('tied', $zero['standing']);
@@ -270,7 +270,7 @@ class QuizPagesTest extends ReviewTestCase
 
     public function test_drafts_stay_private_and_empty_quizzes_and_directories_remain_usable()
     {
-        $this->get('http://learn.localhost/quizzes')->assertOk()->assertSee('New quizzes are on their way');
+        $this->get('http://learn.localhost/quizzes')->assertOk()->assertSee('No quizzes available');
         $draft = $this->quiz('Unpublished quiz', ['published_at' => null]);
         $this->withExceptionHandling()->get('http://learn.localhost/quizzes/'.$draft->slug)->assertNotFound();
         $this->actingAs(create(Admin::class), 'admin');

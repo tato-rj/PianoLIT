@@ -161,12 +161,12 @@ class ShopCatalogSubdomainTest extends ReviewTestCase
     }
 
     /** @dataProvider catalogs */
-    public function test_complete_category_grid_stays_on_shop_and_unknown_paths_do_not_redirect_to_themselves($catalog, $class)
+    public function test_category_grid_stays_on_shop_and_unknown_paths_do_not_redirect_to_themselves($catalog, $class)
     {
         for ($i = 0; $i < 13; $i++) $this->product($class, ['title' => 'Catalog item '.$i]);
         $this->get(route($catalog.'.index'))->assertOk()
             ->assertSee('Catalog item 0')->assertSee('Catalog item 12')->assertDontSee('shop-pagination');
-        $this->get(route($catalog.'.index', ['page' => 2]))->assertOk();
+        $this->get(route($catalog.'.index', ['page' => 2]))->assertRedirect(route($catalog.'.index', ['page' => 1]));
         $this->withExceptionHandling()->get('http://shop.localhost/'.$catalog.'/missing/unrecognized')->assertNotFound();
         $this->get('http://shop.localhost/'.$catalog.'/missing-product')->assertNotFound();
     }

@@ -3,14 +3,17 @@
 namespace App\Services\Shop;
 
 use App\Merchandise\{MerchandiseProduct, Product};
+use App\Review;
 use App\Shop\{eBook, eScore};
 use Illuminate\Database\Eloquent\Collection as ModelCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 /** Public catalog of imported merchandise and published downloads. Never calls Printful. */
 class Storefront
 {
     const DEMO_STORE_ID = 0;
+    const PER_PAGE = 24;
     const CATEGORIES = ['' => 'All', 't-shirts' => 'T-shirts', 'stickers' => 'Stickers', 'ebooks' => 'eBooks', 'escores' => 'eScores'];
     const SECTIONS = ['t-shirts' => 'T-shirts', 'stickers' => 'Stickers', 'escores' => 'eScores', 'ebooks' => 'eBooks', 'merchandise' => 'Merchandise'];
 
@@ -24,26 +27,13 @@ class Storefront
         return MerchandiseProduct::where('printful_store_id', $this->storeId());
     }
 
-    public function products(string $search, ?string $category, array $topics = []): Collection
+    public function paginate(string $search, ?string $category, array $topics, int $page, string $path): LengthAwarePaginator
     {
-        return $this->cards($this->matches($search, $category, $topics));
-    }
-
-    public function grouped(string $search): Collection
-    {
-        $groups = $this->products($search, null)->groupBy('category');
-        return collect(self::SECTIONS)->map(fn ($label, $category) => $groups->get($category, collect()));
-    }
-
-    /** One affordable, available product per category, using the already-loaded public catalog. */
-    public function bestDeals(Collection $groups): Collection
-    {
-        return collect(['t-shirts', 'stickers', 'ebooks', 'escores'])->map(function ($category) use ($groups) {
-            $products = $groups->get($category, collect())->filter(fn ($product) => $product['priceCents'] !== null);
-            // Compare like currencies only; the spotlight does not perform currency conversion.
-            $currency = $products->contains('currency', 'USD') ? 'USD' : ($products->first()['currency'] ?? null);
-            return $products->where('currency', $currency)->sortBy('priceCents')->first();
-        })->filter()->values();
+        $matches = $this->matches($search, $category, $topics);
+        return new LengthAwarePaginator(
+            $this->cards($matches->forPage($page, self::PER_PAGE)->values()),
+            $matches->count(), self::PER_PAGE, $page, ['path' => $path]
+        );
     }
 
     private function matches(string $search, ?string $category, array $topics = []): Collection
@@ -66,10 +56,28 @@ class Storefront
             ?: strcmp(get_class($a), get_class($b)) ?: ($b->id <=> $a->id))->values();
     }
 
-    private function cards(Collection $products): Collection
+    public function cards(Collection $products): Collection
     {
+        if ($products->isEmpty()) return collect();
         (new ModelCollection($products->whereInstanceOf(MerchandiseProduct::class)->all()))->load('images');
-        return $products->map(fn ($product) => $product instanceof MerchandiseProduct ? $this->present($product) : $this->presentDigital($product));
+        $closeups = app(Closeups::class)->urlsFor($products);
+        // Keep review aggregates in web DTOs rather than adding shared/mobile model attributes.
+        $ratings = Review::published()->select('reviewable_type', 'reviewable_id')
+            ->selectRaw('COUNT(*) AS review_count, AVG(rating) AS average_rating')
+            ->where(function ($query) use ($products) {
+                foreach ($products->groupBy(fn ($product) => get_class($product)) as $model => $items) {
+                    $query->orWhere(fn ($query) => $query->where('reviewable_type', $model)->whereIn('reviewable_id', $items->pluck('id')));
+                }
+            })->groupBy('reviewable_type', 'reviewable_id')->toBase()->get()
+            ->keyBy(fn ($rating) => $rating->reviewable_type.':'.$rating->reviewable_id);
+        return $products->map(function ($product) use ($ratings, $closeups) {
+            $rating = $ratings->get(get_class($product).':'.$product->id);
+            return ($product instanceof MerchandiseProduct ? $this->present($product) : $this->presentDigital($product)) + [
+                'reviewCount' => $rating ? (int) $rating->review_count : 0,
+                'averageRating' => $rating ? number_format($rating->average_rating, 1) : 0,
+                'closeupUrl' => $closeups->get(get_class($product).':'.$product->id),
+            ];
+        });
     }
 
     private function matching($query, string $column, string $search)
@@ -89,9 +97,7 @@ class Storefront
             'category' => $category, 'digital' => true,
             'label' => $category === 'ebooks' ? 'eBook' : 'eScore', 'url' => $product->showRoute(),
             'imageUrl' => $product->mockup_image() ?: ($product->cover_path ? $product->cover_image() : null),
-            'displayMockupUrl' => $product->displayMockupUrl(),
             'variants' => [], 'price' => $product->isFree() ? 'Free' : $this->money((int) $product->finalPrice(true), 'USD'),
-            'priceCents' => $product->isFree() ? 0 : (int) $product->finalPrice(true), 'currency' => 'USD',
             'priceVaries' => false,
         ];
     }
@@ -139,9 +145,7 @@ class Storefront
             'label' => ['t-shirts' => 'T-shirt', 'stickers' => 'Sticker', 'merchandise' => 'Merchandise'][$category],
             'url' => $this->productUrl($product), 'images' => $images, 'image' => $images->first(),
             'imageUrl' => optional($images->first())->url, 'digital' => false,
-            'displayMockupUrl' => $product->displayMockupUrl(),
             'variants' => $variants, 'colors' => MerchandiseColors::options($variants), 'price' => $price === null ? null : $this->money($price, reset($currencies)),
-            'priceCents' => $price, 'currency' => count($currencies) === 1 ? reset($currencies) : null,
             'priceVaries' => count(array_unique(array_column($variants, 'cents'))) > 1,
         ];
     }

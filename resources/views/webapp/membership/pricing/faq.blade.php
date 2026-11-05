@@ -1,6 +1,6 @@
 <section class="membership-faq" aria-labelledby="membership-faq-heading">
     <div class="membership-section-heading">
-        <h2 id="membership-faq-heading">A few things you might be wondering</h2>
+        <h2 id="membership-faq-heading">Frequently asked questions</h2>
     </div>
     <details>
         <summary>How does the free trial work? @icon('plus', ['mr' => 0])</summary>

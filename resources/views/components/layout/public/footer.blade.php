@@ -1,8 +1,8 @@
 <footer class="site-footer container mt-auto py-4 pt-2 pt-md-4">
     @if($homeWorlds ?? false)
     <div class="row align-items-center justify-content-between gy-2 mx-lg-4">
-        <div class="col-12 col-sm-auto"><p class="mb-0">Made for the love of piano.</p></div>
-        <div class="col-12 col-sm-auto"><p class="mb-0">PianoLIT · Come back curious.</p></div>
+        <div class="col-12 col-sm-auto"><p class="mb-0">Piano music and learning resources.</p></div>
+        <div class="col-12 col-sm-auto"><p class="mb-0">PianoLIT</p></div>
     </div>
     @else
     <nav class="text-center mx-lg-4 mb-3" aria-label="PianoLIT hubs">
@@ -24,7 +24,7 @@
     </nav>
     <div class="row align-items-center gy-3 text-center mx-lg-4">
         <div class="col-12 col-md-4 text-md-start">
-            <p class="mb-0">Made for the love of piano.</p>
+            <p class="mb-0">Piano music and learning resources.</p>
         </div>
         <nav class="col-12 col-md-4" aria-label="Footer">
             <div class="row justify-content-center gx-4">

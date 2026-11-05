@@ -59,30 +59,7 @@ export class NotePython {
       showBombs: false,
       realWalls: false,
       speedUpEachRound: false,
-      successPhrases: [
-        "Awesome",
-        "Nicely done",
-        "Well done",
-        "Great job",
-        "Hooray",
-        "Fantastic",
-        "Nice work",
-        "Looks good",
-        "Good one",
-        "Splendid",
-        "Way to go",
-        "Nailed it",
-        "Brilliant",
-        "Excellent",
-        "Superb",
-        "Right on",
-        "You got it",
-        "Perfect",
-        "Spot on",
-        "Impressive",
-        "Top notch",
-        "That’s it",
-      ],
+      successPhrases: ["Correct"],
       intervals: Object.keys(NotePython.INTERVAL_FULL_NAME_MAP),
       namespace: "notePython",
     };
@@ -153,7 +130,7 @@ export class NotePython {
     };
     this.successPhrases = Array.isArray(this.opts.successPhrases) && this.opts.successPhrases.length
       ? this.opts.successPhrases.slice()
-      : ["Great job"];
+      : ["Correct"];
   }
 
   _gridRows() {

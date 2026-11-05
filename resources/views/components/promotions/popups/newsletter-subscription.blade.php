@@ -9,7 +9,7 @@
     @endslot
     @slot('body')
         <h2 class="h3 mb-3" id="newsletter-subscription-heading">{{ $newsletterHeading ?? 'Stay in tune with PianoLIT' }}</h2>
-        <p class="text-muted mb-4" id="newsletter-subscription-description">{{ $newsletterDescription ?? 'Be the first to explore new features, games, tools, stories, and more from across PianoLIT. Get everything new in one monthly email.' }}</p>
+        <p class="text-muted mb-4" id="newsletter-subscription-description">{{ $newsletterDescription ?? 'Receive one monthly email about new PianoLIT features, games, tools, and articles, only when there is news to share.' }}</p>
         @include('components.newsletter.subscribe-form')
     @endslot
 @endcomponent

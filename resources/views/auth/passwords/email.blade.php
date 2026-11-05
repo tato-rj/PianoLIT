@@ -1,7 +1,7 @@
 @component('auth.webapp.layout', [
     'showCarousel' => false,
     'title' => 'Forgot your password?',
-    'subtitle' => "You will receive an email with a link to change your password. Just click on that link, type out your new password and that's it!"])
+    'subtitle' => "Enter your email to receive a password reset link."])
 
     <form method="POST" action="{{ route('password.email') }}" disable-on-submit>
         @csrf

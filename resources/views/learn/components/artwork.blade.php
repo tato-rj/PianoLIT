@@ -54,8 +54,8 @@
                 <path d="M100 24H385V260H100z" fill="#fffdf7"/>
                 <text x="124" y="55" fill="#c53a1a" font-size="11" letter-spacing="1.8">PIANOLIT / CRASH COURSES</text>
                 <path d="M124 70H361" stroke="#d7d2c8"/>
-                <text x="121" y="112" fill="#20242b" font-family="var(--font-family-serif)" font-size="34">A little learning,</text>
-                <text x="121" y="151" fill="#20242b" font-family="var(--font-family-serif)" font-size="34">a little closer</text>
+                <text x="121" y="112" fill="#20242b" font-family="var(--font-family-serif)" font-size="34">Music lessons</text>
+                <text x="121" y="151" fill="#20242b" font-family="var(--font-family-serif)" font-size="34">by email</text>
                 <text x="124" y="181" fill="#5b6575" font-size="13">Your next musical discovery, by email</text>
                 <path d="M124 202H361M124 213H320M124 224H345" stroke="#d7d2c8" stroke-width="3"/>
             </g>
@@ -80,7 +80,7 @@
             <circle cx="398" cy="120" r="104" stroke="#20242b" stroke-width="1.5"/>
             <circle cx="398" cy="120" r="88" stroke="#20242b" stroke-opacity=".25"/>
             <text x="398" y="169" fill="#20242b" text-anchor="middle" font-family="var(--font-family-serif)" font-size="151">?</text>
-            <text x="28" y="43" fill="#20242b" font-size="12" letter-spacing="2">A LITTLE MUSICAL CHALLENGE</text>
+            <text x="28" y="43" fill="#20242b" font-size="12" letter-spacing="2">MUSIC QUIZ</text>
             <text x="26" y="102" fill="#20242b" font-size="32" font-weight="600">Think you</text>
             <text x="26" y="141" fill="#20242b" font-size="32" font-weight="600">know music?</text>
             <path d="M28 187H190M28 197H190M28 207H190M28 217H190M28 227H190" stroke="#20242b" stroke-opacity=".25"/>
@@ -93,13 +93,13 @@
         @case('pianists')
             <path fill="#20242b" d="M0 0H480V240H0z"/>
             <path d="M359 0H480V240H359z" fill="#e85632"/>
-            <text x="28" y="39" fill="#bcc3ce" font-size="12" letter-spacing="2">THE PEOPLE BEHIND THE PIANO</text>
+            <text x="28" y="39" fill="#bcc3ce" font-size="12" letter-spacing="2">PIANIST BIOGRAPHIES</text>
             <g fill="#fffdf7" font-family="var(--font-family-serif)" font-size="39">
                 <text x="26" y="96">Martha Argerich</text>
                 <text x="26" y="143">Arthur Rubinstein</text>
                 <text x="26" y="190">Vladimir Horowitz</text>
             </g>
-            <text x="28" y="222" fill="#bcc3ce" font-size="11" letter-spacing="1.5">EXTRAORDINARY LIVES. UNFORGETTABLE MUSIC</text>
+            <text x="28" y="222" fill="#bcc3ce" font-size="11" letter-spacing="1.5">LIVES AND CAREERS</text>
             <path d="M389 61H465V207H389z" fill="#fffdf7"/>
             @foreach([89, 118, 147, 176] as $keyY)
                 <path d="M389 {{ $keyY }}H465" stroke="#20242b"/>

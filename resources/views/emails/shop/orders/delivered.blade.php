@@ -1,9 +1,9 @@
 @component('mail::message')
-# Your order arrived!
+# Your order was delivered
 
 Hi {{ $order->recipient['name'] }},
 
-Your PianoLIT order has been reported as delivered. We hope it brings a little more music into your day!
+Your PianoLIT order has been reported as delivered.
 
 **Order reference:** {{ $order->id }}<br>
 @if($deliveredAt)

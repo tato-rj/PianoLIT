@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Merchandise\Product;
 use App\Behaviors\PublishableContent;
 
 class Review extends PublishableContent
@@ -34,7 +33,7 @@ class Review extends PublishableContent
 		return $query->where('user_id', '=', $user->id);
 	}
 
-	public function scopeFor($query, Product $product)
+	public function scopeFor($query, \Illuminate\Database\Eloquent\Model $product)
 	{
 		return $query->where(['reviewable_type' => get_class($product), 'reviewable_id' => $product->id]);
 	}
@@ -61,12 +60,6 @@ class Review extends PublishableContent
 
     public function scopeDatatable($query)
     {
-        return datatable($query->with(['user', 'reviewable']))->withDate(['created_at'])->withBlade([
-            'reviewable' => view('admin.pages.reviews.table.reviewable'),
-            'user' => view('admin.pages.reviews.table.users'),
-            'rating' => view('admin.pages.reviews.table.rating'),
-            'published' => view('admin.pages.reviews.table.published'),
-            'action' => view('admin.pages.reviews.table.actions')
-        ])->make();
+        return app(\App\Services\Admin\ReviewsTable::class)->response($query);
     }
 }

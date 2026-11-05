@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Merchandise\MerchandiseProduct;
 use App\Services\Admin\{MerchandiseCatalog, PrintfulCatalogSync};
-use App\Services\Shop\{MerchandiseImages, Printful, PrintfulException, PrintfulProductNotFound};
+use App\Services\Shop\{MerchandiseGallery, MerchandiseImages, Printful, PrintfulException, PrintfulProductNotFound};
 use App\Support\{AdminPagination, AdminTableFilters};
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Validation\Rule;
 
 class MerchandiseController extends Controller
 {
@@ -90,13 +91,15 @@ class MerchandiseController extends Controller
         $request->validate(['variants_page' => 'nullable|integer|min:1|max:100000']);
         $returnFilters = $this->returnFilters();
         $product = $merchandise->load('images');
+        $galleryColors = app(MerchandiseGallery::class)->colors($product);
+        $galleryGroups = app(MerchandiseGallery::class)->groups($product);
         $removed = $product->images()->onlyTrashed()->get();
         $page = (int) $request->input('variants_page', 1);
         $all = collect($product->variants);
         $variants = new LengthAwarePaginator($all->forPage($page, AdminPagination::PER_PAGE)->values(), $all->count(), AdminPagination::PER_PAGE, $page,
             ['path' => route('admin.merchandise.edit', $product), 'pageName' => 'variants_page', 'fragment' => 'variants']);
         $variants->appends($returnFilters);
-        return view('admin.pages.merchandise.edit', compact('product', 'removed', 'variants', 'returnFilters'));
+        return view('admin.pages.merchandise.edit', compact('product', 'removed', 'variants', 'returnFilters', 'galleryColors', 'galleryGroups'));
     }
 
     public function refresh(Request $request, MerchandiseProduct $merchandise, MerchandiseCatalog $catalog)
@@ -127,9 +130,10 @@ class MerchandiseController extends Controller
             'revision' => 'required|integer|min:1', 'images' => 'required|array|min:1|max:10',
             'images.*' => 'required|file|image|mimes:jpg,jpeg,png,webp|max:10240|dimensions:max_width=6000,max_height=6000',
             'alt' => 'nullable|string|max:255',
+            'gallery_color' => ['nullable', 'string', 'max:255', Rule::in(app(MerchandiseGallery::class)->colors($merchandise))],
         ]);
         try {
-            $catalog->upload($merchandise, (int) $data['revision'], $request->file('images'), $data['alt'] ?? null);
+            $catalog->upload($merchandise, (int) $data['revision'], $request->file('images'), $data['alt'] ?? null, $data['gallery_color'] ?? null);
         } catch (PrintfulException $exception) {
             return $this->backToImages($merchandise)->with('error', $exception->getMessage());
         }
@@ -146,11 +150,16 @@ class MerchandiseController extends Controller
 
     public function updateImage(Request $request, MerchandiseProduct $merchandise, int $image, MerchandiseCatalog $catalog)
     {
-        $data = $request->validateWithBag('merchandise', ['revision' => 'required|integer|min:1', 'alt' => 'required|string|max:255']);
+        $current = $catalog->image($merchandise, $image);
+        $colors = array_merge(app(MerchandiseGallery::class)->colors($merchandise), [$current->gallery_color]);
+        $data = $request->validateWithBag('merchandise', ['revision' => 'required|integer|min:1', 'alt' => 'required|string|max:255',
+            'gallery_color' => ['sometimes', 'nullable', 'string', 'max:255', Rule::in($colors)]]);
         $catalog->change($merchandise, (int) $data['revision'], function ($product) use ($image, $catalog, $data) {
-            $catalog->image($product, $image)->update(['alt' => $data['alt']]);
+            $changes = ['alt' => $data['alt']];
+            if (array_key_exists('gallery_color', $data)) $changes['gallery_color'] = $data['gallery_color'];
+            $catalog->image($product, $image)->update($changes);
         });
-        return $this->backToImages($merchandise)->with('status', 'The image description has been updated.');
+        return $this->backToImages($merchandise)->with('status', 'The gallery image has been updated.');
     }
 
     public function move(Request $request, MerchandiseProduct $merchandise, int $image, MerchandiseCatalog $catalog)
@@ -158,7 +167,7 @@ class MerchandiseController extends Controller
         $data = $request->validateWithBag('merchandise', ['revision' => 'required|integer|min:1', 'direction' => 'required|in:up,down']);
         $catalog->change($merchandise, (int) $data['revision'], function ($product) use ($image, $catalog, $data) {
             $selected = $catalog->image($product, $image);
-            $ordered = $product->images()->get();
+            $ordered = $product->images()->where('gallery_color', $selected->gallery_color)->get();
             $index = $ordered->search(fn ($item) => $item->id === $selected->id);
             $next = $index + ($data['direction'] === 'up' ? -1 : 1);
             if ($next < 0 || $next >= $ordered->count()) return;

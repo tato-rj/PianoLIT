@@ -23,7 +23,7 @@
 			@else
 			<div class="mb-4">
 				<h5>My preferences</h5>
-				<p>Looks like you are not subscribed to our email lists!</p>
+				<p>You are not subscribed to any email lists.</p>
 			</div>
 			<div class="alert alert-grey text-center border-0">
 				<p>Would you like to subscribe now?</p>

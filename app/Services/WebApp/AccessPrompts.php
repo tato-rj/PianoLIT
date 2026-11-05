@@ -15,10 +15,10 @@ class AccessPrompts
     public function prompt(string $action, string $kind = 'signup', ?Piece $piece = null)
     {
         $titles = [
-            'default' => 'More music awaits', 'video' => 'Keep watching', 'audio' => 'Keep listening',
-            'score' => 'Unlock the score', 'annotations' => 'Save your markings',
-            'score-export' => 'Download & print', 'favorites' => 'Build your music library',
-            'folders' => 'Room for more favorites', 'escore' => 'Create your practice book',
+            'default' => 'Account access', 'video' => 'Keep watching', 'audio' => 'Keep listening',
+            'score' => 'Read the score', 'annotations' => 'Save your markings',
+            'score-export' => 'Download & print', 'favorites' => 'Save pieces',
+            'folders' => 'Favorite folder access', 'escore' => 'Create your practice book',
             'collections' => 'Explore every collection', 'search' => 'Find your next piece',
         ];
         $feature = ['video' => 'performance', 'score-export' => 'exports', 'favorites' => 'folder_pieces', 'escore' => 'escores'][$action] ?? $action;
@@ -36,7 +36,7 @@ class AccessPrompts
             if ($action === 'collections') $title = 'Discover collections';
             $description = $this->policy->signupDescription($feature, $piece, $actions[$action] ?? 'explore more piano music');
         } else {
-            $description = 'Go Premium to get more from every practice session.';
+            $description = 'Premium provides additional access to scores, videos, recordings, and account features.';
         }
         return compact('title', 'description', 'kind') + ['benefits' => $this->benefits($kind)];
     }

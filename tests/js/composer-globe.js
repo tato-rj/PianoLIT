@@ -149,7 +149,7 @@ module.exports = async function () {
     assert.strictEqual(get('composers').textContent, '0');
     assert.strictEqual(get('browse').hidden, true, 'Zero-count selections never retain the previous browse link');
     get('home').events.click();
-    assert.strictEqual(get('title').textContent, 'A world of music');
+    assert.strictEqual(get('title').textContent, 'All countries');
     assert.strictEqual(get('mode').textContent, 'Continents');
     get('zoom-in').events.click(); get('zoom-in').events.click();
     assert.strictEqual(get('mode').textContent, 'Countries');
@@ -170,7 +170,7 @@ module.exports = async function () {
     assert.strictEqual(get('place').disabled, false, 'Place picker remains usable without WebGL');
 
     for (const [key, title, altitude] of [['country:DE', 'Germany', 0.65], ['continent:Asia', 'Asia', 1.95],
-        ['recorded:3', '<Unmapped>', 2.05], ['__proto__', 'A world of music', 2.05], ['bad:place', 'A world of music', 2.05]]) {
+        ['recorded:3', '<Unmapped>', 2.05], ['__proto__', 'All countries', 2.05], ['bad:place', 'All countries', 2.05]]) {
         const restored = harness(url => Promise.resolve({ok: true, json: () => Promise.resolve(url === '/map' ? map : catalogue)}),
             'https://my.pianolit.com/composers?source=saved&modal=composer-globe-modal&globe-place=' + encodeURIComponent(key) + '#details');
         assert.strictEqual(restored.instances, 0, 'A place URL alone does not initialize the globe');
@@ -178,11 +178,11 @@ module.exports = async function () {
         assert.strictEqual(restored.elements['[data-globe-title]'].textContent, title);
         assert.strictEqual(restored.pov.altitude, altitude);
         let params = new URL(restored.win.location.href).searchParams;
-        assert.strictEqual(params.get('globe-place'), title === 'A world of music' ? null : key);
+        assert.strictEqual(params.get('globe-place'), title === 'All countries' ? null : key);
         restored.modal.events['hide.bs.modal'](); restored.modal.events['hidden.bs.modal']();
         assert.strictEqual(new URL(restored.win.location.href).searchParams.has('globe-place'), false);
         restored.modal.events['shown.bs.modal']();
-        assert.strictEqual(new URL(restored.win.location.href).searchParams.get('globe-place'), title === 'A world of music' ? null : key);
+        assert.strictEqual(new URL(restored.win.location.href).searchParams.get('globe-place'), title === 'All countries' ? null : key);
         restored.elements['[data-globe-home]'].events.click();
         params = new URL(restored.win.location.href).searchParams;
         assert.strictEqual(params.has('globe-place'), false, 'World reset clears the saved country');

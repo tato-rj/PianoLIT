@@ -23,7 +23,6 @@
     const dialog = window.bootstrap.Modal.getOrCreateInstance(modal);
     const motion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
     const animations = new Set();
-    const previousPicks = {};
     let answers = questions.map(function () { return null; });
     let pending = false;
     let attempt = 0;
@@ -36,13 +35,6 @@
     let resultRequested = false;
 
     function reducedMotion() { return (motion && motion.matches) || document.hidden; }
-
-    function pick(key, items) {
-        const choices = items.filter(function (item) { return item !== previousPicks[key]; });
-        const choice = choices[Math.floor(Math.random() * choices.length)];
-        previousPicks[key] = choice;
-        return choice;
-    }
 
     function focus(element) {
         element.focus({preventScroll: true});
@@ -326,14 +318,13 @@
                         answer.classList.add(isCorrect ? 'is-correct' : 'is-incorrect');
                         outcome.hidden = false;
                         outcome.querySelector('[data-quiz-outcome-symbol]').textContent = isCorrect ? '✓' : '✕';
-                        outcome.querySelector('[data-quiz-outcome-label]').textContent = isCorrect ? 'Correct' : 'Oops';
+                        outcome.querySelector('[data-quiz-outcome-label]').textContent = isCorrect ? 'Correct' : 'Incorrect';
                     }
                 });
                 const reaction = question.querySelector('[data-quiz-question-feedback]');
-                const line = won
-                    ? (streak >= 2 ? '🔥 ' + streak + ' in a row! ' + pick('streak', ['You’re on fire', 'Save some for the encore', 'No brakes on this piano']) : pick('correct', ['Nailed it! 🎯', 'Brain: standing ovation 👏', 'That’s how it’s done ✨', 'Take a tiny bow 🎹']))
-                    : pick('incorrect', ['A very confident plot twist 🙃', 'Blame the imaginary cat 🐈', 'We’ll call that jazz 🙈', 'Your brain took a coffee break ☕']);
-                reaction.textContent = (won ? 'Correct! ' : 'Not quite! ') + line;
+                reaction.textContent = won
+                    ? (streak >= 2 ? 'Correct. ' + streak + ' correct answers in a row.' : 'Correct.')
+                    : 'Incorrect. The correct answer is highlighted.';
                 // Keep the correction available to assistive technology without a paragraph of duplicate copy.
                 reaction.setAttribute('aria-label', reaction.textContent + (won || !correct ? '' : '. Correct answer: ' + correct.querySelector('.quiz-answer-copy').textContent));
                 animate(button, won

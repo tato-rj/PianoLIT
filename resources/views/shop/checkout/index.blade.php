@@ -24,7 +24,7 @@
     ]])
     <header class="mb-4 mb-lg-5">
         <h1 class="h2 mb-2">{{ $existingPurchase ? 'Your download' : 'Checkout' }}</h1>
-        <p class="text-muted mb-0">{{ $existingPurchase ? 'This edition is already in your PianoLIT account.' : 'A little more music, ready for your piano.' }}</p>
+        <p class="text-muted mb-0">{{ $existingPurchase ? 'This edition is already in your PianoLIT account.' : 'Review your account and download options below.' }}</p>
     </header>
     <div class="row g-4 g-lg-5 align-items-start">
         <div class="col-lg-7 order-2 order-lg-1">
@@ -34,7 +34,7 @@
                 <p class="text-muted small mb-0">Your files will be saved in My downloads.</p>
             </div>
             @if($existingPurchase)
-                <h2 class="h5 mb-2">Ready when you are</h2>
+                <h2 class="h5 mb-2">Download again</h2>
                 <p class="text-muted mb-3">You can download this {{ $productKind }} again at any time.</p>
                 <a class="btn btn-primary" href="{{ route('shop.success', $existingPurchase) }}">@icon('file-down')Open your download</a>
             @elseif(! $needsPayment)
