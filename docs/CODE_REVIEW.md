@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-05 — Subtle upward slide during product reveals (P3, complete locally)
+
+- **Request / change:** Added `translateY(12px)` → `translateY(0)` to the existing Shop product-entry keyframes, matching Arthur's follow-up request for a very subtle rise during the fade. The whole card keeps the same 650ms ease-out timing and settles into its existing grid position. Reduced-motion, keyboard, print and restored-page bypasses remain effective. Updated current animation guidance; no JavaScript, markup, data or provider change.
+- **Verification:** Scoped Storefront Sass rebuild, asset/hash checks, existing reveal regressions and whitespace checks pass. On the actual local Shop, entering cards reached opacity 0.61 with about 4.64px of downward offset remaining, then settled at opacity 1 with no transform or animation. Proof: `/Users/arthur/.codex/visualizations/2026/11/05/01a1ac75-4602-7ed3-a60b-dc1035ebca5f/shop-products-fade-up-desktop.png`. Local implementation only; no deployment performed.
+
 ### 2026-11-05 — Fade Shop products into view on load and scroll (P3, complete locally)
 
 - **Reference / change:** Inspected Arthur's 10-second recording across initial reloads and scrolling rows. Added a soft 650ms ease-out opacity fade to the shared catalog product grid. Each product reveals once as it enters the viewport, with a 24px lower inset; previously viewed products stay visible. No movement/scale is added. `components/product-reveal.js` initializes immediately after the server-rendered grid, independently of the deferred app bundle, and the existing Design System specimen renders this same behavior.
