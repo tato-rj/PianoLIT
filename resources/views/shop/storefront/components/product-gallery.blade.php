@@ -27,7 +27,7 @@
                 $thumbnailViews[$thumbnailColor] = ($thumbnailViews[$thumbnailColor] ?? 0) + 1;
                 $thumbnailSelected = $loop->index === $firstGalleryIndex;
             @endphp
-            <button type="button" class="shop-gallery__thumbnail btn btn-secondary p-1 shadow-none border-0 rounded-0 {{ $thumbnailSelected ? 'border-dark' : '' }}" data-gallery-thumb="{{ $loop->index }}" aria-label="View image {{ $thumbnailViews[$thumbnailColor] }}" aria-pressed="{{ $thumbnailSelected ? 'true' : 'false' }}" @if($usesColorGallery && $image['color'] !== $product['galleryColor']) hidden @endif>
+            <button type="button" class="shop-gallery__thumbnail btn btn-secondary p-1 shadow-none rounded-0 {{ $thumbnailSelected ? 'border-dark' : '' }}" data-gallery-thumb="{{ $loop->index }}" aria-label="View image {{ $thumbnailViews[$thumbnailColor] }}" aria-pressed="{{ $thumbnailSelected ? 'true' : 'false' }}" @if($usesColorGallery && $image['color'] !== $product['galleryColor']) hidden @endif>
                 <img src="{{ $image['url'] }}" alt="" width="64" height="64" loading="lazy">
             </button>
         @endforeach
