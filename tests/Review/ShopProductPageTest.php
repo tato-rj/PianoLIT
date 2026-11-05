@@ -84,6 +84,27 @@ class ShopProductPageTest extends ReviewTestCase
             ->assertDontSee('Other product review')->assertDontSee('Pending review');
     }
 
+    /** @dataProvider products */
+    public function test_product_sharing_uses_the_canonical_url_and_discount_prices_show_original_first($class)
+    {
+        $product = $this->product($class, ['discount' => 25]);
+        $html = $this->get($product->showRoute().'?utm_source=sample&return_token=private')->assertOk()
+            ->assertSee('js/components/link-share.js', false)->getContent();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@data-product-detail]//button[@data-bs-target="#product-share-modal"]/following-sibling::h2[1]'));
+        $this->assertSame($product->showRoute(), $xpath->query('//*[@id="product-share-modal"]//input[@readonly]')->item(0)->getAttribute('value'));
+        $this->assertCount(6, $xpath->query('//*[@id="product-share-modal"]//a[starts-with(@aria-label,"Share via ")]'));
+        $price = $xpath->query('//*[@data-product-price]')->item(0);
+        $this->assertSame('$9.00 USD', trim($price->textContent));
+        $this->assertSame('$12.00 USD', trim($xpath->query('preceding-sibling::del', $price)->item(0)->textContent));
+        $email = $xpath->query('//*[@id="product-share-modal"]//a[starts-with(@href,"mailto:")]')->item(0);
+        parse_str(parse_url($email->getAttribute('href'), PHP_URL_QUERY), $query);
+        $this->assertSame('Product from PianoLIT Shop', $query['subject']);
+        $this->assertSame($product->title."\r\n\r\n".$product->showRoute(), $query['body']);
+    }
+
     public function test_reviewer_names_are_escaped()
     {
         $product = $this->product();

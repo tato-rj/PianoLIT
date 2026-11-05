@@ -20,17 +20,24 @@
           @include('shop.storefront.components.option', ['option' => 'Mint', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#b9d8d1']), 'selected' => true])
           @include('shop.storefront.components.option', ['option' => 'Two-tone', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#14191e', 'color_code2' => '#ffffff']), 'selected' => false])
         </div>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          @include('shop.storefront.components.option', ['option' => 'M', 'swatch' => [], 'selected' => true, 'small' => true])
+          @include('shop.storefront.components.option', ['option' => 'L', 'swatch' => [], 'selected' => false, 'small' => true])
+        </div>
         <div class="row g-4 mt-2">
           <div class="col-12 col-md-6">
             @include('shop.storefront.components.product-gallery', ['product' => [
-              'gallery' => collect([['url' => asset('images/shop/demo/shirt-mint.png'), 'alt' => 'Sample piano T-shirt']]),
+              'gallery' => collect([
+                ['url' => asset('images/shop/demo/shirt-mint.png'), 'alt' => 'Sample piano T-shirt'],
+                ['url' => asset('images/shop/demo/shirt-mint.png'), 'alt' => 'Sample piano T-shirt'],
+              ]),
               'hasPreview' => false,
             ]])
           </div>
           <div class="col-12 col-md-6">
             @include('shop.storefront.components.product-price', ['product' => [
               'digital' => false, 'variants' => [1], 'priceVaries' => false,
-              'price' => '$28.00 USD', 'originalPrice' => null,
+              'price' => '$28.00 USD', 'originalPrice' => '$32.00 USD',
             ]])
             <p class="mb-0">One product gallery and price component for merchandise, eBooks and eScores.</p>
           </div>
@@ -69,6 +76,12 @@
         ])->map(fn ($cardPreview) => $cardPreview + ['url' => '#ds-components', 'digital' => true, 'variants' => [['id' => 0], ['id' => 1]], 'priceVaries' => false]))
         @include('shop.storefront.components.product-grid', ['products' => $shopGridPreview])
       </div>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Fitting and size chart', 'usage' => 'shop.storefront.components.size-chart · T-shirt measurements in inches and centimeters', 'properties' => 'width,padding,font-size,color'])
+      <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="offcanvas" data-bs-target="#ds-shop-size-chart" aria-controls="ds-shop-size-chart">Fitting and size chart</button>
+      @push('scripts')
+        @include('shop.storefront.components.size-chart', ['id' => 'ds-shop-size-chart'])
+      @endpush
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Account and hubs menu', 'usage' => 'components.account.menu · account and hubs offcanvas', 'properties' => 'width,padding,color,border-radius,box-shadow'])
       <span id="ds-account-menu-label" class="visually-hidden">Account menu preview</span>

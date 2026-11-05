@@ -50,17 +50,25 @@
         var slides = Array.from(gallery.querySelectorAll('[data-gallery-slide]'));
         var color = gallery.dataset.gallerySelectedColor;
         var visible = slides.filter(function (slide) { return color === undefined || slide.dataset.galleryColor === color; });
-        var arrows = gallery.querySelectorAll('[data-gallery-step]');
+        var thumbnails = Array.from(gallery.querySelectorAll('[data-gallery-thumb]'));
+        var thumbnailRow = gallery.querySelector('[data-gallery-thumbnails]');
         var empty = gallery.querySelector('[data-gallery-empty]');
-        var count = root.querySelector('[data-gallery-count]');
+        var count = gallery.querySelector('[data-gallery-count]');
         var current = 0;
         function move(step) {
             current = visible.length ? (current + step + visible.length) % visible.length : 0;
             slides.forEach(function (slide) { slide.hidden = slide !== visible[current]; });
             if (empty) empty.hidden = visible.length > 0;
-            arrows.forEach(function (button) { button.hidden = visible.length < 2; });
+            thumbnails.forEach(function (button) {
+                var slide = slides[Number(button.dataset.galleryThumb)];
+                var selected = slide === visible[current];
+                button.hidden = !visible.includes(slide);
+                button.setAttribute('aria-pressed', String(selected));
+                button.classList.toggle('border-dark', selected);
+            });
+            if (thumbnailRow) thumbnailRow.hidden = visible.length < 2;
             if (count) {
-                count.textContent = (visible.length ? current + 1 : 0) + ' / ' + visible.length;
+                count.textContent = 'Image ' + (visible.length ? current + 1 : 0) + ' of ' + visible.length;
                 count.hidden = visible.length < 2;
             }
         }
@@ -71,13 +79,22 @@
             current = 0;
             move(0);
         };
-        arrows.forEach(function (button) {
-            button.addEventListener('click', function () { move(Number(button.dataset.galleryStep)); });
+        thumbnails.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var index = visible.indexOf(slides[Number(button.dataset.galleryThumb)]);
+                if (index < 0) return;
+                current = index;
+                move(0);
+            });
         });
         gallery.addEventListener('keydown', function (event) {
             if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
             event.preventDefault();
             move(event.key === 'ArrowLeft' ? -1 : 1);
+            if (event.target && event.target.matches('[data-gallery-thumb]')) {
+                var selected = thumbnails.find(function (button) { return slides[Number(button.dataset.galleryThumb)] === visible[current]; });
+                if (selected) selected.focus();
+            }
         });
         move(0);
     });
@@ -107,8 +124,7 @@
                 group.querySelectorAll('[data-option-value]').forEach(function (button) {
                     var active = button.dataset.optionValue === selected.dataset[key];
                     button.setAttribute('aria-pressed', String(active));
-                    button.classList.toggle('btn-primary', active);
-                    button.classList.toggle('btn-secondary', !active);
+                    button.classList.toggle('border-primary', active);
                     button.disabled = key === 'size' && !variants.some(function (variant) { return variant.dataset.color === selected.dataset.color && variant.dataset.size === button.dataset.optionValue; });
                 });
             });

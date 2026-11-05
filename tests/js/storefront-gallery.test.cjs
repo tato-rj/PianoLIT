@@ -5,23 +5,26 @@ const path = require('node:path');
 
 module.exports = async function () {
     function element(extra = {}) {
-        return Object.assign({events: {}, dataset: {}, hidden: false,
-            classList: {toggle() {}}, addEventListener(name, fn) { this.events[name] = fn; }, setAttribute() {}
+        const classes = new Set();
+        return Object.assign({events: {}, dataset: {}, attrs: {}, hidden: false,
+            classList: {toggle(name, active) { if (active) classes.add(name); else classes.delete(name); }, contains: name => classes.has(name)},
+            addEventListener(name, fn) { this.events[name] = fn; }, setAttribute(name, value) { this.attrs[name] = value; },
+            focus() { this.focused = true; }, matches(selector) { return selector === '[data-gallery-thumb]' && this.dataset.galleryThumb !== undefined; }
         }, extra);
     }
     function gallery(colors, productId) {
         const slides = colors.map(color => element({dataset: {galleryColor: color}}));
-        const arrows = [-1, 1].map(step => element({dataset: {galleryStep: String(step)}}));
-        const empty = element();
+        const thumbnails = colors.map((color, index) => element({dataset: {galleryThumb: String(index)}}));
+        const empty = element(), row = element(), count = element();
         const node = element({dataset: productId ? {galleryProduct: productId, gallerySelectedColor: 'Pink'} : {},
-            querySelectorAll(selector) { return selector === '[data-gallery-slide]' ? slides : arrows; },
-            querySelector() { return empty; }});
-        return {node, slides, arrows, empty};
+            querySelectorAll(selector) { return selector === '[data-gallery-slide]' ? slides : selector === '[data-gallery-thumb]' ? thumbnails : []; },
+            querySelector(selector) { return {'[data-gallery-empty]': empty, '[data-gallery-thumbnails]': row, '[data-gallery-count]': count}[selector] || null; }});
+        return {node, slides, thumbnails, row, count, empty};
     }
     const colorGallery = gallery(['Pink', 'Blue', 'Pink', 'Ivory'], '1');
     const digital = gallery([undefined, undefined]);
     const variants = [['91', 'Pink', 'M'], ['92', 'Pink', 'L'], ['93', 'Blue', 'M'], ['94', 'Ivory', 'M'], ['95', 'White', 'M']]
-        .map(([value, color, size]) => ({value, dataset: {color, size, price: '$25.00', inBag: '0'}}));
+        .map(([value, color, size]) => ({value, dataset: {color, size, price: color === 'Blue' ? '$27.00' : '$25.00', inBag: '0'}}));
     const select = element({options: variants, value: '91'});
     Object.defineProperty(select, 'selectedOptions', {get() { return variants.filter(option => option.value === this.value); }});
     function group(key) {
@@ -33,12 +36,12 @@ module.exports = async function () {
         '[data-option-group="color"]': colors, '[data-option-group="size"]': sizes,
         '[data-bag-label]': element(), '[data-variant-fallback]': element(), '[data-option-pickers]': element()};
     const form = element({querySelector(selector) { return formNodes[selector]; }});
-    const count = element();
+    const price = element();
     const root = element({querySelectorAll(selector) {
         if (selector === '[data-shop-gallery]') return [colorGallery.node, digital.node];
         if (selector === '[data-product-options]') return [form];
         return [];
-    }, querySelector(selector) { return selector === '[data-gallery-count]' ? count : null; }});
+    }, querySelector(selector) { return selector === '[data-product-price]' ? price : null; }});
     // Each detail page has one gallery; the second fixture exercises the unchanged digital path independently.
     const source = fs.readFileSync(path.join(__dirname, '../../resources/js/views/storefront.js'), 'utf8');
     function run(galleries, forms) {
@@ -47,30 +50,45 @@ module.exports = async function () {
     }
     run([colorGallery.node], [form]);
     const shown = () => colorGallery.slides.flatMap((slide, index) => slide.hidden ? [] : [index]);
-    const next = () => colorGallery.arrows[1].events.click();
+    const thumbnail = index => colorGallery.thumbnails[index].events.click();
     function choose(group, value) { group.buttons.find(button => button.dataset.optionValue === value).events.click(); }
     assert.deepEqual(shown(), [0]);
-    assert.equal(count.textContent, '1 / 2');
-    next(); assert.deepEqual(shown(), [2]);
+    assert.equal(colorGallery.count.textContent, 'Image 1 of 2');
+    assert.deepEqual(colorGallery.thumbnails.map(button => button.hidden), [false, true, false, true]);
+    assert.equal(colorGallery.thumbnails[0].attrs['aria-pressed'], 'true');
+    thumbnail(2); assert.deepEqual(shown(), [2]);
+    assert.equal(colorGallery.thumbnails[2].attrs['aria-pressed'], 'true');
+    assert.equal(colorGallery.thumbnails[2].classList.contains('border-dark'), true);
+    assert.equal(colorGallery.thumbnails[0].attrs['aria-pressed'], 'false');
     choose(sizes, 'L'); assert.deepEqual(shown(), [2], 'Size changes retain the selected view');
-    next(); assert.deepEqual(shown(), [0], 'Next wraps inside Pink only');
-    colorGallery.node.events.keydown({key: 'ArrowLeft', preventDefault() {}});
+    thumbnail(0); assert.deepEqual(shown(), [0]);
+    colorGallery.node.events.keydown({key: 'ArrowLeft', target: colorGallery.thumbnails[0], preventDefault() {}});
     assert.deepEqual(shown(), [2], 'Keyboard navigation also stays within the selected color');
+    assert.equal(colorGallery.thumbnails[2].focused, true, 'Keyboard navigation follows the selected thumbnail');
+    thumbnail(1); assert.deepEqual(shown(), [2], 'An inactive color thumbnail cannot select another color');
     choose(colors, 'Blue'); assert.deepEqual(shown(), [1]);
+    assert.equal(price.textContent, '$27.00', 'The price below the options follows the selected variant');
+    assert.equal(colors.buttons.find(button => button.dataset.optionValue === 'Blue').classList.contains('border-primary'), true);
+    assert.equal(colors.buttons.find(button => button.dataset.optionValue === 'Pink').classList.contains('border-primary'), false);
+    assert.equal(sizes.buttons.find(button => button.dataset.optionValue === 'M').classList.contains('border-primary'), true);
     assert.equal(select.value, '93', 'Color selection still chooses an actual available size/variant');
-    assert.equal(colorGallery.arrows[0].hidden, true);
-    assert.equal(count.hidden, true);
-    next(); assert.deepEqual(shown(), [1], 'A single view cannot reveal another color');
+    assert.equal(colorGallery.row.hidden, true);
+    assert.equal(colorGallery.count.hidden, true);
+    thumbnail(2); assert.deepEqual(shown(), [1], 'A single view cannot reveal another color');
     choose(colors, 'White'); assert.deepEqual(shown(), []);
     assert.equal(colorGallery.empty.hidden, false, 'A missing color gallery never falls back to another color');
-    assert.equal(count.textContent, '0 / 0');
+    assert.equal(colorGallery.count.textContent, 'Image 0 of 0');
+    assert.equal(colorGallery.row.hidden, true);
+    assert.equal(colorGallery.thumbnails.every(button => button.hidden), true);
     choose(colors, 'Pink'); assert.deepEqual(shown(), [0], 'A color change starts at that color’s first view');
     assert.equal(colorGallery.empty.hidden, true);
-    assert.equal(colorGallery.arrows[1].hidden, false);
+    assert.equal(colorGallery.row.hidden, false);
     select.value = '94'; select.events.change(); assert.deepEqual(shown(), [3], 'Native select changes also select the color gallery');
     run([digital.node], []);
     assert.equal(digital.slides[0].hidden, false);
-    digital.arrows[1].events.click();
+    digital.thumbnails[1].events.click();
     assert.equal(digital.slides[1].hidden, false, 'Digital galleries retain their full sequence');
-    console.log('Passed: manual Shop color galleries, isolated image navigation, missing colors, size preservation and digital galleries.');
+    assert.equal(digital.count.textContent, 'Image 2 of 2');
+    assert.equal(colorGallery.count.textContent, 'Image 1 of 1', 'Counters belong to their own galleries');
+    console.log('Passed: color-filtered thumbnail selection, active state, keyboard focus, missing/single views, size preservation and digital galleries.');
 };

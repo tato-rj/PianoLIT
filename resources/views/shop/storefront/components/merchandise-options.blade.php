@@ -6,6 +6,7 @@
     <form action="{{ route('shop.bag.add') }}" method="POST" data-add-to-bag data-product-options>
         @csrf
         <input type="hidden" name="product_id" value="{{ $product['id'] }}">
+        <input type="hidden" name="quantity" value="1">
         <div class="shop-field mb-4" data-variant-fallback>
             <label for="product-variant" class="shop-eyebrow mb-2">Choose an option</label>
             <select name="variant_id" id="product-variant" class="form-control" required>
@@ -21,14 +22,13 @@
                     <div class="d-flex flex-wrap gap-2">
                         @foreach(array_unique(array_column($product['variants'], $key)) as $option)
                             @php($swatch = $key === 'color' ? ($product['colors'][$option] ?? []) : [])
-                            @include('shop.storefront.components.option', ['selected' => false])
+                            @include('shop.storefront.components.option', ['selected' => $option === $initialVariant[$key], 'small' => $key === 'size'])
                         @endforeach
                     </div>
                 </fieldset>
             @endforeach
         </div>
-        <p class="shop-eyebrow mb-4">{{ $product['label'] }}</p>
-        <div class="mb-3">@include('shop.storefront.components.quantity')</div>
+        @include('shop.storefront.components.product-price')
         <button type="submit" class="btn btn-primary w-100">@icon('shopping-bag') <span data-bag-label aria-live="polite">{{ $inBag ? 'In bag ('.$inBag.') · Add more' : 'Add to bag' }}</span></button>
     </form>
 @else

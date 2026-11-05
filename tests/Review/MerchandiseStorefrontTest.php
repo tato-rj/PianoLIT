@@ -229,9 +229,33 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $product->images()->update(['gallery_color' => 'Black']);
         $product->update(['main_image_id' => $main->id]);
         $response = $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()->assertViewIs('shop.storefront.show')->assertSee('Add to bag')
-            ->assertSee('data-color="Black"', false)->assertSee('data-size="L"', false)->assertSee('Next image')
+            ->assertSee('data-color="Black"', false)->assertSee('data-size="L"', false)->assertSee('data-gallery-thumb', false)
+            ->assertDontSee('Next image')->assertDontSee('data-gallery-step', false)
             ->assertSee('Checkout is not available yet')->assertDontSee('variant_id&quot;:4011', false);
         $this->assertLessThan(strpos($response->getContent(), 'shop/front.png'), strpos($response->getContent(), 'shop/back.png'));
+        Http::assertNothingSent();
+    }
+
+    public function test_detail_options_use_labeled_color_buttons_smaller_sizes_and_one_item_per_add()
+    {
+        $product = $this->product(['variants' => [
+            $this->variant(['color_code' => '#14191e']),
+            $this->variant(['id' => 92, 'size' => 'L', 'color_code' => '#14191e']),
+        ]]);
+        $url = app(Storefront::class)->productUrl($product);
+        $html = $this->get($url.'?utm_source=sample')->assertOk()->getContent();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@data-option-group="color"]//button[not(contains(@class,"btn-sm")) and @aria-pressed="true"]//span[contains(@style,"#14191e")]'));
+        $this->assertCount(2, $xpath->query('//*[@data-option-group="size"]//button[contains(@class,"btn-sm")]'));
+        $this->assertCount(0, $xpath->query('//*[@data-product-options]//*[@data-quantity]'));
+        $this->assertCount(1, $xpath->query('//*[@data-product-options]//input[@type="hidden" and @name="quantity" and @value="1"]'));
+        $this->assertCount(1, $xpath->query('//*[@data-product-options]//*[@data-option-pickers]/following-sibling::*[.//*[@data-product-price]]'));
+        $this->assertSame($url, $xpath->query('//*[@id="product-share-modal"]//input[@readonly]')->item(0)->getAttribute('value'));
+        $this->post(route('shop.bag.add'), ['product_id' => $product->id, 'variant_id' => 91, 'quantity' => 1])->assertRedirect();
+        $this->post(route('shop.bag.add'), ['product_id' => $product->id, 'variant_id' => 91, 'quantity' => 1])->assertRedirect();
+        $this->assertSame(2, session(MerchandiseBag::SESSION_KEY)[$product->id.':91']['quantity']);
         Http::assertNothingSent();
     }
 

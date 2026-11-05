@@ -8,11 +8,12 @@
             @include('shop.storefront.components.product-gallery')
         </div>
         <div class="col-12 col-md-6">
-            @include('shop.storefront.components.product-price')
-            <h1 class="mb-3">{{ $product['name'] }}</h1>
+            <button type="button" class="btn btn-secondary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#product-share-modal">@icon('share')Share</button>
+            <h2>{{ $product['name'] }}</h2>
             @if($product['subtitle'])<p class="mb-4">{{ $product['subtitle'] }}</p>@endif
             @include('shop.components.reviews.summary', ['reviewUrl' => '#reviews', 'compact' => false])
             @if($digitalProduct)
+                @include('shop.storefront.components.product-price')
                 @include('shop.storefront.components.digital-actions', ['product' => $digitalProduct])
             @else
                 @include('shop.storefront.components.merchandise-options')
@@ -32,6 +33,14 @@
 @endsection
 
 @push('scripts')
+    @include('components.media.link-share', [
+        'id' => 'product-share-modal', 'url' => $product['url'], 'title' => $product['name'],
+        'shareData' => \App\Support\LinkShare::forMessage($product['url'], $product['name'], $product['name'], 'Product from PianoLIT Shop', $product['name']),
+    ])
+    <script src="{{ mix('js/components/link-share.js') }}" defer></script>
+    @if(!$digitalProduct && $product['category'] === 't-shirts')
+        @include('shop.storefront.components.size-chart', ['id' => 'product-size-chart'])
+    @endif
     @if($digitalProduct)
         <script src="{{ asset('js/vendor/turn.min.js') }}" defer></script>
     @endif

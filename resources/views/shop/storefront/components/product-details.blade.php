@@ -11,5 +11,8 @@
     @else
         <p>{{ $product['name'] }}</p>
         <p class="mb-0">Choose from the available options above. Browse the gallery for a closer look at the design.</p>
+        @if($product['category'] === 't-shirts')
+            <button type="button" class="btn btn-link px-0 mt-3" data-bs-toggle="offcanvas" data-bs-target="#product-size-chart" aria-controls="product-size-chart">@icon('ruler')Fitting and size chart</button>
+        @endif
     @endif
 </section>

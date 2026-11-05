@@ -53,6 +53,10 @@ class MerchandiseGalleryTest extends ReviewTestCase
         $this->assertSame('Blue', $xpath->query('//*[@data-gallery-slide and not(@hidden)]')->item(0)->getAttribute('data-gallery-color'));
         $this->assertCount(0, $xpath->query('//*[@data-shop-gallery]//img[@alt="Unassigned import"]'));
         $this->assertCount(0, $xpath->query('//*[@data-gallery-step and not(@hidden)]'));
+        $this->assertCount(3, $xpath->query('//*[@data-gallery-thumb]'));
+        $this->assertCount(1, $xpath->query('//*[@data-gallery-thumb and not(@hidden)]'));
+        $this->assertCount(1, $xpath->query('//*[@data-gallery-thumb and @aria-pressed="true"]'));
+        $this->assertCount(1, $xpath->query('//*[@data-gallery-thumbnails and @hidden]'));
         $this->assertSame('92', $xpath->query('//select[@name="variant_id"]/option[@selected]')->item(0)->getAttribute('value'));
         $this->assertArrayNotHasKey('gallery_color', $main->toArray());
         Http::assertNothingSent();

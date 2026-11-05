@@ -16,7 +16,7 @@ class ProductPage
         if (!$digital && !$item instanceof MerchandiseProduct) throw new \InvalidArgumentException('Unsupported shop product.');
         $product = $digital ? $catalog->presentDigital($item) : $catalog->present($item);
         $product['name'] = rtrim($product['name'], '. ');
-        $product['subtitle'] = $digital ? $item->subtitle : 'A little piano, wherever you go.';
+        $product['subtitle'] = $digital ? $item->subtitle : null;
         $product['hasPreview'] = $digital && count($item->previews) > 0;
         $product['originalPrice'] = null;
         $product['gallery'] = $digital
