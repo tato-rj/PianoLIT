@@ -89,7 +89,8 @@ class QuizPagesTest extends ReviewTestCase
             ['Q' => 'Name this note [storage/quiz/images/note.png]', 'A' => ['C', 'D[x]']],
         ])]);
         $response = $this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk()
-            ->assertSee('Discover the piano')->assertSee('Test your knowledge')->assertSee('Answer each question, then see your score.')->assertSee('Start quiz')->assertSee('Your progress')->assertSee('Review answers')
+            ->assertSee('Discover the piano')->assertDontSee('Test your knowledge')->assertSee('Answer each question, then see your score.')->assertSee('Start quiz')->assertSee('Your progress')->assertSee('Review answers')
+            ->assertSee('Created')->assertSee('Times answered')->assertSee('Average score')->assertSee('No scores yet')
             ->assertSee('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback', false)
             ->assertDontSee('game-results')->assertDontSee('pinterest.com')->assertDontSee('DISCLAIMER');
         $xpath = $this->xpath($response);
@@ -101,6 +102,8 @@ class QuizPagesTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//img[contains(@src,"/storage/quiz/images/note.png") and @alt]'));
         $this->assertCount(1, $xpath->query('//div[@id="quiz-content" and @hidden]'));
         $this->assertCount(1, $xpath->query('//button[@data-quiz-start and @aria-describedby="quiz-start-description"]'));
+        $this->assertCount(1, $xpath->query('//div[contains(@class,"quiz-launcher")]//button[@data-quiz-start and contains(@class,"rounded-circle")]'));
+        $this->assertCount(1, $xpath->query('//dl[@aria-label="Quiz statistics"]//time[@datetime="'.$quiz->created_at->toDateString().'"]'));
         $this->assertCount(1, $xpath->query('//section[@data-quiz-results and @hidden]'));
         $this->assertCount(1, $xpath->query('//div[@id="quiz-result-modal" and @data-quiz-modal and @aria-labelledby="quiz-dialog-title"]//section[@data-quiz-results]'));
         $this->assertCount(2, $xpath->query('//div[@data-quiz-modal]//section[@data-quiz-question]'));
@@ -131,8 +134,10 @@ class QuizPagesTest extends ReviewTestCase
 
     public function test_endings_restore_the_original_gifs_for_each_score_band_with_short_copy()
     {
-        $quiz = $this->quiz('Can you outsmart a piano?');
-        $this->preview($this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk(), 'playable');
+        $quiz = $this->quiz('Can you outsmart a piano?', ['cover_path' => null]);
+        $overview = $this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk()->assertSee('No scores yet');
+        $this->assertCount(1, $this->xpath($overview)->query('//div[contains(@class,"quiz-launcher-art")]/svg'));
+        $this->preview($overview, 'playable');
         foreach ([0 => 'oops', 25 => 'oops', 50 => 'good', 75 => 'great', 100 => 'perfect'] as $percentage => $tier) {
             $original = $quiz->getFeedback($percentage, 100);
             $response = $this->responseForView('games.quizzes.feedback', ['feedback' => [
@@ -157,6 +162,11 @@ class QuizPagesTest extends ReviewTestCase
     {
         $quiz = $this->quiz('Can you outsmart a piano?');
         foreach ([0, 1, 2] as $score) $quiz->results()->create(['score' => $score]);
+        $overview = $this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk();
+        $overviewXpath = $this->xpath($overview);
+        $this->assertCount(1, $overviewXpath->query('//dl/div[dt="Times answered"]/dd[text()="3"]'));
+        $this->assertCount(1, $overviewXpath->query('//dl/div[dt="Average score"]/dd[text()="1 / 2"]'));
+        $this->preview($overview, 'statistics');
         $other = $this->quiz('Another quiz');
         $other->results()->create(['score' => 2]);
         foreach ([2 => ['above', [0, 1]], 1 => ['tied', [0, 0]], 0 => ['below', [1, 0]]] as $score => [$standing, $answers]) {

@@ -27,31 +27,35 @@
                     </div>
                 @endif
                 <h1 class="h2 mb-3">{{ rtrim($quiz->title, '. ') }}</h1>
-                <p class="text-muted mb-4">{{ $quiz->description }}</p>
-                <div class="d-flex flex-wrap align-items-center gap-3 small text-muted">
-                    <span>@icon('list'){{ count($quiz->questions) }} {{ Str::plural('question', count($quiz->questions)) }}</span>
-                    <span>@icon('clock')About {{ $quiz->duration }}</span>
-                    @include('games.quizzes.level')
-                </div>
+                <p class="text-muted mb-0">{{ $quiz->description }}</p>
             </header>
-            @if($quiz->cover_path)
-                <img src="{{ $quiz->cover_image() }}" alt="{{ rtrim($quiz->title, '. ') }}" class="quiz-cover w-100 d-block mb-4" decoding="async">
-            @endif
-
-            <section class="quiz-start rounded-sm text-center p-4 py-sm-5 mb-4" data-quiz-introduction aria-labelledby="quiz-start-title">
+            <div class="quiz-launcher" data-quiz-introduction>
+                <div class="quiz-launcher-art" aria-hidden="true">
+                    @if($quiz->cover_path)
+                        <img src="{{ $quiz->cover_image() }}" alt="" decoding="async">
+                    @else
+                        @include('learn.components.artwork', ['kind' => 'quizzes'])
+                    @endif
+                </div>
                 @if(count($quiz->questions))
-                    <div class="quiz-start-notes" aria-hidden="true"><span>♫</span><span>✦</span><span>♪</span><span>✦</span></div>
-                    <div class="quiz-start-moments d-flex justify-content-center align-items-center gap-3 mb-4" aria-hidden="true"><span>🧠</span><span>🔥</span><span>🎉</span></div>
-                    <h2 class="h3 mb-3" id="quiz-start-title">Test your knowledge</h2>
-                    <p class="mb-4" id="quiz-start-description">Answer each question, then see your score.</p>
-                    <button class="btn btn-primary" type="button" id="start-quiz" data-quiz-start aria-describedby="quiz-start-description" aria-haspopup="dialog" aria-controls="quiz-result-modal">@icon('play')<span data-quiz-start-label>Start quiz</span></button>
-                    @if($quiz->results_count > 2)<p class="small text-muted mt-4 mb-0">Average: <strong>{{ $quiz->average_score }} / {{ count($quiz->questions) }}</strong> · {{ number_format($quiz->results_count) }} plays</p>@endif
-                    <noscript><p class="small text-muted mt-3 mb-0">Enable JavaScript to answer this quiz.</p></noscript>
+                    <span class="visually-hidden" id="quiz-start-description">Answer each question, then see your score.</span>
+                    @include('components.media.play-button', [
+                        'id' => 'start-quiz', 'label' => 'Start quiz', 'modalId' => 'quiz-result-modal',
+                        'descriptionId' => 'quiz-start-description', 'data' => ['quiz-start' => ''], 'labelData' => ['quiz-start-label' => ''],
+                    ])
                 @else
-                    <h2 class="h5 mb-2" id="quiz-start-title">This quiz is being prepared</h2>
-                    <p class="text-muted mb-0">Explore another quiz while we get this one ready.</p>
+                    <p class="text-white text-center p-4 mb-0">This quiz is being prepared</p>
                 @endif
-            </section>
+            </div>
+            <noscript><p class="small text-muted mt-3 mb-0">Enable JavaScript to answer this quiz.</p></noscript>
+            <dl class="row row-cols-2 row-cols-md-3 g-3 mt-2 mb-0" aria-label="Quiz statistics">
+                <div class="col"><dt class="small text-muted fw-normal">Created</dt><dd class="mb-0">@if($quiz->created_at)<time datetime="{{ $quiz->created_at->toDateString() }}">{{ $quiz->created_at->format('M j, Y') }}</time>@else Not recorded @endif</dd></div>
+                <div class="col"><dt class="small text-muted fw-normal">Questions</dt><dd class="mb-0">{{ count($quiz->questions) }}</dd></div>
+                <div class="col"><dt class="small text-muted fw-normal">Time</dt><dd class="mb-0">About {{ $quiz->duration }}</dd></div>
+                <div class="col"><dt class="small text-muted fw-normal">Times answered</dt><dd class="mb-0">{{ number_format($statistics['plays']) }}</dd></div>
+                <div class="col"><dt class="small text-muted fw-normal">Average score</dt><dd class="mb-0">{{ $statistics['average_label'] !== null ? $statistics['average_label'].' / '.count($quiz->questions) : ($statistics['plays'] ? 'Not available' : 'No scores yet') }}</dd></div>
+                @if($quiz->level)<div class="col"><dt class="small text-muted fw-normal">Difficulty</dt><dd class="mb-0">{{ ucfirst($quiz->level->name) }}</dd></div>@endif
+            </dl>
 
             @component('components.dialogs.modal', ['id' => 'quiz-result-modal', 'titleId' => 'quiz-dialog-title', 'centered' => true, 'data' => ['quiz-modal' => ''], 'options' => ['size' => 'lg', 'header' => ['raw' => true], 'body' => ['padding' => 0]]])
             @slot('header')

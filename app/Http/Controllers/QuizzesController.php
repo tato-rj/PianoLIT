@@ -35,14 +35,13 @@ class QuizzesController extends Controller
         $quiz->loadMissing(['topics', 'level']);
         $suggestions = $quiz->suggestions(4)->with('level')->get();
 
-        if (! $quiz->published_at) {
-            if (auth()->guard('admin')->check())
-                return view('games.quizzes.show', compact(['quiz', 'suggestions']))->with('preview', true);
-
+        if (! $quiz->published_at && ! auth()->guard('admin')->check()) {
             abort(404);
         }
 
-        return view('games.quizzes.show', compact(['quiz', 'suggestions']));
+        $statistics = app(\App\Services\QuizResultComparison::class)->beforeCurrentPlay($quiz, 0, count($quiz->questions));
+
+        return view('games.quizzes.show', compact(['quiz', 'suggestions', 'statistics']))->with('preview', ! $quiz->published_at);
     }
 
     public function feedback(Request $request, Quiz $quiz)
