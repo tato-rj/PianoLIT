@@ -1,5 +1,9 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-05 — Faster Shop product reveal (P3, complete locally)
+
+- Shortened the shared fade/upward slide from 650ms to 500ms at Arthur's request. Retained the 12px distance and ease-out curve, and updated current animation guidance. Scoped Storefront CSS rebuild, asset/hash checks and whitespace checks pass. The actual local Shop reports a 0.5s animation with the fade and upward translation progressing together. Proof: `/Users/arthur/.codex/visualizations/2026/11/05/01a1ac75-4602-7ed3-a60b-dc1035ebca5f/shop-products-faster-reveal.png`. No deployment performed.
+
 ### 2026-11-05 — Subtle upward slide during product reveals (P3, complete locally)
 
 - **Request / change:** Added `translateY(12px)` → `translateY(0)` to the existing Shop product-entry keyframes, matching Arthur's follow-up request for a very subtle rise during the fade. The whole card keeps the same 650ms ease-out timing and settles into its existing grid position. Reduced-motion, keyboard, print and restored-page bypasses remain effective. Updated current animation guidance; no JavaScript, markup, data or provider change.

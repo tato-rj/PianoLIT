@@ -83,7 +83,7 @@
   opacity: 0;
 }
 .shop-storefront .shop-product-revealing {
-  animation: shop-product-enter 650ms ease-out;
+  animation: shop-product-enter 500ms ease-out;
 }
 .shop-storefront [data-product-reveal]:focus-within {
   opacity: 1;

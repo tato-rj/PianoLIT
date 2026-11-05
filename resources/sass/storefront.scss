@@ -43,7 +43,7 @@
     }
     .shop-card__art { position: relative; }
     .shop-product-pending { opacity: 0; }
-    .shop-product-revealing { animation: shop-product-enter 650ms ease-out; }
+    .shop-product-revealing { animation: shop-product-enter 500ms ease-out; }
     // A focused product must be visible even before the observer runs.
     [data-product-reveal]:focus-within { opacity: 1; animation: none; }
     .shop-card__art > a:first-child { position: relative; display: block; width: 100%; aspect-ratio: 1; overflow: hidden; }
