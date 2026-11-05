@@ -7,26 +7,22 @@ use App\{Piece, Tutorial};
 use App\Services\Timeline\WebTimeline;
 use App\Services\RecentlyViewedPieces;
 use App\Services\WebApp\PieceCards;
-use App\Services\WebApp\PieceRecommendations;
+use App\Services\Pieces\PageContent;
 use App\Services\WebApp\SimilarPieces;
 
 class PiecesController extends Controller
 {
-    public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed, PieceRecommendations $recommendations)
+    public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed, PageContent $content)
     {
-        $timelineService = new WebTimeline;
-        $timelinePeriod = $timelineService->periodForPiece($piece);
-        $timeline = $timelineService->forPiece($piece);
-        $piece->loadMissing(['tags', 'tutorials.moments']);
+        $data = $content->data($piece);
         if (auth('web')->check()) {
             $piece->loadExists(['favorites as webapp_is_favorited' => function ($query) {
                 $query->where('user_id', auth('web')->id())->whereNotNull('favorite_folder_id');
             }]);
         }
-        $recommendationRows = $recommendations->rows($piece);
         $sentences = ['Tuning the piano', 'Arranging rows of comfy seats', 'Adjusting the bench', 'Warming up fingers', 'Greeting the eager audience', 'Dimming the lights', 'Wrapping up'];
 
-        $response = response()->view('webapp.piece.index', compact(['piece', 'timeline', 'timelinePeriod', 'sentences', 'recommendationRows']));
+        $response = response()->view('webapp.piece.index', array_merge($data, compact('sentences')));
 
         if (request()->isMethod('GET') && app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user())) {
             $recentlyViewed->record(auth('web')->user(), $piece);

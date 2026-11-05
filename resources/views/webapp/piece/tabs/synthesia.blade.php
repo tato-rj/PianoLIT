@@ -31,7 +31,7 @@
 	<div class="mt-6">
 		<h5 class="mb-3">Other releases</h5>
 		@component('webapp.components.grids.grid')
-			@foreach(\App\Tutorial::synthesia(12)->loadMissing('piece.tags') as $tutorial)
+			@foreach($synthesiaReleases ?? app(\App\Services\Pieces\PageContent::class)->synthesiaReleases() as $tutorial)
 				@include('webapp.explore.cards.synthesia', ['isAuthorized' => $hasFullAccess])
 			@endforeach
 		@endcomponent
