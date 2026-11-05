@@ -89,7 +89,7 @@ class MerchandiseGalleryTest extends ReviewTestCase
             'gallery_color' => 'Blue', 'images' => [UploadedFile::fake()->image('blue-back.png', 120, 120)]])->assertRedirect();
         $this->assertSame('Blue', $product->images()->reorder('id', 'desc')->firstOrFail()->gallery_color);
         $adminPage = $this->get(route('admin.merchandise.edit', $product))->assertOk()->assertSee('Pink (2)')->assertSee('Blue (2)')
-            ->assertSee('Ivory (0)')->assertSee('Color gallery')->assertSee('Save image');
+            ->assertSee('Ivory (0)')->assertSee('data-mockup-row', false)->assertDontSee('Image description')->assertDontSee('Save image');
         if ($directory = getenv('PIANOLIT_GALLERY_BROWSER_FIXTURES')) {
             if (!is_dir($directory)) mkdir($directory, 0700, true);
             $product->update(['main_image_id' => $front->id]);
@@ -127,7 +127,7 @@ class MerchandiseGalleryTest extends ReviewTestCase
         Http::assertNothingSent();
     }
 
-    public function test_validation_drafts_do_not_change_other_images_color_controls()
+    public function test_color_upload_targets_are_fixed_and_mockup_rows_have_no_name_or_color_editors()
     {
         $product = $this->product();
         $first = $this->image($product, 'Pink front', 'Pink');
@@ -138,10 +138,44 @@ class MerchandiseGalleryTest extends ReviewTestCase
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
-        foreach (['image-color-'.$first->id => 'Ivory', 'image-color-'.$second->id => 'Blue'] as $id => $expected) {
-            $this->assertSame($expected, $xpath->query('//select[@id="'.$id.'"]/option[@selected]')->item(0)->getAttribute('value'));
-        }
+        $this->assertCount(0, $xpath->query('//*[@data-mockup-row]//select|//*[@data-mockup-row]//input[@name="alt"]'));
+        $this->assertCount(2, $xpath->query('//*[@data-mockup-row]//img[@width="48" and @height="48"]'));
+        $this->assertCount(8, $xpath->query('//*[@data-mockup-row]//button[contains(@class,"btn-xs")]'));
         foreach (['Pink', 'Blue', 'Ivory'] as $color) $this->assertCount(1, $xpath->query('//form[@data-color-upload="'.$color.'"]/input[@name="gallery_color" and @value="'.$color.'"]'));
+    }
+
+    public function test_batch_duplicate_and_restored_uploads_use_the_target_color_and_current_product_name()
+    {
+        Storage::fake('public');
+        $product = $this->product();
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $url = route('admin.merchandise.images.upload', $product);
+        $this->post($url, ['revision' => 1, 'gallery_color' => 'Ivory', 'alt' => 'Not the product name',
+            'images' => [UploadedFile::fake()->image('front.png', 100, 100), UploadedFile::fake()->image('back.png', 120, 100)]])->assertRedirect();
+        $uploads = $product->images()->get();
+        $this->assertCount(2, $uploads);
+        $this->assertSame(['Ivory', 'Ivory'], $uploads->pluck('gallery_color')->all());
+        $this->assertSame([$product->name, $product->name], $uploads->pluck('alt')->all());
+        $front = $uploads->first();
+        $this->post($url, ['revision' => $product->fresh()->revision, 'gallery_color' => 'Blue',
+            'images' => [UploadedFile::fake()->image('front.png', 100, 100)]])->assertRedirect();
+        $this->assertSame('Blue', $front->fresh()->gallery_color);
+        $this->assertSame(2, $product->images()->count());
+        $this->delete(route('admin.merchandise.images.remove', ['merchandise' => $product, 'image' => $front->id]), ['revision' => $product->fresh()->revision])->assertRedirect();
+        $this->post($url, ['revision' => $product->fresh()->revision, 'gallery_color' => 'Pink',
+            'images' => [UploadedFile::fake()->image('front.png', 100, 100)]])->assertRedirect();
+        $this->assertSame('Pink', $front->fresh()->gallery_color);
+        $this->assertFalse($front->fresh()->trashed());
+        $product->update(['name' => 'Renamed piano T-shirt']);
+        $page = $this->get(app(Storefront::class)->productUrl($product))->assertOk();
+        $page->assertViewHas('product', function ($data) {
+            foreach ($data['gallery'] as $image) $this->assertStringStartsWith('Renamed piano T-shirt — ', $image['alt']);
+            return true;
+        });
+        $this->patch($this->action($product, $front), ['revision' => $product->fresh()->revision, 'gallery_color' => 'Pink', 'alt' => 'Forged title'])->assertRedirect();
+        $this->assertSame('Piano T-shirt', $front->fresh()->alt, 'Legacy image metadata is not an editable product title.');
+        $this->assertSame('Renamed piano T-shirt', $product->fresh()->name);
+        Http::assertNothingSent();
     }
 
     public function test_printful_library_is_compact_read_only_and_never_supplies_storefront_artwork()

@@ -3,7 +3,6 @@
 @section('content')
 @php
     $editingImageId = is_scalar(old('editing_image_id')) ? (string) old('editing_image_id') : '';
-    $draftAlt = is_string(old('alt')) ? old('alt') : null;
     $draftColor = is_string(old('gallery_color')) ? old('gallery_color') : '';
     $colorGroups = array_values(array_filter($galleryGroups, fn ($group) => $group['color'] !== ''));
     $printfulMockups = $product->images->where('source', 'printful');
@@ -24,12 +23,12 @@
             <div class="col-lg-8">
                 @component('admin.components.editor.section', ['id' => 'merchandise-gallery', 'title' => 'Mockups by color', 'description' => 'Upload the views for each product color and arrange their order. The storefront shows only the views for the selected color.'])
                     @forelse($colorGroups as $groupIndex => $group)
-                        <section class="mb-5" aria-labelledby="gallery-group-{{ $groupIndex }}">
-                            <h3 class="h5 mb-3" id="gallery-group-{{ $groupIndex }}">{{ $group['label'] }} ({{ $group['images']->count() }})</h3>
+                        <section class="mb-4" aria-labelledby="gallery-group-{{ $groupIndex }}">
+                            <h3 class="h5 mb-2" id="gallery-group-{{ $groupIndex }}">{{ $group['label'] }} ({{ $group['images']->count() }})</h3>
                             @if(!$group['offered'])<p class="small text-muted">This color is no longer offered. Reassign its images to an available color to use them.</p>@endif
-                            <div class="row g-3">
+                            <div class="row g-0">
                                 @forelse($group['images'] as $image)
-                                    @include('admin.pages.merchandise.image', ['isMain' => (int) $product->main_image_id === $image->id, 'first' => $loop->first, 'last' => $loop->last])
+                                    @include('admin.pages.merchandise.image', ['isMain' => (int) $product->main_image_id === $image->id, 'first' => $loop->first, 'last' => $loop->last, 'viewNumber' => $loop->iteration, 'canAssign' => !$group['offered']])
                                 @empty
                                     <div class="col-12"><p class="text-muted mb-0">No mockups uploaded for this color.</p></div>
                                 @endforelse
@@ -39,7 +38,7 @@
                     @empty
                         <p class="text-muted mb-0">No product colors available. Add variants in Printful, then refresh the product details.</p>
                     @endforelse
-                    <p class="small text-muted mb-0">Choose Use as main on an image to use it in the catalog. Maximum 40 images per product, 6,000 pixels per side and 24 megapixels.</p>
+                    <p class="small text-muted mb-0">The star selects the catalog image. Maximum 40 images per product, 6,000 pixels per side and 24 megapixels.</p>
                 @endcomponent
             </div>
             <div class="col-lg-4">
@@ -71,9 +70,9 @@
             <details class="admin-editor-section mb-4" @if($unassignedUploads->contains('id', (int) $editingImageId)) open @endif>
                 <summary class="fw-semibold">Unassigned uploads ({{ $unassignedUploads->count() }})</summary>
                 <p class="text-muted mt-3">These earlier uploads have no color assigned. Choose a color to add each image to its gallery.</p>
-                <div class="row g-4">
+                <div class="row g-0">
                     @foreach($unassignedUploads as $image)
-                        @include('admin.pages.merchandise.image', ['isMain' => (int) $product->main_image_id === $image->id, 'first' => $loop->first, 'last' => $loop->last])
+                        @include('admin.pages.merchandise.image', ['isMain' => (int) $product->main_image_id === $image->id, 'first' => $loop->first, 'last' => $loop->last, 'viewNumber' => $loop->iteration, 'canAssign' => true])
                     @endforeach
                 </div>
             </details>

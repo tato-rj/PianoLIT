@@ -130,11 +130,10 @@ class MerchandiseController extends Controller
         $data = $request->validateWithBag('merchandise', [
             'revision' => 'required|integer|min:1', 'images' => 'required|array|min:1|max:10',
             'images.*' => 'required|file|image|mimes:jpg,jpeg,png,webp|max:10240|dimensions:max_width=6000,max_height=6000',
-            'alt' => 'nullable|string|max:255',
             'gallery_color' => ['nullable', 'string', 'max:255', Rule::in(app(MerchandiseGallery::class)->colors($merchandise))],
         ]);
         try {
-            $catalog->upload($merchandise, (int) $data['revision'], $request->file('images'), $data['alt'] ?? null, $data['gallery_color'] ?? null);
+            $catalog->upload($merchandise, (int) $data['revision'], $request->file('images'), null, $data['gallery_color'] ?? null);
         } catch (PrintfulException $exception) {
             return $this->backToImages($merchandise)->with('error', $exception->getMessage());
         }
@@ -153,14 +152,12 @@ class MerchandiseController extends Controller
     {
         $current = $catalog->editableImage($merchandise, $image);
         $colors = array_merge(app(MerchandiseGallery::class)->colors($merchandise), [$current->gallery_color]);
-        $data = $request->validateWithBag('merchandise', ['revision' => 'required|integer|min:1', 'alt' => 'required|string|max:255',
-            'gallery_color' => ['sometimes', 'nullable', 'string', 'max:255', Rule::in($colors)]]);
+        $data = $request->validateWithBag('merchandise', ['revision' => 'required|integer|min:1',
+            'gallery_color' => ['present', 'nullable', 'string', 'max:255', Rule::in($colors)]]);
         $catalog->change($merchandise, (int) $data['revision'], function ($product) use ($image, $catalog, $data) {
-            $changes = ['alt' => $data['alt']];
-            if (array_key_exists('gallery_color', $data)) $changes['gallery_color'] = $data['gallery_color'];
-            $catalog->editableImage($product, $image)->update($changes);
+            $catalog->editableImage($product, $image)->update(['gallery_color' => $data['gallery_color']]);
         });
-        return $this->backToImages($merchandise)->with('status', 'The gallery image has been updated.');
+        return $this->backToImages($merchandise)->with('status', 'The image color has been updated.');
     }
 
     public function move(Request $request, MerchandiseProduct $merchandise, int $image, MerchandiseCatalog $catalog)

@@ -269,7 +269,7 @@ class AdminMerchandiseTest extends ReviewTestCase
         $this->assertSame('29.00', $product->variants[0]['retail_price']);
         $this->assertSame($upload->id, (int) $product->main_image_id);
         $this->assertSame($before, $product->images()->pluck('id')->all());
-        $this->assertSame('My studio photo', $upload->fresh()->alt);
+        $this->assertSame('Piano T-shirt', $upload->fresh()->alt);
         $this->assertTrue(MerchandiseImage::withTrashed()->find($removedUpload->id)->trashed());
         $this->assertSame('Black', MerchandiseImage::withTrashed()->find($removedUpload->id)->gallery_color);
         $this->assertFalse($front->fresh()->trashed());
@@ -303,12 +303,12 @@ class AdminMerchandiseTest extends ReviewTestCase
         $this->deleteJson($this->action('images.remove', $other, $image->id), ['revision' => 1])->assertNotFound();
         $this->assertSame(1, $other->fresh()->revision);
         $revision = $product->revision;
-        $this->patch($this->action('images.update', $product, $image->id), ['revision' => $revision, 'alt' => 'Clear description'])->assertRedirect();
+        $this->patch($this->action('images.update', $product, $image->id), ['revision' => $revision, 'gallery_color' => 'Black', 'alt' => 'Ignored description'])->assertRedirect();
         $this->patchJson($this->action('images.main', $product, $image->id), ['revision' => $revision])->assertUnprocessable();
         $files = Storage::disk('public')->allFiles();
         $this->postJson($this->action('images.upload', $product), ['revision' => $revision, 'images' => [UploadedFile::fake()->image('stale.png', 100, 80)]])->assertUnprocessable();
         $this->assertSame($files, Storage::disk('public')->allFiles());
-        $this->assertSame('Clear description', $image->fresh()->alt);
+        $this->assertSame('Uploaded view', $image->fresh()->alt);
     }
 
     public function test_removed_main_cannot_be_selected_until_restored_and_duplicate_uploads_are_not_added()
@@ -525,11 +525,11 @@ class AdminMerchandiseTest extends ReviewTestCase
         $filters = ['search' => 'Piano', 'sort' => 'name_desc', 'per_page' => 24, 'page' => 2];
         $editUrl = route('admin.merchandise.edit', ['merchandise' => $product] + $filters);
         $updateUrl = route('admin.merchandise.images.update', ['merchandise' => $product, 'image' => $image->id] + $filters);
-        $this->get($editUrl)->assertOk()->assertSee(e(route('admin.merchandise.index', $filters)), false)->assertSee(e($updateUrl), false);
-        $this->patch($updateUrl, ['revision' => $product->revision, 'alt' => 'Studio <script>view</script>'])->assertRedirect($editUrl.'#images');
-        $this->get($editUrl)->assertOk()->assertSee('Studio &lt;script&gt;view&lt;/script&gt;', false)->assertDontSee('Studio <script>view</script>', false);
-        $this->withExceptionHandling()->from($editUrl)->patch($updateUrl, ['revision' => $product->fresh()->revision, 'alt' => ['invalid'], 'editing_image_id' => ['invalid']])
-            ->assertRedirect($editUrl)->assertSessionHasErrors('alt', null, 'merchandise');
-        $this->get($editUrl)->assertOk()->assertSee('The alt must be a string.');
+        $this->get($editUrl)->assertOk()->assertSee(e(route('admin.merchandise.index', $filters)), false)->assertDontSee('Image description');
+        $this->patch($updateUrl, ['revision' => $product->revision, 'gallery_color' => 'Black', 'alt' => 'Studio <script>view</script>'])->assertRedirect($editUrl.'#images');
+        $this->get($editUrl)->assertOk()->assertDontSee('Studio <script>view</script>', false)->assertDontSee('name="alt"', false);
+        $this->withExceptionHandling()->from($editUrl)->patch($updateUrl, ['revision' => $product->fresh()->revision, 'gallery_color' => ['invalid'], 'editing_image_id' => ['invalid']])
+            ->assertRedirect($editUrl)->assertSessionHasErrors('gallery_color', null, 'merchandise');
+        $this->get($editUrl)->assertOk()->assertSee('The gallery color must be a string.');
     }
 }

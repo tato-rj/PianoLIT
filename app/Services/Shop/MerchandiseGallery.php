@@ -31,8 +31,18 @@ class MerchandiseGallery
         $color = $selected['color'] ?? ($main->gallery_color ?? ($this->colors($product)[0] ?? null));
         // Products without named colors retain their existing single gallery.
         $namedColors = collect($product->variants ?? [])->contains(fn ($variant) => !empty($variant['color']));
+        $views = [];
         $gallery = $images->filter(fn ($image) => $image->gallery_color !== null || !$namedColors)
-            ->values()->map(fn ($image) => ['url' => $image->url, 'alt' => $image->alt, 'color' => $image->gallery_color ?? $color]);
+            ->values()->map(function ($image) use ($product, $color, &$views) {
+                $key = $image->gallery_color ?? '';
+                $views[$key] = ($views[$key] ?? 0) + 1;
+                return ['url' => $image->url, 'alt' => $this->description($product, $image->gallery_color, $views[$key]), 'color' => $image->gallery_color ?? $color];
+            });
         return ['gallery' => $gallery, 'galleryColor' => $color, 'selectedVariant' => $selected];
+    }
+
+    public function description(MerchandiseProduct $product, ?string $color, int $view): string
+    {
+        return $product->name.($color !== null ? ' — '.$color : '').' · View '.$view;
     }
 }

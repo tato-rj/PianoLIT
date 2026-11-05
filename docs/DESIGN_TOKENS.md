@@ -300,6 +300,13 @@ Use `.admin-editor-grid` for a wide main column and narrower sidebar on desktop;
 it stacks on smaller screens. `.admin-editor-stack`, `.admin-editor-options` and
 `.admin-editor-save` supply the shared layout. Controls keep their standard
 components and finishes. The Design System previews the same section component.
+Uploaded merchandise mockups use `admin.pages.merchandise.image`: a compact row
+with a 48px thumbnail and right-aligned icon actions from
+`admin.components.table-action`. Its optional `size => xs` uses the existing
+extra-small button token; the default remains `sm` for other admin actions.
+The same inert row is previewed in the Design System. Assigned uploads have no
+per-file title/description or color editor; the owning product provides the name.
+
 Native file fields use `components.forms.upload.file` with `id`, `name`, `label`,
 optional `accept` and `currentUrl` / `currentLabel`. Their IDs and labels remain
 unique; existing files open safely in a new tab.

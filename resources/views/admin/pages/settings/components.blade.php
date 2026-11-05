@@ -40,6 +40,15 @@
     @component('admin.pages.settings.sample', ['label' => 'Shop hover close-up upload', 'usage' => 'admin.components.shop.closeup · optional finished hover image', 'properties' => 'font-size,padding,border'])
       @include('admin.components.shop.closeup', ['preview' => true])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Shop mockup row', 'usage' => 'admin.pages.merchandise.image · compact uploaded mockup actions', 'properties' => 'font-size,padding,color,border'])
+      @php
+        $sampleMockupProduct = new \App\Merchandise\MerchandiseProduct(['name' => 'Piano T-shirt']);
+        $sampleMockup = (object) ['id' => 0, 'url' => asset('images/shop/demo/shirt-mint.png'), 'gallery_color' => 'Mint'];
+      @endphp
+      <div class="row g-0">
+        @include('admin.pages.merchandise.image', ['mockupPreview' => true, 'product' => $sampleMockupProduct, 'image' => $sampleMockup, 'viewNumber' => 1, 'isMain' => true, 'first' => true, 'last' => true, 'canAssign' => false])
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Shop product grid', 'usage' => 'shop.storefront.components.product-grid · one regular grid; compact cards with hover close-ups', 'properties' => 'font-size,font-weight,padding,color'])
       <div class="shop-storefront" data-ds-preview>
         @php($shopGridPreview = collect([

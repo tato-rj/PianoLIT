@@ -1,4 +1,4 @@
-<form method="POST" action="{{ route('admin.merchandise.images.upload', ['merchandise' => $product] + $returnFilters) }}" enctype="multipart/form-data" class="mt-4" data-color-upload="{{ $group['color'] }}">
+<form method="POST" action="{{ route('admin.merchandise.images.upload', ['merchandise' => $product] + $returnFilters) }}" enctype="multipart/form-data" class="mt-3" data-color-upload="{{ $group['color'] }}">
     @csrf
     <input type="hidden" name="revision" value="{{ $product->revision }}">
     <input type="hidden" name="gallery_color" value="{{ $group['color'] }}">

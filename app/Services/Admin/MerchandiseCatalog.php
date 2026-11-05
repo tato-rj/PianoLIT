@@ -164,11 +164,17 @@ class MerchandiseCatalog
                 $position = (int) $locked->images()->withTrashed()->max('position');
                 foreach ($assets as $asset) {
                     $existing = $locked->images()->withTrashed()->where('source', 'upload')->where('checksum', $asset['checksum'])->first();
-                    if ($existing && !$existing->trashed()) continue;
+                    if ($existing && !$existing->trashed()) {
+                        if ($color !== null && $existing->gallery_color !== $color) {
+                            $existing->update(['gallery_color' => $color, 'position' => ++$position]);
+                        }
+                        if ($needsMain) { $locked->main_image_id = $existing->id; $needsMain = false; }
+                        continue;
+                    }
                     if ($count >= MerchandiseImages::MAX_IMAGES) throw new PrintfulException('A product can have up to 40 gallery images. Remove an image before uploading more.');
                     if ($existing) {
                         $existing->restore();
-                        $existing->update(['alt' => $asset['alt'], 'position' => ++$position]);
+                        $existing->update(['gallery_color' => $color ?? $existing->gallery_color, 'position' => ++$position]);
                         $image = $existing;
                     } else {
                         $image = $locked->images()->create($asset + ['position' => ++$position, 'gallery_color' => $color]);
