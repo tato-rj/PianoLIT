@@ -10,7 +10,7 @@
     @endslot
     <p class="small text-muted mb-2">Printful #{{ $product->printful_product_id }} · Last refreshed {{ optional($product->synced_at)->format('M j, Y · g:ia') ?: 'Not recorded' }}</p>
     @if(app(\App\Services\Shop\Printful::class)->enabled() && (int) $product->printful_store_id !== 0)
-        <p id="merchandise-refresh-help" class="small text-muted mb-3">Updates the Printful name, materials, options, prices and reference mockups. Your title edits, subtitle, description and uploaded images are kept.</p>
+        <p id="merchandise-refresh-help" class="small text-muted mb-3">Updates the Printful name, materials, options, prices and reference mockups. Your title, subtitle, description, materials edits and uploaded images are kept.</p>
     @endif
     @if($errors->getBag('product_details')->has('revision'))
         @alert(['color' => 'red', 'message' => e($errors->getBag('product_details')->first('revision'))])
@@ -29,13 +29,26 @@
             <div class="col-12">
                 @textarea(['id' => 'merchandise-description', 'name' => 'description', 'label' => 'Description', 'value' => $product->description, 'limit' => 10000, 'rows' => 5, 'bag' => 'product_details', 'required' => false, 'placeholder' => 'Product description'])
             </div>
+            <div class="col-12">
+                @textarea(['id' => 'merchandise-materials', 'name' => 'materials', 'label' => 'Materials', 'value' => $materialsText, 'limit' => 6000, 'rows' => 3, 'bag' => 'product_details', 'required' => false, 'textImprover' => false, 'placeholder' => 'Material details'])
+                <p class="small text-muted">{{ $product->materials_override !== null ? 'Your materials text is being used.' : ($materials ? 'Using imported Printful materials.' : 'No imported material text is available.') }} Edits here are kept when refreshing from Printful.</p>
+            </div>
         </div>
         <button type="submit" class="btn btn-primary btn-sm">@icon('check')Save details</button>
     </form>
     <div class="border-top mt-4 pt-3">
-        <h3 class="h6 mb-2">Materials from Printful</h3>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <h3 class="h6 mb-0">Materials from Printful</h3>
+            @if($product->materials_override !== null)
+                <form method="POST" action="{{ route('admin.merchandise.materials.reset', ['merchandise' => $product] + $returnFilters) }}">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="revision" value="{{ $product->revision }}">
+                    <button type="submit" class="btn btn-secondary btn-sm">Use Printful materials</button>
+                </form>
+            @endif
+        </div>
         @forelse($materials as $material)
-            <p class="{{ $loop->last ? 'mb-0' : 'mb-2' }}">@if($material['label'])<strong>{{ $material['label'] }}:</strong> @endif{{ $material['text'] }}</p>
+            <p class="{{ $loop->last ? 'mb-0' : 'mb-2' }}">@if($material['label'])<strong>{{ $material['label'] }}:</strong> @endif{!! nl2br(e($material['text'])) !!}</p>
         @empty
             <p class="text-muted mb-0">No material details saved from Printful.</p>
         @endforelse

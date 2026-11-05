@@ -5,6 +5,7 @@ namespace Tests\Review;
 use App\{Admin, Merchandise\MerchandiseProduct};
 use App\Services\Shop\Storefront;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class MerchandiseProductDetailsTest extends ReviewTestCase
 {
@@ -77,6 +78,79 @@ class MerchandiseProductDetailsTest extends ReviewTestCase
         $this->assertNull($this->product->fresh()->subtitle);
         $this->assertNull($this->product->fresh()->description);
         $this->assertNull($this->product->fresh()->name_override, 'Saving other fields does not pin the provider title');
+    }
+
+    private function importedMaterials(string $text): void
+    {
+        DB::table('merchandise_materials')->updateOrInsert(['product_id' => $this->product->id, 'sync_variant_id' => 91], [
+            'catalog_variant_id' => 4011, 'catalog_product_id' => 71, 'color' => 'Ivory', 'size' => 'M',
+            'composition' => '[]', 'description_text' => $text, 'updated_at' => now(),
+        ]);
+    }
+
+    public function test_material_edits_are_separate_escaped_and_can_return_to_current_imported_text()
+    {
+        $this->importedMaterials('100% ring-spun cotton');
+        $this->get(route('admin.merchandise.edit', $this->product))->assertOk()
+            ->assertSee('name="materials"', false)->assertSee('100% ring-spun cotton')->assertDontSee('Use Printful materials');
+        $custom = "Verified cotton fabric\n<img src=x onerror=alert(1)>";
+        $this->update(['materials' => $custom])->assertRedirect();
+        $product = $this->product->fresh();
+        $this->assertSame($custom, $product->materials_override);
+        $this->assertSame("A soft cotton tee.\nPrinted in blue.", $product->description);
+        $this->assertArrayNotHasKey('materials_override', $product->toArray());
+        $this->importedMaterials('Updated supplier material');
+        $this->get(app(Storefront::class)->productUrl($product))->assertOk()
+            ->assertSee('Verified cotton fabric')->assertSee('&lt;img src=x onerror=alert(1)&gt;', false)
+            ->assertDontSee('<img src=x', false)->assertDontSee('Updated supplier material');
+        $this->get(route('admin.merchandise.edit', $product))->assertOk()
+            ->assertSee('Use Printful materials')->assertSee('Updated supplier material')->assertSee('Verified cotton fabric');
+        $resetUrl = route('admin.merchandise.materials.reset', ['merchandise' => $product, 'search' => 'Piano']);
+        $this->patch($resetUrl, ['revision' => $product->revision])->assertRedirect(route('admin.merchandise.edit', ['merchandise' => $product, 'search' => 'Piano']).'#product-details');
+        $this->assertNull($product->fresh()->materials_override);
+        $this->assertSame("A soft cotton tee.\nPrinted in blue.", $product->fresh()->description);
+        $this->get(app(Storefront::class)->productUrl($product))->assertOk()->assertSee('Updated supplier material')->assertDontSee('Verified cotton fabric');
+        Http::assertNothingSent();
+    }
+
+    public function test_untouched_materials_keep_following_printful_and_deliberately_empty_edits_are_respected()
+    {
+        $this->importedMaterials("100% cotton\nMaterial content may vary by color");
+        $this->update(['materials' => "100% cotton\r\nMaterial content may vary by color"])->assertRedirect();
+        $this->assertNull($this->product->fresh()->materials_override);
+        $this->importedMaterials('100% polyester');
+        $this->get(app(Storefront::class)->productUrl($this->product))->assertOk()->assertSee('100% polyester');
+        $this->update(['materials' => ''])->assertRedirect();
+        $this->assertSame('', $this->product->fresh()->materials_override);
+        $response = $this->get(app(Storefront::class)->productUrl($this->product))->assertOk()->assertDontSee('100% polyester');
+        $this->assertSame([], $response->viewData('product')['materials']);
+    }
+
+    public function test_material_writes_and_reset_reject_invalid_stale_or_unowned_edits()
+    {
+        $this->withExceptionHandling();
+        foreach ([['materials' => ['bad']], ['materials' => str_repeat('x', 6001)]] as $invalid) $this->update($invalid)->assertUnprocessable();
+        $this->update(['materials' => 'Custom material'])->assertRedirect();
+        $reset = route('admin.merchandise.materials.reset', $this->product);
+        $this->patchJson($reset, ['revision' => 1])->assertUnprocessable();
+        $this->assertSame('Custom material', $this->product->fresh()->materials_override);
+        $this->actingAs(create(Admin::class, ['role' => 'editor']), 'admin');
+        $this->patchJson($reset, ['revision' => 2])->assertForbidden();
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $this->product->update(['printful_store_id' => 55]);
+        $this->patchJson($reset, ['revision' => 2])->assertNotFound();
+        Http::assertNothingSent();
+    }
+
+    public function test_a_materials_only_submission_keeps_existing_description_and_subtitle()
+    {
+        $this->update()->assertRedirect();
+        $before = $this->product->fresh();
+        $this->patchJson(route('admin.merchandise.update', $before), ['revision' => $before->revision,
+            'name' => $before->name, 'materials' => 'My material correction'])->assertRedirect();
+        $this->assertSame($before->description, $before->fresh()->description);
+        $this->assertSame($before->subtitle, $before->fresh()->subtitle);
+        $this->assertSame('My material correction', $before->fresh()->materials_override);
     }
 
     public function test_invalid_copy_reserved_names_and_stale_revisions_cannot_overwrite_details()

@@ -224,6 +224,118 @@ class AdminMerchandiseTest extends ReviewTestCase
         $this->assertCount(2, $product->fresh()->images);
     }
 
+    public function test_description_materials_are_imported_separately_and_structured_values_take_priority()
+    {
+        $this->catalog['product']['description'] = "An introductory paragraph.\n\n• 100% ring-spun cotton\n• Relaxed fit";
+        $this->catalog['variants'][0]['material'] = [];
+        $product = $this->imported();
+        $this->patch($this->action('update', $product), ['revision' => $product->revision, 'name' => $product->name,
+            'description' => "My description\nMy second line"])->assertRedirect();
+        $this->post($this->action('refresh', $product), ['revision' => $product->fresh()->revision])->assertRedirect();
+        $row = DB::table('merchandise_materials')->where('product_id', $product->id)->first();
+        $this->assertSame([], json_decode($row->composition, true));
+        $this->assertSame('100% ring-spun cotton', $row->description_text);
+        $this->assertSame("My description\nMy second line", $product->fresh()->description);
+        $this->assertNull($product->fresh()->materials_override);
+        $this->assertStringNotContainsString('catalog_description', $product->fresh()->toJson());
+        $this->assertStringNotContainsString('materials_override', $product->fresh()->toJson());
+        $this->get($this->action('edit', $product))->assertOk()->assertSee('100% ring-spun cotton')->assertDontSee('Use Printful materials');
+        $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()
+            ->assertSee('100% ring-spun cotton')->assertSee('My description')->assertDontSee('An introductory paragraph.');
+        $this->assertSame(2, Http::recorded(fn ($request) => $request->url() === 'https://api.printful.com/products/71')->count(), 'The description reuses the existing catalog lookup');
+
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 80], ['name' => 'polyester', 'percentage' => 20]];
+        $product = app(MerchandiseCatalog::class)->import(77, $product->fresh(), $product->fresh()->revision)[0];
+        $row = DB::table('merchandise_materials')->where('product_id', $product->id)->first();
+        $this->assertNull($row->description_text);
+        $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()
+            ->assertSee('80% cotton, 20% polyester')->assertDontSee('100% ring-spun cotton');
+    }
+
+    public function test_material_description_uses_the_verified_single_variant_product_and_retains_qualifiers()
+    {
+        unset($this->remote['sync_variants'][0]['product']['product_id']);
+        $this->catalog['variants'][0]['material'] = [];
+        $this->catalog['product']['description'] = "• Solid colors: 100% cotton\n• Heather colors: 52% cotton, 48% polyester";
+        $product = $this->imported();
+        $this->assertDatabaseHas('merchandise_materials', ['product_id' => $product->id, 'catalog_product_id' => 71,
+            'description_text' => "Solid colors: 100% cotton\nHeather colors: 52% cotton, 48% polyester"]);
+        $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()
+            ->assertSee('Solid colors: 100% cotton')->assertSee('Heather colors: 52% cotton, 48% polyester');
+        $this->assertSame(1, Http::recorded(fn ($request) => $request->url() === 'https://api.printful.com/products/variant/4011')->count());
+        $this->catalog['product']['id'] = 99;
+        app(MerchandiseCatalog::class)->import(77, $product, $product->revision);
+        // An invalid response cannot replace the valid, matching saved source.
+        $this->assertDatabaseCount('merchandise_materials', 1);
+        $this->remote['sync_variants'][0]['size'] = 'L';
+        $product = $product->fresh();
+        app(MerchandiseCatalog::class)->import(77, $product, $product->revision);
+        $this->assertDatabaseCount('merchandise_materials', 0);
+    }
+
+    public function test_description_fallback_survives_failure_but_clears_when_the_supplier_removes_the_text()
+    {
+        $this->catalog['variants'][0]['material'] = [];
+        $this->catalog['product']['description'] = '100% cotton';
+        $product = $this->imported();
+        $this->catalogStatus = 500;
+        $product = app(MerchandiseCatalog::class)->import(77, $product, $product->revision)[0]->fresh();
+        $this->assertDatabaseHas('merchandise_materials', ['product_id' => $product->id, 'description_text' => '100% cotton']);
+        $this->catalogStatus = 200;
+        $this->catalog['product']['description'] = '';
+        $product = app(MerchandiseCatalog::class)->import(77, $product, $product->revision)[0]->fresh();
+        $this->assertDatabaseCount('merchandise_materials', 0);
+        $this->catalog['product']['description'] = '100% cotton';
+        $this->catalog['variants'][0]['material'] = [['name' => 'cotton', 'percentage' => 40]];
+        app(MerchandiseCatalog::class)->import(77, $product, $product->revision);
+        // Malformed structured data cannot be replaced with a potentially contradictory fallback.
+        $this->assertDatabaseCount('merchandise_materials', 0);
+    }
+
+    public function test_fallback_and_product_changes_roll_back_together_when_an_import_fails()
+    {
+        $this->catalog['variants'][0]['material'] = [];
+        $this->catalog['product']['description'] = '100% cotton';
+        $product = $this->imported();
+        $revision = $product->revision;
+        $real = new \App\Services\Shop\MerchandiseMaterials;
+        $mock = \Mockery::mock(\App\Services\Shop\MerchandiseMaterials::class);
+        $mock->shouldReceive('sync')->once()->andReturnUsing(function (...$arguments) use ($real) {
+            $real->sync(...$arguments);
+            throw new \RuntimeException('Simulated import failure');
+        });
+        $this->app->instance(\App\Services\Shop\MerchandiseMaterials::class, $mock);
+        $this->remote['sync_product']['name'] = 'Changed provider title';
+        $this->catalog['product']['description'] = '100% polyester';
+        try {
+            app(MerchandiseCatalog::class)->import(77, $product, $revision);
+            $this->fail('The import should fail.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('Simulated import failure', $exception->getMessage());
+        }
+        $this->assertSame('Piano T-shirt', $product->fresh()->name);
+        $this->assertSame($revision, $product->fresh()->revision);
+        $this->assertDatabaseHas('merchandise_materials', ['product_id' => $product->id, 'description_text' => '100% cotton']);
+    }
+
+    public function test_provider_refresh_keeps_custom_materials_and_local_description()
+    {
+        $this->catalog['variants'][0]['material'] = null;
+        $this->catalog['product']['description'] = '100% cotton';
+        $product = $this->imported();
+        $this->assertDatabaseHas('merchandise_materials', ['product_id' => $product->id, 'description_text' => '100% cotton']);
+        $this->patch($this->action('update', $product), ['revision' => $product->revision, 'name' => $product->name,
+            'description' => 'My product description', 'materials' => 'My verified material text'])->assertRedirect();
+        unset($this->catalog['variants'][0]['material']);
+        $this->catalog['product']['description'] = '100% polyester';
+        $this->post($this->action('refresh', $product), ['revision' => $product->fresh()->revision])->assertRedirect();
+        $this->assertDatabaseHas('merchandise_materials', ['product_id' => $product->id, 'description_text' => '100% polyester']);
+        $this->assertSame('My product description', $product->fresh()->description);
+        $this->assertSame('My verified material text', $product->fresh()->materials_override);
+        $this->get(app(\App\Services\Shop\Storefront::class)->productUrl($product))->assertOk()
+            ->assertSee('My verified material text')->assertSee('My product description')->assertDontSee('100% polyester');
+    }
+
     public function test_materials_do_not_require_a_color_and_confirmed_empty_materials_clear_old_values()
     {
         $this->remote['sync_variants'][0]['color'] = null;

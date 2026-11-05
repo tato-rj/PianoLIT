@@ -32,6 +32,8 @@ class MerchandiseColors
         $known = collect($previous)->keyBy('id');
         $products = [];
         $singleVariants = [];
+        $descriptions = [];
+        $singleDescriptions = [];
         $catalogRows = [];
         $requests = 0;
         $warnings = 0;
@@ -54,6 +56,7 @@ class MerchandiseColors
                         $requests++;
                         $response = $api->catalogProduct($productId, (int) ceil($deadline - microtime(true)));
                         if (($response['product']['id'] ?? null) == $productId && is_array($response['variants'] ?? null)) {
+                            $descriptions[$productId] = $response['product']['description'] ?? null;
                             foreach ($response['variants'] as $row) {
                                 if (is_array($row) && ($row['product_id'] ?? null) == $productId && is_int($row['id'] ?? null)) {
                                     $products[$productId][$row['id']] = $row;
@@ -74,6 +77,7 @@ class MerchandiseColors
                             && is_int($row['product_id'] ?? null) && $row['product_id'] > 0
                             && ($response['product']['id'] ?? null) === $row['product_id']) {
                             $singleVariants[$variantId] = $row;
+                            $singleDescriptions[$variantId] = $response['product']['description'] ?? null;
                         }
                     }
                     $catalog = $singleVariants[$variantId];
@@ -83,6 +87,9 @@ class MerchandiseColors
             }
             if (is_array($catalog)) {
                 $catalogRows[$variant['id']] = $catalog;
+                // Supplier text belongs only to the material importer, never shared variant JSON.
+                $catalogRows[$variant['id']]['catalog_description'] = $productId
+                    ? ($descriptions[$productId] ?? null) : ($singleDescriptions[$variantId] ?? null);
                 $variant['catalog_product_id'] = $catalog['product_id'];
             }
             $valid = is_array($catalog) && array_key_exists('color_code', $catalog) && array_key_exists('color_code2', $catalog);

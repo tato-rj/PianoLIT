@@ -94,14 +94,15 @@ class MerchandiseController extends Controller
         $product = $merchandise->load('images');
         $galleryColors = app(MerchandiseGallery::class)->colors($product);
         $galleryGroups = app(MerchandiseGallery::class)->groups($product);
-        $materials = app(MerchandiseMaterials::class)->forProduct($product, app(\App\Services\Shop\Storefront::class)->variants($product));
+        $materials = app(MerchandiseMaterials::class)->importedForProduct($product, app(\App\Services\Shop\Storefront::class)->variants($product));
+        $materialsText = $product->materials_override ?? MerchandiseMaterials::plainText($materials);
         $removed = $product->images()->onlyTrashed()->get();
         $page = (int) $request->input('variants_page', 1);
         $all = collect($product->variants);
         $variants = new LengthAwarePaginator($all->forPage($page, AdminPagination::PER_PAGE)->values(), $all->count(), AdminPagination::PER_PAGE, $page,
             ['path' => route('admin.merchandise.edit', $product), 'pageName' => 'variants_page', 'fragment' => 'variants']);
         $variants->appends($returnFilters);
-        return view('admin.pages.merchandise.edit', compact('product', 'removed', 'variants', 'returnFilters', 'galleryColors', 'galleryGroups', 'materials'));
+        return view('admin.pages.merchandise.edit', compact('product', 'removed', 'variants', 'returnFilters', 'galleryColors', 'galleryGroups', 'materials', 'materialsText'));
     }
 
     public function update(Request $request, MerchandiseProduct $merchandise, MerchandiseCatalog $catalog)
@@ -110,10 +111,19 @@ class MerchandiseController extends Controller
         $data = $request->validateWithBag('product_details', [
             'revision' => 'required|integer|min:1', 'name' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255', 'description' => 'nullable|string|max:10000',
+            'materials' => 'nullable|string|max:6000',
         ]);
         $catalog->updateDetails($merchandise, (int) $data['revision'], $data);
         return redirect()->route('admin.merchandise.edit', ['merchandise' => $merchandise] + $this->returnFilters())
             ->withFragment('product-details')->with('status', 'Product details saved.');
+    }
+
+    public function resetMaterials(Request $request, MerchandiseProduct $merchandise, MerchandiseCatalog $catalog)
+    {
+        abort_unless((string) $merchandise->printful_store_id === app(\App\Services\Shop\Storefront::class)->storeId(), 404);
+        $revision = $request->validateWithBag('product_details', ['revision' => 'required|integer|min:1'])['revision'];
+        $catalog->resetMaterials($merchandise, (int) $revision);
+        return $this->backToProductDetails($merchandise)->with('status', 'Printful materials are now being used.');
     }
 
     public function refresh(Request $request, MerchandiseProduct $merchandise, MerchandiseCatalog $catalog)

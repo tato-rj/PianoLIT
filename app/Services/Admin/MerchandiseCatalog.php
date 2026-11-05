@@ -102,9 +102,24 @@ class MerchandiseCatalog
             $locked->fill([
                 'name' => $name, 'printful_name' => $providerName,
                 'name_override' => $name === $providerName ? null : $name,
-                'subtitle' => $details['subtitle'] ?? null,
-                'description' => $details['description'] ?? null,
             ]);
+            foreach (['subtitle', 'description'] as $field) {
+                if (array_key_exists($field, $details)) $locked->$field = $details[$field];
+            }
+            if (array_key_exists('materials', $details)) {
+                $materials = app(MerchandiseMaterials::class)->importedForProduct($locked, app(\App\Services\Shop\Storefront::class)->variants($locked));
+                $normalize = fn ($text) => trim(str_replace(["\r\n", "\r"], "\n", $text ?? ''));
+                $submitted = $normalize($details['materials']);
+                $locked->materials_override = $submitted === $normalize(MerchandiseMaterials::plainText($materials)) ? null : $submitted;
+            }
+        }, 'product_details');
+    }
+
+    public function resetMaterials(MerchandiseProduct $product, int $revision): void
+    {
+        $this->change($product, $revision, function ($locked) {
+            abort_unless((string) $locked->printful_store_id === app(\App\Services\Shop\Storefront::class)->storeId(), 404);
+            $locked->materials_override = null;
         }, 'product_details');
     }
 

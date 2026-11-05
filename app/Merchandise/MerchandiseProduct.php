@@ -10,7 +10,7 @@ class MerchandiseProduct extends Model
     use SoftDeletes, \App\Traits\HasProductReviews;
 
     protected $guarded = ['id'];
-    protected $hidden = ['printful_name', 'name_override', 'subtitle', 'description'];
+    protected $hidden = ['printful_name', 'name_override', 'subtitle', 'description', 'materials_override'];
     protected $casts = ['variants' => 'array', 'synced_at' => 'datetime', 'revision' => 'integer'];
 
     protected static function booted()

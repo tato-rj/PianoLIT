@@ -21,7 +21,7 @@
             @component('components.layout.accordion-item', ['id' => $detailsId.'-about', 'parentId' => $detailsId.'-accordion', 'title' => empty($product['materials']) ? 'About' : 'Material', 'indicator' => 'plus-minus'])
                 @if(!empty($product['materials']))
                     @foreach($product['materials'] as $material)
-                        <p class="{{ $loop->last ? 'mb-0' : 'mb-2' }}">@if($material['label'])<strong>{{ $material['label'] }}:</strong> @endif{{ $material['text'] }}</p>
+                        <p class="{{ $loop->last ? 'mb-0' : 'mb-2' }}">@if($material['label'])<strong>{{ $material['label'] }}:</strong> @endif{!! nl2br(e($material['text'])) !!}</p>
                     @endforeach
                 @else
                     <p>{{ $product['name'] }}</p>

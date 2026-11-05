@@ -47,16 +47,23 @@ class MerchandiseMaterials
             $catalog = $catalogRows[$variant['id']] ?? null;
             $composition = self::composition($catalog['material'] ?? null);
             $old = $previous->get($variant['id']);
+            $description = null;
+            if ($composition === [] || (is_array($catalog) && ($catalog['material'] ?? null) === null && is_string($catalog['catalog_description'] ?? null))) {
+                $description = MaterialDescription::extract($catalog['catalog_description'] ?? null);
+                if ($description !== null) $composition = [];
+                if ($description === null && $this->matches($old, $variant)) $description = $old->description_text ?? null;
+            }
             if ($composition === null && $this->matches($old, $variant)) {
                 $composition = self::composition(json_decode($old->composition, true));
+                $description = $old->description_text ?? null;
             }
-            if (!$composition) continue;
+            if (!$composition && !$description) continue;
             $rows[] = [
                 'product_id' => $product->id, 'sync_variant_id' => $variant['id'],
                 'catalog_variant_id' => $variant['variant_id'],
                 'catalog_product_id' => $catalog['product_id'] ?? $old->catalog_product_id,
                 'color' => $variant['color'], 'size' => $variant['size'],
-                'composition' => json_encode($composition), 'updated_at' => now(),
+                'composition' => json_encode($composition ?: []), 'description_text' => $composition ? null : $description, 'updated_at' => now(),
             ];
         }
         DB::table('merchandise_materials')->where('product_id', $product->id)->delete();
@@ -64,6 +71,19 @@ class MerchandiseMaterials
     }
 
     public function forProduct(MerchandiseProduct $product, array $variants): array
+    {
+        if ($product->materials_override !== null) {
+            return $product->materials_override === '' ? [] : [['label' => null, 'text' => $product->materials_override]];
+        }
+        return $this->importedForProduct($product, $variants);
+    }
+
+    public static function plainText(array $materials): string
+    {
+        return implode("\n", array_map(fn ($material) => ($material['label'] ? $material['label'].': ' : '').$material['text'], $materials));
+    }
+
+    public function importedForProduct(MerchandiseProduct $product, array $variants): array
     {
         $saved = DB::table('merchandise_materials')->where('product_id', $product->id)->get()->keyBy('sync_variant_id');
         $original = collect($product->variants ?? [])->keyBy('id');
@@ -73,7 +93,9 @@ class MerchandiseMaterials
                 $row = $saved->get($variant['id']);
                 $raw = $original->get($variant['id']);
                 $parts = $raw && $this->matches($row, $raw) ? self::composition(json_decode($row->composition, true)) : null;
-                return $parts ? implode(', ', array_map(fn ($part) => rtrim(rtrim(number_format($part['percentage'], 3, '.', ''), '0'), '.').'% '.$part['name'], $parts)) : null;
+                if ($parts) return implode(', ', array_map(fn ($part) => rtrim(rtrim(number_format($part['percentage'], 3, '.', ''), '0'), '.').'% '.$part['name'], $parts));
+                $text = $raw && $this->matches($row, $raw) ? ($row->description_text ?? null) : null;
+                return is_string($text) && mb_strlen($text) <= MaterialDescription::MAX_LENGTH && trim($text) !== '' ? $text : null;
             });
             if ($texts->unique()->count() === 1) $options[$color] = $texts->first();
             else foreach ($choices->values() as $index => $choice) $options[$color.' / '.$choice['size']] = $texts->values()[$index];
