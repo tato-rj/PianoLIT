@@ -330,51 +330,51 @@ trait PieceExtraAttributes
 
         $sentences = [
             'elementary' => [
-                'pedagogical' => "This piece will inspire you to stay motivated and keep on learning.",
-                'non-traditional' => "Ideal for beginners who like original pieces with modern sounds and unique characters.",
-                'flashy' => "If you are starting out and want to wow your audience, this piece is for you!",
-                'relaxing' => "Great piece for beginners who like relaxing, dreamy pieces.",
-                'default' => "If you are just starting out and developing your technique, this piece will be a great one for you!",
+                'pedagogical' => "This could be a lovely place to start if you're new to the piano and enjoy hearing your progress take shape in a piece of music. The appeal is discovering what you can already express.",
+                'non-traditional' => "If you're new to the piano but curious about modern sounds, this could be your next discovery. It offers a chance to explore a different musical world while you're still building your first collection of pieces.",
+                'flashy' => "A little flair can make learning your first pieces especially exciting, and this one may suit you if you like music that catches the ear. It's a choice to consider when you're eager to share your playing.",
+                'relaxing' => "It might be, especially if you're just starting out and love calm, reflective music. Learning a piece with this mood can make time at the piano feel like a quiet moment to yourself.",
+                'default' => "This is worth considering if you're new to the piano and eager to make a piece your own. There's a particular pleasure in hearing familiar notes come together as music you can play from beginning to end.",
             ],
             'early beginner' => [
-                'pedagogical' => "Ideal for beginners looking for an inspiring and rewarding experience.",
-                'non-traditional' => "A modern piece with original sounds, ideal for beginners who like to explore different styles.",
-                'flashy' => "If you are a beginner and want to wow your audience, you'll love this piece!",
-                'relaxing' => "Ideal for beginners who like inspiring, relaxing and dreamy pieces.",
-                'default' => "A great piece for beginners who are polishing their technique.",
+                'pedagogical' => "You may enjoy this if you're an early beginner who likes having a new piece to look forward to as your skills grow. Learning it can give those small discoveries at the keyboard a satisfying musical home.",
+                'non-traditional' => "For an early beginner with curious ears, this could be an appealing change of style. Its modern character brings variety to your growing repertoire, with the pleasure of getting to know sounds that may be new to you.",
+                'flashy' => "This could be a fun next choice if you're an early beginner who enjoys music with a sense of display. Learning something you'd like to play for friends or family can give the experience an extra spark.",
+                'relaxing' => "If gentle, reflective music is what draws you to the piano, this may be a good fit for your early beginner repertoire. Its quiet mood offers room to enjoy the sound and feeling of what you're playing.",
+                'default' => "It could be a satisfying next step if you're an early beginner ready to add another piece to your collection. Part of the enjoyment is finding that music which once felt unfamiliar gradually starts to feel like your own.",
             ],
             'late beginner' => [
-                'pedagogical' => "Ideal for late beginner levels looking for a challenging and inspiring piece to play.",
-                'non-traditional' => "A very nice piece for those who like original and creative styles.",
-                'flashy' => "For beginners who are up for the challenge and want to wow their audience.",
-                'relaxing' => "If you are a beginner and like relaxing, dreamy music, this piece will be a good challenge for you!",
-                'default' => "An excellent piece for beginners who are polishing their technique.",
+                'pedagogical' => "This may appeal to you if you're a late beginner who enjoys the sense of discovery that comes with a new musical challenge. It's a chance to hear your growing abilities become part of a performance you can feel proud of.",
+                'non-traditional' => "A taste for modern sounds could make this a good match for your late beginner repertoire. Learning it offers the pleasure of exploring a different style and discovering more about the kinds of music you most enjoy playing.",
+                'flashy' => "If you love the idea of sharing a piece with a little flair, this could earn a place in your late beginner repertoire. The attraction is as much the anticipation of performing it as the satisfaction of learning it.",
+                'relaxing' => "This might be your next piece if you're a late beginner drawn to music with a calm, reflective atmosphere. It may suit the moments when you want to settle into a mood and enjoy expressing something personal at the piano.",
+                'default' => "You might find this a rewarding choice as a late beginner who enjoys seeing how far your playing has come. A new piece can bring that progress into focus while giving you something fresh to return to at the keyboard.",
             ],
             'early intermediate' => [
-                'pedagogical' => "This is an amazing piece that will keep you motivated and help you get into the intermediate level repertoire.",
-                'non-traditional' => "Ideal for intermediate level pianists who like original and non-traditional pieces.",
-                'flashy' => "For intermediate pianists looking for an extra challenge that will bring their technique up to the next level.",
-                'relaxing' => "Ideal for intermediate pianists who like inspiring, relaxing and dreamy pieces.",
-                'default' => "An excellent piece for intermediate level pianists who are working on their technique.",              
+                'pedagogical' => "As you move into intermediate repertoire, this could offer the kind of musical project that makes learning feel purposeful. It may appeal if you enjoy discovering new possibilities in your playing and hearing them become part of a complete piece.",
+                'non-traditional' => "This is one to consider if you're an early intermediate pianist looking for a different musical flavor. Its modern language offers a change of scenery, with the enjoyment of discovering sounds and ideas beyond your usual repertoire.",
+                'flashy' => "If a piece with flair is what gets you excited to sit down at the piano, this could suit your early intermediate level. It offers a reason to look forward to sharing your music with an audience.",
+                'relaxing' => "It could be, especially if you're an early intermediate pianist drawn to calm, dreamy music. The appeal is spending time with a reflective mood and discovering how much personality you can bring to a quiet musical moment.",
+                'default' => "You may find your next musical project here if you're an early intermediate pianist who enjoys making interpretive choices. Learning a piece can be especially satisfying when your own taste begins to shape how the music sounds.",
             ],
             'late intermediate' => [
-                'pedagogical' => "This piece is not as difficult as it sounds and is ideal to develop your technique get you ready for more demanding repertoire.",
-                'non-traditional' => "Ideal for intermediate pianists with a solid foundation that want to explore modern sounds and original styles.",
-                'flashy' => "This piece will impress your audience and give you the motivation you need to move on to even harder repertoire.",
-                'relaxing' => "If you are at an intermediate level and enjoy playing relaxing music, this piece will be a great challenge!",
-                'default' => "This is a great piece for intermediate level pianists with a solid foundation and strong technique.",
+                'pedagogical' => "This could hold your interest if you're a late intermediate pianist who finds satisfaction in a piece gradually coming together. The enjoyment lies in bringing your experience to something new and hearing an interpretation take shape over time.",
+                'non-traditional' => "If you're ready for a change of musical scenery, this may be an inviting addition to your late intermediate repertoire. Its modern character offers a chance to follow your curiosity and discover another side of your musical taste.",
+                'flashy' => "A love of performing could make this a strong contender for your next late intermediate piece. Its flair may appeal if you enjoy the anticipation of sharing music and the satisfaction of giving a performance your own personality.",
+                'relaxing' => "For a late intermediate pianist who loves reflective music, this could be a welcome addition to the repertoire. Much of the pleasure lies in its calm atmosphere and the room that mood leaves for a personal connection with the music.",
+                'default' => "This deserves a place on your shortlist if you're a late intermediate pianist who enjoys getting to know a piece in depth. The attraction is building a lasting musical connection as its details become familiar and your interpretation becomes your own.",
             ],
             'advanced' => [
-                'pedagogical' => "This piece is great for advanced level pianists looking for a rewarding experience from a piece that is not as difficult as it looks like.",
-                'non-traditional' => "Ideal for advanced pianists looking for a unique experience and want to learn new styles and techniques.",
-                'flashy' => "This piece will impress your audience and might well become your next favorite.",
-                'relaxing' => "An incredible piece for advanced pianists looking for a relaxing and inspiring piece to play.",
-                'default' => "Great piece for advanced pianists who want to expand their repertoire and learn more about the music of {$this->composer->last_name}.",
+                'pedagogical' => "You could enjoy making this your next project if you're an advanced pianist who takes pleasure in the craft of playing. It may suit a love of detailed musical work and the satisfaction of hearing an interpretation gradually come into focus.",
+                'non-traditional' => "For an advanced pianist with an appetite for modern music, this could open an interesting new direction. The pleasure is in getting to know a different musical language and discovering how naturally, or unexpectedly, it connects with your own taste.",
+                'flashy' => "This may be the one if you're an advanced pianist who enjoys the excitement of preparing a piece with flair. It could be especially appealing when you want to bring both your musical personality and a sense of occasion to a performance.",
+                'relaxing' => "If the reflective side of piano music is what keeps you coming back, this could belong in your advanced repertoire. Its calm character may appeal to your enjoyment of subtle expression and the intimacy of playing something that feels personal.",
+                'default' => "An interest in {$this->composer->last_name} could make this a rewarding next choice for your advanced repertoire. Learning it offers time to get closer to the composer's musical world and discover what you most enjoy bringing to that music yourself.",
             ]
         ];
 
         if (! in_array($this->extended_level_name, array_keys($sentences)))
-            return "A great piece for {$this->level_name} pianists who are polishing their technique and expanding their repertoire.";
+            return "This could be your next discovery if you're exploring {$this->level_name} repertoire and enjoy getting to know new music from the inside. Learning a piece offers the pleasure of turning something you enjoy hearing into something you can make your own.";
 
         foreach ($types as $type => $valid) {
             if ($valid && array_key_exists($type, $sentences[$this->extended_level_name]))

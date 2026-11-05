@@ -34,7 +34,7 @@ module.exports = async function () {
         country.options = ['', 'US', 'GB', 'CH'].map(value => ({value}));
         const retry = node({hidden: true}), status = node(), error = node(), pay = node(), label = node(), orderLink = node({hidden: true});
         const stateContainer = node(), shippingOptions = node({hidden: true});
-        const totals = Object.fromEntries(['total', 'shipping', 'tax', 'discount-line', 'discount', 'subtotal'].map(key => [key, node()]));
+        const totals = Object.fromEntries(['total', 'shipping', 'tax', 'discount-line', 'discount-label', 'discount', 'subtotal'].map(key => [key, node()]));
         const shipping = node({querySelector(selector) {
             if (selector === '[data-delivery-retry]') return retry;
             if (selector === '[data-delivery-status]') return status;
@@ -111,6 +111,15 @@ module.exports = async function () {
     await f.respond(0); assert.equal(f.totals.total.textContent, '$33.00'); assert.equal(f.pay.disabled, false);
     f.shipping.events.change({}); f.shipping.events.input({}); f.edit('address1', ' 123 Test Street ');
     await f.tick(2000); assert.equal(f.requests.length, 1, 'Identical change/input/blur values and harmless whitespace do not quote again');
+
+    f = fixture(); f.fill(); await f.tick(1000);
+    await f.respond(0, {subtotal: 2520, discount: 280, discount_label: 'First-order discount (10%)', total: 3020});
+    assert.equal(f.totals['discount-label'].textContent, 'First-order discount (10%)');
+    assert.equal(f.totals['discount-line'].hidden, false);
+    assert.equal(f.totals.discount.textContent, '−$2.80');
+    assert.equal(f.totals.subtotal.textContent, '$28.00');
+    assert.equal(f.totals.shipping.textContent, '$5.00');
+    assert.equal(f.totals.total.textContent, '$30.20');
 
     f = fixture(); f.fill(); await f.tick(1000);
     f.edit('city', 'Boston'); await f.tick(2000);

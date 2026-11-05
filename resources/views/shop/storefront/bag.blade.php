@@ -10,8 +10,8 @@
     <div class="row mt-1 g-4 g-lg-5">
         <div class="col-12 col-lg-8">
             @foreach($shoppingBag['lines'] as $line)
-                <article class="shop-bag-item mb-3">
-                    <a href="{{ $line['product']['url'] }}" class="shop-bag-item__image" tabindex="-1" aria-hidden="true">
+                <article class="shop-bag-item border rounded-sm mb-3">
+                    <a href="{{ $line['product']['url'] }}" class="shop-bag-item__image border rounded-sm overflow-hidden" tabindex="-1" aria-hidden="true">
                         @if($line['product']['image'])<img src="{{ $line['product']['image']->url }}" alt="" width="100" height="100">@else @icon('image') @endif
                     </a>
                     <div class="shop-bag-item__copy">
@@ -23,27 +23,27 @@
                         <form action="{{ route('shop.bag.update', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST" data-bag-quantity>
                             @csrf @method('PATCH')
                             @include('shop.storefront.components.quantity', ['quantity' => $line['quantity'], 'compact' => true, 'productName' => $line['product']['name']])
-                            <button type="submit" class="shop-text-button" data-quantity-save>Update</button>
+                            <button type="submit" class="btn btn-secondary btn-sm mt-2" data-quantity-save>Update</button>
                         </form>
                         <form action="{{ route('shop.bag.remove', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST">
                             @csrf @method('DELETE')
-                            <button class="shop-remove" type="submit" aria-label="Remove {{ $line['product']['name'] }} ({{ $line['variant']['color'] }} / {{ $line['variant']['size'] }})">@icon('trash-2')</button>
+                            <button class="btn btn-secondary btn-sm shop-remove" type="submit" aria-label="Remove {{ $line['product']['name'] }} ({{ $line['variant']['color'] }} / {{ $line['variant']['size'] }})">@icon('trash-2', ['mr' => 0])</button>
                         </form>
                     </div>
                 </article>
             @endforeach
-            <a class="shop-text-button d-inline-flex align-items-center gap-2 mt-3" href="{{ route('shop.home') }}">@icon('arrow-left') Continue shopping</a>
+            <a class="d-inline-flex align-items-center gap-2 mt-3" href="{{ route('shop.home') }}">@icon('arrow-left') Continue shopping</a>
         </div>
         <aside class="col-12 col-lg-4" aria-label="Order summary">
-            <div class="shop-summary">
-                <h2>Order summary</h2>
+            <div class="shop-summary border rounded-sm">
+                <h2 class="border-bottom">Order summary</h2>
                 <div class="d-flex justify-content-between gap-3 py-4"><span>Subtotal</span><strong>{{ $shoppingBag['subtotal'] }}</strong></div>
                 <p>Shipping and taxes will be calculated at checkout.</p>
-                <div class="shop-summary__total d-flex justify-content-between gap-3 py-4"><strong>Item total</strong><strong>{{ $shoppingBag['subtotal'] }}</strong></div>
+                <div class="border-top d-flex justify-content-between gap-3 py-4"><strong>Item total</strong><strong>{{ $shoppingBag['subtotal'] }}</strong></div>
                 @if(app(\App\Services\Shop\CheckoutEnvironment::class)->available())
-                    <a class="shop-button shop-button--mint w-100" href="{{ route('shop.checkout') }}" data-checkout-open>Checkout</a>
+                    <a class="btn btn-primary w-100" href="{{ route('shop.checkout') }}" data-checkout-open>Checkout</a>
                 @else
-                    <button class="shop-button shop-button--mint w-100" type="button" disabled aria-describedby="checkout-status">Checkout</button>
+                    <button class="btn btn-primary w-100" type="button" disabled aria-describedby="checkout-status">Checkout</button>
                     <p class="text-center mt-3 mb-0" id="checkout-status">Checkout is coming soon</p>
                 @endif
             </div>
@@ -51,10 +51,10 @@
     </div>
 @else
     <div class="shop-empty py-5">
-        <span class="shop-empty__icon" aria-hidden="true">@icon('shopping-bag', ['mr' => 0, 'size' => '2x'])</span>
+        <span class="shop-empty__icon bg-light text-muted rounded-circle" aria-hidden="true">@icon('shopping-bag', ['mr' => 0, 'size' => '2x'])</span>
         <h2>Your bag is waiting for a little music</h2>
         <p>Find something that strikes a chord.</p>
-        <a class="shop-button shop-button--mint" href="{{ route('shop.home') }}">Browse products @icon('arrow-right')</a>
+        <a class="btn btn-primary" href="{{ route('shop.home') }}">Browse products @icon('arrow-right')</a>
     </div>
 @endif
 @endsection

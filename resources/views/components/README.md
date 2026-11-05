@@ -38,6 +38,7 @@ Frequently edited files:
 - Link-sharing modal: `media/link-share.blade.php` and its reusable `media/link-share-options.blade.php` body, `resources/js/components/link-share.js` and `resources/sass/components/_link-share.scss`; the Design System renders the same dialog. The entire readonly URL field and copy icon copy the canonical link, with a brief Bootstrap Copied! tooltip. Pass `useOldInput => false` for this generated URL.
 - Profile/Support section menu: `navigation/section-navigation.blade.php`
 - Discover and piece recommendation buttons: `navigation/pill-tabs.blade.php`, sharing `.pill-filters` and native Bootstrap tab behavior
+- Row-end View all links: `navigation/rail-view-all.blade.php`, used after cards inside the piece recommendation rails
 - Accordions, including Support's `variant => minimal`: `layout/accordion.blade.php`, `layout/accordion-item.blade.php` and `resources/sass/components/_accordion.scss`
 - Account prompts: `account/access-modal.blade.php`, `account/signup-card.blade.php`
 - Account and Game player dropdown surface: `account/menu-panel.blade.php`
@@ -71,3 +72,5 @@ These paths are relative to `resources/views/`:
 - Before deleting a file, check direct includes, Blade shortcuts, view composers, controller responses and dynamic selectors. Ads, app links, tags and promotional popups choose some of their children dynamically. Popup request names such as `gift`, `ebook` and `newsletter-subscription` are independent of the folder path and must stay compatible.
 
 The October 26 reorganization changes view locations only. Stylesheets, scripts, public asset URLs, form actions and mobile responses keep their existing contracts. Deploy the moved views, providers and callers together, then clear/rebuild the compiled Blade view cache and reload long-running workers through the normal release process.
+
+Shop reuses `layout/public/header` through its `navigationBeforeAccount` slot for the Bag link (with `navigationLabel` for the accessible nav name). `layout/hub-header` supports a heading without a description and an optional `spacing` utility when placed beside search; its default Learn/Blog layout is unchanged. Shop controls use the shared button/field classes and border/radius utilities, with only layout/media rules in `storefront.scss`.

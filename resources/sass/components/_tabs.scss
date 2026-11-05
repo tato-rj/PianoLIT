@@ -99,6 +99,10 @@
         .tab-navigation__selection { visibility: visible; }
     }
 
+    @media (max-width: 767px) {
+        .nav-link { font-size: var(--font-size-sm); }
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .tab-navigation__selection { transition: none; }
     }

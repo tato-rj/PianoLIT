@@ -9,7 +9,7 @@
         <p>Your payment is confirmed and your order has been sent for printing and delivery.</p>
     @elseif($order->kind === 'digital' && $order->purchase_id)
         <p>Your payment is confirmed and your download is ready.</p>
-        <a class="shop-button shop-button--dark mb-4" href="{{ route('shop.success', $order->purchase_id) }}">Open your download @icon('file-down')</a>
+        <a class="btn btn-primary mb-4" href="{{ route('shop.success', $order->purchase_id) }}">Open your download @icon('file-down')</a>
     @elseif($order->paid_at && empty($privateTracking))
         <p>{{ $order->mode === 'live' ? 'Your payment is confirmed. Your order is being prepared for fulfillment.' : 'Your test checkout is complete.' }}</p>
     @elseif(!$order->paid_at)
@@ -27,9 +27,12 @@
         </div>
         <div class="col-12 col-md-5">
             <h2>Order total</h2>
+            @if($discount = app(\App\Services\Shop\FirstOrderDiscount::class)->amount($order->items))
+                <p>{{ app(\App\Services\Shop\FirstOrderDiscount::class)->label($order->items) }}: −{{ app(\App\Services\Shop\Storefront::class)->money($discount, strtoupper($order->currency)) }}</p>
+            @endif
             <p>{{ app(\App\Services\Shop\Storefront::class)->money($order->total, strtoupper($order->currency)) }}</p>
             <p>{{ $order->shipping_name }}</p>
         </div>
     </div>
-    <a class="shop-button shop-button--mint" href="{{ route('shop.home') }}">Continue shopping @icon('arrow-right')</a>
+    <a class="btn btn-primary" href="{{ route('shop.home') }}">Continue shopping @icon('arrow-right')</a>
 @endsection

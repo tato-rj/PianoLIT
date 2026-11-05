@@ -5,7 +5,10 @@
         'id' => ($formId ?? 'newsletter-subscription-form').'-email', 'name' => 'email', 'type' => 'email',
         'label' => 'Email address', 'placeholder' => 'you@example.com', 'autocomplete' => 'email',
         'describedBy' => ($formId ?? 'newsletter-subscription-form').'-note',
+        'bag' => $newsletterErrorBag ?? 'default',
+        'value' => $newsletterEmail ?? null,
     ])
-    <button type="submit" class="btn btn-primary w-100 mt-2 mb-3" disable-on-submit>Keep me in the loop</button>
+    <button type="submit" class="btn btn-primary w-100 mt-2 mb-3" disable-on-submit>{{ $newsletterButtonLabel ?? 'Keep me in the loop' }}</button>
+    @isset($newsletterOfferTerms)<p class="small text-muted text-center mb-3">{{ $newsletterOfferTerms }}</p>@endisset
     <p class="small text-muted text-center mb-0" id="{{ $formId ?? 'newsletter-subscription-form' }}-note">Once a month, only when there’s something new.<br>Unsubscribe anytime.</p>
 </form>

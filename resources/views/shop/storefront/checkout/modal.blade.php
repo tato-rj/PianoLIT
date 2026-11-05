@@ -14,7 +14,7 @@
                 <fieldset class="checkout-shipping">
                     <legend>{{ $kind === 'digital' ? 'Billing details' : 'Contact and delivery' }}</legend>
                     <div class="row g-3">
-                        <div class="col-12 col-sm-6">@input(['bag' => 'default', 'id' => 'delivery-email', 'name' => 'email', 'type' => 'email', 'label' => 'Email', 'autocomplete' => 'email', 'value' => optional(auth('web')->user())->email, 'readonly' => $kind === 'digital', 'limit' => 254])</div>
+                        <div class="col-12 col-sm-6">@input(['bag' => 'default', 'id' => 'delivery-email', 'name' => 'email', 'type' => 'email', 'label' => 'Email', 'autocomplete' => 'email', 'value' => optional(auth('web')->user())->email ?? session('shop_newsletter_email'), 'readonly' => $kind === 'digital', 'limit' => 254])</div>
                         <div class="col-12 col-sm-6">@input(['bag' => 'default', 'id' => 'delivery-name', 'name' => 'name', 'label' => 'Full name', 'autocomplete' => 'shipping name', 'value' => optional(auth('web')->user())->full_name, 'limit' => 100])</div>
                         <div class="col-12">@input(['bag' => 'default', 'id' => 'delivery-address', 'name' => 'address1', 'label' => 'Street address', 'autocomplete' => 'shipping address-line1', 'limit' => 150])</div>
                         <div class="col-12">@input(['bag' => 'default', 'id' => 'delivery-address2', 'name' => 'address2', 'label' => 'Apartment, suite, etc. (optional)', 'autocomplete' => 'shipping address-line2', 'required' => false, 'limit' => 150])</div>
@@ -70,7 +70,7 @@
         @endforeach
         <div class="membership-order-lines">
             <div><span>Products</span><strong data-checkout-subtotal>{{ app(\App\Services\Shop\Storefront::class)->money($snapshot['subtotal'], 'USD') }}</strong></div>
-            <div data-checkout-discount-line hidden><span>Coupon discount</span><strong data-checkout-discount></strong></div>
+            <div data-checkout-discount-line hidden><span data-checkout-discount-label>Discount</span><strong data-checkout-discount></strong></div>
             @if($kind !== 'digital')<div><span>Delivery</span><strong data-checkout-shipping>Calculated at checkout</strong></div>@endif
             <div><span>Tax</span><strong data-checkout-tax>Calculated at checkout</strong></div>
             <div class="membership-due"><span>Total <small>(USD)</small></span><strong data-checkout-total>—</strong></div>

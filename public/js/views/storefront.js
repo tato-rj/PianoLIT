@@ -118,7 +118,10 @@
             [colors, sizes].forEach(function (group) {
                 var key = group.dataset.optionGroup;
                 group.querySelectorAll('[data-option-value]').forEach(function (button) {
-                    button.setAttribute('aria-pressed', String(button.dataset.optionValue === selected.dataset[key]));
+                    var active = button.dataset.optionValue === selected.dataset[key];
+                    button.setAttribute('aria-pressed', String(active));
+                    button.classList.toggle('btn-primary', active);
+                    button.classList.toggle('btn-secondary', !active);
                     button.disabled = key === 'size' && !variants.some(function (variant) { return variant.dataset.color === selected.dataset.color && variant.dataset.size === button.dataset.optionValue; });
                 });
             });

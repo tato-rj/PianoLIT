@@ -10,7 +10,7 @@
             @if($shipment->tracking_number)<p class="text-break mb-3">Tracking number: {{ $shipment->tracking_number }}</p>@endif
             @foreach($shipment->items as $item)<p class="mb-2">{{ $item['name'] }} · {{ $item['option'] }} × {{ $item['quantity'] }}</p>@endforeach
             @if($shipment->tracking_url)
-                <a class="shop-button mt-3" href="{{ $shipment->tracking_url }}" target="_blank" rel="noopener noreferrer">Track this package @icon('arrow-up-right')</a>
+                <a class="btn btn-secondary mt-3" href="{{ $shipment->tracking_url }}" target="_blank" rel="noopener noreferrer">Track this package @icon('arrow-up-right')</a>
             @else
                 <p class="text-muted mb-0">The carrier hasn’t provided a tracking link yet.</p>
             @endif

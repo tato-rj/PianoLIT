@@ -10,7 +10,11 @@ Your payment is confirmed. Thank you for bringing a little more piano into your 
 @component('mail::shop.products', ['items' => $order->items, 'currency' => $order->currency, 'showPrices' => true])
 @endcomponent
 
-Products: {{ app(\App\Services\Shop\Storefront::class)->money($order->subtotal, strtoupper($order->currency)) }}<br>
+@php($discount = app(\App\Services\Shop\FirstOrderDiscount::class)->amount($order->items))
+Products: {{ app(\App\Services\Shop\Storefront::class)->money($order->subtotal + $discount, strtoupper($order->currency)) }}<br>
+@if($discount)
+{{ app(\App\Services\Shop\FirstOrderDiscount::class)->label($order->items) }}: −{{ app(\App\Services\Shop\Storefront::class)->money($discount, strtoupper($order->currency)) }}<br>
+@endif
 Delivery: {{ app(\App\Services\Shop\Storefront::class)->money($order->shipping, strtoupper($order->currency)) }}<br>
 Tax: {{ app(\App\Services\Shop\Storefront::class)->money($order->tax, strtoupper($order->currency)) }}<br>
 **Total paid: {{ app(\App\Services\Shop\Storefront::class)->money($order->total, strtoupper($order->currency)) }}**

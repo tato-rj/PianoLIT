@@ -22,6 +22,9 @@
             <h2 class="h4">Payment and fulfillment</h2>
             <p>{{ ucfirst($order->mode) }} · {{ ucfirst(str_replace('_', ' ', $order->status)) }}</p>
             <p>Total: {{ app(\App\Services\Shop\Storefront::class)->money($order->total, strtoupper($order->currency)) }}</p>
+            @if($discount = app(\App\Services\Shop\FirstOrderDiscount::class)->amount($order->items))
+                <p>{{ app(\App\Services\Shop\FirstOrderDiscount::class)->label($order->items) }}: −{{ app(\App\Services\Shop\Storefront::class)->money($discount, strtoupper($order->currency)) }}</p>
+            @endif
             @if($order->last_error)<p>Review: {{ str_replace('_', ' ', $order->last_error) }}</p>@endif
             <h2 class="h4 mt-4">{{ $order->kind === 'digital' ? 'Billing details' : 'Delivery details' }}</h2>
             <p>{{ $order->recipient['name'] }}<br>{{ $order->recipient['email'] }}</p>

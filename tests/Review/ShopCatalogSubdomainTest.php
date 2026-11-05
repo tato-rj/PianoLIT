@@ -131,7 +131,7 @@ class ShopCatalogSubdomainTest extends ReviewTestCase
         $this->assertSame('http://shop.localhost/'.$catalog, $product->indexRoute());
         $this->assertSame('http://localhost', route('home'));
         $this->assertSame('http://blog.localhost', route('posts.index'));
-        $this->get(route('shop.home'))->assertOk()->assertSee('All products')->assertSee($product->title)->assertDontSee('Unpublished catalog entry');
+        $this->get(route('shop.home'))->assertOk()->assertSee('PianoLIT Shop')->assertSee($product->title)->assertDontSee('Unpublished catalog entry');
         Mail::assertNothingSent();
         $this->assertDatabaseCount('purchases', 0);
     }

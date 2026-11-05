@@ -24,20 +24,20 @@
             </div>
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
                 <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="{{ ($storefront ?? false) ? 'shop-button shop-button--compact' : 'btn btn-secondary btn-sm' }}" data-book-previous aria-label="Previous preview page" disabled>@icon('chevron-left', ['mr' => 0])</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-book-previous aria-label="Previous preview page" disabled>@icon('chevron-left', ['mr' => 0])</button>
                     <span class="{{ ($storefront ?? false) ? '' : 'small' }} text-muted text-nowrap" data-book-counter aria-live="polite" aria-atomic="true"></span>
-                    <button type="button" class="{{ ($storefront ?? false) ? 'shop-button shop-button--compact' : 'btn btn-secondary btn-sm' }}" data-book-next aria-label="Next preview page" disabled>@icon('chevron-right', ['mr' => 0])</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-book-next aria-label="Next preview page" disabled>@icon('chevron-right', ['mr' => 0])</button>
                 </div>
-                <button type="button" class="{{ ($storefront ?? false) ? 'shop-button shop-button--compact' : 'btn btn-secondary btn-sm' }}" data-book-magnify aria-pressed="false" disabled>@icon('zoom-in')<span data-book-zoom-label>Zoom in</span></button>
+                <button type="button" class="btn btn-secondary btn-sm" data-book-magnify aria-pressed="false" disabled>@icon('zoom-in')<span data-book-zoom-label>Zoom in</span></button>
             </div>
             <p class="{{ ($storefront ?? false) ? '' : 'small' }} text-muted text-center mt-3 mb-2" data-book-hint>Drag a page corner or use the arrows to turn pages</p>
             <div class="product-preview__thumbnails d-flex gap-2 justify-content-center" aria-label="Go to preview page">
                 @foreach($product->previews as $preview)
-                <button type="button" class="{{ ($storefront ?? false) ? 'shop-button shop-button--compact' : 'btn btn-secondary btn-sm' }}" data-book-page="{{ $loop->iteration }}" aria-label="Go to preview page {{ $loop->iteration }}">{{ $loop->iteration }}</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-book-page="{{ $loop->iteration }}" aria-label="Go to preview page {{ $loop->iteration }}">{{ $loop->iteration }}</button>
                 @endforeach
             </div>
             <div class="{{ ($storefront ?? false) ? '' : 'small' }} text-danger text-center mt-2" data-book-error role="status" hidden>
-                Some pages couldn’t load. <button type="button" class="{{ ($storefront ?? false) ? 'shop-button shop-button--compact' : 'btn btn-secondary btn-sm' }}" data-book-retry>Try again</button>
+                Some pages couldn’t load. <button type="button" class="btn btn-secondary btn-sm" data-book-retry>Try again</button>
             </div>
         </div>
         <noscript><p class="mt-3">Enable JavaScript to turn pages, or open a sample below.</p>@foreach($product->previews as $preview)<a class="me-3" href="{{ storage($preview) }}" target="_blank" rel="noopener noreferrer">Preview page {{ $loop->iteration }}</a>@endforeach</noscript>

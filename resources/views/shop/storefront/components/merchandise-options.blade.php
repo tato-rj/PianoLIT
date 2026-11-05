@@ -5,7 +5,7 @@
         <input type="hidden" name="product_id" value="{{ $product['id'] }}">
         <div class="shop-field mb-4" data-variant-fallback>
             <label for="product-variant" class="shop-eyebrow mb-2">Choose an option</label>
-            <select name="variant_id" id="product-variant" class="shop-select" required>
+            <select name="variant_id" id="product-variant" class="form-control" required>
                 @foreach($product['variants'] as $variant)
                     <option value="{{ $variant['id'] }}" data-color="{{ $variant['color'] }}" data-size="{{ $variant['size'] }}" data-price="{{ $variant['price'] }}" data-in-bag="{{ $shoppingBag['lines'][$product['id'].':'.$variant['id']]['quantity'] ?? 0 }}">{{ $variant['color'] }} / {{ $variant['size'] }} — {{ $variant['price'] }}</option>
                 @endforeach
@@ -26,7 +26,7 @@
         </div>
         <p class="shop-eyebrow mb-4">{{ $product['label'] }}</p>
         <div class="mb-3">@include('shop.storefront.components.quantity')</div>
-        <button type="submit" class="shop-button shop-button--dark w-100">@icon('shopping-bag') <span data-bag-label aria-live="polite">{{ $inBag ? 'In bag ('.$inBag.') · Add more' : 'Add to bag' }}</span></button>
+        <button type="submit" class="btn btn-primary w-100">@icon('shopping-bag') <span data-bag-label aria-live="polite">{{ $inBag ? 'In bag ('.$inBag.') · Add more' : 'Add to bag' }}</span></button>
     </form>
 @else
     <p class="shop-unavailable">Currently unavailable</p>

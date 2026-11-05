@@ -12,11 +12,11 @@
         @input(['bag' => 'review', 'id' => 'product-reviewer', 'name' => 'reviewer', 'label' => 'Display name (optional)', 'placeholder' => 'Leave blank to appear as Anonymous', 'limit' => 50, 'required' => false])
         <p class="{{ ($storefront ?? false) ? '' : 'small' }} text-muted mb-3">Reviews appear after moderation.</p>
         <div class="d-flex flex-wrap justify-content-end gap-2">
-            <button type="button" class="{{ ($storefront ?? false) ? 'shop-button' : 'btn btn-secondary' }}" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             @auth
-            <button type="submit" class="{{ ($storefront ?? false) ? 'shop-button shop-button--dark' : 'btn btn-primary' }}">Submit review</button>
+            <button type="submit" class="btn btn-primary">Submit review</button>
             @else
-            <button type="button" class="{{ ($storefront ?? false) ? 'shop-button shop-button--dark' : 'btn btn-primary' }}" data-review-signin>Sign in to submit</button>
+            <button type="button" class="btn btn-primary" data-review-signin>Sign in to submit</button>
             @endauth
         </div>
     </form>

@@ -144,6 +144,8 @@
                 surface.querySelector('[data-checkout-subtotal]').textContent = money(result.subtotal + (result.discount || 0));
                 surface.querySelector('[data-checkout-discount-line]').hidden = !result.discount;
                 surface.querySelector('[data-checkout-discount]').textContent = '−' + money(result.discount || 0);
+                const discountLabel = surface.querySelector('[data-checkout-discount-label]');
+                if (discountLabel) discountLabel.textContent = result.discount_label || 'Coupon discount';
                 const delivery = surface.querySelector('[data-checkout-shipping]');
                 if (delivery) delivery.textContent = money(result.shipping);
                 surface.querySelector('[data-checkout-tax]').textContent = money(result.tax);

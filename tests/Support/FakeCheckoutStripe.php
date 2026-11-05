@@ -15,7 +15,12 @@ class FakeCheckoutStripe extends CheckoutStripe
         if ($key && isset($this->keys[$key])) return $this->keys[$key];
         if ($resource === 'paymentIntents') {
             if ($method === 'retrieve') return $this->intents[$id];
-            if ($method === 'cancel') { $this->intents[$id]['status'] = 'canceled'; return $this->intents[$id]; }
+            if ($method === 'cancel') {
+                if (!in_array($this->intents[$id]['status'], ['requires_payment_method', 'requires_confirmation', 'requires_action', 'canceled'], true)) {
+                    throw new CheckoutException('Payment cannot be canceled in its current state.');
+                }
+                $this->intents[$id]['status'] = 'canceled'; return $this->intents[$id];
+            }
             $id = 'pi_review'.(count($this->intents) + 1);
             $result = $parameters + ['id' => $id, 'client_secret' => $id.'_secret_review', 'status' => 'requires_payment_method',
                 'amount_received' => 0, 'livemode' => config('shop-checkout.mode') === 'live'];

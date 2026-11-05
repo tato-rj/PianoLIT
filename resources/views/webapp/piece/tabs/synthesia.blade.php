@@ -1,6 +1,6 @@
 <div class="tab-pane fade" id="tab-synthesia" role="tabpanel" aria-labelledby="main-nav-tab-synthesia" tabindex="0">
 	@if($piece->media['synthesia'])
-	<div class="rounded-video video-container" style="    max-width: 520px;
+	<div class="rounded-video video-container piece-page-video" style="    max-width: 520px;
     margin: 0 auto;">
 		@video([
 			'classes' => 'w-100',

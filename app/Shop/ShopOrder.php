@@ -9,7 +9,7 @@ class ShopOrder extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $guarded = [];
-    protected $hidden = ['owner_hash', 'recipient'];
+    protected $hidden = ['owner_hash', 'recipient', 'checkout_email_hash', 'first_order_discount_id'];
     protected $casts = ['items' => 'array', 'recipient' => 'encrypted:array',
         'subtotal' => 'integer', 'shipping' => 'integer', 'tax' => 'integer', 'total' => 'integer', 'fulfillment_cost' => 'integer',
         'expires_at' => 'datetime', 'paid_at' => 'datetime', 'submitted_at' => 'datetime', 'tracking_checked_at' => 'datetime'];

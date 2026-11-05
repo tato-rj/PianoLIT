@@ -106,6 +106,33 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $this->getJson(route('shop.home', ['stickers_page' => -1]))->assertStatus(422);
     }
 
+    public function test_shop_home_reuses_the_newsletter_modal_without_prompting_on_products_or_the_bag()
+    {
+        config(['shop-checkout.mode' => 'sandbox', 'shop-checkout.stripe_key' => 'pk_test_review', 'shop-checkout.stripe_secret' => 'sk_test_review']);
+        $home = $this->get(route('shop.home'))->assertOk()
+            ->assertSee('data-shop-welcome="true"', false)->assertSee('data-shop-welcome-retry="false"', false)
+            ->assertSee('shop-newsletter-subscription-form-email')->assertSee('pianolit-input')
+            ->assertSee('action="http://shop.localhost/newsletter/subscribe"', false)
+            ->assertSee('Get my 10% discount')->assertSee('10% off your first order')->assertSee('one monthly email')->assertSee('js/views/shop-welcome.js');
+        $this->assertSame(1, substr_count($home->getContent(), 'id="modal-newsletter-subscription"'));
+        $product = $this->product();
+        foreach ([app(Storefront::class)->productUrl($product), route('shop.bag'), route('ebooks.index')] as $url) {
+            $this->get($url)->assertOk()->assertDontSee('data-shop-welcome', false)->assertDontSee('js/views/shop-welcome.js');
+        }
+    }
+
+    public function test_shop_newsletter_validation_returns_to_the_same_form_without_account_modal_errors()
+    {
+        $this->withExceptionHandling()->from(route('shop.home'))->post('http://shop.localhost/newsletter/subscribe', [
+            'email' => 'invalid', 'started_at' => now()->subSeconds(10)->toDateTimeString(),
+            'form_id' => 'shop-newsletter-subscription-form',
+        ])->assertRedirect(route('shop.home'))->assertSessionHasErrors(['email'], null, 'storefront');
+        $this->assertFalse(session('errors')->getBag('default')->any());
+        $this->get(route('shop.home'))->assertOk()->assertSee('data-shop-welcome-retry="true"', false)
+            ->assertSee('aria-invalid="true"', false)->assertSee('value="invalid"', false);
+        Mail::assertNothingSent();
+    }
+
     public function test_shop_header_reuses_guest_and_authenticated_account_controls_next_to_the_bag()
     {
         $product = $this->product();

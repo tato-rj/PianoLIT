@@ -11,13 +11,14 @@
                 @if($showBrandName ?? false)<span class="site-header__name d-none d-md-inline">PianoLIT</span>@endif
             </a>
         </div>
-        <nav class="col-auto ms-auto" aria-label="{{ ! $showAccount ? 'Site navigation' : ($showYouTube ? 'Account and YouTube' : 'Account and site navigation') }}">
+        <nav class="col-auto ms-auto" aria-label="{{ $navigationLabel ?? (! $showAccount ? 'Site navigation' : ($showYouTube ? 'Account and YouTube' : 'Account and site navigation')) }}">
             <ul class="d-flex align-items-center gap-3 list-unstyled mb-0">
                 @if($showYouTube)
                     <li class="nav-item d-flex align-items-center">
                         @include('components.navigation.youtube-button')
                     </li>
                 @endif
+                {{ $navigationBeforeAccount ?? '' }}
                 @if($showAccount)
                     @if(auth('web')->check() && request()->routeIs('games.home'))
                         @include('games.challenges.profile.dropdown')

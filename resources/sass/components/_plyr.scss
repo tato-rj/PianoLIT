@@ -28,11 +28,37 @@
     }
 }
 
+// Only piece-page players extend beyond the text column on phones.
+@media (max-width: 767.98px) {
+    #tabs-container .piece-page-video {
+        .plyr--video:not(.plyr--fullscreen-fallback) {
+            width: 100vw;
+            max-width: none;
+            height: auto;
+            max-height: none;
+            margin-inline: calc((100% - 100vw) / 2);
+            border-radius: 0 !important;
+
+            .plyr__video-wrapper,
+            video {
+                max-height: none;
+                border-radius: 0 !important;
+            }
+        }
+
+        &.piece-about-video {
+            height: auto;
+            max-height: none;
+        }
+    }
+}
+
 // Plyr 3 uses native fullscreen selectors or its fallback class. Reset both
 // the player and its media wrapper so the embedded height cap cannot carry over.
 @mixin piece-video-fullscreen {
     height: 100%;
     width: 100%;
+    margin: 0;
     max-height: none;
     border-radius: 0 !important;
     .plyr__video-wrapper,

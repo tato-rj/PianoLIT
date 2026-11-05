@@ -2,7 +2,7 @@
 <div class="tab-pane fade show active" id="tab-about" role="tabpanel" aria-labelledby="main-nav-tab-about" tabindex="0">
 	<div class="row">
 		@if($piece->media['performance'])
-		<div class="{{$hasMoments ? 'col-lg-12' : 'col-lg-6 mx-auto piece-about-video'}} col-12 rounded-video video-container" style="margin-bottom: 2rem;">
+		<div class="{{$hasMoments ? 'col-lg-12' : 'col-lg-6 mx-auto piece-about-video'}} col-12 rounded-video video-container piece-page-video" style="margin-bottom: 2rem;">
 			@video([
 				'classes' => 'w-100',
 				'id' => 'piece-performance',
@@ -29,7 +29,7 @@
 			</div> --}}
 			@if($piece->hasDescription())
 			<div class="piece-description"  style="margin-bottom: 2rem;" data-piece-description>
-				<h5 class="mb-2">What's this piece like?</h5>
+				<h5 class="mb-2">A closer look</h5>
 				<div class="piece-description__content" id="piece-description">{{$piece->description}}</div>
 				<div class="d-flex justify-content-end">
 					<button type="button" class="piece-description__toggle" aria-controls="piece-description" aria-expanded="false" hidden>Read more</button>
@@ -42,7 +42,7 @@
 				<div>To learn more about {{$piece->composer->last_name}} <a href="{{route('webapp.composers.show', $piece->composer)}}">click here</a>.</div>
 			</div>
 			@endif
-				<h5 class="mb-2">Who's this piece for?</h5>
+				<h5 class="mb-2">Is this your next piece?</h5>
 				<div>{{$piece->for_who}}</div>
 		</div>
 	</div>

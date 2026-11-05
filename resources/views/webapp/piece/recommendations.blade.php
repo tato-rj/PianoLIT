@@ -4,15 +4,13 @@
 @endphp
 @if($collectionRow)
 <section class="discover-latest mb-4" aria-labelledby="piece-collection-heading">
-    <div class="d-flex d-apart gap-3 mb-3">
-        <h5 id="piece-collection-heading" class="m-0">{{ $collectionRow['title'] }}</h5>
-        <a href="{{ $collectionRow['url'] }}" class="btn-raw link-primary" aria-label="View all: {{ $collectionRow['title'] }}">View all</a>
-    </div>
+    <h5 id="piece-collection-heading" class="mb-3">{{ $collectionRow['title'] }}</h5>
     <div class="discover-latest__rail custom-scroll dragscroll dragscroll-horizontal card-scroll-row" role="region" aria-labelledby="piece-collection-heading" tabindex="0">
         <div class="d-flex gap-3 pb-2">
             @foreach($collectionRow['pieces'] as $recommendationPiece)
                 @include('webapp.discover.cards.latest-piece', ['piece' => $recommendationPiece])
             @endforeach
+            @include('components.navigation.rail-view-all', ['url' => $collectionRow['url'], 'context' => $collectionRow['title']])
         </div>
     </div>
 </section>
@@ -30,14 +28,12 @@
         @foreach($matchRows as $matchRow)
         <div class="tab-pane {{ $matchRow['key'] === 'best-matches' ? 'active' : '' }}" id="piece-recommendations-{{ $matchRow['key'] }}" role="tabpanel" aria-labelledby="piece-recommendations-{{ $matchRow['key'] }}-tab" tabindex="0">
             @if($matchRow['pieces']->isNotEmpty())
-            <div class="d-flex justify-content-end mb-2">
-                <a href="{{ $matchRow['url'] }}" class="btn-raw link-primary" aria-label="View all: {{ $matchRow['title'] }}">View all</a>
-            </div>
             <div class="discover-for-you__rail custom-scroll dragscroll dragscroll-horizontal card-scroll-row" role="region" aria-label="{{ $matchRow['title'] }}" tabindex="0">
                 <div class="d-flex gap-3 pb-2">
                     @foreach($matchRow['pieces'] as $recommendationPiece)
                         @include('webapp.discover.cards.compact-piece', ['piece' => $recommendationPiece, 'showMedia' => true])
                     @endforeach
+                    @include('components.navigation.rail-view-all', ['url' => $matchRow['url'], 'context' => $matchRow['title']])
                 </div>
             </div>
             @else

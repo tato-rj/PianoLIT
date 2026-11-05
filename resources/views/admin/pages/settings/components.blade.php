@@ -5,14 +5,15 @@
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="modal" data-bs-target="#ds-link-share">@icon('share')Open share dialog</button>
       @include('components.media.link-share', ['id' => 'ds-link-share', 'url' => 'https://my.pianolit.com/pieces/0', 'title' => 'Prelude in E minor by Frédéric Chopin'])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Shop storefront', 'usage' => 'shop.storefront.components · white, outlined cards and controls without offset shadows', 'properties' => 'font-size,color,border,box-shadow'])
+    @component('admin.pages.settings.sample', ['label' => 'Shop storefront', 'usage' => 'shop.storefront.components · shared PianoLIT buttons, borders and rounded surfaces', 'properties' => 'font-size,color,border,box-shadow'])
       <div class="shop-storefront p-2" data-ds-preview>
-        <div class="d-flex flex-wrap gap-3 mb-4">
-          @foreach(\App\Services\Shop\Storefront::CATEGORIES as $key => $label)
-            <button type="button" class="shop-button {{ $key === '' ? 'shop-button--dark' : '' }}">{{ $label }}</button>
-          @endforeach
-          <button type="button" class="shop-button shop-button--mint">Checkout</button>
+        <div class="mb-4">
+          @include('shop.storefront.components.category-navigation', [
+            'categoryUrls' => array_fill_keys(array_keys(\App\Services\Shop\Storefront::CATEGORIES), '#ds-components'),
+            'category' => '', 'search' => '', 'preview' => true,
+          ])
         </div>
+        <div class="mb-4"><button type="button" class="btn btn-primary">Checkout</button></div>
         @include('shop.storefront.components.quantity', ['quantity' => 1])
         <div class="d-flex flex-wrap gap-2 mt-4">
           @include('shop.storefront.components.option', ['option' => 'Mint', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#b9d8d1']), 'selected' => true])
@@ -261,6 +262,9 @@
         @alert(['color' => 'green', 'message' => 'Your changes have been saved.', 'dismissible' => true])
         @alert(['color' => 'red', 'message' => 'Please check the highlighted fields.', 'dismissible' => true])
       </div>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Row-end View all', 'usage' => 'components.navigation.rail-view-all', 'properties' => 'font-size,padding,color'])
+      @include('components.navigation.rail-view-all', ['url' => '#ds-components', 'context' => 'Sample pieces', 'preview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Piece segmented tabs', 'usage' => 'components.navigation.tab-navigation · variant: segmented-bar', 'properties' => 'font-size,padding,color,background-color,border-radius,box-shadow'])
       @component('components.navigation.tab-navigation', ['id' => 'ds-piece-tabs', 'label' => 'Sample piece sections', 'variant' => 'segmented-bar', 'preview' => true, 'syncHash' => false, 'items' => [

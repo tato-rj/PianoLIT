@@ -56,6 +56,7 @@ class DigitalCheckout
         $snapshot = $this->snapshot($request, $data['product_type'], $data['product_id'], $data['coupon'] ?? null);
         $recipient = app(ShopCheckout::class)->recipient($request);
         $recipient['email'] = $request->user('web')->email;
+        $snapshot = app(FirstOrderDiscount::class)->apply($request, $snapshot, $recipient['email']);
         $activeKey = hash('sha256', app(CheckoutEnvironment::class)->mode().':'.$request->user('web')->id.':'.$data['product_type'].':'.$data['product_id']);
         return DB::transaction(function () use ($request, $snapshot, $recipient, $activeKey) {
             User::whereKey($request->user('web')->id)->lockForUpdate()->firstOrFail();

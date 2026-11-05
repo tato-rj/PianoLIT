@@ -52,7 +52,7 @@ class ShopSubdomainTest extends ReviewTestCase
         $this->useDomain($baseUrl);
         $this->get(route('shop.home'))->assertOk()
             ->assertSee('data-storefront', false)
-            ->assertSee('All products')
+            ->assertSee('PianoLIT Shop')
             ->assertSee('Good things are on their way')
             ->assertSee('css/storefront.css', false)
             ->assertSee('href="'.$baseUrl.'"', false)

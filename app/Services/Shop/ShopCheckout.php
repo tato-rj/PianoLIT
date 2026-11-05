@@ -81,6 +81,7 @@ class ShopCheckout
         $mode = app(CheckoutEnvironment::class)->mode();
         $recipient = $this->recipient($request);
         $snapshot = $this->snapshot($request);
+        $snapshot = app(FirstOrderDiscount::class)->apply($request, $snapshot, $recipient['email']);
         $provider = app(PrintfulOrders::class);
         $rates = array_values(array_filter($provider->rates($recipient, $snapshot['items'], $snapshot['currency']),
             fn ($rate) => strtoupper($rate['currency'] ?? '') === $snapshot['currency'] && !empty($rate['id'])));
@@ -101,7 +102,7 @@ class ShopCheckout
             $tax = app(CheckoutStripe::class)->call('tax.calculations', 'create', ['currency' => 'usd',
                 'customer_details' => ['address_source' => $kind === 'digital' ? 'billing' : 'shipping', 'address' => $this->stripeAddress($recipient)],
                 'shipping_cost' => ['amount' => $estimate['shipping'], 'tax_behavior' => 'exclusive', 'tax_code' => 'txcd_92010001'],
-                'line_items' => array_map(fn ($item) => ['amount' => $item['unit_price'] * $item['quantity'], 'quantity' => $item['quantity'],
+                'line_items' => array_map(fn ($item) => ['amount' => $item['line_total'] ?? $item['unit_price'] * $item['quantity'], 'quantity' => $item['quantity'],
                     'reference' => $item['product_id'].':'.$item['sync_variant_id'], 'tax_behavior' => 'exclusive',
                     'tax_code' => config('shop-checkout.tax_codes.'.$item['category'], 'txcd_99999999')], $snapshot['items'])]);
         }
@@ -110,6 +111,8 @@ class ShopCheckout
             || ($kind === 'merchandise' && $tax['amount_total'] === 0)) throw new CheckoutException('This order total is not supported. Please contact us.');
         $order = ShopOrder::create(['id' => $id, 'owner_hash' => $this->owner($request), 'user_id' => optional($request->user('web'))->id,
             'kind' => $kind, 'active_key' => $activeKey,
+            'checkout_email_hash' => app(FirstOrderDiscount::class)->emailHash($recipient['email']),
+            'first_order_discount_id' => $snapshot['first_order_discount_id'] ?? null,
             'mode' => $mode, 'printful_store_id' => app(Storefront::class)->storeId(), 'bag_hash' => $snapshot['hash'],
             'items' => $snapshot['items'], 'recipient' => $recipient, 'currency' => 'usd', 'subtotal' => $snapshot['subtotal'],
             'shipping' => $estimate['shipping'], 'tax' => $tax['tax_amount_exclusive'], 'total' => $tax['amount_total'],
@@ -118,7 +121,8 @@ class ShopCheckout
             'expires_at' => now()->addMinutes((int) config('shop-checkout.quote_minutes', 15))]);
         return ['order_id' => $id, 'subtotal' => $order->subtotal, 'shipping' => $order->shipping, 'tax' => $order->tax,
             'expires_at' => $order->expires_at->toIso8601String(),
-            'discount' => array_sum(array_map(fn ($item) => ($item['discount'] ?? 0) * $item['quantity'], $snapshot['items'])),
+            'discount' => app(FirstOrderDiscount::class)->amount($snapshot['items']),
+            'discount_label' => app(FirstOrderDiscount::class)->label($snapshot['items']),
             'total' => $order->total, 'currency' => 'usd', 'shipping_id' => $rate['id'],
             'rates' => array_map(fn ($item) => ['id' => $item['id'], 'name' => $item['name'], 'amount' => app(PrintfulOrders::class)->cents($item['rate'])], $rates)];
     }
@@ -131,28 +135,39 @@ class ShopCheckout
 
     public function prepare(Request $request, string $id): array
     {
-        $this->owned($request, $id);
+        $owned = $this->owned($request, $id);
+        if (!$owned->paid_at && ($owned->expires_at->isPast() || $owned->status === 'abandoned')) {
+            throw new CheckoutException('Your order quote has changed. Please review the updated total before paying.', 409);
+        }
+        app(FirstOrderDiscount::class)->reserve($request, $owned);
         return DB::transaction(function () use ($request, $id) {
             $order = ShopOrder::whereKey($id)->lockForUpdate()->firstOrFail();
             if ($order->paid_at) return ['paid' => true, 'redirect' => route('shop.order', $order->id)];
             $snapshot = $order->kind === 'digital' ? app(DigitalCheckout::class)->current($request, $order) : $this->snapshot($request);
-            if ($order->expires_at->isPast() || $order->bag_hash !== $snapshot['hash']) throw new CheckoutException('Your order quote has changed. Please review the updated total before paying.', 409);
+            $snapshot = app(FirstOrderDiscount::class)->apply($request, $snapshot, $order->recipient['email'], $order);
+            if ($order->status === 'abandoned' || $order->expires_at->isPast() || $order->bag_hash !== $snapshot['hash']) throw new CheckoutException('Your order quote has changed. Please review the updated total before paying.', 409);
             if ($order->kind === 'digital' && $order->total === 0) {
                 $order->update(['paid_at' => now(), 'status' => 'paid']);
                 app(DigitalCheckout::class)->grant($order, null);
                 return ['paid' => true, 'redirect' => route('shop.order', $order->id)];
             }
             if ($order->mode === 'demo') return ['demo' => true, 'order_id' => $order->id];
-            $gateway = app(CheckoutStripe::class);
-            $intent = $order->stripe_payment_intent ? $gateway->call('paymentIntents', 'retrieve', [], $order->stripe_payment_intent)
-                : $gateway->call('paymentIntents', 'create', ['amount' => $order->total, 'currency' => $order->currency,
-                    'payment_method_types' => ['card'], 'receipt_email' => $order->recipient['email'],
-                    ...($order->kind === 'merchandise' ? ['shipping' => ['name' => $order->recipient['name'], 'address' => $this->stripeAddress($order->recipient)]] : []),
-                    'metadata' => ['pianolit_shop_order' => $order->id]], null, $order->id.':payment');
+            $intent = $this->paymentIntent($order);
             $this->verifyIntent($order, $intent, false);
+            if ($intent['status'] === 'canceled') throw new CheckoutException('This payment was canceled. Please review your updated total.', 409);
             $order->update(['stripe_payment_intent' => $intent['id'], 'status' => 'payment_pending']);
             return ['order_id' => $order->id, 'client_secret' => $intent['client_secret'], 'return_url' => route('shop.order', $order->id)];
         }, 3);
+    }
+
+    public function paymentIntent(ShopOrder $order): array
+    {
+        $gateway = app(CheckoutStripe::class);
+        return $order->stripe_payment_intent ? $gateway->call('paymentIntents', 'retrieve', [], $order->stripe_payment_intent)
+            : $gateway->call('paymentIntents', 'create', ['amount' => $order->total, 'currency' => $order->currency,
+                'payment_method_types' => ['card'], 'receipt_email' => $order->recipient['email'],
+                ...($order->kind === 'merchandise' ? ['shipping' => ['name' => $order->recipient['name'], 'address' => $this->stripeAddress($order->recipient)]] : []),
+                'metadata' => ['pianolit_shop_order' => $order->id]], null, $order->id.':payment');
     }
 
     public function verifyIntent(ShopOrder $order, array $intent, bool $paid = true): void
@@ -180,6 +195,7 @@ class ShopCheckout
                 return $order->fresh();
             }
             if (!$order->paid_at) $order->update(['paid_at' => now(), 'status' => 'paid']);
+            app(FirstOrderDiscount::class)->redeem($order);
             if ($order->stripe_tax_calculation && !$order->stripe_tax_transaction) {
                 $transaction = app(CheckoutStripe::class)->call('tax.transactions', 'createFromCalculation',
                     ['calculation' => $order->stripe_tax_calculation, 'reference' => $order->id], null, $order->id.':tax');
@@ -197,6 +213,7 @@ class ShopCheckout
         if (!app()->environment('local', 'testing') || app(CheckoutEnvironment::class)->mode() !== 'demo' || $order->mode !== 'demo') abort(404);
         $this->prepare($request, $id);
         if (!$order->paid_at) $order->update(['paid_at' => now(), 'status' => 'test_complete']);
+        app(FirstOrderDiscount::class)->redeem($order);
         if ($order->kind === 'digital') app(DigitalCheckout::class)->grant($order, null);
         else app(OrderEmails::class)->confirmation($order);
         return $order->fresh();

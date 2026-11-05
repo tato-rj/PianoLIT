@@ -1,5 +1,5 @@
-<article class="shop-card h-100">
-    <div class="shop-card__art">
+<article class="shop-card card rounded-sm overflow-hidden h-100">
+    <div class="shop-card__art border-bottom">
         <a href="{{ $product['url'] }}" tabindex="-1" aria-hidden="true">
             @if($product['imageUrl'])
                 <img src="{{ $product['imageUrl'] }}" alt="" width="600" height="600" loading="lazy">
@@ -8,17 +8,17 @@
             @endif
         </a>
         @if($product['digital'])
-            <a class="shop-card__quick shop-button shop-button--dark" href="{{ $product['url'] }}">View product @icon('arrow-up-right')</a>
+            <a class="shop-card__quick btn btn-primary" href="{{ $product['url'] }}">View product @icon('arrow-up-right')</a>
         @elseif(count($product['variants']) === 1)
             <form action="{{ route('shop.bag.add') }}" method="POST" class="shop-card__quick" data-add-to-bag>
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product['id'] }}">
                 <input type="hidden" name="variant_id" value="{{ $product['variants'][0]['id'] }}">
                 <input type="hidden" name="quantity" value="1">
-                <button class="shop-button shop-button--dark w-100" type="submit" aria-label="Quick add {{ $product['name'] }}">Quick add @icon('plus')</button>
+                <button class="btn btn-primary w-100" type="submit" aria-label="Quick add {{ $product['name'] }}">Quick add @icon('plus')</button>
             </form>
         @elseif(count($product['variants']) > 1)
-            <a class="shop-card__quick shop-button shop-button--dark" href="{{ $product['url'] }}">Choose options @icon('arrow-up-right')</a>
+            <a class="shop-card__quick btn btn-primary" href="{{ $product['url'] }}">Choose options @icon('arrow-up-right')</a>
         @endif
     </div>
     <div class="shop-card__copy">

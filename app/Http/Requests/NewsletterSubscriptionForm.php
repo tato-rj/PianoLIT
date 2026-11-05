@@ -4,6 +4,13 @@ namespace App\Http\Requests;
 
 class NewsletterSubscriptionForm extends SubscriptionForm
 {
+    protected function prepareForValidation()
+    {
+        if ($this->input('form_id') === 'shop-newsletter-subscription-form') {
+            $this->errorBag = 'storefront';
+        }
+    }
+
     public function authorize()
     {
         try {

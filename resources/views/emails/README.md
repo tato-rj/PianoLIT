@@ -478,3 +478,5 @@ Local merchandise email previews for actual test-order data are available in Adm
 ### Synthesia Requests
 
 Edit `synthesia-requests/new.blade.php` for receipt and `synthesia-requests/published.blade.php` for readiness. Their mailables live in `App\Mail\SynthesiaRequests`; the admin switches/previews are `synthesia-request` and `synthesia-published`. The table-rename migration preserves saved switches. The old `App\Mail\Tutorials` classes remain only for queued messages serialized before this rename and inherit the same delivery switches. See `docs/SYNTHESIA_REQUESTS.md` for the coordinated schema/worker rollout and permanent legacy API boundary.
+
+The merchandise confirmation in `shop/orders/confirmed.blade.php` shows any first-order welcome discount separately from products, delivery and tax. Its item snapshots and promotion amounts come from the verified saved checkout; rendering never contacts payment or fulfillment providers.
