@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-05 — Restore the product-review empty label (P3, complete locally)
+
+- **Request / change:** Hide the count beside Customer reviews when there are no published reviews. The shared star summary now shows small, muted, italic No reviews yet for zero reviews; positive counts retain normal `(count)` text. Updated only `shop/components/reviews/{layout,summary}.blade.php`; moderation, ownership, links, catalog selection and mobile/API behavior remain unchanged.
+- **Verification / remaining work:** All 21 isolated merchandise/digital product-page tests pass (240 assertions); whitespace checks pass. Browser QA of disposable rendered data confirms the empty heading has no count and the star label is 12.8px, italic and gray (`rgb(108, 117, 125)`). Proof: `empty-rating.png` and `empty-reviews-page.png` in `/Users/arthur/.codex/visualizations/2026/11/05/01a1ade2-ae0c-7863-8037-e30f143e6f8c/empty-reviews/`. No asset rebuild, normal-environment data change or deployment performed.
+
 ### 2026-11-05 — Compact product reviews and inline owner actions (P3, complete locally)
 
 - **Request / change:** Kept the rating, stars, five-row breakdown and review content while tightening the shared review layout with existing Bootstrap spacing, type and grid utilities. The score and breakdown sit side by side; reviewer/stars/date share a compact header. Moved the owner's icon-only `btn-red btn-sm` trash button to the bottom right inside their review, retaining its accessible label and existing CSRF/DELETE confirmation. The review date appears once. Published rating-only reviews remain visible to their owner so deletion stays available. The shared rating link now shows stars plus `(count)` in normal body color without an underline, retaining its descriptive accessible label and anchor destination.
