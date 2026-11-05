@@ -1,6 +1,6 @@
 schema_version: 1
-revision: 2026-11-03.1
-updated_on: '2026-11-03'
+revision: 2026-11-04.1
+updated_on: '2026-11-04'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -11,11 +11,13 @@ runtime:
   production_base_url: https://pianolit.com/api/v2
   existing_api: unchanged
   deployment_target: https://pianolit.com/api/v2
-  verification: Login, Discover and confirmed piece-open history were production verified
-    on 2026-10-28. Expanded composer groups and Find my match are implemented locally
-    and await deployment. Match tours are disabled by default until the tour migration,
-    private sample preparation, HTTPS delivery and synthetic production checks are
-    completed. No staging URL or native acceptance is verified.
+  verification: 'Login, Discover and confirmed-open history were production verified
+    on 2026-10-28. Piece detail was production verified on 2026-11-04: bearer identity,
+    shared metadata, full/blocked native media, owned favorite state, safe missing-piece
+    errors and side-effect-free reads. Synthetic account/token SQL writes were rolled
+    back. Find my match remains disabled and unverified pending its separate deployment/media
+    activation; expanded composer-pool acceptance is unchanged. No staging URL or
+    native-device acceptance is verified.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -26,10 +28,12 @@ entrypoints:
   swift_example: examples/PianoLITV2Client.swift
   match_tour: screens/find-my-match.yaml
   match_examples: examples/find-my-match.md
+  piece: screens/piece.yaml
+  piece_examples: examples/piece.md
 files:
 - path: README.md
-  bytes: 9809
-  sha256: d17461373e02adb4bd692eafc909d1eac07b6c4cc5d23d9637031c2684e29652
+  bytes: 9961
+  sha256: 78d04a27492dc454ae75c236595618831b8376adeab3e1a75006a53f50aac29f
 - path: foundations.yaml
   bytes: 5703
   sha256: b3f156ec96aa8b0e32ebae302a5422181c6e8a5059d688c40ba628fbcf87d977
@@ -37,8 +41,8 @@ files:
   bytes: 10384
   sha256: 3a26ddf1df6e7fdc7e992d2d629b57cd6ae7a16cd75763c7f20291165a28ebe0
 - path: openapi.yaml
-  bytes: 45955
-  sha256: a1155eed31d08abcf1efda52191f6dee1bfc8eff9aea7b1c0f3827d9728152fa
+  bytes: 61784
+  sha256: 441ba6c8326b1dc5851576afe823949f1c3ccd491d3e3b476f1dc70a903b63a1
 - path: design.yaml
   bytes: 2740
   sha256: 094fef76502c95677b0f36acb9045d3930633257ee93192184b02ce896dbe330
@@ -46,8 +50,8 @@ files:
   bytes: 1824
   sha256: 27b5d92f4dbfee4a11a92f654b0bcea574595a81c0b7f37cb90f3365cfdc4729
 - path: screens/discover.yaml
-  bytes: 6532
-  sha256: 7c157d6f90f07c7d8239b5c91366186752c1d68711846093fc1d9c906c6353b5
+  bytes: 6616
+  sha256: 72924ff1e3aa7f8264cad2276138232b2ea545b029423fd8aa9fb389c2bc0aa3
 - path: fixtures/discover.json
   bytes: 21715
   sha256: cfbcb41783fedd20027a8746c8ebdd277edee2d25f127a16df14afc4804a6609
@@ -55,8 +59,8 @@ files:
   bytes: 183
   sha256: 28b67a3a1694e2f2e92c75066870b0d385e149b2fad0e335545de84f038510e6
 - path: examples/PianoLITV2Client.swift
-  bytes: 10759
-  sha256: f47c8f1e4fa8e40628050cf0116c423a4d546587e572343874ebd4c7bffe1b52
+  bytes: 15490
+  sha256: c11cb087505082590c5782b89a21f87a6d9b100bceb18dcc112d7af304b813ae
 - path: screens/find-my-match.yaml
   bytes: 4284
   sha256: f673b463d8b521c1a5e225c5904fa9b914444b1753c82de8d2bcd802e90a11c2
@@ -69,6 +73,18 @@ files:
 - path: fixtures/find-my-match-errors.json
   bytes: 5928
   sha256: 58cbef35113e5af7ed0022aec1e5fdf1f34211feea84d9f9c841138da1a0eb14
+- path: screens/piece.yaml
+  bytes: 4988
+  sha256: 0a6d2baea4a6b56fa0498513f62304322b0c4c1ca385abef841037bd23ad1d6a
+- path: examples/piece.md
+  bytes: 6731
+  sha256: 98e4e8d73d0099503ef6af8873b7e5e30bbaee802650a0fe09ba7440cb9504fc
+- path: fixtures/piece-full.json
+  bytes: 12973
+  sha256: d7bcd0d1d5c1e04bb4f0d01a32a2818cd5b369f65e443e4a424dfcc1e9fb0cf2
+- path: fixtures/piece-blocked.json
+  bytes: 12695
+  sha256: 368ee1b9b2998b43d53efae55a1700abe8a5ee9ebbfb6e097f935a115e3cd5e0
 features:
 - id: foundations
   document: foundations.yaml
@@ -90,6 +106,13 @@ features:
   ios_status: pending_data_integration_existing_steps_1_to_4_design_unchanged
   depends_on:
   - foundations
+- id: piece
+  document: screens/piece.yaml
+  status: draft
+  backend_status: production_verified
+  ios_status: pending_integration
+  depends_on:
+  - foundations
 consumer_rules:
 - Read README.md, the concrete OpenAPI operations and examples/PianoLITV2Client.swift
   for the connection procedure.
@@ -105,14 +128,26 @@ consumer_rules:
   exchange stored user_id for access.
 - Preserve installed legacy clients and their endpoints indefinitely. This work does
   not require updating the old app.
-- Discover cards are summaries, not complete PieceVC detail models or media entitlements.
-  Use the documented target/fallback boundary.
+- Discover cards remain summaries. Load GET /pieces/{id} for the new piece page; use
+  its explicit native media modes. Existing legacy PieceVC raw-array parsers require
+  an explicit adapter.
 - Record consumed revision, native commit/build, device checks and unresolved destinations
   in the iOS repository.
 - Find my match endpoints in this revision are implemented locally, not production
   verified. Preserve the completed native steps 1–4 and replace their data/calculations
   only; connect mood and the native piece target after deployment verification.
 changelog:
+- revision: 2026-11-04.1
+  changes:
+  - Added authenticated GET /pieces/{piece} for complete read-only piece-page metadata,
+    account favorite state, media/moments, score information, timeline and related
+    content.
+  - Web and native reuse Pieces\PageContent, WebTimeline, PieceRecommendations and
+    existing media/name/description getters; no shared model serialization changes.
+  - Added explicit native full/blocked/unavailable media modes, a Swift piece decoder/client
+    method, integration instructions and synthetic full/blocked fixtures.
+  - Legacy contracts, current login, confirmed-open history and all previous published
+    revisions remain intact. Match-tour activation and native acceptance are separate.
 - revision: 2026-11-03.1
   changes:
   - Added bearer-authenticated account-owned Find my match tours with shared web draws,
@@ -165,4 +200,4 @@ changelog:
   - Established the handoff format, shared API proposals and compatibility boundaries.
   - Inventoried Discover against the current web implementation.
   - No runtime endpoints, migrations, Swift changes or deployment in this revision.
-base_path: revisions/2026-11-03.1/
+base_path: revisions/2026-11-04.1/
