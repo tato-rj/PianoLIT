@@ -111,31 +111,9 @@ class eBooksController extends Controller
 
     public function update(Request $request, eBook $ebook)
     {
-        $request->merge(['title' => app(ProductNames::class)->validate($request->input('title'), $ebook)]);
-        $ebook->update([
-            'slug' => ProductNames::slug($request->title),
-            'title' => $request->title,
-            'author' => $request->author,
-            'subtitle' => $request->subtitle,
-            'description' => $request->description,
-            'pages_count' => $request->pages_count,
-            'price' => $request->price,
-            'discount' => $request->discount,
-            'cover_path' => (new ImageUpload($request))->take('cover_image')
-                                                       ->for($ebook)
-                                                       ->name(str_slug($request->title))
-                                                       ->upload(),
-            'mockup_path' => (new ImageUpload($request))->take('mockup_image')
-                                                       ->for($ebook)
-                                                       ->name(str_slug($request->title).'-mockup')
-                                                       ->upload(),
-            'pdf_path' => $this->hasFile('pdf_file')->delete($ebook->pdf_path)->upload('title', 'escores/pdf'),
-            'epub_path' => $this->hasFile('epub_file')->delete($ebook->epub_path)->upload('title', 'escores/epub')
-        ]);
+        app(\App\Services\Shop\DigitalEditor::class)->update($request, $ebook, 'ebooks');
 
-        $ebook->topics()->sync($request->topics);
-
-        return redirect(route('admin.ebooks.edit', $ebook))->with('status', 'The eBook has been successfuly updated!');
+        return redirect()->route('admin.ebooks.edit', $ebook)->with('status', 'Product details saved.');
     }
 
     public function updateStatus(eBook $ebook)

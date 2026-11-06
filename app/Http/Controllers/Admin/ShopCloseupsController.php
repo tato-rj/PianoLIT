@@ -32,7 +32,7 @@ class ShopCloseupsController extends Controller
         } catch (PrintfulException $exception) {
             return $this->back($request, $product)->with('error', $exception->getMessage());
         }
-        return $this->back($request, $product)->with('status', 'The hover close-up has been saved.');
+        return $this->back($request, $product)->with('status', ($request->route('closeupKind') === 'merchandise' ? 'The hover close-up has been saved.' : 'The hover image has been saved.'));
     }
 
     public function destroy(Request $request, Closeups $closeups)
@@ -40,7 +40,7 @@ class ShopCloseupsController extends Controller
         $product = $this->product($request);
         $data = $request->validateWithBag('closeup', ['closeup_revision' => 'required|integer|min:0']);
         $closeups->remove($product, (int) $data['closeup_revision']);
-        return $this->back($request, $product)->with('status', 'The close-up has been removed. Hover now keeps the regular image.');
+        return $this->back($request, $product)->with('status', 'The hover image has been removed. Hover now keeps the regular image.');
     }
 
     private function back(Request $request, $product)

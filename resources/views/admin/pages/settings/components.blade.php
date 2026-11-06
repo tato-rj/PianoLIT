@@ -71,6 +71,12 @@
         @include('admin.pages.merchandise.image', ['mockupPreview' => true, 'product' => $sampleMockupProduct, 'image' => $sampleMockup, 'viewNumber' => 1, 'isMain' => true, 'first' => true, 'last' => true, 'canAssign' => false])
       </div>
     @endcomponent
+
+    @component('admin.pages.settings.sample', ['label' => 'Digital display image', 'usage' => 'admin.pages.digital.image · shared eBook and eScore gallery actions', 'properties' => 'font-size,padding,color,border'])
+        @include('admin.pages.digital.image', ['imagePreview' => true, 'product' => (object) ['title' => 'Sample eBook'], 'kind' => 'ebooks',
+            'image' => ['id' => 'sample', 'path' => '', 'url' => asset('images/misc/score1.png')], 'mediaState' => ['main_image_id' => 'sample'], 'viewNumber' => 1, 'first' => true, 'last' => true])
+    @endcomponent
+
     @component('admin.pages.settings.sample', ['label' => 'Shop product grid', 'usage' => 'shop.storefront.components.product-grid · products fade in once as they enter the viewport', 'properties' => 'font-size,font-weight,padding,color'])
       <div class="shop-storefront" data-ds-preview>
         @php($shopGridPreview = collect([

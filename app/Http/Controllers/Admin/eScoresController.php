@@ -111,31 +111,9 @@ class eScoresController extends Controller
 
     public function update(Request $request, eScore $escore)
     {
-        $request->merge(['title' => app(ProductNames::class)->validate($request->input('title'), $escore)]);
-        $escore->update([
-            'slug' => ProductNames::slug($request->title),
-            'title' => $request->title,
-            'author' => $request->author,
-            'subtitle' => $request->subtitle,
-            'description' => $request->description,
-            'pages_count' => $request->pages_count,
-            'price' => $request->price,
-            'discount' => $request->discount,
-            'cover_path' => (new ImageUpload($request))->take('cover_image')
-                                                       ->for($escore)
-                                                       ->name(str_slug($request->title))
-                                                       ->upload(),
-            'mockup_path' => (new ImageUpload($request))->take('mockup_image')
-                                                       ->for($escore)
-                                                       ->name(str_slug($request->title).'-mockup')
-                                                       ->upload(),
-            'pdf_path' => $this->hasFile('pdf_file')->delete($escore->pdf_path)->upload('title', 'escores/pdf'),
-            'audio_path' => $this->hasFile('audio_file')->delete($escore->audio_path)->upload('title', 'escores/audio')
-        ]);
+        app(\App\Services\Shop\DigitalEditor::class)->update($request, $escore, 'escores');
 
-        $escore->topics()->sync($request->topics);
-
-        return redirect(route('admin.escores.edit', $escore))->with('status', 'The eScore has been successfuly updated!');
+        return redirect()->route('admin.escores.edit', $escore)->with('status', 'Product details saved.');
     }
 
     public function updateStatus(eScore $escore)

@@ -62,6 +62,7 @@ class Storefront
         if ($products->isEmpty()) return collect();
         (new ModelCollection($products->whereInstanceOf(MerchandiseProduct::class)->all()))->load('images');
         $closeups = app(Closeups::class)->urlsFor($products);
+        $digitalImages = app(DigitalMedia::class)->mainUrls($products);
         // Keep review aggregates in web DTOs rather than adding shared/mobile model attributes.
         $ratings = Review::published()->select('reviewable_type', 'reviewable_id')
             ->selectRaw('COUNT(*) AS review_count, AVG(rating) AS average_rating')
@@ -71,9 +72,9 @@ class Storefront
                 }
             })->groupBy('reviewable_type', 'reviewable_id')->toBase()->get()
             ->keyBy(fn ($rating) => $rating->reviewable_type.':'.$rating->reviewable_id);
-        return $products->map(function ($product) use ($ratings, $closeups) {
+        return $products->map(function ($product) use ($ratings, $closeups, $digitalImages) {
             $rating = $ratings->get(get_class($product).':'.$product->id);
-            return ($product instanceof MerchandiseProduct ? $this->present($product) : $this->presentDigital($product)) + [
+            return ($product instanceof MerchandiseProduct ? $this->present($product) : $this->presentDigital($product, ['imageUrl' => $digitalImages->get(get_class($product).':'.$product->id)])) + [
                 'reviewCount' => $rating ? (int) $rating->review_count : 0,
                 'averageRating' => $rating ? number_format($rating->average_rating, 1) : 0,
                 'closeupUrl' => $closeups->get(get_class($product).':'.$product->id),
@@ -99,14 +100,14 @@ class Storefront
         return $query;
     }
 
-    public function presentDigital(Product $product): array
+    public function presentDigital(Product $product, ?array $artwork = null): array
     {
         $category = $product instanceof eBook ? 'ebooks' : 'escores';
         return [
             'id' => $product->id, 'name' => $product->title, 'subtitle' => trim($product->subtitle ?? ''),
             'category' => $category, 'digital' => true,
             'label' => $category === 'ebooks' ? 'eBook' : 'eScore', 'url' => $product->showRoute(),
-            'imageUrl' => $product->mockup_image() ?: ($product->cover_path ? $product->cover_image() : null),
+            'imageUrl' => $artwork !== null ? $artwork['imageUrl'] : (app(DigitalMedia::class)->gallery($product)->first()['url'] ?? null),
             'variants' => [], 'price' => $product->isFree() ? 'Free' : $this->money((int) $product->finalPrice(true), 'USD'),
             'priceVaries' => false,
         ];

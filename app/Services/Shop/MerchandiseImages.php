@@ -60,6 +60,11 @@ class MerchandiseImages
         return $this->store(file_get_contents($file->getRealPath()), $alt, 'upload', null, 'shop/closeups', 95);
     }
 
+    public function fromDisplayUpload(UploadedFile $file, string $alt): array
+    {
+        return $this->store(file_get_contents($file->getRealPath()), $alt, 'upload', null, 'shop/digital/images');
+    }
+
     private function store(string $bytes, string $alt, string $source, ?string $sourceKey = null, string $directory = 'shop/merchandise', int $quality = 88): array
     {
         $size = @getimagesizefromstring($bytes);

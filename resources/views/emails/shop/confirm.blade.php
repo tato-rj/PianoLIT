@@ -3,7 +3,7 @@
 
 Hi {{ $user->first_name }}, your purchase is confirmed. Your files are ready to download.
 
-@php($productImage = method_exists($item, 'mockup_image') ? ($item->mockup_image() ?: ($item->cover_path ? $item->cover_image() : null)) : ($item->image ?? null))
+@php($productImage = ($item instanceof \App\Shop\eBook || $item instanceof \App\Shop\eScore) ? (app(\App\Services\Shop\DigitalMedia::class)->gallery($item)->first()['url'] ?? null) : (method_exists($item, 'mockup_image') ? ($item->mockup_image() ?: ($item->cover_path ? $item->cover_image() : null)) : ($item->image ?? null)))
 @component('mail::shop.products', ['items' => [['name' => $item->title, 'image' => $productImage]]])
 @endcomponent
 

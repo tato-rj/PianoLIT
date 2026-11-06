@@ -23,6 +23,10 @@ Route::prefix('escores')->name('escores.')->group(function() {
 	Route::get('{escore}', 'Admin\eScoresController@show')->name('show');
 
 	Route::get('{escore}/edit', 'Admin\eScoresController@edit')->name('edit');
+
+    Route::post('{escore}/images', 'Admin\DigitalMediaController@upload')->defaults('digitalKind', 'escores')->name('images.upload');
+    Route::patch('{escore}/images/{image}', 'Admin\DigitalMediaController@action')->defaults('digitalKind', 'escores')->name('images.action');
+    Route::post('{escore}/pdf-preview', 'Admin\DigitalMediaController@preview')->defaults('digitalKind', 'escores')->name('pdf-preview');
     Route::post('{escore}/closeup', 'Admin\ShopCloseupsController@store')->defaults('closeupKind', 'escores')->name('closeup.store');
     Route::delete('{escore}/closeup', 'Admin\ShopCloseupsController@destroy')->defaults('closeupKind', 'escores')->name('closeup.destroy');
 

@@ -14,15 +14,16 @@ class ProductPage
         $catalog = app(Storefront::class);
         $digital = $item instanceof eBook || $item instanceof eScore;
         if (!$digital && !$item instanceof MerchandiseProduct) throw new \InvalidArgumentException('Unsupported shop product.');
-        $product = $digital ? $catalog->presentDigital($item) : $catalog->present($item);
+        $digitalMedia = $digital ? app(DigitalMedia::class) : null;
+        $digitalState = $digital ? $digitalMedia->state($item) : null;
+        $digitalGallery = $digital ? $digitalMedia->gallery($item, $digitalState) : collect();
+        $previewPages = $digital ? $digitalMedia->previews($item, $digitalState) : [];
+        $product = $digital ? $catalog->presentDigital($item, ['imageUrl' => $digitalGallery->first()['url'] ?? null]) : $catalog->present($item);
         $product['name'] = rtrim($product['name'], '. ');
         $product['subtitle'] = $item->subtitle;
-        $product['hasPreview'] = $digital && count($item->previews) > 0;
+        $product['hasPreview'] = count($previewPages) > 0;
         $product['originalPrice'] = null;
-        $product['gallery'] = $digital
-            ? collect([$item->mockup_image(), $item->cover_path ? $item->cover_image() : null])->filter()->unique()->values()
-                ->map(fn ($url) => ['url' => $url, 'alt' => $product['name'].' cover'])
-            : collect();
+        $product['gallery'] = $digitalGallery;
         if (!$digital) $product = array_replace($product, app(MerchandiseGallery::class)->present($item, $product['variants'], $product['images']));
         $product['materials'] = $digital ? [] : app(MerchandiseMaterials::class)->forProduct($item, $product['variants']);
         $product['sizeChart'] = !$digital && $product['category'] === 't-shirts' ? SizeCharts::forProduct($item) : null;
@@ -33,7 +34,7 @@ class ProductPage
         $breadcrumbs[] = ['label' => $product['name']];
         $user = auth('web')->user();
         $reviews = $item->publishedReviews()->latest()->get();
-        $data = ['product' => $product, 'breadcrumbs' => $breadcrumbs, 'digitalProduct' => null, 'reviewProduct' => $item,
+        $data = ['product' => $product, 'breadcrumbs' => $breadcrumbs, 'digitalProduct' => null, 'reviewProduct' => $item, 'previewPages' => $previewPages,
             'reviews' => $reviews, 'reviewCount' => $reviews->count(),
             'averageRating' => $reviews->count() ? number_format($reviews->avg('rating'), 1) : 0,
             'ownedReview' => $user ? $user->reviewFor($item) : null, 'productKind' => $product['label'],

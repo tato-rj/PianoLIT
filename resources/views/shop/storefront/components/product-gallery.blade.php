@@ -38,6 +38,6 @@
 @if($product['hasPreview'])
     <div class="mt-3">
         <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#preview-product">@icon('book-open')Look inside</button>
-        <p class="text-muted mt-2 mb-0">Flip through {{ count($digitalProduct->previews) }} preview pages</p>
+        <p class="text-muted mt-2 mb-0">View {{ count($previewPages) }} preview pages</p>
     </div>
 @endif

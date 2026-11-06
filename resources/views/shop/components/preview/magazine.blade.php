@@ -1,4 +1,5 @@
-@if($product->previews)
+@php($previewPages = $previewPages ?? $product->previews)
+@if($previewPages)
 @component('components.dialogs.modal', [
     'id' => 'preview-product',
     'header' => 'Look inside',
@@ -12,9 +13,9 @@
                 <p class="text-muted mb-0" data-book-loading role="status">Opening your preview…</p>
                 <div data-book-host hidden>
                     <div class="product-preview__book" data-book>
-                        @foreach($product->previews as $preview)
+                        @foreach($previewPages as $preview)
                         <div class="product-preview__page">
-                            <img data-preview-src="{{ storage($preview) }}" alt="Preview page {{ $loop->iteration }} of {{ count($product->previews) }}" draggable="false">
+                            <img data-preview-src="{{ (($storefront ?? false) ? asset('storage/'.$preview) : storage($preview)) }}" alt="Preview page {{ $loop->iteration }} of {{ count($previewPages) }}" draggable="false">
                             <span class="product-preview__missing {{ ($storefront ?? false) ? '' : 'small' }} text-muted" hidden>This page couldn’t be loaded</span>
                         </div>
                         @endforeach
@@ -32,7 +33,7 @@
             </div>
             <p class="{{ ($storefront ?? false) ? '' : 'small' }} text-muted text-center mt-3 mb-2" data-book-hint>Drag a page corner or use the arrows to turn pages</p>
             <div class="product-preview__thumbnails d-flex gap-2 justify-content-center" aria-label="Go to preview page">
-                @foreach($product->previews as $preview)
+                @foreach($previewPages as $preview)
                 <button type="button" class="btn btn-secondary btn-sm" data-book-page="{{ $loop->iteration }}" aria-label="Go to preview page {{ $loop->iteration }}">{{ $loop->iteration }}</button>
                 @endforeach
             </div>
@@ -40,7 +41,7 @@
                 Some pages couldn’t load. <button type="button" class="btn btn-secondary btn-sm" data-book-retry>Try again</button>
             </div>
         </div>
-        <noscript><p class="mt-3">Enable JavaScript to turn pages, or open a sample below.</p>@foreach($product->previews as $preview)<a class="me-3" href="{{ storage($preview) }}" target="_blank" rel="noopener noreferrer">Preview page {{ $loop->iteration }}</a>@endforeach</noscript>
+        <noscript><p class="mt-3">Enable JavaScript to turn pages, or open a sample below.</p>@foreach($previewPages as $preview)<a class="me-3" href="{{ (($storefront ?? false) ? asset('storage/'.$preview) : storage($preview)) }}" target="_blank" rel="noopener noreferrer">Preview page {{ $loop->iteration }}</a>@endforeach</noscript>
     @endslot
 @endcomponent
 @endif

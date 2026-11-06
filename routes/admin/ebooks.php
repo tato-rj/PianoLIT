@@ -23,6 +23,10 @@ Route::prefix('ebooks')->name('ebooks.')->group(function() {
 	Route::get('{ebook}', 'Admin\eBooksController@show')->name('show');
 
 	Route::get('{ebook}/edit', 'Admin\eBooksController@edit')->name('edit');
+
+    Route::post('{ebook}/images', 'Admin\DigitalMediaController@upload')->defaults('digitalKind', 'ebooks')->name('images.upload');
+    Route::patch('{ebook}/images/{image}', 'Admin\DigitalMediaController@action')->defaults('digitalKind', 'ebooks')->name('images.action');
+    Route::post('{ebook}/pdf-preview', 'Admin\DigitalMediaController@preview')->defaults('digitalKind', 'ebooks')->name('pdf-preview');
     Route::post('{ebook}/closeup', 'Admin\ShopCloseupsController@store')->defaults('closeupKind', 'ebooks')->name('closeup.store');
     Route::delete('{ebook}/closeup', 'Admin\ShopCloseupsController@destroy')->defaults('closeupKind', 'ebooks')->name('closeup.destroy');
 

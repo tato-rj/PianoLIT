@@ -38,7 +38,7 @@ class DigitalCheckout
         $item = ['product_type' => $type, 'product_id' => $id, 'sync_variant_id' => 0, 'quantity' => 1,
             'unit_price' => $base - $discount, 'base_price' => $base, 'coupon' => $coupon, 'discount' => $discount,
             'name' => $product->title, 'option' => ($type === 'ebooks' ? 'eBook' : 'eScore').' · Digital download',
-            'category' => $type, 'image' => $product->mockup_image() ?: $product->cover_image()];
+            'category' => $type, 'image' => (app(DigitalMedia::class)->gallery($product)->first()['url'] ?? null)];
         return ['items' => [$item], 'currency' => 'USD', 'hash' => hash('sha256', json_encode([$item])), 'subtotal' => $item['unit_price']];
     }
 

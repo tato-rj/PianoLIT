@@ -73,15 +73,16 @@ class ShopCloseupsTest extends ReviewTestCase
     {
         $product = $this->product($kind);
         $before = (array) DB::table($product->getTable())->where('id', $product->id)->first();
+        $hoverLabel = $kind === 'merchandise' ? 'close-up' : 'hover image';
         $editor = route('admin.'.$kind.'.edit', $product);
-        $this->get($editor)->assertOk()->assertSee('Hover close-up')->assertSee('No close-up uploaded')
+        $this->get($editor)->assertOk()->assertSee($kind === 'merchandise' ? 'Hover close-up' : 'Hover image')->assertSee('No '.$hoverLabel.' uploaded')
             ->assertSee('name="closeup_image"', false)->assertSee('enctype="multipart/form-data"', false);
         $this->upload($product, $kind)->assertRedirect($editor.'#hover-closeup')->assertSessionHas('status');
         $first = app(Closeups::class)->for($product);
         $this->assertSame(1, (int) $first->revision);
         $this->assertSame(256, (int) $first->width);
         Storage::disk('public')->assertExists($first->path);
-        $adminPage = $this->get($editor)->assertOk()->assertSee('Current hover close-up')->assertSee('Remove close-up')
+        $adminPage = $this->get($editor)->assertOk()->assertSee($kind === 'merchandise' ? 'Current hover close-up' : 'Current hover image')->assertSee('Remove '.$hoverLabel)
             ->assertDontSee('Replace close-up')->assertDontSee('name="closeup_image"', false)->assertDontSee('Save close-up');
         $dom = new \DOMDocument;
         @$dom->loadHTML($adminPage->getContent());
@@ -110,8 +111,8 @@ class ShopCloseupsTest extends ReviewTestCase
         $removed = app(Closeups::class)->for($product);
         $this->assertNull($removed->path);
         $this->assertSame(3, (int) $removed->revision);
-        $this->get($editor)->assertOk()->assertSee('No close-up uploaded')->assertSee('name="closeup_image"', false)
-            ->assertSee('Save close-up')->assertDontSee('Current hover close-up')->assertDontSee('Remove close-up');
+        $this->get($editor)->assertOk()->assertSee('No '.$hoverLabel.' uploaded')->assertSee('name="closeup_image"', false)
+            ->assertSee('Save '.$hoverLabel)->assertDontSee('Current hover close-up')->assertDontSee('Remove close-up');
         $this->assertNull(app(Storefront::class)->cards(collect([$product]))[0]['closeupUrl']);
         $html = view('shop.storefront.components.card', ['product' => app(Storefront::class)->cards(collect([$product]))[0]])->render();
         $this->assertStringNotContainsString('data-card-closeup', $html);

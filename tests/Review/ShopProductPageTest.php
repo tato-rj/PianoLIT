@@ -25,15 +25,23 @@ class ShopProductPageTest extends ReviewTestCase
 
     private function product($class = eScore::class, array $attributes = [])
     {
-        return Model::withoutEvents(function () use ($class, $attributes) {
+        $product = Model::withoutEvents(function () use ($class, $attributes) {
             return create($class, $attributes + [
                 'title' => 'A collection for piano', 'subtitle' => 'Music for your next practice',
                 'description' => '<h3>Inside this edition</h3><p>A thoughtfully selected collection.</p>',
                 'published_at' => now(), 'price' => 12, 'discount' => 0,
                 'previews' => serialize(['previews/cover.jpg', 'previews/page-2.jpg', 'previews/page-3.jpg', 'previews/page-4.jpg', 'previews/page-5.jpg']),
-                'cover_path' => 'previews/cover.jpg', 'mockup_path' => null,
+                'pdf_path' => 'editions/fixture.pdf', 'cover_path' => 'previews/cover.jpg', 'mockup_path' => null,
             ]);
         });
+        if ($product->previews) {
+            app(\App\Services\Shop\DigitalMedia::class)->change($product, 0, function ($state) use ($product) {
+                $state['preview_pages'] = $product->previews;
+                $state['preview_source'] = hash('sha256', $product->pdf_path);
+                return $state;
+            });
+        }
+        return $product;
     }
 
     private function user()
