@@ -25,6 +25,7 @@ class ProductPage
             : collect();
         if (!$digital) $product = array_replace($product, app(MerchandiseGallery::class)->present($item, $product['variants'], $product['images']));
         $product['materials'] = $digital ? [] : app(MerchandiseMaterials::class)->forProduct($item, $product['variants']);
+        $product['sizeChart'] = !$digital && $product['category'] === 't-shirts' ? SizeCharts::forProduct($item) : null;
         $breadcrumbs = [['label' => 'Home', 'url' => route('home')], ['label' => 'Shop', 'url' => route('shop.home')]];
         if (isset(Storefront::SECTIONS[$product['category']])) {
             $breadcrumbs[] = ['label' => Storefront::SECTIONS[$product['category']], 'url' => $catalog->categoryUrl($product['category'])];

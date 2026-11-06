@@ -16,6 +16,10 @@
         <div class="mb-4"><button type="button" class="btn btn-primary">Checkout</button></div>
         <div class="mb-4">@include('shop.storefront.components.welcome-launcher', ['preview' => true])</div>
         @include('shop.storefront.components.quantity', ['quantity' => 1])
+        <div class="d-flex align-items-center gap-2 mt-3">
+          @include('shop.storefront.components.quantity', ['quantity' => 1, 'compact' => true])
+          <button type="button" class="btn btn-red btn-sm shop-remove" aria-label="Remove sample product">@icon('trash-2', ['mr' => 0])</button>
+        </div>
         <div class="d-flex flex-wrap gap-2 mt-4">
           @include('shop.storefront.components.option', ['option' => 'Mint', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#b9d8d1']), 'selected' => true])
           @include('shop.storefront.components.option', ['option' => 'Two-tone', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#14191e', 'color_code2' => '#ffffff']), 'selected' => false])
@@ -84,15 +88,16 @@
         @include('shop.storefront.components.product-row', ['rowId' => 'ds-related-products', 'products' => $relatedRowPreview])
       </div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Fitting and size chart', 'usage' => 'shop.storefront.components.size-chart · T-shirt measurements in inches and centimeters', 'properties' => 'width,padding,font-size,color'])
+    @php($shopSizeChartPreview = \App\Services\Shop\SizeCharts::catalog(586))
+    @component('admin.pages.settings.sample', ['label' => 'Fitting and size chart', 'usage' => 'shop.storefront.components.size-chart · Printful Comfort Colors 1717 garment measurements in inches and centimeters', 'properties' => 'width,padding,font-size,color'])
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="offcanvas" data-bs-target="#ds-shop-size-chart" aria-controls="ds-shop-size-chart">Fitting and size chart</button>
       @push('scripts')
-        @include('shop.storefront.components.size-chart', ['id' => 'ds-shop-size-chart'])
+        @include('shop.storefront.components.size-chart', ['id' => 'ds-shop-size-chart', 'sizeChart' => $shopSizeChartPreview])
       @endpush
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Shop product details', 'usage' => 'shop.storefront.components.product-details · fictional material example with one section open at a time', 'properties' => 'font-size,padding,color,border'])
       <div class="shop-storefront" data-ds-preview>
-        @include('shop.storefront.components.product-details', ['product' => ['name' => 'Sample piano T-shirt', 'category' => 't-shirts', 'materials' => [['label' => null, 'text' => '100% cotton']]], 'digitalProduct' => null, 'detailsId' => 'ds-shop-product-details', 'sizeChartId' => 'ds-shop-size-chart'])
+        @include('shop.storefront.components.product-details', ['product' => ['name' => 'Sample piano T-shirt', 'category' => 't-shirts', 'materials' => [['label' => null, 'text' => '100% cotton']], 'sizeChart' => $shopSizeChartPreview], 'digitalProduct' => null, 'detailsId' => 'ds-shop-product-details', 'sizeChartId' => 'ds-shop-size-chart'])
       </div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Account and hubs menu', 'usage' => 'components.account.menu · account and hubs offcanvas', 'properties' => 'width,padding,color,border-radius,box-shadow'])

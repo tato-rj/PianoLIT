@@ -31,7 +31,7 @@
             @endif
             @if($product['category'] === 't-shirts')
                 @component('components.layout.accordion-item', ['id' => $detailsId.'-fitting', 'parentId' => $detailsId.'-accordion', 'title' => 'Fitting', 'indicator' => 'plus-minus'])
-                    @include('shop.storefront.components.fitting', ['sizeChartId' => $sizeChartId])
+                    @include('shop.storefront.components.fitting', ['sizeChartId' => $sizeChartId, 'sizeChart' => $product['sizeChart'] ?? null])
                 @endcomponent
             @endif
             @component('components.layout.accordion-item', ['id' => $detailsId.'-quality-returns', 'parentId' => $detailsId.'-accordion', 'title' => 'Quality Guarantee & Returns', 'indicator' => 'plus-minus'])

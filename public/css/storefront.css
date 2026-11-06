@@ -264,6 +264,17 @@
   height: 44px;
   padding: 0;
 }
+.shop-storefront .shop-quantity--compact {
+  gap: 4px;
+}
+.shop-storefront .shop-quantity--compact input {
+  width: 40px;
+  flex-basis: 40px;
+}
+.shop-storefront .shop-quantity--compact button {
+  width: 34px;
+  height: 34px;
+}
 .shop-storefront .shop-details h2 {
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -370,8 +381,10 @@
   text-align: right;
 }
 .shop-storefront .shop-remove {
-  width: 44px;
-  height: 44px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
   padding: 0;
 }
 .shop-storefront .shop-summary {
@@ -417,10 +430,7 @@
   }
   .shop-storefront .shop-bag-item__actions {
     flex-basis: 100%;
-    display: flex;
     justify-content: flex-end;
-    align-items: center;
-    gap: 16px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

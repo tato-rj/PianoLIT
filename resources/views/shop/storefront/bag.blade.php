@@ -19,11 +19,11 @@
                         <p class="mb-1">{{ $line['variant']['color'] }} / {{ $line['variant']['size'] }}</p>
                         <p class="shop-card__price mb-0">{{ $line['total'] }}</p>
                     </div>
-                    <div class="shop-bag-item__actions">
-                        <form action="{{ route('shop.bag.update', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST" data-bag-quantity>
+                    <div class="shop-bag-item__actions d-flex align-items-center gap-2 flex-shrink-0">
+                        <form action="{{ route('shop.bag.update', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST" class="d-flex align-items-center gap-2" data-bag-quantity>
                             @csrf @method('PATCH')
                             @include('shop.storefront.components.quantity', ['quantity' => $line['quantity'], 'compact' => true, 'productName' => $line['product']['name']])
-                            <button type="submit" class="btn btn-secondary btn-sm mt-2" data-quantity-save>Update</button>
+                            <button type="submit" class="btn btn-secondary btn-sm" data-quantity-save>Update</button>
                         </form>
                         <form action="{{ route('shop.bag.remove', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST">
                             @csrf @method('DELETE')

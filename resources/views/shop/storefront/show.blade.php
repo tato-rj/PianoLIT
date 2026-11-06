@@ -39,8 +39,8 @@
         'shareData' => \App\Support\LinkShare::forMessage($product['url'], $product['name'], $product['name'], 'Product from PianoLIT Shop', $product['name']),
     ])
     <script src="{{ mix('js/components/link-share.js') }}" defer></script>
-    @if(!$digitalProduct && $product['category'] === 't-shirts')
-        @include('shop.storefront.components.size-chart', ['id' => 'product-size-chart'])
+    @if(!empty($product['sizeChart']))
+        @include('shop.storefront.components.size-chart', ['id' => 'product-size-chart', 'sizeChart' => $product['sizeChart']])
     @endif
     @if($digitalProduct)
         <script src="{{ asset('js/vendor/turn.min.js') }}" defer></script>
