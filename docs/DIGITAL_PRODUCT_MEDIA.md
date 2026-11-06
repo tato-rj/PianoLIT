@@ -22,9 +22,15 @@ All editor writes run through admin routes with session authentication and CSRF.
 
 ## Deployment
 
-1. Install Poppler (`pdftoppm`) on the application host and make it executable by the PHP worker. The default command is `pdftoppm`; `/opt/homebrew/bin` and `/usr/local/bin` are also searched. `SHOP_PDFTOPPM` can provide a custom executable path. No setting is needed with a standard installation.
+1. Install Poppler (`pdftoppm`) on the application host and make it executable by the PHP worker. The default command is `pdftoppm`; `/usr/local/bin`, `/usr/bin`, `/bin` and `/opt/homebrew/bin` are also searched, including when PHP-FPM clears `PATH`. `SHOP_PDFTOPPM` can provide a custom executable path. No setting is needed with a standard installation. Configuration caches created before this feature also use the default command.
 2. Run `2026_11_06_120000_create_shop_digital_media.php` before activating the matching code. The migration creates a separate table and does not rewrite any product or legacy media fields.
 3. Deploy the code and views together, then refresh compiled views through the normal deployment process. No frontend asset changes, provider changes, scheduler or queue job are required.
 4. Generate a PDF preview for each existing product in its editor. New PDF uploads generate the preview as part of saving. Missing or unreadable PDFs show a validation error and preserve the saved state.
 
-The migration and renderer are installed locally. Both existing local products have generated previews (one page for the eBook's one-page PDF; seven pages for the eScore). Production deployment and preview preparation remain pending.
+The migration and renderer are installed locally. Both existing local products have generated previews (one page for the eBook's one-page PDF; seven pages for the eScore). The editor is also deployed in production as of November 6.
+
+## November 6 preview repair
+
+Production's configuration cache predates `digital-media.php`, so the original renderer lookup passed `null` to Symfony's executable finder. Poppler was already installed at `/usr/bin/pdftoppm`, and the Halloween PDF was readable and 1,271,206 bytes. The repair supplies the default command for missing cached configuration, supports absolute executable paths and includes Linux executable locations when the worker has no `PATH`.
+
+Failures now identify the failed stage (source, size, renderer, temporary workspace, rendering or saved images). Logs record only the stage, exception class and process exit code. The editor uses the existing shared page alert; no second page-level error summary repeats it. Focused isolated tests pass (15 tests / 167 assertions). Live verification of the repair is pending.

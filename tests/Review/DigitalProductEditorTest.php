@@ -215,4 +215,42 @@ class DigitalProductEditorTest extends ReviewTestCase
         $this->assertSame($before, $this->state($product));
         $this->assertSame([], Storage::disk('public')->allFiles('app/ebooks/pdf'));
     }
+
+    public function test_pdf_preview_works_with_an_old_config_cache_and_no_worker_path()
+    {
+        Storage::disk('public')->put('book.pdf', $this->pdf(2));
+        config(['digital-media' => []]);
+        $path = getenv('PATH');
+        putenv('PATH=');
+        try {
+            $this->assertCount(2, app(DigitalPreview::class)->render('book.pdf'));
+        } finally {
+            $path === false ? putenv('PATH') : putenv('PATH='.$path);
+        }
+    }
+
+    public function test_pdf_preview_accepts_an_absolute_renderer_path()
+    {
+        $renderer = (new \Symfony\Component\Process\ExecutableFinder)->find('pdftoppm', null, ['/usr/bin', '/usr/local/bin', '/opt/homebrew/bin']);
+        $this->assertNotNull($renderer);
+        config(['digital-media.pdftoppm' => $renderer]);
+        Storage::disk('public')->put('book.pdf', $this->pdf(1));
+        $this->assertCount(1, app(DigitalPreview::class)->render('book.pdf'));
+    }
+
+    public function test_preview_failure_uses_only_the_existing_shared_page_alert()
+    {
+        $product = $this->product();
+        Storage::disk('public')->put($product->pdf_path, $this->pdf(1));
+        config(['digital-media.pdftoppm' => '/missing/renderer']);
+        $this->withExceptionHandling();
+        $this->post(route('admin.ebooks.pdf-preview', $product), ['media_revision' => 0])
+            ->assertSessionHasErrors(['pdf_file' => 'The PDF preview renderer is unavailable on the server. Check the renderer installation and configuration.']);
+        $response = $this->get(route('admin.ebooks.edit', $product))->assertOk();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//div[@role="alert"]'));
+        $this->assertCount(1, $xpath->query('//*[contains(@class, "alert-top")]//*[@role="alert"]'));
+    }
 }

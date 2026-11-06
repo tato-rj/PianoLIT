@@ -20,9 +20,6 @@
         'title' => 'Edit', 'subtitle' => $product->title,
         'breadcrumbs' => [['label' => $isBook ? 'eBooks' : 'eScores', 'url' => route('admin.'.$kind.'.index')]],
     ])@endcomponent
-    @if($errors->getBag('default')->any())
-        <div class="alert alert-red" role="alert"><ul class="mb-0">@foreach($errors->getBag('default')->all() as $message)<li>{{ $message }}</li>@endforeach</ul></div>
-    @endif
     <form method="POST" action="{{ route('admin.'.$kind.'.update', $product) }}" enctype="multipart/form-data" id="digital-details">
         @csrf @method('PATCH')
         <input type="hidden" name="media_revision" value="{{ $mediaState['revision'] }}">

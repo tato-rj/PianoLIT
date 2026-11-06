@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-06 — PDF renderer configuration and duplicate alert repair (P2, verified locally)
+
+- **Evidence:** Production has Poppler 0.86.1 at `/usr/bin/pdftoppm` and a readable 1,271,206-byte Halloween PDF, but its existing configuration cache returns null for `digital-media.pdftoppm`. The original lookup passed that null to the legacy Symfony finder, then replaced the exception with a generic PDF message. The digital edit view also repeated the layout's existing alert in a second page-level summary.
+- **Repair:** `DigitalPreview` falls back to `pdftoppm` for pre-feature configuration caches, handles configured absolute paths and searches standard Linux locations without a worker `PATH`. It reports the failed stage and logs only safe diagnostic fields. Removed the extra summary from the shared digital editor and recorded the single-page-alert rule in `AGENTS.md`.
+- **Verification / limits:** All 15 isolated digital-editor tests pass (167 assertions), including real rendering without cached configuration/PATH, absolute executable paths and one shared page-level error alert. PDF limits, atomic saves and existing field validation remain intact. No frontend build, migration or environment setting is needed. Live repair verification is pending.
+
 
 ### 2026-11-06 — Shared eBook/eScore media editors (P2, complete locally)
 
