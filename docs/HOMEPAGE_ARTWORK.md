@@ -8,6 +8,21 @@ Created with the built-in imagegen tool (no CLI/API fallback), using the supplie
 
 Final workspace assets: `resources/images/home/worlds/{webapp,ios,shop,games,learn,metronome,blog}.webp`. Mix copies them to matching `public/images/home/worlds/` paths and versions every file. Existing `editorial/` and SVG assets are retained.
 
+### Current Web app screen — Discover (2026-11-05)
+
+Updated only the laptop display from a fresh guest capture of `https://my.pianolit.com/` at 1280×1024. It shows the current Discover subtitle, Petite Berceuse by T. Carreño with its moon artwork, current composer portraits and the Log in bottom tab. This is a static, screenshot-guided imagegen edit; the homepage does not query the live feed.
+
+The built-in imagegen result was resized to 720×900 and composited through an antialiased display-only mask onto the original photograph. The laptop hardware, background, cup, table, music paper and crop retain their original decoded pixels. The final WebP uses lossless encoding to preserve them exactly (451,764 bytes); only this asset departs from the original quality-86 encoding. Source/public copies and the single corresponding Mix hash were updated. Card markup, layout and other artwork are unchanged.
+
+- Final asset: `resources/images/home/worlds/webapp.webp`, copied to `public/images/home/worlds/webapp.webp`.
+- Generated source: `/Users/arthur/.codex/generated_images/01a1af26-bd33-7da0-9369-aef577bb0321/exec-1cdf7662-47d0-4983-b2b8-bb26600dc558.png`.
+- Capture, original backup, mask, intermediate files and browser proof: `/Users/arthur/.codex/visualizations/2026/11/06/01a1af26-bd33-7da0-9369-aef577bb0321/discover-mockup/`.
+- Verification: zero changed pixels outside the display mask; 248,873 changed screen pixels; matching 720×900 source/public files and final-content hash; local homepage browser inspection.
+
+Exact edit prompt (built-in tool; no CLI/API fallback):
+
+> Use case: compositing / precise-object-edit. Image 1 is the exact existing PianoLIT homepage laptop photograph to edit; image 2 is the current REAL Discover web-app screenshot, the exact screen-content replacement. Replace ONLY the pixels inside the laptop's illuminated display in image 1 with image 2, mapped faithfully into the existing display perspective. Treat this as precise screenshot insertion, NOT a new photograph or UI redesign. Preserve exactly all pixels outside the display: same laptop dimensions, pose, silver keyboard and trackpad, black bezel, camera, leafy background, cream cup, sunlight, wooden table, foreground music paper, camera angle, lighting, focus, 4:5 portrait canvas and original crop. Do not reframe, zoom, move, repaint or add objects. Preserve screen boundaries at approximately (90,150), (629,134), (677,574), (117,608) on the 720x900 reference canvas. The complete screenshot must fit inside these corners; preserve its white background, real blue PianoLIT icon top left, centered Discover heading, 'Find pieces by level and musical preferences' subtitle, Find your match button, Free weekly pick label, dark navy moon-and-ladder artwork with Petite Berceuse / by T. Carreño / Early intermediate and media icons, Composers row of real portraits and names, View all, the partly visible Latest pieces heading, and fixed white bottom navigation with exactly Discover, Explore, Collections, My pieces, Log in. Remove the outdated pumpkins, Spooks card, old subtitle, top-right search/settings, and bottom Settings tab. Screenshot text, layout, portraits and image should remain literal and sharply legible; do not invent a substitute UI. Add no text, border, rounded card corners, watermark or external design. Output only the original opaque photograph with its screen updated, preserving the composition exactly.
+
 ### Current iOS backdrop — teal glass and daylight (2026-10-26)
 
 Arthur found the neutral backdrop too plain and requested a more polished, interesting setting. Built-in imagegen replaced it with a teal wall, softly focused fluted glass and warm directional window light, retaining the phone composition and beige stone tabletop. The image remains distinct from the lavender HTML card; the full page remains white. No other hub artwork or layout changed.

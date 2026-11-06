@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-05 — Refresh only the homepage laptop display (P3, complete locally)
+
+- **Request / evidence:** The Web app card still showed the old Spooks/pumpkin screen, previous subtitle and Settings tab. Captured the current production guest Discover page, showing Petite Berceuse, the current composer row and Log in tab. Used the built-in imagegen tool with the original photo and that capture, then composited only its display into the original photo. Updated `resources/images/home/worlds/webapp.webp`, its public copy, the matching Mix hash and `docs/HOMEPAGE_ARTWORK.md` with the exact prompt and source paths.
+- **Compatibility:** Original 720×900 framing and every pixel outside the antialiased display mask are preserved. Lossless WebP is 451,764 bytes. Card HTML, appearance, links, responsive behavior, other artwork, actual Discover selection and mobile/API contracts remain unchanged. This remains static artwork, with no feed query on the homepage.
+- **Verification / remaining:** Pixel comparison found zero exterior changes and 248,873 changed screen pixels. Asset-copy/hash checks and whitespace checks pass; local browser QA confirms the new version inside the existing card. Proof: `homepage-card-updated.jpg` in `/Users/arthur/.codex/visualizations/2026/11/06/01a1af26-bd33-7da0-9369-aef577bb0321/discover-mockup/`. No application-code build, data mutation or deployment; production release remains pending.
+
 ### 2026-11-05 — Use the matching Printful garment size guide (P2, complete locally)
 
 - **Evidence / change:** The existing generic XXS–XXL chart mixed chest circumference with garment length and shoulder-seam sleeve measurements, and advised blanket gender-based size changes. Checked Printful's public Comfort Colors 1717 Size guide → Product measurements in both units. Added `Shop\SizeCharts` for saved catalog identity `586`, with the published S–4XL inch/centimeter tables, eighth-inch fractions, flat Width, center-back-collar Sleeve length, relaxed unisex fit and 2″ (5 cm) tolerance. Centimeters retain supplier rounding. Updated `ProductPage`, the shared fitting/size-chart views, their callers and the Design System specimen.
