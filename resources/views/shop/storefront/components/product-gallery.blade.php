@@ -5,22 +5,27 @@
     $visibleCount = $visibleGallery->count();
     $firstGalleryIndex = $visibleGallery->keys()->first();
     $thumbnailViews = [];
+    $galleryPreviewId = $previewId ?? 'preview-product';
 @endphp
-<div data-shop-gallery @if($usesColorGallery) data-gallery-product="{{ $product['id'] }}" data-gallery-selected-color="{{ $product['galleryColor'] }}" @endif aria-label="Product images">
+<div class="shop-gallery-layout" data-shop-gallery @if($usesColorGallery) data-gallery-product="{{ $product['id'] }}" data-gallery-selected-color="{{ $product['galleryColor'] }}" @endif aria-label="Product images">
     <div class="shop-gallery border overflow-hidden">
         @foreach($galleryImages as $image)
             <div data-gallery-slide @if($usesColorGallery) data-gallery-color="{{ $image['color'] }}" @endif @if($loop->index !== $firstGalleryIndex) hidden @endif>
                 @if($product['hasPreview'])
-                    <button type="button" class="shop-gallery__preview" data-bs-toggle="modal" data-bs-target="#preview-product" aria-label="Preview {{ $product['name'] }}">
+                    <button type="button" class="shop-gallery__preview" data-bs-toggle="modal" data-bs-target="#{{ $galleryPreviewId }}" aria-label="Preview {{ $product['name'] }}">
                 @endif
                 <img src="{{ $image['url'] }}" alt="{{ $image['alt'] }}" width="800" height="800" @if($loop->index !== $firstGalleryIndex) loading="lazy" @else fetchpriority="high" @endif>
                 @if($product['hasPreview'])</button>@endif
             </div>
         @endforeach
         <div class="shop-image-placeholder" data-gallery-empty @if($visibleCount) hidden @endif>@icon('image')<span>{{ $usesColorGallery ? 'No images for this color' : 'Image coming soon' }}</span></div>
+        @if($product['hasPreview'])
+            @include('shop.components.preview.trigger', ['previewId' => $galleryPreviewId])
+        @endif
     </div>
     @if($galleryImages->count() > 1)
-        <div class="d-flex flex-wrap gap-2 mt-3" data-gallery-thumbnails role="group" aria-label="Choose a product image" @if($visibleCount < 2) hidden @endif>
+        <div class="shop-gallery__thumbnails order-first" data-gallery-thumbnails role="group" aria-label="Choose a product image" @if($visibleCount < 2) hidden @endif>
+        <div class="d-flex flex-column gap-2 position-absolute top-0 bottom-0 start-0 end-0 overflow-auto">
         @foreach($galleryImages as $image)
             @php
                 $thumbnailColor = $usesColorGallery ? $image['color'] : '';
@@ -32,12 +37,10 @@
             </button>
         @endforeach
         </div>
+        </div>
         <p class="visually-hidden" aria-live="polite" data-gallery-count @if($visibleCount < 2) hidden @endif>Image {{ $visibleCount ? 1 : 0 }} of {{ $visibleCount }}</p>
     @endif
 </div>
 @if($product['hasPreview'])
-    <div class="mt-3">
-        <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#preview-product">@icon('book-open')Look inside</button>
-        <p class="text-muted mt-2 mb-0">View {{ count($previewPages) }} preview pages</p>
-    </div>
+    <p class="visually-hidden" id="{{ $galleryPreviewId }}-page-count">View {{ count($previewPages) }} preview {{ count($previewPages) === 1 ? 'page' : 'pages' }}</p>
 @endif

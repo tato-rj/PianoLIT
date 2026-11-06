@@ -4,10 +4,10 @@
 @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
 <div data-product-detail>
     <div class="row g-4 g-lg-5 mt-1 shop-product">
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-md-6 col-lg-7">
             @include('shop.storefront.components.product-gallery')
         </div>
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-md-6 col-lg-5">
             <button type="button" class="btn btn-raw mb-1" data-bs-toggle="modal" data-bs-target="#product-share-modal">@icon('share-2')Share</button>
             <h2>{{ $product['name'] }}</h2>
             @if($product['subtitle'])<p class="mb-4">{{ $product['subtitle'] }}</p>@endif

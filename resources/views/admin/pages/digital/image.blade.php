@@ -4,7 +4,7 @@
     $rowLabel = 'view '.$viewNumber;
 @endphp
 <article class="d-flex align-items-center gap-2 py-2 border-bottom" aria-label="{{ $rowLabel }}" data-display-image-row @if($imagePreview) data-ds-preview @endif>
-    <img src="{{ ($image['url'] ?? asset('storage/'.$image['path'])) }}" alt="{{ $product->title }} {{ $rowLabel }}" width="48" height="48" class="object-fit-contain rounded flex-shrink-0" loading="lazy">
+    <img src="{{ ($image['url'] ?? asset('storage/'.$image['path'])) }}" alt="{{ $product->title }} {{ $rowLabel }}" width="48" height="48" class="object-fit-contain flex-shrink-0" loading="lazy">
     <span class="small text-muted">View {{ $viewNumber }}</span>
     @unless($imagePreview)
     <form method="POST" action="{{ route('admin.'.$kind.'.images.action', [$product, $image['id']]) }}" class="ms-auto" onsubmit="return !event.submitter || event.submitter.value !== 'remove' || window.confirm('Remove this display image? You can restore it later.')">

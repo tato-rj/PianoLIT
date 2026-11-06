@@ -88,9 +88,9 @@
             });
         });
         gallery.addEventListener('keydown', function (event) {
-            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+            if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
             event.preventDefault();
-            move(event.key === 'ArrowLeft' ? -1 : 1);
+            move(event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1);
             if (event.target && event.target.matches('[data-gallery-thumb]')) {
                 var selected = thumbnails.find(function (button) { return slides[Number(button.dataset.galleryThumb)] === visible[current]; });
                 if (selected) selected.focus();

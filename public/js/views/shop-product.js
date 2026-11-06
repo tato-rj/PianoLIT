@@ -38,16 +38,11 @@
         const previous = element.querySelector('[data-book-previous]');
         const next = element.querySelector('[data-book-next]');
         const counter = element.querySelector('[data-book-counter]');
-        const magnify = element.querySelector('[data-book-magnify]');
-        const zoom = element.querySelector('[data-book-zoom]');
-        const zoomImage = element.querySelector('[data-book-zoom-image]');
-        const thumbnails = Array.from(element.querySelectorAll('[data-book-page]'));
         const reducedMotion = root.matchMedia('(prefers-reduced-motion: reduce)');
         let $book = null;
         let open = false;
         let ready = false;
         let initializing = false;
-        let zoomed = false;
         let current = 1;
         let ratio = 0.707;
         let resizeTimer;
@@ -86,8 +81,8 @@
         function dimensions() {
             const spread = stage.clientWidth >= 640 && images.length > 1;
             const pageWidth = Math.max(1, Math.floor(Math.min(
-                (stage.clientWidth - 32) / (spread ? 2 : 1),
-                (stage.clientHeight - 32) * ratio
+                stage.clientWidth / (spread ? 2 : 1),
+                stage.clientHeight * ratio
             )));
             return {width: pageWidth * (spread ? 2 : 1), height: Math.round(pageWidth / ratio), display: spread ? 'double' : 'single'};
         }
@@ -101,10 +96,12 @@
             if (images[0].naturalWidth && images[0].naturalHeight) ratio = images[0].naturalWidth / images[0].naturalHeight;
             loading.hidden = true;
             host.hidden = false;
+            const size = dimensions();
+            // Open at the first spread on wide screens; the cover remains reachable.
+            current = size.display === 'double' && images.length > 2 ? 2 : 1;
             try {
                 if (!root.jQuery || !root.jQuery.fn.turn) throw new Error('Page turning unavailable');
                 $book = root.jQuery(book);
-                const size = dimensions();
                 host.style.width = size.width + 'px';
                 host.style.height = size.height + 'px';
                 $book.turn(Object.assign(size, {
@@ -121,56 +118,47 @@
                 }
                 $book = null;
                 book.classList.add('product-preview__book--fallback');
-                element.querySelector('[data-book-hint]').textContent = 'Use the arrows or page numbers to browse the preview';
                 resize();
             }
             ready = true;
             stage.setAttribute('aria-busy', 'false');
-            magnify.disabled = false;
             update();
         }
 
         function view() {
-            return $book && !zoomed ? $book.turn('view').filter(page => page > 0 && page <= images.length) : [current];
+            return $book ? $book.turn('view').filter(page => page > 0 && page <= images.length) : [current];
         }
 
         function update() {
             if (!ready) return;
             const visible = view();
+            const focused = doc.activeElement;
             previous.disabled = visible.includes(1);
             next.disabled = visible.includes(images.length);
-            counter.textContent = (visible.length > 1 ? 'Pages ' + visible.join('–') : 'Page ' + current) + ' of ' + images.length;
-            thumbnails.forEach(function (button) {
-                const active = visible.includes(Number(button.dataset.bookPage));
-                button.classList.toggle('active', active);
-                if (Number(button.dataset.bookPage) === current) button.setAttribute('aria-current', 'page');
-                else button.removeAttribute('aria-current');
-            });
-            pages.forEach((page, index) => page.setAttribute('aria-hidden', String(zoomed || !visible.includes(index + 1))));
-            if (!$book) pages.forEach((page, index) => { page.hidden = index !== current - 1; });
-            if (zoomed) {
-                zoomImage.src = images[current - 1].dataset.previewSrc;
-                zoomImage.alt = images[current - 1].alt;
-                zoom.scrollTop = 0;
-                zoom.scrollLeft = 0;
+            // A newly disabled arrow otherwise drops keyboard focus onto the page behind the book.
+            if ((focused === previous && previous.disabled) || (focused === next && next.disabled)) {
+                modal.focus({preventScroll: true});
             }
+            counter.textContent = (visible.length > 1 ? 'Pages ' + visible.join('–') : 'Page ' + current) + ' of ' + images.length;
+            pages.forEach((page, index) => page.setAttribute('aria-hidden', String(!visible.includes(index + 1))));
+            if (!$book) pages.forEach((page, index) => { page.hidden = index !== current - 1; });
         }
 
         function goTo(page) {
             if (!ready || !open) return;
             current = Math.max(1, Math.min(images.length, page));
-            if ($book && !zoomed) $book.turn('page', current);
+            if ($book) $book.turn('page', current);
             else update();
         }
 
         function turn(direction) {
-            if (!ready || (direction < 0 ? previous.disabled : next.disabled)) return;
-            if ($book && !zoomed) $book.turn(direction < 0 ? 'previous' : 'next');
+            if (!ready || !open || (direction < 0 ? previous.disabled : next.disabled)) return;
+            if ($book) $book.turn(direction < 0 ? 'previous' : 'next');
             else goTo(current + direction);
         }
 
         function resize() {
-            if (!open || zoomed) return;
+            if (!open) return;
             const size = dimensions();
             host.style.width = ($book ? size.width : size.width / (size.display === 'double' ? 2 : 1)) + 'px';
             host.style.height = size.height + 'px';
@@ -187,25 +175,12 @@
 
         previous.addEventListener('click', () => turn(-1));
         next.addEventListener('click', () => turn(1));
-        thumbnails.forEach(button => button.addEventListener('click', () => goTo(Number(button.dataset.bookPage))));
         modal.addEventListener('keydown', function (event) {
             if (!ready || event.altKey || event.ctrlKey || event.metaKey || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;
             if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
                 event.preventDefault();
                 turn(event.key === 'ArrowLeft' ? -1 : 1);
             }
-        });
-        magnify.addEventListener('click', function () {
-            zoomed = !zoomed;
-            magnify.setAttribute('aria-pressed', String(zoomed));
-            element.querySelector('[data-book-zoom-label]').textContent = zoomed ? 'Fit pages' : 'Zoom in';
-            host.hidden = zoomed;
-            zoom.hidden = !zoomed;
-            if (!zoomed) {
-                resize();
-                if ($book) $book.turn('page', current);
-            }
-            update();
         });
         element.querySelector('[data-book-retry]').addEventListener('click', function () {
             images.filter(img => img.hidden || !img.naturalWidth).forEach(img => { img.src = img.dataset.previewSrc; });

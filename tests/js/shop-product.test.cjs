@@ -30,21 +30,21 @@ function environment() {
     return root;
 }
 
-async function preview({pending = false, fallback = false} = {}) {
+async function preview({pending = false, fallback = false, width = 1000, count = 5, reducedMotion = false} = {}) {
     const root = environment();
-    const nodes = Object.fromEntries(['stage', 'host', 'loading', 'error', 'previous', 'next', 'counter', 'magnify', 'zoom', 'zoom-image', 'zoom-label', 'hint', 'retry'].map(name => [name, element()]));
-    nodes.stage.clientWidth = 1000;
+    root.matchMedia = () => ({matches: reducedMotion});
+    const nodes = Object.fromEntries(['stage', 'host', 'loading', 'error', 'previous', 'next', 'counter', 'retry'].map(name => [name, element()]));
+    nodes.stage.clientWidth = width;
     nodes.stage.clientHeight = 500;
     const modal = element();
+    modal.focus = () => { root.document.activeElement = modal; };
     const book = element();
-    const images = [1, 2, 3, 4, 5].map(n => Object.assign(element({previewSrc: '/page-' + n}), {naturalWidth: 650, naturalHeight: 900, complete: !pending, alt: 'Page ' + n, nextElementSibling: element()}));
+    const images = Array.from({length: count}, (_, i) => i + 1).map(n => Object.assign(element({previewSrc: '/page-' + n}), {naturalWidth: 650, naturalHeight: 900, complete: !pending, alt: 'Page ' + n, nextElementSibling: element()}));
     book.children = images.map(() => element());
     book.querySelectorAll = () => images;
-    const thumbs = images.map((img, i) => element({bookPage: String(i + 1)}));
     const preview = element();
     preview.closest = () => modal;
     preview.querySelector = selector => selector === '[data-book]' ? book : nodes[selector.slice(11, -1)];
-    preview.querySelectorAll = () => thumbs;
     root.document.querySelector = selector => selector === '[data-book-preview]' ? preview : null;
     let options, current = 1, display = 'double';
     const calls = [];
@@ -53,7 +53,7 @@ async function preview({pending = false, fallback = false} = {}) {
         if (typeof action === 'object') { options = action; display = options.display; current = options.page; return; }
         if (action === 'view') return display === 'single' ? [current] : current === 1 ? [0, 1] : [current - current % 2, current - current % 2 + 1];
         if (action === 'display') { display = args[0]; return; }
-        if (action === 'next') current = current === 1 ? 2 : Math.min(5, current + (display === 'double' ? 2 : 1));
+        if (action === 'next') current = current === 1 ? 2 : Math.min(count, current + (display === 'double' ? 2 : 1));
         if (action === 'previous') current = Math.max(1, current - (display === 'double' ? 2 : 1));
         if (action === 'page') current = args[0];
         if (['page', 'next', 'previous'].includes(action)) options.when.turned({}, current);
@@ -62,32 +62,50 @@ async function preview({pending = false, fallback = false} = {}) {
     init(root);
     await modal.fire('shown.bs.modal');
     await Promise.resolve();
-    return {root, nodes, modal, book, images, thumbs, calls, options: () => options};
+    return {root, nodes, modal, book, images, calls, options: () => options};
 }
 
 async function run() {
     let p = await preview();
     assert(p.options().height > 0);
     assert.equal(p.nodes.host.style.width, p.options().width + 'px', 'cover centering must not shrink the measured book host');
-    assert.equal(p.nodes.previous.disabled, true);
-    assert.equal(p.book.children[0].attrs['aria-hidden'], 'false');
-    assert.equal(p.book.children[2].attrs['aria-hidden'], 'true');
-    await p.nodes.next.fire('click');
+    assert.equal(p.nodes.previous.disabled, false);
+    assert.equal(p.book.children[0].attrs['aria-hidden'], 'true');
+    assert.equal(p.book.children[2].attrs['aria-hidden'], 'false');
     assert.equal(p.nodes.counter.textContent, 'Pages 2–3 of 5');
-    await p.thumbs[4].fire('click');
-    assert.equal(p.nodes.next.disabled, true);
-    await p.nodes.magnify.fire('click');
-    assert.equal(p.nodes.zoom.hidden, false);
-    assert.equal(p.nodes['zoom-image'].src, '/page-5');
     await p.nodes.previous.fire('click');
-    assert.equal(p.nodes['zoom-image'].src, '/page-4');
-    await p.nodes.magnify.fire('click');
-    assert.equal(p.nodes.zoom.hidden, true);
+    assert.equal(p.nodes.counter.textContent, 'Page 1 of 5', 'the cover remains reachable');
+    assert.equal(p.nodes.previous.disabled, true);
+    await p.nodes.next.fire('click');
+    p.root.document.activeElement = p.nodes.next;
+    await p.nodes.next.fire('click');
+    assert.equal(p.nodes.next.disabled, true);
+    assert.equal(p.root.document.activeElement, p.modal, 'end-of-book focus stays inside the viewer');
     p.nodes.stage.clientWidth = 360;
     await p.root.fire('resize');
     p.root.flushTimers();
     assert(p.calls.some(call => call[0] === 'display' && call[1] === 'single'));
     assert.match(p.nodes.counter.textContent, /^Page \d of 5$/);
+    const beforeClose = p.nodes.counter.textContent;
+    await p.modal.fire('hide.bs.modal');
+    await p.nodes.previous.fire('click');
+    assert.equal(p.nodes.counter.textContent, beforeClose, 'dismissed books cannot keep turning');
+    await p.modal.fire('shown.bs.modal');
+    assert.equal(p.nodes.counter.textContent, beforeClose, 'reopening retains the current page');
+
+    p = await preview({width: 360, reducedMotion: true});
+    assert.equal(p.options().page, 1);
+    assert.equal(p.options().display, 'single');
+    assert.equal(p.options().duration, 0);
+    let prevented = false;
+    await p.modal.fire('keydown', {key: 'ArrowRight', target: {tagName: 'BUTTON'}, preventDefault() { prevented = true; }});
+    assert.equal(prevented, true);
+    assert.equal(p.nodes.counter.textContent, 'Page 2 of 5');
+
+    p = await preview({count: 1});
+    assert.equal(p.options().display, 'single');
+    assert.equal(p.nodes.next.disabled, true);
+    assert.equal(p.nodes.previous.disabled, true);
 
     p = await preview({pending: true});
     await p.modal.fire('hide.bs.modal');
@@ -98,7 +116,6 @@ async function run() {
     assert.equal(p.nodes.loading.hidden, true);
 
     p = await preview({fallback: true});
-    await p.nodes.next.fire('click');
     assert.equal(p.nodes.counter.textContent, 'Page 2 of 5');
     assert.equal(p.book.children[0].hidden, true);
     assert.equal(p.book.children[1].hidden, false);
@@ -140,7 +157,7 @@ async function run() {
     await pending;
     assert.equal(button.attrs['aria-pressed'], 'false', 'late playback completion must not restore playing state after leaving');
     assert.equal(button.disabled, false);
-    console.log('Passed: shop preview sizing, page controls, zoom, mobile resize, reopen race, readable fallback, image errors and cancellable audio.');
+    console.log('Passed: open-book preview, cover access, arrows/keyboard, mobile resize, reduced motion, reopen race, readable fallback, image errors and cancellable audio.');
 }
 
 if (require.main === module) run().catch(error => { console.error(error); process.exitCode = 1; });

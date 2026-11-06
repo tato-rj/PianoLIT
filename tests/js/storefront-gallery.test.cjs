@@ -65,6 +65,11 @@ module.exports = async function () {
     colorGallery.node.events.keydown({key: 'ArrowLeft', target: colorGallery.thumbnails[0], preventDefault() {}});
     assert.deepEqual(shown(), [2], 'Keyboard navigation also stays within the selected color');
     assert.equal(colorGallery.thumbnails[2].focused, true, 'Keyboard navigation follows the selected thumbnail');
+    colorGallery.node.events.keydown({key: 'ArrowDown', target: colorGallery.thumbnails[2], preventDefault() {}});
+    assert.deepEqual(shown(), [0], 'Down wraps within the visible thumbnail rail');
+    assert.equal(colorGallery.thumbnails[0].focused, true);
+    colorGallery.node.events.keydown({key: 'ArrowUp', target: colorGallery.thumbnails[0], preventDefault() {}});
+    assert.deepEqual(shown(), [2], 'Up moves to the previous visible thumbnail');
     thumbnail(1); assert.deepEqual(shown(), [2], 'An inactive color thumbnail cannot select another color');
     choose(colors, 'Blue'); assert.deepEqual(shown(), [1]);
     assert.equal(price.textContent, '$27.00', 'The price below the options follows the selected variant');

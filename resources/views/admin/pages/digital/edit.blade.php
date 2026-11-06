@@ -87,7 +87,7 @@
                 @foreach($previewPages as $page)
                 <div class="col-6 col-sm-3 col-lg-2">
                     <a href="{{ asset('storage/'.$page) }}" target="_blank" rel="noopener noreferrer" aria-label="Open preview page {{ $loop->iteration }}">
-                        <img src="{{ asset('storage/'.$page) }}" alt="{{ $product->title }} preview page {{ $loop->iteration }}" class="img-fluid border rounded" loading="lazy">
+                        <img src="{{ asset('storage/'.$page) }}" alt="{{ $product->title }} preview page {{ $loop->iteration }}" class="img-fluid border" loading="lazy">
                     </a>
                     <p class="small text-muted mt-2 mb-0">{{ $loop->first ? 'Cover' : 'Page '.$loop->iteration }}</p>
                 </div>

@@ -1,4 +1,4 @@
-<div class="modal fade fullscreen-modal {{ $classes ?? '' }}" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $headingId }}" aria-hidden="true" @foreach($data ?? [] as $key => $value) data-{{ $key }}="{{ $value }}" @endforeach>
+<div class="modal fade fullscreen-modal {{ !empty($transparent) ? 'fullscreen-modal--transparent' : '' }} {{ $classes ?? '' }}" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $headingId }}" aria-hidden="true" @foreach($data ?? [] as $key => $value) data-{{ $key }}="{{ $value }}" @endforeach>
     <div class="modal-dialog modal-fullscreen">
         @if(!empty($floatingClose))
             @include('components.dialogs.fullscreen.close', ['closeClasses' => 'fullscreen-modal-close--floating'])

@@ -1,47 +1,45 @@
-@php($previewPages = $previewPages ?? $product->previews)
+@php
+    $previewPages = $previewPages ?? $product->previews;
+    $previewId = $previewId ?? 'preview-product';
+    $previewTitle = $previewTitle ?? $product->title;
+@endphp
 @if($previewPages)
-@component('components.dialogs.modal', [
-    'id' => 'preview-product',
-    'header' => 'Look inside',
-    'options' => ['size' => 'xl'],
-    'descriptionId' => 'product-preview-description',
+@component('components.dialogs.fullscreen.panel', [
+    'id' => $previewId,
+    'headingId' => $previewId.'-title',
+    'classes' => 'product-preview-dialog',
+    'transparent' => true,
+    'floatingClose' => true,
+    'closeLabel' => 'Close book preview',
 ])
-    @slot('body')
-        <p id="product-preview-description" class="text-muted {{ ($storefront ?? false) ? '' : 'small' }} mb-3">{{ $product->title }} · Selected preview pages</p>
-        <div class="product-preview" data-book-preview>
-            <div class="product-preview__stage" data-book-stage tabindex="0" role="group" aria-label="Book preview. Use the left and right arrow keys to turn pages" aria-busy="true">
-                <p class="text-muted mb-0" data-book-loading role="status">Opening your preview…</p>
-                <div data-book-host hidden>
-                    <div class="product-preview__book" data-book>
-                        @foreach($previewPages as $preview)
-                        <div class="product-preview__page">
-                            <img data-preview-src="{{ (($storefront ?? false) ? asset('storage/'.$preview) : storage($preview)) }}" alt="Preview page {{ $loop->iteration }} of {{ count($previewPages) }}" draggable="false">
-                            <span class="product-preview__missing {{ ($storefront ?? false) ? '' : 'small' }} text-muted" hidden>This page couldn’t be loaded</span>
-                        </div>
-                        @endforeach
+    <h2 class="visually-hidden" id="{{ $previewId }}-title">{{ $previewTitle }} · Preview</h2>
+    <div class="product-preview" data-book-preview>
+        <div class="product-preview__stage" data-book-stage role="group" aria-label="Book preview. Drag a page corner or use the left and right arrow keys to turn pages" aria-busy="true">
+            <p class="bg-white rounded px-3 py-2 mb-0" data-book-loading role="status">Loading preview…</p>
+            <div data-book-host hidden>
+                <div class="product-preview__book" data-book>
+                    @foreach($previewPages as $preview)
+                    <div class="product-preview__page">
+                        <img data-preview-src="{{ !empty($previewUrls) ? $preview : (($storefront ?? false) ? asset('storage/'.$preview) : storage($preview)) }}" alt="Preview page {{ $loop->iteration }} of {{ count($previewPages) }}" draggable="false">
+                        <span class="product-preview__missing text-muted" hidden>This page could not be loaded.</span>
                     </div>
+                    @endforeach
                 </div>
-                <div class="product-preview__zoom" data-book-zoom hidden><img alt="" data-book-zoom-image></div>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
-                <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-secondary btn-sm" data-book-previous aria-label="Previous preview page" disabled>@icon('chevron-left', ['mr' => 0])</button>
-                    <span class="{{ ($storefront ?? false) ? '' : 'small' }} text-muted text-nowrap" data-book-counter aria-live="polite" aria-atomic="true"></span>
-                    <button type="button" class="btn btn-secondary btn-sm" data-book-next aria-label="Next preview page" disabled>@icon('chevron-right', ['mr' => 0])</button>
-                </div>
-                <button type="button" class="btn btn-secondary btn-sm" data-book-magnify aria-pressed="false" disabled>@icon('zoom-in')<span data-book-zoom-label>Zoom in</span></button>
-            </div>
-            <p class="{{ ($storefront ?? false) ? '' : 'small' }} text-muted text-center mt-3 mb-2" data-book-hint>Drag a page corner or use the arrows to turn pages</p>
-            <div class="product-preview__thumbnails d-flex gap-2 justify-content-center" aria-label="Go to preview page">
-                @foreach($previewPages as $preview)
-                <button type="button" class="btn btn-secondary btn-sm" data-book-page="{{ $loop->iteration }}" aria-label="Go to preview page {{ $loop->iteration }}">{{ $loop->iteration }}</button>
-                @endforeach
-            </div>
-            <div class="{{ ($storefront ?? false) ? '' : 'small' }} text-danger text-center mt-2" data-book-error role="status" hidden>
-                Some pages couldn’t load. <button type="button" class="btn btn-secondary btn-sm" data-book-retry>Try again</button>
             </div>
         </div>
-        <noscript><p class="mt-3">Enable JavaScript to turn pages, or open a sample below.</p>@foreach($previewPages as $preview)<a class="me-3" href="{{ (($storefront ?? false) ? asset('storage/'.$preview) : storage($preview)) }}" target="_blank" rel="noopener noreferrer">Preview page {{ $loop->iteration }}</a>@endforeach</noscript>
-    @endslot
+        <div class="product-preview__controls d-flex align-items-center justify-content-center gap-2" @if(count($previewPages) < 2) hidden @endif>
+            <button type="button" class="btn btn-secondary rounded-circle" style="--radius-button: var(--radius-circle)" data-book-previous aria-label="Previous preview page" disabled>@icon('chevron-left', ['mr' => 0])</button>
+            <span class="visually-hidden" data-book-counter aria-live="polite" aria-atomic="true"></span>
+            <button type="button" class="btn btn-secondary rounded-circle" style="--radius-button: var(--radius-circle)" data-book-next aria-label="Next preview page" disabled>@icon('chevron-right', ['mr' => 0])</button>
+        </div>
+        <div class="product-preview__error" data-book-error hidden>
+            @component('components.feedback.alert', ['color' => 'red'])
+            @slot('message')
+                Some preview pages could not be loaded.
+                <button type="button" class="btn btn-secondary btn-sm ms-2" data-book-retry>Try again</button>
+            @endslot
+            @endcomponent
+        </div>
+    </div>
 @endcomponent
 @endif

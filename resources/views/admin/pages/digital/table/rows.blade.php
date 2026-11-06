@@ -7,7 +7,7 @@
     <td class="text-nowrap">{{ optional($product->created_at)->format('M j, Y') ?: 'Not set' }}</td>
     <td>
         <div class="d-flex align-items-center gap-3">
-            @if($imageUrl)<img src="{{ $imageUrl }}" alt="" width="48" height="64" class="rounded object-fit-contain flex-shrink-0" loading="lazy">@endif
+            @if($imageUrl)<img src="{{ $imageUrl }}" alt="" width="48" height="64" class="object-fit-contain flex-shrink-0" loading="lazy">@endif
             <div class="admin-table__account">
                 <a href="{{ route($kind.'.show', $product) }}" target="_blank" rel="noopener noreferrer" class="admin-table__primary clamp-2" title="{{ $product->title }}">{{ $product->title }}</a>
                 @if($product->author)<small>{{ $product->author }}</small>@endif

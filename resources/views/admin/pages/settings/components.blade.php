@@ -1,6 +1,14 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Book preview', 'usage' => 'shop.components.preview.magazine · Turn.js with a transparent fullscreen panel', 'properties' => 'padding,background-color'])
+      <div class="shop-storefront" data-ds-preview>
+        @include('shop.storefront.components.product-gallery', ['previewId' => 'ds-book-preview', 'previewPages' => array_fill(0, 5, asset('images/misc/score1.png')), 'product' => [
+          'name' => 'Sample score', 'hasPreview' => true,
+          'gallery' => collect([['url' => asset('images/misc/score1.png'), 'alt' => 'Sample score page']]),
+        ]])
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Share a page', 'usage' => 'components.media.link-share · direct sharing and copy link', 'properties' => 'padding,color,border-radius'])
       <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="modal" data-bs-target="#ds-link-share">@icon('share')Open share dialog</button>
       @include('components.media.link-share', ['id' => 'ds-link-share', 'url' => 'https://my.pianolit.com/pieces/0', 'title' => 'Prelude in E minor by Frédéric Chopin'])
@@ -441,5 +449,8 @@
 ])
 
 @push('scripts')
+@include('shop.components.preview.magazine', ['previewId' => 'ds-book-preview', 'previewTitle' => 'Sample score', 'previewUrls' => true, 'previewPages' => array_fill(0, 5, asset('images/misc/score1.png'))])
+<script src="{{ asset('js/vendor/turn.min.js') }}" defer></script>
+<script src="{{ mix('js/views/shop-product.js') }}" defer></script>
 <script src="{{ mix('js/components/link-share.js') }}"></script>
 @endpush
