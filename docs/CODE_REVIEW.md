@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-06 — Centered, larger flipbook arrows (P3, complete locally)
+
+- **Request / change:** Updated both page-arrow buttons in `shop.components.preview.magazine` to use shared zero-padding and flex-centering utilities with 24px chevrons. This overrides the standard button padding that displaced the icons while retaining the 44px circles. The public viewer and Design System share this component; no asset rebuild is required.
+- **Verification / limits:** All 16 isolated product-page tests pass (161 assertions), and whitespace checks pass. Browser measurements confirm zero horizontal/vertical center offset and 24×24 icons on desktop and at 390px, including the disabled Previous button on page one. Page turning still works. Proofs: `centered-arrows-desktop.jpg`, `centered-arrows-detail.jpg` and `centered-arrows-phone.jpg` in `/Users/arthur/.codex/visualizations/2026/11/06/01a1af26-bd33-7da0-9369-aef577bb0321/book-preview/`. No data, API, provider or deployment changes; production deployment remains pending.
+
 ### 2026-11-06 — Left thumbnail rail and compact product details (P3, complete locally)
 
 - **Request / change:** Moved the shared product gallery's thumbnails into a vertical rail left of the square image. The rail retains 114px desktop thumbnails, uses 64px below 992px and scrolls within the image height. Product pages now allocate seven desktop columns to the gallery and five to the details; tablet columns and stacked phone content remain responsive. Merchandise Add to bag uses its content width with shared padding. Source/public Storefront CSS and JavaScript plus their final-content hashes are updated; the Design System continues using the shared gallery.

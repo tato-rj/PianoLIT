@@ -28,9 +28,9 @@
             </div>
         </div>
         <div class="product-preview__controls d-flex align-items-center justify-content-center gap-2" @if(count($previewPages) < 2) hidden @endif>
-            <button type="button" class="btn btn-secondary rounded-circle" style="--radius-button: var(--radius-circle)" data-book-previous aria-label="Previous preview page" disabled>@icon('chevron-left', ['mr' => 0])</button>
+            <button type="button" class="btn btn-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center" style="--radius-button: var(--radius-circle)" data-book-previous aria-label="Previous preview page" disabled>@icon('chevron-left', ['mr' => 0, 'styles' => 'font-size: 24px'])</button>
             <span class="visually-hidden" data-book-counter aria-live="polite" aria-atomic="true"></span>
-            <button type="button" class="btn btn-secondary rounded-circle" style="--radius-button: var(--radius-circle)" data-book-next aria-label="Next preview page" disabled>@icon('chevron-right', ['mr' => 0])</button>
+            <button type="button" class="btn btn-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center" style="--radius-button: var(--radius-circle)" data-book-next aria-label="Next preview page" disabled>@icon('chevron-right', ['mr' => 0, 'styles' => 'font-size: 24px'])</button>
         </div>
         <div class="product-preview__error" data-book-error hidden>
             @component('components.feedback.alert', ['color' => 'red'])
