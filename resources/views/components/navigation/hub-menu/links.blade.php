@@ -26,7 +26,7 @@
                             : request()->getHost() === parse_url($hubLink['url'], PHP_URL_HOST));
                 @endphp
                 <li class="nav-item">
-                    <a href="{{ $hubLink['url'] }}" class="hub-menu__link d-flex align-items-center gap-3" @if($currentHub) aria-current="true" @endif @if($hubLink['external'] ?? false) target="_blank" rel="noopener noreferrer" @endif>
+                    <a href="{{ $hubLink['url'] }}" class="hub-menu__link d-flex align-items-center gap-2" @if($currentHub) aria-current="true" @endif @if($hubLink['external'] ?? false) target="_blank" rel="noopener noreferrer" @endif>
                         @icon($hubLink['icon'], ['mr' => 0, 'classes' => 'hub-menu__icon icon-fw flex-shrink-0'])
                         <span class="me-auto">{{ $hubLink['label'] }}</span>
                         @icon('chevron-right', ['mr' => 0, 'classes' => 'hub-menu__arrow'])
