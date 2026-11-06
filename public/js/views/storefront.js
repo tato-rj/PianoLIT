@@ -176,6 +176,7 @@
                     throw new Error(messages[0] || (response.status === 419 ? 'Please reload this page and try again.' : 'Your bag could not be updated. Please try again.'));
                 }
                 root.querySelectorAll('[data-bag-count]').forEach(function (count) { count.textContent = payload.count; });
+                root.querySelectorAll('[data-shopping-bag-link]').forEach(function (link) { link.hidden = !(Number(payload.count) > 0); });
                 if (payload.item) {
                     root.querySelectorAll('[data-product-options]').forEach(function (productForm) {
                         if (productForm.querySelector('[name="product_id"]').value !== String(payload.item.product_id)) return;

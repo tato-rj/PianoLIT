@@ -32575,6 +32575,11 @@ body.score-editor-fullscreen-open .playlist-player--piece {
 .checkout-modal .checkout-shipping .form-group {
   margin-bottom: 0;
 }
+.checkout-modal [data-checkout-sections] .accordion-body {
+  padding-right: 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
 .checkout-modal .checkout-line {
   display: flex;
   gap: 16px;

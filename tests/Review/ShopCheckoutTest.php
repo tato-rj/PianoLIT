@@ -146,6 +146,13 @@ class ShopCheckoutTest extends ReviewTestCase
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
         $this->assertCount(1, $xpath->query('//details[@data-checkout-summary]/summary//*[@data-checkout-mobile-total]'));
+        $this->assertCount(3, $xpath->query('//*[@data-checkout-sections]//button[@data-bs-toggle="collapse"]'));
+        foreach (['checkout-contact' => 'Contact', 'checkout-delivery' => 'Delivery address', 'checkout-payment-method' => 'Payment method'] as $id => $label) {
+            $toggle = $xpath->query('//button[@aria-controls="'.$id.'"]');
+            $this->assertCount(1, $toggle);
+            $this->assertSame($label, trim($toggle->item(0)->textContent));
+            $this->assertCount(1, $xpath->query('//*[@id="'.$id.'" and @data-bs-parent="#checkout-sections"]'));
+        }
         $this->assertCount(1, $xpath->query('//form[@data-shipping-form]//input[@type="email" and @name="email"]'));
         $this->assertCount(1, $xpath->query('//form[@data-shipping-form]//a[@href="'.route('login').'"]'));
         if ($directory = getenv('SHOP_WALLET_PREVIEW_DIR')) file_put_contents($directory.'/checkout-page.html', $response->getContent());

@@ -36,6 +36,7 @@
         </div>
         @include('shop.storefront.components.product-price')
         <button type="submit" class="btn btn-primary w-100" @if(empty($galleryColors)) disabled @endif>@icon('shopping-bag') <span data-bag-label aria-live="polite">{{ $inBag ? 'In bag ('.$inBag.') · Add more' : 'Add to bag' }}</span></button>
+        <p class="text-center mt-3 mb-0" data-shopping-bag-link @if(!$shoppingBag['count']) hidden @endif><a href="{{ route('shop.bag') }}">Go to shopping bag</a></p>
     </form>
 @else
     <p class="shop-unavailable">Currently unavailable</p>

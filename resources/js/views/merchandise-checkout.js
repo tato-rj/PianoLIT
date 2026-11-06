@@ -20,6 +20,51 @@
         const demo = root.dataset.mode === 'demo';
         const digital = root.dataset.kind === 'digital';
         const walletOnly = root.dataset.walletOnly === 'true';
+        const sections = root.querySelectorAll ? Array.from(root.querySelectorAll('[data-checkout-sections] .accordion-collapse')) : [];
+        const sectionWaiters = new Set();
+        let checkingAddress = false, invalidTarget = null, reportingInvalid = false;
+        function setSection(panel, open) {
+            panel.classList.toggle('show', open);
+            const toggle = root.querySelector('[data-bs-target="#' + panel.id + '"]');
+            toggle.classList.toggle('collapsed', !open);
+            toggle.setAttribute('aria-expanded', String(open));
+        }
+        function initialSections() {
+            // Card frames mount at their final width before the loading surface is revealed.
+            sections.forEach(panel => setSection(panel, panel.id === root.dataset.checkoutInitialSection));
+        }
+        function revealSection(node) {
+            if (disposed || !sections.length || !node) return Promise.resolve();
+            const panel = node.closest('.accordion-collapse');
+            if (!panel || panel.classList.contains('show')) return Promise.resolve();
+            return new Promise(resolve => {
+                function done() {
+                    window.clearTimeout(timer);
+                    panel.removeEventListener('shown.bs.collapse', done);
+                    sectionWaiters.delete(done);
+                    resolve();
+                }
+                const timer = window.setTimeout(done, 500);
+                sectionWaiters.add(done);
+                panel.addEventListener('shown.bs.collapse', done, {once: true});
+                if (window.bootstrap?.Collapse) window.bootstrap.Collapse.getOrCreateInstance(panel, {toggle: false}).show();
+                else { sections.forEach(item => setSection(item, item === panel)); done(); }
+            });
+        }
+        root.addEventListener('invalid', function (event) {
+            if (!sections.length || checkingAddress || walletOnly || (reportingInvalid && event.target === invalidTarget)) return;
+            event.preventDefault();
+            if (invalidTarget) return;
+            invalidTarget = event.target;
+            revealSection(invalidTarget).then(function () {
+                if (!disposed) {
+                    reportingInvalid = true;
+                    invalidTarget.focus(); invalidTarget.reportValidity();
+                    reportingInvalid = false;
+                }
+                invalidTarget = null;
+            });
+        }, true);
         const bagItems = walletOnly ? root.closest('[data-storefront]')?.querySelector('[data-bag-items]') : null;
         const bagContinue = walletOnly ? root.closest('[data-storefront]')?.querySelector('.shop-bag-checkout') : null;
         const summary = surface.querySelector('[data-checkout-summary]');
@@ -71,6 +116,7 @@
                 if (!response.ok) {
                     const failure = new Error(Object.values(result.errors || {}).flat()[0] || result.message || 'Checkout could not be confirmed. Please try again.');
                     failure.refreshQuote = result.refresh_quote === true;
+                    failure.fieldNames = Object.keys(result.errors || {});
                     throw failure;
                 }
                 return result;
@@ -114,8 +160,11 @@
             return JSON.stringify(['address1', 'address2', 'country_code', 'state_code', 'city', 'zip'].map(key => data[key] || ''));
         }
         function completeAddress() {
-            return !composing && shipping.checkValidity() && Array.from(shipping.querySelectorAll('[required]'))
-                .every(node => node.disabled || String(node.value).trim() !== '');
+            checkingAddress = true;
+            try {
+                return !composing && shipping.checkValidity() && Array.from(shipping.querySelectorAll('[required]'))
+                    .every(node => node.disabled || String(node.value).trim() !== '');
+            } finally { checkingAddress = false; }
         }
         function cancelScheduled() {
             if (quoteTimer !== null) window.clearTimeout(quoteTimer);
@@ -173,6 +222,8 @@
                     error.textContent = failure.message || 'Delivery could not be calculated. Please try again.';
                     status.textContent = 'Please check your address and try again.';
                     retryButton.hidden = false;
+                    const name = failure.fieldNames?.find(name => /^[a-z_]+$/.test(name));
+                    if (name) await revealSection(shipping.querySelector('[name="' + name + '"]'));
                 }
             } finally {
                 quoting = false;
@@ -296,12 +347,17 @@
         shipping.addEventListener('submit', function (event) { event.preventDefault(); changed(); });
         async function pay(walletPayment) {
             if (busy || disposed) return;
+            if (!walletPayment && !completeAddress()) { shipping.reportValidity(); return; }
             if (!quote || quoteKey !== details().key || (quote.expires_at && Date.parse(quote.expires_at) <= Date.now())) {
                 changed(true, 0);
                 if (walletPayment) throw new Error('Your total is being updated. Please review it before paying.');
                 return;
             }
-            if (!walletPayment && !demo && quote.total && (completed.size !== 3 || !form.reportValidity())) { if (card) card.focus(); return; }
+            if (!walletPayment && !demo && quote.total) {
+                await revealSection(form.querySelector('[name="cardholder"]'));
+                if (disposed) return;
+                if (completed.size !== 3 || !form.reportValidity()) { if (card) card.focus(); return; }
+            }
             const selectedQuote = quote;
             const orderLink = form.querySelector('[data-checkout-order-link]');
             orderLink.href = window.location.origin + '/orders/' + selectedQuote.order_id;
@@ -327,6 +383,7 @@
             } catch (failure) {
                 refreshQuote = failure.refreshQuote === true;
                 if (!disposed) error.textContent = failure.message || 'We could not confirm your order. Please try again.';
+                if (!walletPayment) await revealSection(form.querySelector('[name="cardholder"]'));
                 if (walletPayment) throw failure;
             } finally {
                 busy = false;
@@ -353,7 +410,7 @@
                         field.on('ready', function () {
                             if (disposed) return;
                             ready.add(type);
-                            if (ready.size === 3) { paymentReady = true; form.querySelector('[data-card-status]').textContent = ''; controls(); signal('checkout:loaded'); }
+                            if (ready.size === 3) { paymentReady = true; form.querySelector('[data-card-status]').textContent = ''; initialSections(); controls(); signal('checkout:loaded'); }
                         });
                         field.on('change', function (event) {
                             if (event.complete) completed.add(type); else completed.delete(type);
@@ -390,11 +447,12 @@
                 }, payFromWallet);
                 if (walletOnly) signal('checkout:loaded');
             } catch (failure) { error.textContent = 'The secure payment form could not load. Please try again.'; signal('checkout:loaderror'); }
-        } else signal('checkout:loaded');
+        } else { initialSections(); signal('checkout:loaded'); }
         controls();
         mounted.set(root, {destroy: function () {
             disposed = true;
             walletVersion++;
+            sectionWaiters.forEach(done => done());
             if (smallScreen) smallScreen.removeEventListener('change', summaryLayout);
             if (bagItems) bagItems.inert = false;
             if (bagContinue) bagContinue.inert = false;

@@ -6,16 +6,21 @@ const path = require('node:path');
 module.exports = async function () {
     const source = fs.readFileSync(path.join(__dirname, '../../resources/js/views/merchandise-checkout.js'), 'utf8');
     const settle = async () => { for (let n = 0; n < 12; n++) await Promise.resolve(); };
-    function fixture({digital = false, prefilled = false, mode = 'demo', walletOnly = false, signedIn = false, narrow = null} = {}) {
+    function fixture({digital = false, prefilled = false, mode = 'demo', walletOnly = false, signedIn = false, narrow = null, withSections = false} = {}) {
         let now = Date.parse('2026-10-28T16:00:00Z'), sequence = 0;
-        const timers = new Map(), requests = [], redirects = [], confirmations = [], documentEvents = {}, wallets = [], cardMounts = [];
+        const timers = new Map(), requests = [], redirects = [], confirmations = [], documentEvents = {}, wallets = [], cardMounts = [], cardMountVisibility = [], focused = [];
+        function classes(initial = []) {
+            const values = new Set(initial);
+            return {contains: name => values.has(name), toggle(name, active) { if (active) values.add(name); else values.delete(name); }};
+        }
         function node(extra = {}) {
             return Object.assign({events: {}, dataset: {}, textContent: '', hidden: false, disabled: false, value: '',
                 addEventListener(name, fn) { this.events[name] = fn; }, setAttribute(name, value) { this[name] = value; },
+                removeEventListener(name) { delete this.events[name]; },
                 dispatchEvent() {}}, extra);
         }
         function field(name, value, required = false, select = false) {
-            const control = node({name, value, required, select, options: [], add(option) {
+            const control = node({name, value, required, select, options: [], focus() { focused.push(name); }, reportValidity() { return false; }, add(option) {
                 this.options.push(option); if (this.options.length === 1) this.value = option.value;
             }, replaceChildren() { this.options = []; this.value = ''; }});
             return control;
@@ -38,6 +43,10 @@ module.exports = async function () {
         const totals = Object.fromEntries(['total', 'mobile-total', 'shipping', 'tax', 'discount-line', 'discount-label', 'discount', 'subtotal'].map(key => [key, node()]));
         const summaryToggle = node(), summary = narrow === null ? null : node({open: true, querySelector: () => summaryToggle});
         const media = node({matches: narrow, removeEventListener() {}}), bagItems = node();
+        const sectionPanels = Object.fromEntries(['contact', 'delivery', 'payment-method'].map(name => [name,
+            node({id: 'checkout-' + name, classList: classes(['show'])})]));
+        const sectionToggles = Object.fromEntries(Object.keys(sectionPanels).map(name => [name, node({classList: classes()})]));
+        Object.values(inputs).forEach(input => { input.closest = () => input.name === 'email' ? sectionPanels.contact : sectionPanels.delivery; });
         const shipping = node({querySelector(selector) {
             if (selector === '[data-delivery-retry]') return retry;
             if (selector === '[data-delivery-status]') return status;
@@ -46,10 +55,13 @@ module.exports = async function () {
         }, querySelectorAll(selector) {
             return Object.values(inputs).filter(input => selector !== '[required]' || input.required);
         }, checkValidity() {
-            return Object.values(inputs).every(input => input.disabled || !input.required || input.value !== '')
+            const valid = Object.values(inputs).every(input => input.disabled || !input.required || input.value !== '')
                 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inputs.email.value);
+            if (!valid && withSections) root.events.invalid({target: inputs.email, preventDefault() {}});
+            return valid;
         }});
         const nativeCardInputs = [field('_token', 'review-csrf'), field('cardholder', 'Jamie', true), field('postal_code', '')];
+        nativeCardInputs.forEach(input => { input.closest = () => sectionPanels['payment-method']; });
         const stripeNodes = ['cardNumber', 'cardExpiry', 'cardCvc'].map(type => node({dataset: {stripeField: type}}));
         const form = node({reportValidity: () => true, querySelector(selector) {
             if (selector === '[type="submit"]') return pay;
@@ -60,12 +72,14 @@ module.exports = async function () {
             return nativeCardInputs.find(input => selector === '[name="' + input.name + '"]') || null;
         }, querySelectorAll(selector) { return selector === '[data-stripe-field]' ? stripeNodes : selector === 'input' ? nativeCardInputs : []; }});
         const surface = node({querySelector: selector => selector === '[data-checkout-summary]' ? summary : totals[selector.match(/data-checkout-([^\]]+)/)?.[1]]});
-        const root = node({dataset: {mode, walletOnly: String(walletOnly), kind: digital ? 'digital' : 'merchandise', key: 'pk_test_review', quoteUrl: '/quote', prepareUrl: '/prepare', completeUrl: '/complete', walletQuoteUrl: '/wallet-quote', walletAmount: '2800',
+        const root = node({dataset: {mode, checkoutInitialSection: signedIn ? 'checkout-delivery' : 'checkout-contact', walletOnly: String(walletOnly), kind: digital ? 'digital' : 'merchandise', key: 'pk_test_review', quoteUrl: '/quote', prepareUrl: '/prepare', completeUrl: '/complete', walletQuoteUrl: '/wallet-quote', walletAmount: '2800',
             countries: JSON.stringify([{code: 'US', states: [{code: 'NY', name: 'New York'}, {code: 'CA', name: 'California'}]}, {code: 'GB', states: null}, {code: 'CH', states: null}])},
         closest: selector => selector === '[data-checkout-surface]' ? surface : selector === '[data-storefront]' ? {querySelector: () => bagItems} : node(),
         querySelector(selector) {
+            const sectionName = selector.match(/data-bs-target="#checkout-([^"]+)"/)?.[1];
+            if (sectionName) return sectionToggles[sectionName];
             return {'[data-shipping-form]': shipping, '[data-merchandise-payment]': form, '[data-state-field]': stateContainer}[selector];
-        }});
+        }, querySelectorAll: () => withSections ? Object.values(sectionPanels) : []});
         function timeout(fn, delay) { const id = ++sequence; timers.set(id, {fn, at: now + delay}); return id; }
         const window = {setTimeout: timeout, clearTimeout: id => timers.delete(id), AbortController,
             CustomEvent: class { constructor(type) { this.type = type; } }, Option: class { constructor(text, value) { this.text = text; this.value = value; } },
@@ -74,7 +88,7 @@ module.exports = async function () {
             Stripe: () => ({elements: () => ({create: type => {
                 cardMounts.push(type);
                 const events = {};
-                return {on: (type, fn) => { events[type] = fn; }, mount() { events.ready(); events.change({complete: true}); }, update() {}, destroy() {}, focus() {}};
+                return {on: (type, fn) => { events[type] = fn; }, mount() { cardMountVisibility.push(sectionPanels['payment-method'].classList.contains('show')); events.ready(); events.change({complete: true}); }, update() {}, destroy() {}, focus() {}};
             }}), confirmCardPayment: async secret => { confirmations.push(secret); return {}; }}),
             PianoLITExpressCheckout: {mount(stripe, form, options, confirm) {
                 const wallet = {options, confirm, updates: [], update(values) { this.updates.push(values); }, destroy() { this.destroyed = true; }};
@@ -108,7 +122,7 @@ module.exports = async function () {
         }
         function destroy() { documentEvents['checkout:dispose']({target: {querySelector: () => root}}); }
         const submit = () => form.events.submit({preventDefault() {}});
-        return {inputs, shipping, form, totals, summary, summaryToggle, media, bagItems, retry, pay, error, status, requests, redirects, confirmations, wallets, cardMounts, orderLink, edit, fill, tick, respond, destroy, submit};
+        return {inputs, shipping, form, root, sectionPanels, sectionToggles, focused, totals, summary, summaryToggle, media, bagItems, retry, pay, error, status, requests, redirects, confirmations, wallets, cardMounts, cardMountVisibility, orderLink, edit, fill, tick, respond, destroy, submit};
     }
 
     let f = fixture();
@@ -268,5 +282,24 @@ module.exports = async function () {
     f.fill(); await f.tick(1000); await f.respond(0);
     assert.equal(f.totals['mobile-total'].textContent, '$33.00');
     f.media.matches = false; f.media.events.change(); assert.equal(f.summary.open, true); assert.equal(f.summaryToggle.tabIndex, -1);
+    f = fixture({withSections: true, mode: 'sandbox'});
+    assert.equal(f.sectionPanels.contact.classList.contains('show'), true, 'Guests start on Contact');
+    assert.equal(f.sectionPanels.delivery.classList.contains('show'), false);
+    assert.equal(f.sectionPanels['payment-method'].classList.contains('show'), false);
+    assert.equal(f.cardMountVisibility.every(Boolean), true, 'Card fields mount at visible dimensions before their panel collapses');
+    f.sectionPanels.contact.classList.toggle('show', false); f.sectionPanels.delivery.classList.toggle('show', true);
+    f.edit('email', 'invalid'); await settle();
+    assert.equal(f.sectionPanels.contact.classList.contains('show'), false, 'Automatic address checks do not move the current section');
+    let prevented = false;
+    f.root.events.invalid({target: f.inputs.email, preventDefault() { prevented = true; }}); await settle();
+    assert.equal(prevented, true); assert.equal(f.sectionPanels.contact.classList.contains('show'), true);
+    assert.equal(f.focused.at(-1), 'email', 'Explicit validation opens and focuses the section needing attention');
+    f.edit('email', 'customer@example.test'); f.fill(); await f.tick(1000); await f.respond(0);
+    f.submit(); await settle();
+    assert.equal(f.sectionPanels['payment-method'].classList.contains('show'), true, 'Card submission opens Payment method before validating native fields');
+    assert.equal(f.cardMounts.length, 3, 'Opening sections preserves the mounted card fields');
+    f.destroy();
+    f = fixture({withSections: true, signedIn: true});
+    assert.equal(f.sectionPanels.delivery.classList.contains('show'), true, 'Signed-in customers start on Delivery address');
     console.log('Passed: automatic address quotes and early wallets, address/rate collection, final-total review, payment, cancellation, serialized requests and disposal.');
 };

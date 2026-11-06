@@ -1,19 +1,24 @@
         @php($walletOnly = $walletOnly ?? false)
         @php($recipient = $recipient ?? [])
+        @php($collapsible = $kind === 'merchandise' && !$walletOnly)
         <div data-merchandise-checkout data-wallet-only="{{ $walletOnly ? 'true' : 'false' }}" data-mode="{{ $mode }}" data-key="{{ $stripeKey }}" data-kind="{{ $kind }}"
+            data-checkout-initial-section="{{ auth('web')->check() ? 'checkout-delivery' : 'checkout-contact' }}"
             data-quote-url="{{ route('shop.checkout.quote') }}" data-prepare-url="{{ route('shop.checkout.prepare') }}"
             data-complete-url="{{ route('shop.checkout.complete') }}" data-countries="{{ json_encode($countries) }}"
             data-wallet-quote-url="{{ route('shop.checkout.wallet-quote') }}" data-wallet-amount="{{ $snapshot['subtotal'] }}">
             @if($kind === 'merchandise' && $mode !== 'demo')
                 @include('components.billing.checkout.wallets', ['divider' => $walletOnly ? '' : 'Or'])
             @endif
+            @if($collapsible)<div id="checkout-sections" data-checkout-sections>@endif
             <form data-shipping-form @if($walletOnly) hidden @endif>
                 @csrf
                 <input type="hidden" name="kind" value="{{ $kind }}">
                 @if($kind === 'digital')<input type="hidden" name="product_type" value="{{ $productType }}"><input type="hidden" name="product_id" value="{{ $productId }}">@endif
                 @if($kind === 'merchandise')
-                    <fieldset class="checkout-shipping">
-                        <legend class="d-flex justify-content-between align-items-center gap-3">Contact @guest('web')<a class="fs-6" href="{{ route('login') }}">Sign in</a>@endguest</legend>
+                    @component('shop.storefront.checkout.section', ['collapsible' => $collapsible, 'id' => 'checkout-contact', 'title' => 'Contact'])
+                    <fieldset class="checkout-shipping {{ $collapsible ? 'mb-0' : '' }}">
+                        <legend class="{{ $collapsible ? 'visually-hidden' : '' }}">Contact</legend>
+                        @guest('web')<p class="text-end mb-3"><a href="{{ route('login') }}">Sign in</a></p>@endguest
                         @auth('web')
                             <p class="mb-0">{{ auth('web')->user()->full_name }}<br>{{ auth('web')->user()->email }}</p>
                             <input type="hidden" name="email" value="{{ auth('web')->user()->email }}">
@@ -21,9 +26,11 @@
                             @input(['bag' => 'default', 'id' => 'delivery-email', 'name' => 'email', 'type' => 'email', 'label' => 'Email', 'autocomplete' => 'email', 'value' => $recipient['email'] ?? session('shop_newsletter_email'), 'limit' => 254])
                         @endauth
                     </fieldset>
+                    @endcomponent
                 @endif
-                <fieldset class="checkout-shipping">
-                    <legend>{{ $kind === 'digital' ? 'Billing details' : 'Delivery' }}</legend>
+                @component('shop.storefront.checkout.section', ['collapsible' => $collapsible, 'id' => 'checkout-delivery', 'title' => 'Delivery address'])
+                <fieldset class="checkout-shipping {{ $collapsible ? 'mb-0' : '' }}">
+                    <legend class="{{ $collapsible ? 'visually-hidden' : '' }}">{{ $kind === 'digital' ? 'Billing details' : 'Delivery address' }}</legend>
                     <div class="row g-3">
                         @if($kind === 'digital')
                         <div class="col-12 col-sm-6">@input(['bag' => 'default', 'id' => 'delivery-email', 'name' => 'email', 'type' => 'email', 'label' => 'Email', 'autocomplete' => 'email', 'value' => optional(auth('web')->user())->email ?? session('shop_newsletter_email'), 'readonly' => $kind === 'digital', 'limit' => 254])</div>
@@ -52,9 +59,11 @@
                     <p class="mt-3 mb-0 text-muted" data-delivery-status role="status" aria-live="polite">{{ $kind === 'digital' ? 'Your total updates automatically when your billing address is complete.' : 'Delivery and tax update automatically when your address is complete.' }}</p>
                     <button type="button" class="btn btn-secondary mt-3" data-delivery-retry hidden>Try again</button>
                 </fieldset>
+                @endcomponent
             </form>
             <form data-checkout-payment data-merchandise-payment data-wallet-controller="{{ mix('js/components/express-checkout.js') }}">
                 @csrf
+                @component('shop.storefront.checkout.section', ['collapsible' => $collapsible, 'id' => 'checkout-payment-method', 'title' => 'Payment method'])
                 @if($mode !== 'demo' && !$walletOnly)
                     @if($kind === 'digital') @include('components.billing.checkout.wallets') @endif
                     <div class="checkout-card-and-fields">
@@ -62,7 +71,10 @@
                         @include('components.billing.payment-card-fields', ['prefix' => 'merchandise', 'cardholder' => optional(auth('web')->user())->full_name])
                     </div>
                     <p class="membership-card-status" data-card-status role="status">Loading secure card fields…</p>
+                @elseif($collapsible)
+                    <p class="mb-0">No payment is required for this test order.</p>
                 @endif
+                @endcomponent
                 <p class="membership-card-errors" data-checkout-error role="alert" tabindex="-1"></p>
                 <a href="#" data-checkout-order-link hidden>Check order status</a>
                 <p class="membership-terms" @if($walletOnly) hidden @endif>By placing your order, you agree to the <a href="{{ route('terms') }}" target="_blank" rel="noopener noreferrer">Terms of Service</a>.</p>
@@ -72,4 +84,5 @@
                 </div>
                 <p class="membership-stripe-credit" @if($walletOnly) hidden @endif>{{ $mode === 'demo' ? 'Offline demonstration' : 'Payments securely processed by Stripe' }}</p>
             </form>
+            @if($collapsible)</div>@endif
         </div>
