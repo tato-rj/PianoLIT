@@ -3,6 +3,7 @@
 namespace App\Services\WebApp;
 
 use App\{Composer, Country, Piece, Tag};
+use App\Services\Discover\ComposerFeatures;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -235,6 +236,16 @@ class ExploreCatalogue
     public function query(array $params)
     {
         $query = Piece::query();
+        if (!empty($params['composer_feature'])) $query->whereHas('composer', function ($q) use ($params) {
+            $feature = collect(ComposerFeatures::GROUPS)->firstWhere('key', $params['composer_feature']);
+            if (isset($feature['country'])) {
+                $q->whereHas('country', function ($country) use ($feature) {
+                    $country->where('flag_code', $feature['country']);
+                });
+            } else {
+                ComposerGroups::apply($q, $feature['key']);
+            }
+        });
         if (!empty($params['level'])) $query->whereHas('tags', function ($q) use ($params) {
             $q->whereIn('type', ['level', 'sublevel'])->where('name', $params['level']);
         });
@@ -270,6 +281,7 @@ class ExploreCatalogue
     public function results(Request $request)
     {
         $params = $request->validate([
+            'composer_feature' => ['nullable', 'string', Rule::in(array_column(ComposerFeatures::GROUPS, 'key'))],
             'level' => ['nullable', Rule::in(self::LEVELS)],
             'mood' => $this->moodRules(),
             'composers' => ['nullable', Rule::in(array_keys(ComposerGroups::OPTIONS))], 'country' => 'nullable|integer|min:1',

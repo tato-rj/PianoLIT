@@ -16,7 +16,7 @@
         <div class="mb-4"><button type="button" class="btn btn-primary">Checkout</button></div>
         <div class="mb-4">@include('shop.storefront.components.welcome-launcher', ['preview' => true])</div>
         @include('shop.storefront.components.quantity', ['quantity' => 1])
-        <div class="d-flex flex-column align-items-end gap-3 mt-3">
+        <div class="d-flex flex-row-reverse flex-md-column align-items-center align-items-md-end justify-content-between gap-3 mt-3">
           @include('shop.storefront.components.quantity', ['quantity' => 1, 'compact' => true])
           <button type="button" class="btn btn-red btn-sm" aria-label="Remove sample product">@icon('trash-2', ['mr' => 0])</button>
         </div>

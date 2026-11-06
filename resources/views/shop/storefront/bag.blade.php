@@ -19,7 +19,7 @@
                         <p class="mb-1">{{ $line['variant']['color'] }} / {{ $line['variant']['size'] }}</p>
                         <p class="shop-card__price mb-0">{{ $line['total'] }}</p>
                     </div>
-                    <div class="shop-bag-item__actions d-flex flex-column align-items-end align-self-stretch justify-content-between gap-3 flex-shrink-0">
+                    <div class="shop-bag-item__actions d-flex flex-row-reverse flex-md-column align-items-center align-items-md-end align-self-stretch justify-content-between gap-3 flex-shrink-0">
                         <form action="{{ route('shop.bag.update', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST" class="d-flex align-items-center gap-2" data-bag-quantity>
                             @csrf @method('PATCH')
                             @include('shop.storefront.components.quantity', ['quantity' => $line['quantity'], 'compact' => true, 'productName' => $line['product']['name']])

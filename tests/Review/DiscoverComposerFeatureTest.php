@@ -5,6 +5,7 @@ namespace Tests\Review;
 use App\{Composer, Country, Piece, Tag, User};
 use App\Api\Api;
 use App\Services\DiscoverRefresh;
+use App\Services\WebApp\ExploreCatalogue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Cache, Redis};
 
@@ -134,7 +135,7 @@ class DiscoverComposerFeatureTest extends ReviewTestCase
             }
             $response->assertSee('aria-label="Pieces from '.self::FEATURE_LABELS[$key].' composers"', false);
             $composer = $this->composers[$key];
-            $response->assertSee(e(route('webapp.search.results', ['search' => $composer->name, 'model' => Composer::class])), false);
+            $response->assertSee(e(ExploreCatalogue::url(['composer_feature' => $key], 'From '.self::FEATURE_LABELS[$key].' composers')), false);
             $this->assertSame($title, $this->selectedTitle(Cache::get($this->cacheKey())));
             $this->assertNull(Cache::get($this->cacheKey())->firstWhere('title', 'Past highlights'));
             if ($signedIn) {
@@ -149,6 +150,60 @@ class DiscoverComposerFeatureTest extends ReviewTestCase
             if ($preview = getenv('DISCOVER_COMPOSER_PREVIEW_DIR')) {
                 file_put_contents($preview.'/'.$key.'.html', $response->getContent());
             }
+        }
+    }
+
+    /** @dataProvider featureChoices */
+    public function test_discover_pieces_browses_the_full_group_across_composers_and_pages($title, $key, $group)
+    {
+        $this->keepOnlyGroup($key);
+        $expected = Model::withoutEvents(function () use ($key, $group) {
+            $composer = $this->composers[$key];
+            $countryId = $composer->country_id;
+            if (strlen($group) === 2) {
+                // A country group follows its saved code even across country records.
+                $countryId = create(Country::class, ['flag_code' => $group])->id;
+            }
+            $otherComposer = create(Composer::class, ['name' => 'Another matching composer',
+                'gender' => $composer->gender, 'ethnicity' => $composer->ethnicity, 'country_id' => $countryId]);
+            create(Piece::class, ['composer_id' => $composer->id], 13);
+            create(Piece::class, ['composer_id' => $otherComposer->id], 2);
+            return Piece::whereIn('composer_id', [$composer->id, $otherComposer->id])->get()
+                ->map(function ($piece) { return route('webapp.pieces.show', $piece); })->all();
+        });
+        $this->selectCachedTitle($title);
+        $discover = $this->get(route('webapp.discover'))->assertOk();
+        $this->assertCount(12, $discover->viewData('rows')->firstWhere('title', $title)['content']);
+        $document = new \DOMDocument();
+        @$document->loadHTML($discover->getContent());
+        $action = (new \DOMXPath($document))->query('//a[contains(@class, "discover-composer-feature__action")]')->item(0);
+        $url = $action->getAttribute('href');
+        $this->assertSame(ExploreCatalogue::url(['composer_feature' => $key], 'From '.self::FEATURE_LABELS[$key].' composers'), $url);
+        $this->get($url)->assertOk()->assertSee('From '.self::FEATURE_LABELS[$key].' composers');
+
+        $guest = $this->getJson($url.'&include_total=1')->assertOk()->assertHeader('X-Search-Total', '16');
+        $this->assertSame(3, substr_count($guest->getContent(), 'class="py-2 piece-result '));
+        $this->assertSame('', $this->getJson($url.'&page=2')->assertOk()->getContent());
+        $this->actingAs(Model::withoutEvents(function () { return create(User::class, ['super_user' => true]); }), 'web');
+        $actual = [];
+        foreach ([1 => 10, 2 => 6, 3 => 0] as $page => $count) {
+            $response = $this->getJson($url.'&page='.$page)->assertOk();
+            preg_match_all('/<a href="([^"]+)" class="link-none" data-activity-label=/', $response->getContent(), $matches);
+            $this->assertCount($count, $matches[1]);
+            $actual = array_merge($actual, $matches[1]);
+        }
+        $this->assertEqualsCanonicalizing($expected, $actual);
+        $filtered = $this->getJson($url.'&'.http_build_query(['filters' => ['["intermediate"]'], 'sort' => 'title_asc', 'include_total' => 1]))
+            ->assertOk()->assertHeader('X-Search-Total', '1');
+        $this->assertSame(1, substr_count($filtered->getContent(), 'class="py-2 piece-result '));
+        $filtered->assertSee(route('webapp.pieces.show', $this->composers[$key]->pieces()->first()));
+    }
+
+    public function test_discover_group_search_rejects_unknown_groups_and_invalid_shapes()
+    {
+        $this->withExceptionHandling();
+        foreach (['invalid', 'asian', ['american']] as $feature) {
+            $this->getJson(ExploreCatalogue::url(['composer_feature' => $feature]))->assertStatus(422);
         }
     }
 

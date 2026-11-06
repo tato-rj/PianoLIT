@@ -1,5 +1,5 @@
 <section class="checkout-wallets" data-checkout-wallets data-wallet-state="loading" aria-label="Express payment" hidden>
-    @if(!empty($heading))<p class="text-center text-muted mb-3">{{ $heading }}</p>@endif
+    <p class="text-center text-muted mb-0 small">– Express checkout –</p>
     <div data-wallet-mount></div>
-    @if(($divider ?? 'Or pay by card') !== '')<p class="checkout-payment-divider"><span>{{ $divider ?? 'Or pay by card' }}</span></p>@endif
+    @if(($divider ?? 'Or') !== '')<p class="checkout-payment-divider"><span>{{ $divider ?? 'Or' }}</span></p>@endif
 </section>

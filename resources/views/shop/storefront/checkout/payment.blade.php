@@ -5,7 +5,7 @@
             data-complete-url="{{ route('shop.checkout.complete') }}" data-countries="{{ json_encode($countries) }}"
             data-wallet-quote-url="{{ route('shop.checkout.wallet-quote') }}" data-wallet-amount="{{ $snapshot['subtotal'] }}">
             @if($kind === 'merchandise' && $mode !== 'demo')
-                @include('components.billing.checkout.wallets', ['heading' => 'Express checkout', 'divider' => $walletOnly ? '' : 'Or'])
+                @include('components.billing.checkout.wallets', ['divider' => $walletOnly ? '' : 'Or'])
             @endif
             <form data-shipping-form @if($walletOnly) hidden @endif>
                 @csrf

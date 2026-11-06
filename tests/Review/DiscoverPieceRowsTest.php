@@ -198,7 +198,9 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         $this->assertStringContainsString(e($composer->name), $html);
         $this->assertStringNotContainsString('<script>', $html);
         $this->assertStringContainsString('A biography from the existing composer profile.', $html);
-        $this->assertStringContainsString(e(route('webapp.search.results', ['search' => $composer->name, 'model' => \App\Composer::class])), $html);
+        $feature = \App\Services\Discover\ComposerFeatures::forTitle($title);
+        $this->assertStringContainsString(e(\App\Services\WebApp\ExploreCatalogue::url(['composer_feature' => $feature['key']], 'From '.$feature['label'].' composers')), $html);
+        $this->assertStringContainsString(route('webapp.composers.show', $composer), $html);
         $this->assertSame(14, substr_count($html, 'class="discover-compact-card discover-piece-link'));
         $this->assertStringContainsString('id="'.$heading.'"', $html);
         $this->assertSame(14, substr_count($html, 'Late intermediate'));
