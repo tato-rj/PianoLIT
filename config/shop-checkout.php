@@ -10,7 +10,8 @@ return [
     'stripe_version' => '2025-03-31.basil',
     'printful_orders_enabled' => env('PRINTFUL_ORDERS_ENABLED', false),
     'printful_webhook_file' => env('PRINTFUL_WEBHOOK_KEYS_FILE', storage_path('app/private/printful-webhook-keys.json')),
-    'countries' => [], // Empty means every destination returned by Printful.
+    // Live merchandise ships to the US; local/test retain the offline destination fixtures.
+    'countries' => env('APP_ENV', 'production') === 'production' ? ['US'] : [],
     'quote_minutes' => 15,
     'tax_codes' => ['t-shirts' => 'txcd_30011000', 'stickers' => 'txcd_99999999', 'merchandise' => 'txcd_99999999',
         'ebooks' => 'txcd_10302000', 'escores' => 'txcd_10000000'],
