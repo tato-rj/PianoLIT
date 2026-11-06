@@ -3,6 +3,7 @@
 Route::namespace('Shop')->group(function () {
     Route::get('checkout', 'CheckoutController@show')->block()->name('shop.checkout');
     Route::post('checkout/quote', 'CheckoutController@quote')->middleware('throttle:30,1')->block()->name('shop.checkout.quote');
+    Route::post('checkout/wallet-quote', 'CheckoutController@walletQuote')->middleware('throttle:30,1')->block()->name('shop.checkout.wallet-quote');
     Route::post('checkout/prepare', 'CheckoutController@prepare')->middleware('throttle:30,1')->block()->name('shop.checkout.prepare');
     Route::post('checkout/complete', 'CheckoutController@complete')->middleware('throttle:30,1')->block()->name('shop.checkout.complete');
     Route::get('orders/{order}', 'CheckoutController@order')->whereUuid('order')->block()->name('shop.order');

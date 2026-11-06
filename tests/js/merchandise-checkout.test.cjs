@@ -6,9 +6,9 @@ const path = require('node:path');
 module.exports = async function () {
     const source = fs.readFileSync(path.join(__dirname, '../../resources/js/views/merchandise-checkout.js'), 'utf8');
     const settle = async () => { for (let n = 0; n < 12; n++) await Promise.resolve(); };
-    function fixture({digital = false, prefilled = false, mode = 'demo'} = {}) {
+    function fixture({digital = false, prefilled = false, mode = 'demo', walletOnly = false, signedIn = false, narrow = null} = {}) {
         let now = Date.parse('2026-10-28T16:00:00Z'), sequence = 0;
-        const timers = new Map(), requests = [], redirects = [], confirmations = [], documentEvents = {};
+        const timers = new Map(), requests = [], redirects = [], confirmations = [], documentEvents = {}, wallets = [], cardMounts = [];
         function node(extra = {}) {
             return Object.assign({events: {}, dataset: {}, textContent: '', hidden: false, disabled: false, value: '',
                 addEventListener(name, fn) { this.events[name] = fn; }, setAttribute(name, value) { this[name] = value; },
@@ -27,6 +27,7 @@ module.exports = async function () {
             country_code: field('country_code', prefilled ? 'GB' : '', true, true),
             state_code: field('state_code', ''), city: field('city', prefilled ? 'London' : '', true), zip: field('zip', prefilled ? 'SW1A 1AA' : '')
         };
+        inputs.email.type = signedIn ? 'hidden' : 'email';
         if (digital) {
             inputs.product_type = field('product_type', 'ebooks'); inputs.product_id = field('product_id', '1'); inputs.coupon = field('coupon', '');
         } else { inputs.state_code.select = true; inputs.shipping_id = field('shipping_id', '', false, true); }
@@ -34,7 +35,9 @@ module.exports = async function () {
         country.options = ['', 'US', 'GB', 'CH'].map(value => ({value}));
         const retry = node({hidden: true}), status = node(), error = node(), pay = node(), label = node(), orderLink = node({hidden: true});
         const stateContainer = node(), shippingOptions = node({hidden: true});
-        const totals = Object.fromEntries(['total', 'shipping', 'tax', 'discount-line', 'discount-label', 'discount', 'subtotal'].map(key => [key, node()]));
+        const totals = Object.fromEntries(['total', 'mobile-total', 'shipping', 'tax', 'discount-line', 'discount-label', 'discount', 'subtotal'].map(key => [key, node()]));
+        const summaryToggle = node(), summary = narrow === null ? null : node({open: true, querySelector: () => summaryToggle});
+        const media = node({matches: narrow, removeEventListener() {}}), bagItems = node();
         const shipping = node({querySelector(selector) {
             if (selector === '[data-delivery-retry]') return retry;
             if (selector === '[data-delivery-status]') return status;
@@ -56,10 +59,10 @@ module.exports = async function () {
             if (selector === '[data-card-status]') return node();
             return nativeCardInputs.find(input => selector === '[name="' + input.name + '"]') || null;
         }, querySelectorAll(selector) { return selector === '[data-stripe-field]' ? stripeNodes : selector === 'input' ? nativeCardInputs : []; }});
-        const surface = node({querySelector: selector => totals[selector.match(/data-checkout-([^\]]+)/)?.[1]]});
-        const root = node({dataset: {mode, kind: digital ? 'digital' : 'merchandise', key: 'pk_test_review', quoteUrl: '/quote', prepareUrl: '/prepare', completeUrl: '/complete',
+        const surface = node({querySelector: selector => selector === '[data-checkout-summary]' ? summary : totals[selector.match(/data-checkout-([^\]]+)/)?.[1]]});
+        const root = node({dataset: {mode, walletOnly: String(walletOnly), kind: digital ? 'digital' : 'merchandise', key: 'pk_test_review', quoteUrl: '/quote', prepareUrl: '/prepare', completeUrl: '/complete', walletQuoteUrl: '/wallet-quote', walletAmount: '2800',
             countries: JSON.stringify([{code: 'US', states: [{code: 'NY', name: 'New York'}, {code: 'CA', name: 'California'}]}, {code: 'GB', states: null}, {code: 'CH', states: null}])},
-        closest: selector => selector === '[data-checkout-surface]' ? surface : node(),
+        closest: selector => selector === '[data-checkout-surface]' ? surface : selector === '[data-storefront]' ? {querySelector: () => bagItems} : node(),
         querySelector(selector) {
             return {'[data-shipping-form]': shipping, '[data-merchandise-payment]': form, '[data-state-field]': stateContainer}[selector];
         }});
@@ -67,11 +70,16 @@ module.exports = async function () {
         const window = {setTimeout: timeout, clearTimeout: id => timers.delete(id), AbortController,
             CustomEvent: class { constructor(type) { this.type = type; } }, Option: class { constructor(text, value) { this.text = text; this.value = value; } },
             FormData: class { constructor() { return Object.entries(inputs).filter(([, input]) => !input.disabled && (!input.select || input.options.length)).map(([name, input]) => [name, input.value]); } },
-            location: {origin: 'http://shop.example.test', assign: url => redirects.push(url)}, getComputedStyle: () => ({}),
-            Stripe: () => ({elements: () => ({create: () => {
+            location: {origin: 'http://shop.example.test', assign: url => redirects.push(url)}, getComputedStyle: () => ({}), matchMedia: () => media,
+            Stripe: () => ({elements: () => ({create: type => {
+                cardMounts.push(type);
                 const events = {};
                 return {on: (type, fn) => { events[type] = fn; }, mount() { events.ready(); events.change({complete: true}); }, update() {}, destroy() {}, focus() {}};
             }}), confirmCardPayment: async secret => { confirmations.push(secret); return {}; }}),
+            PianoLITExpressCheckout: {mount(stripe, form, options, confirm) {
+                const wallet = {options, confirm, updates: [], update(values) { this.updates.push(values); }, destroy() { this.destroyed = true; }};
+                wallets.push(wallet); return wallet;
+            }},
             fetch: (url, options) => new Promise((resolve, reject) => {
                 requests.push({url, options, data: JSON.parse(options.body), resolve, reject});
                 options.signal.addEventListener('abort', () => reject(new Error('Aborted')));
@@ -93,14 +101,14 @@ module.exports = async function () {
             now = end; await settle();
         }
         async function respond(index, data = {}, ok = true) {
-            const payload = {order_id: 'review-order', subtotal: 2800, shipping: 500, tax: 0, total: 3300, discount: 0,
+            const payload = {order_id: 'review-order', currency: 'usd', subtotal: 2800, shipping: 500, tax: 0, total: 3300, discount: 0,
                 shipping_id: 'STANDARD', expires_at: new Date(now + 900000).toISOString(),
                 rates: [{id: 'STANDARD', name: 'Standard', amount: 500}, {id: 'EXPRESS', name: 'Express', amount: 1200}], ...data};
             requests[index].resolve({ok, json: async () => payload}); await settle();
         }
         function destroy() { documentEvents['checkout:dispose']({target: {querySelector: () => root}}); }
         const submit = () => form.events.submit({preventDefault() {}});
-        return {inputs, shipping, form, totals, retry, pay, error, status, requests, redirects, confirmations, orderLink, edit, fill, tick, respond, destroy, submit};
+        return {inputs, shipping, form, totals, summary, summaryToggle, media, bagItems, retry, pay, error, status, requests, redirects, confirmations, wallets, cardMounts, orderLink, edit, fill, tick, respond, destroy, submit};
     }
 
     let f = fixture();
@@ -169,5 +177,96 @@ module.exports = async function () {
     assert.equal(f.requests[2].url, '/complete'); await f.respond(2, {message: 'Confirmation unavailable'}, false); await f.tick(5000);
     assert.equal(f.requests.length, 3, 'An ambiguous payment completion never silently starts a replacement quote/payment');
     assert.equal(f.orderLink.hidden, false);
-    console.log('Passed: automatic settled-address/coupon quotes, validation, deduplication, serialized/stale requests, country/rate changes, composition, disposal, retry and payment safety.');
+    f = fixture({mode: 'sandbox'});
+    assert.equal(f.wallets.length, 1, 'An eligible wallet mounts before an address or quote exists');
+    let w = f.wallets[0];
+    assert.equal(w.options.collection.shippingAddressRequired, true);
+    assert.equal(w.options.collection.emailRequired, true);
+    assert.deepEqual(Array.from(w.options.collection.allowedShippingCountries), ['US', 'GB', 'CH']);
+    await f.tick(2000); assert.equal(f.requests.length, 0);
+    let opened = false;
+    w.options.click({resolve() { opened = true; }}); assert.equal(opened, true);
+    const partial = {country: 'US', state: 'NY', city: 'New York', postal_code: '10001'};
+    let preview = w.options.shippingAddressChange({address: partial}); await settle();
+    assert.equal(f.requests[0].url, '/wallet-quote');
+    assert.equal(f.requests[0].data.address1, undefined, 'Privacy-redacted wallet addresses do not acquire invented street details');
+    await f.respond(0); let displayed = await preview;
+    assert.equal(displayed.amount, 3300);
+    preview = w.options.shippingRateChange({shippingRate: {id: 'EXPRESS'}}); await settle();
+    assert.equal(f.requests[1].data.shipping_id, 'EXPRESS');
+    await f.respond(1, {shipping_id: 'EXPRESS', shipping: 1200, total: 4000}); displayed = await preview;
+    assert.equal(displayed.shippingRates[0].id, 'EXPRESS');
+    const payment = {event: {billingDetails: {email: 'wallet@example.test'}, shippingAddress: {name: 'Wallet Customer',
+        address: {...partial, line1: '8 Wallet Street', line2: 'Apt 2'}}, shippingRate: {id: 'EXPRESS'}},
+    async confirm(secret, kind, returnUrl) { f.confirmations.push({secret, kind, returnUrl}); }};
+    const paid = w.confirm(payment); await settle();
+    assert.equal(f.requests[2].url, '/quote', 'The full wallet address receives the normal authoritative quote before preparing payment');
+    assert.equal(f.requests[2].data.address1, '8 Wallet Street');
+    assert.equal(f.requests[2].data.address2, 'Apt 2');
+    assert.equal(f.requests[2].data.state_code, 'NY', 'Wallet autofill enables the state field before serializing the full address');
+    assert.equal(f.requests[2].data.country_code, 'US');
+    assert.equal(f.requests[2].data.email, 'wallet@example.test');
+    assert.equal(f.requests[2].data.name, 'Wallet Customer');
+    await f.respond(2, {shipping_id: 'EXPRESS', shipping: 1200, total: 4000, currency: 'usd'});
+    assert.equal(f.requests[3].url, '/prepare');
+    await f.respond(3, {client_secret: 'wallet_secret', return_url: 'https://shop.example.test/orders/actual'});
+    assert.equal(f.confirmations[0].returnUrl, 'https://shop.example.test/orders/actual');
+    await f.respond(4, {redirect: '/orders/paid'}); await paid;
+    assert.equal(f.redirects[0], '/orders/paid');
+    assert.equal(f.wallets.length, 1, 'Address/total changes retain the same wallet instance');
+
+    f = fixture({mode: 'sandbox'}); w = f.wallets[0]; w.options.click({resolve() {}});
+    preview = w.options.shippingAddressChange({address: partial}); await settle(); await f.respond(0, {currency: 'usd'}); await preview;
+    const changedTotal = w.confirm({...payment, event: {...payment.event, shippingRate: {id: 'STANDARD'}}});
+    const rejectedTotal = assert.rejects(changedTotal, /total changed/); await settle();
+    await f.respond(1, {shipping: 600, total: 3400, currency: 'usd'}); await rejectedTotal;
+    assert.equal(f.requests.length, 2, 'A changed delivery/tax/discount total cannot prepare or confirm payment');
+    assert.equal(f.confirmations.length, 0); assert.equal(f.totals.total.textContent, '$34.00');
+    assert.equal(f.inputs.address1.value, '8 Wallet Street', 'The full wallet address remains available after a review error');
+    w.options.click({resolve() {}});
+    preview = w.options.shippingAddressChange({address: partial}); await settle();
+    assert.equal(f.requests[2].data.address1, '8 Wallet Street', 'Retrying the same destination can use the full address for an exact preview');
+    w.options.cancel(); await f.respond(2);
+    await assert.rejects(preview, error => error.obsolete === true);
+
+    f = fixture({mode: 'sandbox'}); w = f.wallets[0]; w.options.click({resolve() {}});
+    const first = w.options.shippingAddressChange({address: partial}); const firstRejected = assert.rejects(first, error => error.obsolete === true);
+    await settle();
+    const second = w.options.shippingAddressChange({address: {...partial, city: 'Boston'}}); await settle();
+    assert.equal(f.requests.length, 1, 'Wallet selections serialize provider requests');
+    await f.respond(0); await firstRejected; await settle();
+    assert.equal(f.requests.length, 2); assert.equal(f.requests[1].data.city, 'Boston');
+    await f.respond(1); await second;
+    w.options.cancel(); await f.tick(2000);
+    assert.equal(f.confirmations.length, 0, 'Canceling a wallet never prepares a payment');
+
+    f = fixture({mode: 'sandbox'}); w = f.wallets[0]; w.options.click({resolve() {}});
+    preview = w.options.shippingAddressChange({address: partial}); const closed = assert.rejects(preview, /Aborted/); await settle();
+    f.destroy(); await closed; assert.equal(w.destroyed, true);
+    assert.equal(f.requests.length, 1, 'Disposal aborts pending wallet requests');
+
+    f = fixture({mode: 'sandbox'}); w = f.wallets[0]; w.options.click({resolve() {}});
+    preview = w.options.shippingAddressChange({address: partial}); await settle(); await f.respond(0); await preview;
+    const canceledPayment = w.confirm({...payment, event: {...payment.event, shippingRate: {id: 'STANDARD'}}});
+    const canceled = assert.rejects(canceledPayment, error => error.obsolete === true); await settle();
+    assert.equal(f.requests[1].url, '/quote'); w.options.cancel();
+    await f.respond(1); await canceled;
+    assert.equal(f.requests.length, 2, 'Canceling while checking the full address cannot prepare payment');
+    assert.equal(f.confirmations.length, 0);
+    f = fixture({mode: 'sandbox', walletOnly: true, signedIn: true, prefilled: true});
+    assert.equal(f.cardMounts.length, 0, 'Bag express checkout never loads card-entry fields');
+    await f.tick(2000); assert.equal(f.requests.length, 0, 'The bag never creates an automatic full-address order');
+    w = f.wallets[0]; assert.equal(w.options.collection.emailRequired, false, 'Signed-in customers keep their account contact');
+    w.options.click({resolve() {}}); assert.equal(f.bagItems.inert, true, 'Bag quantities cannot change during a wallet payment');
+    preview = w.options.shippingAddressChange({address: partial}); await settle(); await f.respond(0); await preview;
+    const inlinePaid = w.confirm({event: {shippingAddress: payment.event.shippingAddress, shippingRate: {id: 'STANDARD'}},
+        confirm: payment.confirm}); await settle();
+    assert.equal(f.requests[1].data.email, 'customer@example.test');
+    await f.respond(1); await f.respond(2, {client_secret: 'inline_wallet'}); await f.respond(3, {redirect: '/orders/inline-paid'}); await inlinePaid;
+    assert.equal(f.redirects[0], '/orders/inline-paid'); assert.equal(f.bagItems.inert, false);
+    f = fixture({narrow: true}); assert.equal(f.summary.open, false, 'Phone checkout starts with a compact native order summary');
+    f.fill(); await f.tick(1000); await f.respond(0);
+    assert.equal(f.totals['mobile-total'].textContent, '$33.00');
+    f.media.matches = false; f.media.events.change(); assert.equal(f.summary.open, true); assert.equal(f.summaryToggle.tabIndex, -1);
+    console.log('Passed: automatic address quotes and early wallets, address/rate collection, final-total review, payment, cancellation, serialized requests and disposal.');
 };

@@ -32384,6 +32384,94 @@ body.score-editor-fullscreen-open .playlist-player--piece {
     gap: 8px;
   }
 }
+.checkout-wallets {
+  margin-bottom: 28px;
+}
+
+.checkout-wallets[data-wallet-state=loading] {
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  margin: 0;
+}
+
+.checkout-payment-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0 0;
+  color: var(--color-text-muted);
+}
+
+.checkout-payment-divider::before, .checkout-payment-divider::after {
+  content: "";
+  height: 1px;
+  background: var(--color-border);
+  flex: 1;
+}
+
+.checkout-summary-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  list-style: none;
+}
+
+.checkout-summary-toggle::-webkit-details-marker {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .checkout-summary-toggle {
+    pointer-events: none;
+    font-size: var(--font-size-h3);
+    margin-bottom: 28px;
+  }
+  .checkout-summary-toggle .app-icon {
+    display: none;
+  }
+}
+@media (max-width: 767.98px) {
+  .checkout-modal.checkout-modal--shop .checkout-layout {
+    gap: 0;
+  }
+  .checkout-modal.checkout-modal--shop .checkout-summary {
+    padding: 0;
+    background: transparent;
+  }
+  .checkout-modal.checkout-modal--shop .checkout-brand {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .checkout-modal.checkout-modal--shop .checkout-summary-details {
+    background: var(--color-surface);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+  }
+  .checkout-modal.checkout-modal--shop .checkout-summary-toggle {
+    font-size: var(--font-size-base);
+    cursor: pointer;
+  }
+  .checkout-modal.checkout-modal--shop .checkout-summary-toggle > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .checkout-modal.checkout-modal--shop .checkout-summary-details-content {
+    padding-top: 24px;
+  }
+  .checkout-modal.checkout-modal--shop .checkout-payment {
+    padding-top: 24px;
+  }
+  .checkout-modal.checkout-modal--shop .checkout-loading .checkout-summary > :not(.checkout-brand):not(h2):not(.h2) {
+    display: none;
+  }
+  .checkout-modal.checkout-modal--shop .checkout-loading .checkout-summary > h2, .checkout-modal.checkout-modal--shop .checkout-loading .checkout-summary > .h2 {
+    font-size: var(--font-size-base);
+    margin-bottom: 0;
+  }
+}
 .checkout-modal .modal-content {
   background: #f3f5f7;
 }
@@ -32473,28 +32561,6 @@ body.score-editor-fullscreen-open .playlist-player--piece {
   grid-template-columns: minmax(160px, 0.8fr) minmax(0, 1.35fr);
   gap: 28px;
   align-items: start;
-}
-.checkout-modal .checkout-wallets {
-  margin-bottom: 28px;
-}
-.checkout-modal .checkout-wallets[data-wallet-state=loading] {
-  height: 0;
-  overflow: hidden;
-  visibility: hidden;
-  margin: 0;
-}
-.checkout-modal .checkout-payment-divider {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 20px 0 0;
-  color: var(--color-text-muted);
-}
-.checkout-modal .checkout-payment-divider::before, .checkout-modal .checkout-payment-divider::after {
-  content: "";
-  height: 1px;
-  background: var(--color-border);
-  flex: 1;
 }
 .checkout-modal .checkout-shipping {
   border: 0;

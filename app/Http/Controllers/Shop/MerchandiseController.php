@@ -58,7 +58,15 @@ class MerchandiseController extends Controller
 
     public function bag(Request $request, MerchandiseBag $bag)
     {
-        return view('shop.storefront.bag', ['shoppingBag' => $bag->contents($request)]);
+        if ($request->query('checkout') === 'merchandise') return redirect()->route('shop.checkout', $request->except(['checkout', 'modal']));
+        $shoppingBag = $bag->contents($request);
+        $expressCheckout = null;
+        $environment = app(\App\Services\Shop\CheckoutEnvironment::class);
+        if ($shoppingBag['lines'] && $environment->available() && $environment->mode() !== 'demo') {
+            try { $expressCheckout = app(\App\Services\Shop\ShopCheckout::class)->pageData($request); }
+            catch (\Throwable $exception) { /* The bag and ordinary checkout link remain usable if express setup is unavailable. */ }
+        }
+        return response()->view('shop.storefront.bag', compact('shoppingBag', 'expressCheckout'))->header('Cache-Control', 'private, no-store');
     }
 
     public function add(Request $request, MerchandiseBag $bag)

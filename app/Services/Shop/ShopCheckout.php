@@ -11,6 +11,26 @@ use Illuminate\Validation\ValidationException;
 
 class ShopCheckout
 {
+    public function pageData(Request $request): array
+    {
+        $environment = app(CheckoutEnvironment::class);
+        if (!$environment->available()) throw new CheckoutException('Checkout is temporarily unavailable. Please try again later.');
+        $mode = $environment->mode();
+        return ['mode' => $mode, 'snapshot' => $this->snapshot($request), 'countries' => $this->countries(),
+            'stripeKey' => $mode === 'demo' ? '' : $environment->credentials()[0], 'kind' => 'merchandise',
+            'recipient' => $this->savedRecipient($request), 'cancelUrl' => route('shop.bag')];
+    }
+
+    public function savedRecipient(Request $request): array
+    {
+        $id = $request->session()->get('shop_checkout_recipient_order');
+        if (!$id || !($order = ShopOrder::find($id)) || $order->kind !== 'merchandise' || $order->paid_at || $order->expires_at->isPast()
+            || $order->mode !== app(CheckoutEnvironment::class)->mode()) return [];
+        $owned = $order->user_id ? ((int) $order->user_id === (int) optional($request->user('web'))->id)
+            : hash_equals($order->owner_hash, $this->owner($request));
+        return $owned ? $order->recipient : [];
+    }
+
     public function owner(Request $request): string
     {
         if (!$request->session()->has('shop_checkout_owner')) $request->session()->put('shop_checkout_owner', Str::random(64));
@@ -97,18 +117,7 @@ class ShopCheckout
     {
         $mode = app(CheckoutEnvironment::class)->mode();
         $id = (string) Str::uuid();
-        $tax = ['amount_total' => $snapshot['subtotal'] + $estimate['shipping'], 'tax_amount_exclusive' => 0, 'id' => null];
-        if ($mode === 'live') {
-            $tax = app(CheckoutStripe::class)->call('tax.calculations', 'create', ['currency' => 'usd',
-                'customer_details' => ['address_source' => $kind === 'digital' ? 'billing' : 'shipping', 'address' => $this->stripeAddress($recipient)],
-                'shipping_cost' => ['amount' => $estimate['shipping'], 'tax_behavior' => 'exclusive', 'tax_code' => 'txcd_92010001'],
-                'line_items' => array_map(fn ($item) => ['amount' => $item['line_total'] ?? $item['unit_price'] * $item['quantity'], 'quantity' => $item['quantity'],
-                    'reference' => $item['product_id'].':'.$item['sync_variant_id'], 'tax_behavior' => 'exclusive',
-                    'tax_code' => config('shop-checkout.tax_codes.'.$item['category'], 'txcd_99999999')], $snapshot['items'])]);
-        }
-        if ((int) $tax['amount_total'] !== $snapshot['subtotal'] + $estimate['shipping'] + (int) $tax['tax_amount_exclusive']) throw new CheckoutException('The order total could not be confirmed. Please try again.');
-        if ($tax['amount_total'] > 99999999 || ($tax['amount_total'] > 0 && $tax['amount_total'] < 50)
-            || ($kind === 'merchandise' && $tax['amount_total'] === 0)) throw new CheckoutException('This order total is not supported. Please contact us.');
+        $tax = $this->totals($snapshot, $recipient, $estimate['shipping'], $kind);
         $order = ShopOrder::create(['id' => $id, 'owner_hash' => $this->owner($request), 'user_id' => optional($request->user('web'))->id,
             'kind' => $kind, 'active_key' => $activeKey,
             'checkout_email_hash' => app(FirstOrderDiscount::class)->emailHash($recipient['email']),
@@ -119,6 +128,7 @@ class ShopCheckout
             'fulfillment_cost' => $estimate['total'], 'shipping_id' => $rate['id'], 'shipping_name' => $rate['name'],
             'stripe_tax_calculation' => $tax['id'], 'printful_external_id' => substr(hash('sha256', 'pianolit:'.$id), 0, 32),
             'expires_at' => now()->addMinutes((int) config('shop-checkout.quote_minutes', 15))]);
+        if ($kind === 'merchandise') $request->session()->put('shop_checkout_recipient_order', $order->id);
         return ['order_id' => $id, 'subtotal' => $order->subtotal, 'shipping' => $order->shipping, 'tax' => $order->tax,
             'expires_at' => $order->expires_at->toIso8601String(),
             'discount' => app(FirstOrderDiscount::class)->amount($snapshot['items']),
@@ -127,9 +137,26 @@ class ShopCheckout
             'rates' => array_map(fn ($item) => ['id' => $item['id'], 'name' => $item['name'], 'amount' => app(PrintfulOrders::class)->cents($item['rate'])], $rates)];
     }
 
+    public function totals(array $snapshot, array $recipient, int $shipping, string $kind = 'merchandise'): array
+    {
+        $tax = ['amount_total' => $snapshot['subtotal'] + $shipping, 'tax_amount_exclusive' => 0, 'id' => null];
+        if (app(CheckoutEnvironment::class)->mode() === 'live') {
+            $tax = app(CheckoutStripe::class)->call('tax.calculations', 'create', ['currency' => 'usd',
+                'customer_details' => ['address_source' => $kind === 'digital' ? 'billing' : 'shipping', 'address' => $this->stripeAddress($recipient)],
+                'shipping_cost' => ['amount' => $shipping, 'tax_behavior' => 'exclusive', 'tax_code' => 'txcd_92010001'],
+                'line_items' => array_map(fn ($item) => ['amount' => $item['line_total'] ?? $item['unit_price'] * $item['quantity'], 'quantity' => $item['quantity'],
+                    'reference' => $item['product_id'].':'.$item['sync_variant_id'], 'tax_behavior' => 'exclusive',
+                    'tax_code' => config('shop-checkout.tax_codes.'.$item['category'], 'txcd_99999999')], $snapshot['items'])]);
+        }
+        if ((int) $tax['amount_total'] !== $snapshot['subtotal'] + $shipping + (int) $tax['tax_amount_exclusive']) throw new CheckoutException('The order total could not be confirmed. Please try again.');
+        if ($tax['amount_total'] > 99999999 || ($tax['amount_total'] > 0 && $tax['amount_total'] < 50)
+            || ($kind === 'merchandise' && $tax['amount_total'] === 0)) throw new CheckoutException('This order total is not supported. Please contact us.');
+        return $tax;
+    }
+
     public function stripeAddress(array $recipient): array
     {
-        return ['line1' => $recipient['address1'], 'line2' => $recipient['address2'] ?? '', 'city' => $recipient['city'],
+        return ['line1' => $recipient['address1'] ?? '', 'line2' => $recipient['address2'] ?? '', 'city' => $recipient['city'] ?? '',
             'state' => $recipient['state_code'] ?? '', 'postal_code' => $recipient['zip'] ?? '', 'country' => $recipient['country_code']];
     }
 

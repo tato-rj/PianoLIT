@@ -101,6 +101,121 @@ class ShopCheckoutTest extends ReviewTestCase
         $this->assertCount(0, $this->gateway->calls);
     }
 
+    public function test_wallet_preview_accepts_a_redacted_address_and_uses_saved_prices_without_creating_an_order()
+    {
+        $html = $this->getJson(route('shop.checkout'))->assertOk()->json('html');
+        $this->assertLessThan(strpos($html, 'data-shipping-form'), strpos($html, 'data-checkout-wallets'));
+        $this->assertStringContainsString('data-wallet-amount="2800"', $html);
+        if ($directory = getenv('SHOP_WALLET_PREVIEW_DIR')) {
+            if (!is_dir($directory)) mkdir($directory, 0700, true);
+            file_put_contents($directory.'/checkout.html', $html);
+        }
+        $response = $this->postJson(route('shop.checkout.wallet-quote'), ['country_code' => 'US', 'state_code' => 'NY',
+            'city' => 'New York', 'zip' => '10001', 'shipping_id' => 'EXPRESS', 'subtotal' => 1, 'shipping' => 0, 'total' => 1, 'user_id' => 99]);
+        $response->assertOk()->assertJson(['subtotal' => 2800, 'shipping' => 1200, 'total' => 4000, 'shipping_id' => 'EXPRESS', 'currency' => 'usd']);
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+        $this->assertArrayNotHasKey('order_id', $response->json());
+        $this->assertDatabaseCount('shop_orders', 0);
+        $this->assertCount(0, $this->gateway->calls);
+        Http::assertNothingSent();
+    }
+
+    public function test_bag_offers_express_checkout_and_a_native_link_to_the_full_checkout_page()
+    {
+        $response = $this->get(route('shop.bag'))->assertOk()->assertSee("Checkout with card", false)
+            ->assertSee('Express checkout')->assertSee('data-wallet-only="true"', false)->assertSee('js/components/express-checkout.js');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $link = $xpath->query('//a[@href="'.route('shop.checkout').'"]');
+        $this->assertCount(1, $link);
+        $this->assertFalse($link->item(0)->hasAttribute('data-checkout-open'));
+        $this->assertCount(1, $xpath->query('//*[@data-wallet-only="true"]//form[@data-shipping-form and @hidden]'));
+        $this->assertCount(0, $xpath->query('//*[@data-wallet-only="true"]//*[@data-stripe-field]'));
+        if ($directory = getenv('SHOP_WALLET_PREVIEW_DIR')) file_put_contents($directory.'/bag-page.html', $response->getContent());
+        $this->get(route('shop.bag', ['checkout' => 'merchandise', 'modal' => 'payment-checkout-modal']))->assertRedirect(route('shop.checkout'));
+        $this->assertDatabaseCount('shop_orders', 0);
+        $this->assertCount(0, $this->gateway->calls);
+        Http::assertNothingSent();
+    }
+
+    public function test_checkout_keeps_express_before_guest_contact_and_delivery_and_uses_a_collapsible_summary()
+    {
+        $response = $this->get(route('shop.checkout'))->assertOk()->assertSee('Express checkout')->assertSee('Contact')->assertSee('Sign in')->assertSee('Delivery');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//details[@data-checkout-summary]/summary//*[@data-checkout-mobile-total]'));
+        $this->assertCount(1, $xpath->query('//form[@data-shipping-form]//input[@type="email" and @name="email"]'));
+        $this->assertCount(1, $xpath->query('//form[@data-shipping-form]//a[@href="'.route('login').'"]'));
+        if ($directory = getenv('SHOP_WALLET_PREVIEW_DIR')) file_put_contents($directory.'/checkout-page.html', $response->getContent());
+        $user = \Illuminate\Database\Eloquent\Model::withoutEvents(fn () => create(\App\User::class, ['email' => 'account@example.test']));
+        $signedIn = $this->actingAs($user, 'web')->get(route('shop.checkout'))->assertOk()->assertSee('account@example.test');
+        @$dom->loadHTML($signedIn->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//form[@data-shipping-form]//input[@type="hidden" and @name="email" and @value="account@example.test"]'));
+        $this->assertCount(0, $xpath->query('//form[@data-shipping-form]//input[@type="email" and @name="email"]'));
+        $this->assertDatabaseCount('shop_orders', 0);
+    }
+
+    public function test_an_owned_pending_wallet_address_follows_the_customer_to_checkout_without_leaking_to_another_account()
+    {
+        $user = \Illuminate\Database\Eloquent\Model::withoutEvents(fn () => create(\App\User::class));
+        $this->actingAs($user, 'web');
+        $quote = $this->quote();
+        $this->get(route('shop.checkout'))->assertOk()->assertSee('value="123 Test Street"', false)->assertSee('value="10001"', false);
+        $other = \Illuminate\Database\Eloquent\Model::withoutEvents(fn () => create(\App\User::class));
+        $this->actingAs($other, 'web')->get(route('shop.checkout'))->assertOk()->assertDontSee('value="123 Test Street"', false);
+        $this->actingAs($user, 'web');
+        ShopOrder::findOrFail($quote['order_id'])->update(['expires_at' => now()->subMinute()]);
+        $this->get(route('shop.checkout'))->assertOk()->assertDontSee('value="123 Test Street"', false);
+        $this->assertCount(0, $this->gateway->intents);
+    }
+
+    public function test_wallet_preview_rejects_unknown_destinations_and_rates_and_obeys_checkout_activation()
+    {
+        $url = route('shop.checkout.wallet-quote');
+        $this->postJson($url, ['country_code' => 'US', 'state_code' => 'UNKNOWN'])->assertJsonValidationErrors('state_code');
+        $this->postJson($url, ['country_code' => 'XX'])->assertJsonValidationErrors('country_code');
+        $this->postJson($url, ['country_code' => 'US', 'state_code' => 'NY', 'shipping_id' => 'FREE'])->assertStatus(422);
+        $this->postJson($url, ['country_code' => 'US', 'state_code' => 'NY', 'email' => 'invalid'])->assertJsonValidationErrors('email');
+        $remote = null;
+        $this->live($remote);
+        config(['shop-checkout.enabled' => false]);
+        $this->postJson($url, ['country_code' => 'US', 'state_code' => 'NY'])->assertStatus(422);
+        $this->assertDatabaseCount('shop_orders', 0);
+        $this->assertCount(0, $this->gateway->intents);
+        Http::assertNothingSent();
+    }
+
+    public function test_live_wallet_preview_uses_provider_rates_and_shared_tax_without_saving_private_contact_or_payment()
+    {
+        $remote = null;
+        $this->live($remote);
+        $this->postJson(route('shop.checkout.wallet-quote'), ['country_code' => 'US', 'state_code' => 'NY', 'city' => 'New York', 'zip' => '10001'])
+            ->assertOk()->assertJson(['subtotal' => 2800, 'shipping' => 500, 'tax' => 200, 'total' => 3500]);
+        Http::assertSentCount(2);
+        Http::assertSent(fn ($request) => str_ends_with($request->url(), '/shipping/rates')
+            && !isset($request['recipient']['name']) && !isset($request['recipient']['address1']));
+        $this->assertSame('tax.calculations', $this->gateway->calls[0]['resource']);
+        $this->assertSame('10001', $this->gateway->calls[0]['parameters']['customer_details']['address']['postal_code']);
+        $this->assertCount(0, $this->gateway->intents);
+        $this->assertNull($remote);
+        $this->assertDatabaseCount('shop_orders', 0);
+    }
+
+    public function test_wallet_preview_can_estimate_a_known_full_address_and_does_not_reserve_the_first_order_offer()
+    {
+        app(\App\Services\Shop\FirstOrderDiscount::class)->grant('checkout@example.test');
+        $this->postJson(route('shop.checkout.wallet-quote'), $this->address())
+            ->assertOk()->assertJson(['subtotal' => 2520, 'shipping' => 500, 'total' => 3020, 'discount' => 280]);
+        $this->assertNull(DB::table('shop_first_order_discounts')->first()->reserved_order_id);
+        $this->assertNull(DB::table('shop_first_order_discounts')->first()->redeemed_order_id);
+        $this->assertDatabaseCount('shop_orders', 0);
+        $this->assertCount(0, $this->gateway->intents);
+        Http::assertNothingSent();
+    }
+
     public function test_payment_preparation_is_idempotent_and_unpaid_confirmation_never_fulfills()
     {
         $order = $this->prepared();
@@ -329,7 +444,7 @@ class ShopCheckoutTest extends ReviewTestCase
 
     public function test_checkout_posts_keep_same_host_csrf_and_session_locking()
     {
-        foreach (['shop.checkout.quote', 'shop.checkout.prepare', 'shop.checkout.complete'] as $name) {
+        foreach (['shop.checkout.quote', 'shop.checkout.wallet-quote', 'shop.checkout.prepare', 'shop.checkout.complete'] as $name) {
             $route = app('router')->getRoutes()->getByName($name);
             $this->assertSame('shop.localhost', $route->getDomain());
             $this->assertContains('web', $route->middleware());

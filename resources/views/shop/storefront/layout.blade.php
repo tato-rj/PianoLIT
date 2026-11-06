@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => $shopTitle ?? 'PianoLIT Shop', 'projectHome' => true, 'bodyClass' => 'shop-page'])
+@extends('layouts.app', ['title' => $shopTitle ?? 'PianoLIT Shop', 'projectHome' => true, 'bodyClass' => $shopBodyClass ?? 'shop-page'])
 
 @push('header')
     <link rel="stylesheet" href="{{ mix('css/storefront.css') }}">

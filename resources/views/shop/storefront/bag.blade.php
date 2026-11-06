@@ -1,4 +1,4 @@
-@extends('shop.storefront.layout', ['shopTitle' => 'Shopping bag | PianoLIT Shop'])
+@extends('shop.storefront.layout', ['shopTitle' => 'Shopping bag | PianoLIT Shop', 'shopBodyClass' => 'shop-page shop-bag-page'])
 
 @section('shop-content')
 @include('components.navigation.breadcrumb', ['items' => [['label' => 'Home', 'url' => route('home')], ['label' => 'Shop', 'url' => route('shop.home')], ['label' => 'Shopping bag']]])
@@ -8,7 +8,7 @@
 @endif
 @if(count($shoppingBag['lines']))
     <div class="row mt-1 g-4 g-lg-5">
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-lg-8" data-bag-items>
             @foreach($shoppingBag['lines'] as $line)
                 <article class="shop-bag-item border rounded-sm mb-3">
                     <a href="{{ $line['product']['url'] }}" class="shop-bag-item__image border rounded-sm overflow-hidden" tabindex="-1" aria-hidden="true">
@@ -19,7 +19,7 @@
                         <p class="mb-1">{{ $line['variant']['color'] }} / {{ $line['variant']['size'] }}</p>
                         <p class="shop-card__price mb-0">{{ $line['total'] }}</p>
                     </div>
-                    <div class="shop-bag-item__actions d-flex align-items-center gap-2 flex-shrink-0">
+                    <div class="shop-bag-item__actions d-flex flex-column align-items-end align-self-stretch justify-content-between gap-3 flex-shrink-0">
                         <form action="{{ route('shop.bag.update', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST" class="d-flex align-items-center gap-2" data-bag-quantity>
                             @csrf @method('PATCH')
                             @include('shop.storefront.components.quantity', ['quantity' => $line['quantity'], 'compact' => true, 'productName' => $line['product']['name']])
@@ -27,7 +27,7 @@
                         </form>
                         <form action="{{ route('shop.bag.remove', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST">
                             @csrf @method('DELETE')
-                            <button class="btn btn-red btn-sm shop-remove" type="submit" aria-label="Remove {{ $line['product']['name'] }} ({{ $line['variant']['color'] }} / {{ $line['variant']['size'] }})">@icon('trash-2', ['mr' => 0])</button>
+                            <button class="btn btn-red btn-sm" type="submit" aria-label="Remove {{ $line['product']['name'] }} ({{ $line['variant']['color'] }} / {{ $line['variant']['size'] }})">@icon('trash-2', ['mr' => 0])</button>
                         </form>
                     </div>
                 </article>
@@ -40,10 +40,19 @@
                 <div class="d-flex justify-content-between gap-3 py-4"><span>Subtotal</span><strong>{{ $shoppingBag['subtotal'] }}</strong></div>
                 <p>Shipping and taxes will be calculated at checkout.</p>
                 <div class="border-top d-flex justify-content-between gap-3 py-4"><strong>Item total</strong><strong>{{ $shoppingBag['subtotal'] }}</strong></div>
+                @if($expressCheckout)
+                    <div data-checkout-surface class="shop-bag-express">
+                        @include('shop.storefront.checkout.payment', $expressCheckout + ['walletOnly' => true])
+                        <div hidden aria-hidden="true">
+                            <span data-checkout-total></span><span data-checkout-subtotal></span><span data-checkout-shipping></span>
+                            <span data-checkout-tax></span><span data-checkout-discount-line></span><span data-checkout-discount></span>
+                        </div>
+                    </div>
+                @endif
                 @if(app(\App\Services\Shop\CheckoutEnvironment::class)->available())
-                    <a class="btn btn-primary w-100" href="{{ route('shop.checkout') }}" data-checkout-open>Checkout</a>
+                    <div class="shop-bag-checkout"><a class="btn btn-primary w-100" href="{{ route('shop.checkout') }}">Checkout with card @icon('arrow-right', ['ml' => 2, 'mr' => 0])</a></div>
                 @else
-                    <button class="btn btn-primary w-100" type="button" disabled aria-describedby="checkout-status">Checkout</button>
+                    <button class="btn btn-primary w-100" type="button" disabled aria-describedby="checkout-status">Checkout with card</button>
                     <p class="text-center mt-3 mb-0" id="checkout-status">Checkout is not available yet</p>
                 @endif
             </div>
@@ -58,3 +67,11 @@
     </div>
 @endif
 @endsection
+
+@if($expressCheckout)
+    @push('scripts')
+        <script src="https://js.stripe.com/v3/" defer></script>
+        <script src="{{ mix('js/components/express-checkout.js') }}" defer></script>
+        <script src="{{ mix('js/views/merchandise-checkout.js') }}" defer></script>
+    @endpush
+@endif

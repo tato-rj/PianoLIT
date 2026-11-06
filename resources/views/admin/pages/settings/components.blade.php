@@ -16,9 +16,9 @@
         <div class="mb-4"><button type="button" class="btn btn-primary">Checkout</button></div>
         <div class="mb-4">@include('shop.storefront.components.welcome-launcher', ['preview' => true])</div>
         @include('shop.storefront.components.quantity', ['quantity' => 1])
-        <div class="d-flex align-items-center gap-2 mt-3">
+        <div class="d-flex flex-column align-items-end gap-3 mt-3">
           @include('shop.storefront.components.quantity', ['quantity' => 1, 'compact' => true])
-          <button type="button" class="btn btn-red btn-sm shop-remove" aria-label="Remove sample product">@icon('trash-2', ['mr' => 0])</button>
+          <button type="button" class="btn btn-red btn-sm" aria-label="Remove sample product">@icon('trash-2', ['mr' => 0])</button>
         </div>
         <div class="d-flex flex-wrap gap-2 mt-4">
           @include('shop.storefront.components.option', ['option' => 'Mint', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#b9d8d1']), 'selected' => true])

@@ -1,4 +1,17 @@
 // Shop layout and artwork. Controls use PianoLIT's shared styles and tokens.
+@media (max-width: 767.98px) {
+    .shop-bag-page .shop-storefront { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+    .shop-bag-page .shop-welcome-launcher { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+    .shop-bag-checkout {
+        position: fixed;
+        inset: auto 0 0;
+        padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+        background: var(--color-surface);
+        border-top: 1px solid var(--color-border);
+        z-index: 1020;
+    }
+}
+
 .shop-welcome-launcher {
     position: fixed;
     left: calc(16px + env(safe-area-inset-left, 0px));
@@ -87,11 +100,9 @@
     .shop-quantity { display: inline-flex; align-items: center; gap: 8px; }
     .shop-quantity input { width: 56px; flex: 0 0 56px; appearance: textfield; text-align: center; padding-left: 0; padding-right: 0; }
     .shop-quantity input::-webkit-inner-spin-button, .shop-quantity input::-webkit-outer-spin-button { appearance: none; margin: 0; }
-    .shop-quantity button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; }
     .shop-quantity--compact {
         gap: 4px;
         input { width: 40px; flex-basis: 40px; }
-        button { width: 34px; height: 34px; }
     }
     .shop-details h2 { font-family: var(--font-family-body); font-size: var(--font-size-base); line-height: var(--line-height-body); font-weight: 600; }
     .shop-checkout-note { color: var(--color-text-muted); }
@@ -134,7 +145,6 @@
     .shop-bag-item h2 { font-size: var(--font-size-h6); line-height: 1.5; margin-bottom: 4px; }
     .shop-bag-item h2 a { color: inherit; text-decoration: none; }
     .shop-bag-item__actions { text-align: right; }
-    .shop-remove { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; }
     .shop-summary { padding: 24px; }
     .shop-summary h2 { font-size: var(--font-size-h5); padding-bottom: 20px; margin: 0; }
     .shop-summary strong { white-space: nowrap; }
@@ -147,7 +157,7 @@
         .shop-content { padding-top: 6px; }
         .shop-bag-item { flex-wrap: wrap; gap: 12px; padding: 14px; }
         .shop-bag-item__image { width: 76px; height: 76px; }
-        .shop-bag-item__actions { flex-basis: 100%; justify-content: flex-end; }
+        .shop-bag-item__actions { flex-basis: 100%; }
     }
     @media (prefers-reduced-motion: reduce) {
         .shop-card__art .shop-card__detail { transition: none; }

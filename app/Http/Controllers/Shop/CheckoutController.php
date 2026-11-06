@@ -9,15 +9,10 @@ use Illuminate\Validation\ValidationException;
 
 class CheckoutController extends Controller
 {
-    public function show(Request $request, ShopCheckout $checkout, CheckoutEnvironment $environment)
+    public function show(Request $request, ShopCheckout $checkout)
     {
         try {
-            if (!$environment->available()) throw new CheckoutException('Checkout is temporarily unavailable. Please try again later.');
-            $mode = $environment->mode();
-            $snapshot = $checkout->snapshot($request);
-            $countries = $checkout->countries();
-            $stripeKey = $mode === 'demo' ? '' : $environment->credentials()[0];
-            $data = compact('mode', 'snapshot', 'countries', 'stripeKey') + ['kind' => 'merchandise', 'cancelUrl' => route('shop.bag')];
+            $data = $checkout->pageData($request);
             if ($request->expectsJson()) return response()->json(['html' => view('shop.storefront.checkout.modal', $data)->render()])->header('Cache-Control', 'private, no-store');
             return response()->view('shop.storefront.checkout.index', $data)->header('Cache-Control', 'private, no-store');
         } catch (\Throwable $exception) {
@@ -52,6 +47,12 @@ class CheckoutController extends Controller
     public function quote(Request $request, ShopCheckout $checkout)
     {
         try { return response()->json($checkout->quote($request))->header('Cache-Control', 'private, no-store'); }
+        catch (\Throwable $exception) { return $this->failure($exception); }
+    }
+
+    public function walletQuote(Request $request, \App\Services\Shop\WalletQuote $quotes)
+    {
+        try { return response()->json($quotes->preview($request))->header('Cache-Control', 'private, no-store'); }
         catch (\Throwable $exception) { return $this->failure($exception); }
     }
 
