@@ -18,9 +18,9 @@
 <div class="content-wrapper"><div class="container-fluid">
     @component('admin.components.page.title', [
         'title' => 'Edit', 'subtitle' => $product->title,
-        'breadcrumbs' => [['label' => $isBook ? 'eBooks' : 'eScores', 'url' => route('admin.'.$kind.'.index')]],
+        'breadcrumbs' => [['label' => $isBook ? 'eBooks' : 'eScores', 'url' => route('admin.'.$kind.'.index', $returnFilters ?? [])]],
     ])@endcomponent
-    <form method="POST" action="{{ route('admin.'.$kind.'.update', $product) }}" enctype="multipart/form-data" id="digital-details">
+    <form method="POST" action="{{ route('admin.'.$kind.'.update', [$kind === 'ebooks' ? 'ebook' : 'escore' => $product] + ($returnFilters ?? [])) }}" enctype="multipart/form-data" id="digital-details">
         @csrf @method('PATCH')
         <input type="hidden" name="media_revision" value="{{ $mediaState['revision'] }}">
         @component('admin.components.editor.section', ['id' => 'digital-details', 'sectionId' => 'product-details', 'title' => 'Product details', 'class' => 'mb-4'])

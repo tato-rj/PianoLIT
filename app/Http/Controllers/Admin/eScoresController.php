@@ -8,17 +8,20 @@ use App\Files\Uploaders\ImageUpload;
 use App\Shop\{eScore, eScoreTopic};
 use App\Http\Controllers\Traits\ManageFiles;
 use App\Services\Shop\ProductNames;
+use App\Services\Admin\DigitalProductsTable;
+use App\Support\AdminTableFilters;
+use Illuminate\Support\Facades\DB;
 
 class eScoresController extends Controller
 {
     use ManageFiles;
 
-    public function index()
+    public function index(Request $request, DigitalProductsTable $table)
     {
         if (request()->ajax())
             return eScore::datatable();
 
-        return view('admin.pages.escores.index');
+        return view('admin.pages.escores.index', $table->get($request, 'escores'));
     }
 
     public function topics()
@@ -102,23 +105,33 @@ class eScoresController extends Controller
         return redirect()->back()->with('status', "The topic has been successfully deleted!");
     }
 
-    public function edit(eScore $escore)
+    public function edit(Request $request, eScore $escore, DigitalProductsTable $table)
     {
         $topics = eScoreTopic::ordered()->get();
 
-        return view('admin.pages.escores.edit', compact(['escore', 'topics']));
+        $returnFilters = AdminTableFilters::query($table->filters($request));
+
+        return view('admin.pages.escores.edit', compact('escore', 'topics', 'returnFilters'));
     }
 
-    public function update(Request $request, eScore $escore)
+    public function update(Request $request, eScore $escore, DigitalProductsTable $table)
     {
+        $returnFilters = AdminTableFilters::query($table->filters(Request::create('/', 'GET', $request->query())));
         app(\App\Services\Shop\DigitalEditor::class)->update($request, $escore, 'escores');
 
-        return redirect()->route('admin.escores.edit', $escore)->with('status', 'Product details saved.');
+        return redirect()->route('admin.escores.edit', ['escore' => $escore] + $returnFilters)->with('status', 'Product details saved.');
     }
 
-    public function updateStatus(eScore $escore)
+    public function updateStatus(Request $request, eScore $escore, DigitalProductsTable $table)
     {
-        return $this->updateStatusFor($escore);
+        if ($request->query('return_to') !== 'directory') return $this->updateStatusFor($escore);
+        $filters = $table->filters(Request::create('/', 'GET', $request->query()));
+        $data = $request->validate(['published' => 'required|boolean']);
+        DB::transaction(function () use ($escore, $data) {
+            $product = $escore->newQuery()->whereKey($escore->id)->lockForUpdate()->firstOrFail();
+            $product->update(['published_at' => $data['published'] ? ($product->published_at ?? now()) : null]);
+        });
+        return $table->redirect('escores', $filters)->with('status', $data['published'] ? 'Product published.' : 'Product unpublished.');
     }
 
     public function uploadPreview(Request $request, eScore $escore)
@@ -139,9 +152,11 @@ class eScoresController extends Controller
         return back()->with('status', 'The preview image has been removed.');
     }
 
-    public function destroy(eScore $escore)
+    public function destroy(Request $request, eScore $escore, DigitalProductsTable $table)
     {
+        $filters = $request->query('return_to') === 'directory' ? $table->filters(Request::create('/', 'GET', $request->query())) : null;
         $escore->delete();
+        if ($filters !== null) return $table->redirect('escores', $filters)->with('status', 'The eScore was deleted.');
 
         return redirect()->back()->with('status', 'The eScore has been successfuly deleted!');
     }

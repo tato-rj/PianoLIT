@@ -362,6 +362,27 @@ supported sort, pagination, retained filter state and row/bulk actions. Use
 isolated SQLite fixtures and fake services as described in `AGENTS.md`; never
 perform destructive verification against real accounts.
 
+## Digital product directories
+
+The eBook/eScore directories share `admin.pages.digital.index` and
+`Services/Admin/DigitalProductsTable`. They use SQL title/author/short-description/ID
+search, published/draft filtering, fixed date/title/purchase/publication sorts and
+the standard 12-result pagination. Publication retains these products' existing
+non-null `published_at` semantics. Main display artwork is loaded in one batch
+through `DigitalMedia`; no artwork or directory fields are attached to shared models.
+Public title/preview links use the Shop host. Edit and product-detail saves retain
+directory query values, and confirmed deletion/publication changes clamp the return
+page after filtering.
+
+Purchase counts open the existing modal pattern through a native GET. Only the
+selected product's purchase records and account names are loaded, with an independent
+12-result `purchases_page` paginator; each product family scopes its own purchase
+relation. Closing the modal returns to the directory without its modal query. Native
+publication forms save the explicit desired state under a product lock and use the
+one shared page alert. The old authenticated Ajax DataTables and status responses
+remain available for existing callers, but these index pages no longer initialize
+DataTables. Creation, topics, download routes and mobile payloads are unchanged.
+
 ## DataTables awaiting migration
 
 Legacy DataTables search/page-size forms also come from the common form. The
