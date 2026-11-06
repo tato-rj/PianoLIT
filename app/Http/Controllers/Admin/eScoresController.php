@@ -8,7 +8,7 @@ use App\Files\Uploaders\ImageUpload;
 use App\Shop\{eScore, eScoreTopic};
 use App\Http\Controllers\Traits\ManageFiles;
 use App\Services\Shop\ProductNames;
-use App\Services\Admin\DigitalProductsTable;
+use App\Services\Admin\{DigitalProductsTable, DigitalTopics};
 use App\Support\AdminTableFilters;
 use Illuminate\Support\Facades\DB;
 
@@ -24,11 +24,9 @@ class eScoresController extends Controller
         return view('admin.pages.escores.index', $table->get($request, 'escores'));
     }
 
-    public function topics()
+    public function topics(Request $request, DigitalTopics $topics)
     {
-        $topics = eScoreTopic::ordered()->get();
-
-        return view('admin.pages.escores.topics.index', compact('topics'));
+        return redirect($topics->url($request, 'escores'));
     }
 
     public function create()
@@ -40,6 +38,7 @@ class eScoresController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate(['topics' => 'nullable|array', 'topics.*' => 'integer|distinct|exists:e_score_topics,id']);
         $request->merge(['title' => app(ProductNames::class)->validate($request->input('title'))]);
 
         $escore = eScore::create([
@@ -69,40 +68,19 @@ class eScoresController extends Controller
         return redirect(route('admin.escores.index'))->with('status', 'The eScore has been successfuly created!');
     }
 
-    public function topicStore(Request $request)
+    public function topicStore(Request $request, DigitalTopics $topics)
     {
-        $request->validate([
-            'name' => 'required|unique:e_score_topics|max:255',
-        ]);
-
-        eScoreTopic::create([
-            'slug' => str_slug($request->name),
-            'name' => $request->name,
-            'creator_id' => auth()->guard('admin')->user()->id
-        ]);
-
-        return redirect()->back()->with('status', "The topic has been successfully added!");
+        return $topics->save($request, 'escores');
     }
 
-    public function topicUpdate(Request $request, eScoreTopic $topic)
+    public function topicUpdate(Request $request, eScoreTopic $topic, DigitalTopics $topics)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-        ]);
-        
-        $topic->update([
-            'slug' => str_slug($request->name),
-            'name' => $request->name
-        ]);
-
-        return redirect()->back()->with('status', "The topic has been successfully updated!");
+        return $topics->save($request, 'escores', $topic);
     }
 
-    public function topicDestroy(eScoreTopic $topic)
+    public function topicDestroy(Request $request, eScoreTopic $topic, DigitalTopics $topics)
     {
-        $topic->delete();
-
-        return redirect()->back()->with('status', "The topic has been successfully deleted!");
+        return $topics->delete($request, 'escores', $topic);
     }
 
     public function edit(Request $request, eScore $escore, DigitalProductsTable $table)

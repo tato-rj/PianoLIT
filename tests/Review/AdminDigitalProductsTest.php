@@ -130,7 +130,7 @@ class AdminDigitalProductsTest extends ReviewTestCase
             $counts[] = count($queries);
             $this->assertStringNotContainsString('from "users"', implode(' ', array_column($queries, 'query')));
         }
-        $this->assertSame([3, 3], $counts);
+        $this->assertSame([4, 4], $counts);
         $this->withExceptionHandling();
         foreach ([['sort' => 'password_asc'], ['status' => ['draft']], ['search' => ['bad']], ['per_page' => 1000], ['page' => -1], ['purchases' => ['bad']], ['purchases_page' => -1]] as $invalid) {
             $this->getJson(route('admin.'.$kind.'.index', $invalid))->assertUnprocessable();

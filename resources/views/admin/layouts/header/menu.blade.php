@@ -55,13 +55,10 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Shop', 'icon' => 'shopping-cart',
         'dropdown' => [
           ['name' => 'Merchandise', 'route' => route('admin.merchandise.index')],
-          ['name' => 'Orders', 'route' => route('admin.shop-orders.index')],
-          [],
           ['name' => 'eBooks', 'route' => route('admin.ebooks.index')],
-          ['name' => 'eBook Topics', 'route' => route('admin.ebooks.topics.index')],
-          [],
           ['name' => 'eScores', 'route' => route('admin.escores.index')],
-          ['name' => 'eScore Topics', 'route' => route('admin.escores.topics.index')]
+          [],
+          ['name' => 'Orders', 'route' => route('admin.shop-orders.index')],
         ]])
 
         @include('admin.layouts.header.item', ['route' => route('admin.reviews.index'), 'name' => 'Reviews', 'icon' => 'star-half'])

@@ -8,7 +8,7 @@ use App\Files\Uploaders\ImageUpload;
 use App\Shop\{eBook, eBookTopic};
 use App\Http\Controllers\Traits\ManageFiles;
 use App\Services\Shop\ProductNames;
-use App\Services\Admin\DigitalProductsTable;
+use App\Services\Admin\{DigitalProductsTable, DigitalTopics};
 use App\Support\AdminTableFilters;
 use Illuminate\Support\Facades\DB;
 
@@ -24,11 +24,9 @@ class eBooksController extends Controller
         return view('admin.pages.ebooks.index', $table->get($request, 'ebooks'));
     }
 
-    public function topics()
+    public function topics(Request $request, DigitalTopics $topics)
     {
-        $topics = eBookTopic::ordered()->get();
-
-        return view('admin.pages.ebooks.topics.index', compact('topics'));
+        return redirect($topics->url($request, 'ebooks'));
     }
 
     public function create()
@@ -40,6 +38,7 @@ class eBooksController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate(['topics' => 'nullable|array', 'topics.*' => 'integer|distinct|exists:e_book_topics,id']);
         $request->merge(['title' => app(ProductNames::class)->validate($request->input('title'))]);
 
         $ebook = eBook::create([
@@ -69,40 +68,19 @@ class eBooksController extends Controller
         return redirect(route('admin.ebooks.index'))->with('status', 'The eBook has been successfuly created!');
     }
 
-    public function topicStore(Request $request)
+    public function topicStore(Request $request, DigitalTopics $topics)
     {
-        $request->validate([
-            'name' => 'required|unique:e_book_topics|max:255',
-        ]);
-
-        eBookTopic::create([
-            'slug' => str_slug($request->name),
-            'name' => $request->name,
-            'creator_id' => auth()->guard('admin')->user()->id
-        ]);
-
-        return redirect()->back()->with('status', "The topic has been successfully added!");
+        return $topics->save($request, 'ebooks');
     }
 
-    public function topicUpdate(Request $request, eBookTopic $topic)
+    public function topicUpdate(Request $request, eBookTopic $topic, DigitalTopics $topics)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-        ]);
-        
-        $topic->update([
-            'slug' => str_slug($request->name),
-            'name' => $request->name
-        ]);
-
-        return redirect()->back()->with('status', "The topic has been successfully updated!");
+        return $topics->save($request, 'ebooks', $topic);
     }
 
-    public function topicDestroy(eBookTopic $topic)
+    public function topicDestroy(Request $request, eBookTopic $topic, DigitalTopics $topics)
     {
-        $topic->delete();
-
-        return redirect()->back()->with('status', "The topic has been successfully deleted!");
+        return $topics->delete($request, 'ebooks', $topic);
     }
 
     public function edit(Request $request, eBook $ebook, DigitalProductsTable $table)

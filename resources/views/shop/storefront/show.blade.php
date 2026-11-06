@@ -10,7 +10,6 @@
         <div class="col-12 col-md-6 col-lg-5">
             <button type="button" class="btn btn-raw mb-1" data-bs-toggle="modal" data-bs-target="#product-share-modal">@icon('share-2')Share</button>
             <h2>{{ $product['name'] }}</h2>
-            @if($product['subtitle'])<p class="mb-4">{{ $product['subtitle'] }}</p>@endif
             @include('shop.components.reviews.summary', ['reviewUrl' => '#reviews', 'compact' => false])
             @if($digitalProduct)
                 @include('shop.storefront.components.product-price')
@@ -19,9 +18,7 @@
                 @include('shop.storefront.components.merchandise-options')
             @endif
             @include('shop.storefront.components.product-details')
-            @unless($digitalProduct)
-                <p class="mt-3 mb-0 shop-checkout-note">{{ app(\App\Services\Shop\CheckoutEnvironment::class)->available() ? 'Shipping and taxes are calculated at checkout.' : 'Checkout is not available yet. You can add products to your bag.' }}</p>
-            @endunless
+            <p class="mt-3 mb-0 shop-checkout-note">{{ $digitalProduct ? 'Instant digital download · Lifetime access' : (app(\App\Services\Shop\CheckoutEnvironment::class)->available() ? 'Shipping and taxes are calculated at checkout.' : 'Checkout is not available yet. You can add products to your bag.') }}</p>
         </div>
     </div>
     @if($digitalProduct)

@@ -7,10 +7,12 @@
     $filtered = $filters['search'] !== '' || !empty($filters['status']);
 @endphp
 <div class="content-wrapper"><div class="container-fluid">
-    @include('admin.components.page.title', [
+    @component('admin.components.page.title', [
         'title' => $label, 'subtitle' => 'Manage products, purchases and publication.',
         'action' => ['label' => 'Create a new '.$singular, 'url' => route('admin.'.$kind.'.create')],
     ])
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#digital-topics-modal">@icon('tag')Manage topics</button>
+    @endcomponent
     @component('admin.components.table', [
         'id' => $kind.'-table', 'label' => $label, 'items' => $products,
         'action' => route('admin.'.$kind.'.index'), 'state' => $filters,
@@ -33,10 +35,25 @@
     @endcomponent
 </div></div>
 @include('admin.components.modals.delete')
+@include('admin.pages.digital.topics.modal')
 @if($purchaseProduct)@include('admin.pages.digital.table.purchases')@endif
 @endsection
 
 @section('scripts')
+<script>
+(function () {
+    const modal = document.getElementById('digital-topics-modal');
+    modal.addEventListener('hidden.bs.modal', function () {
+        const url = new URL(window.location.href);
+        if (!url.searchParams.has('topics')) return;
+        url.searchParams.delete('topics');
+        window.location.assign(url);
+    });
+    @if(request()->query('topics') === '1' && !$purchaseProduct)
+    window.bootstrap.Modal.getOrCreateInstance(modal).show();
+    @endif
+})();
+</script>
 @if($purchaseProduct)
 <script>
 (function () {

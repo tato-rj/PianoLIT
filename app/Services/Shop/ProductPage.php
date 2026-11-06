@@ -25,6 +25,16 @@ class ProductPage
         $product['originalPrice'] = null;
         $product['gallery'] = $digitalGallery;
         if (!$digital) $product = array_replace($product, app(MerchandiseGallery::class)->present($item, $product['variants'], $product['images']));
+        $multipleColors = !$digital && collect($product['variants'])->pluck('color')->unique()->count() > 1;
+        $mainColor = $product['galleryColor'] ?? null;
+        if (!$multipleColors || $product['gallery']->contains('color', $mainColor)) {
+            $closeups = app(Closeups::class);
+            $hoverUrl = $closeups->url($closeups->for($item));
+            if ($hoverUrl && !$product['gallery']->contains('url', $hoverUrl)) {
+                // Bind the extra view to the initial main color, without changing sellable colors.
+                $product['gallery']->push(['url' => $hoverUrl, 'alt' => $product['name'].' · Detail image', 'color' => $mainColor, 'detail' => true]);
+            }
+        }
         $product['materials'] = $digital ? [] : app(MerchandiseMaterials::class)->forProduct($item, $product['variants']);
         $product['sizeChart'] = !$digital && $product['category'] === 't-shirts' ? SizeCharts::forProduct($item) : null;
         $breadcrumbs = [['label' => 'Home', 'url' => route('home')], ['label' => 'Shop', 'url' => route('shop.home')]];

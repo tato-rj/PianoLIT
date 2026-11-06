@@ -2,6 +2,16 @@
 
 The eBook and eScore edit pages share `admin/pages/digital/edit` and the merchandise editor's section, dropzone, field and icon-action components. Product details retain title, author/composer, subtitle, page count, price, discount, topics and the rich description. PDF and EPUB uploads remain for eBooks; PDF and audio uploads remain for eScores.
 
+Public product-information columns also use the merchandise pattern: title and
+reviews, price, compact purchase/download and optional audio actions, then the
+shared minimal accordions. About contains the saved subtitle, editorial HTML and
+topic links once. Details contains file formats, page count, author/composer,
+publication date and optional sample availability; Membership appears only when
+the existing eligibility notice renders content. The digital access note follows
+the accordions. Existing download ownership, membership eligibility, checkout,
+audio source and playback behavior are retained. No editorial database text or
+mobile/API fields are changed by this web presentation update.
+
 ## Display artwork
 
 `Shop\DigitalMedia` stores ordered display images, the main image and recoverable removals in `shop_digital_media`, keyed by the fixed eBook/eScore class and product ID. The same ID in another product table is a different owner. No relationship or new attribute is attached to either shared model. The first edit starts with the saved mockup and cover, without modifying those legacy fields. Once initialized, an empty gallery remains empty and cannot fall back to removed artwork.
@@ -9,6 +19,14 @@ The eBook and eScore edit pages share `admin/pages/digital/edit` and the merchan
 Upload up to ten JPG/PNG/WebP images at once, each at most 10 MB, 6,000 pixels per side and 24 megapixels. There may be forty active images. Uploads reuse the existing raster decoder/re-encoder; no provider request is made. The list has 48px thumbnails, earlier/later arrows, a main-image star and recoverable removal. The public gallery starts with the selected main image. Catalog cards, related cards, checkout, Shop promotions and purchase confirmations use this web artwork. Historical order snapshots and legacy/mobile cover/mockup serialization remain unchanged.
 
 The existing separate `shop_product_closeups` service supplies the optional **Hover image**, with digital-specific labels and guidance for an open book or styled view. Merchandise retains **Hover close-up**. The upload, revision and hover interaction behavior is shared.
+
+That saved image also appears as the last selectable image in the public detail
+gallery. `Shop\ProductPage` validates the existing owned file through `Closeups`
+and appends a web-only detail-image entry, preserving the saved main image and
+gallery order. eBooks/eScores include it without color filtering. Merchandise
+binds it to the initial main gallery color and hides it when another color is
+selected. Missing or removed hover files are omitted. Upload ownership, source
+files, card hover behavior and legacy/mobile serialization remain unchanged.
 
 ## PDF samples
 

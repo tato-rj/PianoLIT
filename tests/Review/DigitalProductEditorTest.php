@@ -50,6 +50,26 @@ class DigitalProductEditorTest extends ReviewTestCase
     }
 
     /** @dataProvider kinds */
+    public function test_both_editors_select_save_and_clear_their_own_topics($kind, $class)
+    {
+        $topicClass = $kind === 'ebooks' ? \App\Shop\eBookTopic::class : \App\Shop\eScoreTopic::class;
+        $otherClass = $kind === 'ebooks' ? \App\Shop\eScoreTopic::class : \App\Shop\eBookTopic::class;
+        $topic = $topicClass::create(['name' => 'Practice', 'slug' => 'practice']);
+        $foreign = $otherClass::create(['id' => 999, 'name' => 'Foreign topic', 'slug' => 'foreign']);
+        $product = $this->product($class);
+        $product->topics()->attach($topic);
+        $this->get(route('admin.'.$kind.'.create'))->assertOk()->assertSee('Practice')->assertDontSee('Foreign topic');
+        $this->get(route('admin.'.$kind.'.edit', $product))->assertOk()->assertSee('Topics')->assertSee('Practice')->assertDontSee('Foreign topic');
+        $this->patch(route('admin.'.$kind.'.update', $product), $this->details(['topics' => [$topic->id]]))->assertRedirect();
+        $this->assertSame([$topic->id], $product->topics()->pluck($topic->getTable().'.id')->all());
+        $this->withExceptionHandling();
+        $this->post(route('admin.'.$kind.'.store'), ['title' => 'Another edition', 'topics' => [$foreign->id]])->assertSessionHasErrors('topics.0');
+        $this->patch(route('admin.'.$kind.'.update', $product), $this->details(['media_revision' => 1, 'topics' => [$foreign->id]]))->assertSessionHasErrors('topics.0');
+        $this->patch(route('admin.'.$kind.'.update', $product), $this->details(['media_revision' => 1]))->assertRedirect();
+        $this->assertSame(0, $product->topics()->count());
+    }
+
+    /** @dataProvider kinds */
     public function test_editors_share_sections_and_keep_only_the_correct_product_files($kind, $class)
     {
         $product = $this->product($class);
@@ -190,8 +210,8 @@ class DigitalProductEditorTest extends ReviewTestCase
         Storage::disk('public')->assertExists($fresh->pdf_path);
         $this->assertCount(7, app(DigitalMedia::class)->previews($fresh));
         $this->app['auth']->shouldUse('web');
-        $this->get($fresh->showRoute())->assertOk()->assertSee('data-book-page="7"', false)
-            ->assertDontSee('data-book-page="8"', false)->assertDontSee('legacy/preview.jpg')->assertDontSee($fresh->pdf_path);
+        $this->get($fresh->showRoute())->assertOk()->assertSee('alt="Preview page 7 of 7"', false)
+            ->assertDontSee('alt="Preview page 8', false)->assertDontSee('legacy/preview.jpg')->assertDontSee($fresh->pdf_path);
         $this->withExceptionHandling();
         $this->patch(route('admin.'.$kind.'.update', $fresh), $this->details(['title' => 'Stale title',
             'pdf_file' => UploadedFile::fake()->createWithContent('replacement.pdf', $this->pdf(2))]))->assertSessionHasErrors('media_revision');

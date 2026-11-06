@@ -4,7 +4,7 @@ namespace Tests\Review;
 
 use App\{Admin, User};
 use App\Merchandise\MerchandiseProduct;
-use App\Services\Shop\{Closeups, Storefront};
+use App\Services\Shop\{Closeups, ProductPage, Storefront};
 use App\Shop\{eBook, eScore};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
@@ -56,7 +56,7 @@ class ShopCloseupsTest extends ReviewTestCase
             'closeup_image' => UploadedFile::fake()->createWithContent($name, $bytes)]);
     }
 
-    private function browserFixture(string $name, string $html, $closeup): void
+    private function browserFixture(string $name, string $html, $closeup, bool $digital = false): void
     {
         if (!$directory = getenv('PIANOLIT_SHOP_CLOSEUP_FIXTURES')) return;
         if (!is_dir($directory)) mkdir($directory, 0700, true);
@@ -64,8 +64,74 @@ class ShopCloseupsTest extends ReviewTestCase
         $html = str_replace(['http://localhost/', 'http://admin.localhost/', 'http://shop.localhost/', 'href="/css/', 'src="/js/'],
             ['http://shop.pianolit.test/', 'http://admin.pianolit.test/', 'http://shop.pianolit.test/', 'href="http://shop.pianolit.test/css/', 'src="http://shop.pianolit.test/js/'], $html);
         $html = preg_replace('#https?://[^/]+/storage/'.preg_quote($closeup->path, '#').'#', 'http://127.0.0.1:8776/uploaded-closeup.png', $html);
-        $html = str_replace('http://shop.pianolit.test/storage/shop/original.png', 'http://shop.pianolit.test/images/shop/demo/shirt-mint.png', $html);
+        $html = str_replace(['http://shop.pianolit.test/storage/shop/original.png', 'http://shop.pianolit.test/storage/shop/cover.png'],
+            $digital ? 'http://shop.pianolit.test/images/misc/score1.png' : 'http://shop.pianolit.test/images/shop/demo/shirt-mint.png', $html);
+        $html = str_replace('http://shop.pianolit.test/storage/shop/butter.png', 'http://shop.pianolit.test/images/shop/demo/shirt-butter.png', $html);
         file_put_contents($directory.'/'.$name.'.html', $html);
+    }
+
+    /** @dataProvider kinds */
+    public function test_hover_image_is_appended_to_each_product_gallery_and_invalid_or_removed_images_are_omitted($kind)
+    {
+        $product = $this->product($kind);
+        $this->app['auth']->shouldUse('web');
+        $page = app(ProductPage::class);
+        $url = $kind === 'merchandise' ? app(Storefront::class)->productUrl($product) : $product->showRoute();
+        $before = $this->get($url)->assertOk()->viewData('product');
+        $originalUrls = $before['gallery']->pluck('url')->all();
+        $this->upload($product, $kind)->assertRedirect();
+        $closeup = app(Closeups::class)->for($product);
+        $this->app['auth']->shouldUse('web');
+        $response = $this->get($url)->assertOk()->assertSee('View detail image');
+        $hoverUrl = app(Closeups::class)->url($closeup);
+        $data = $response->viewData('product');
+        $this->assertSame(array_merge($originalUrls, [$hoverUrl]), $data['gallery']->pluck('url')->all());
+        $this->assertSame($before['imageUrl'], $data['imageUrl']);
+        $this->assertTrue($data['gallery']->last()['detail']);
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@data-gallery-slide]//img[@src="'.$hoverUrl.'"]'));
+        $this->assertCount(1, $xpath->query('//button[@data-gallery-thumb and @aria-label="View detail image"]//img[@src="'.$hoverUrl.'"]'));
+        $this->browserFixture($kind.'-gallery', $response->getContent(), $closeup, $kind !== 'merchandise');
+        Storage::disk('public')->delete($closeup->path);
+        $this->assertSame($originalUrls, $page->data($product, request())['product']['gallery']->pluck('url')->all());
+        $this->delete($this->url($product, $kind, 'destroy'), ['closeup_revision' => 1])->assertRedirect();
+        $this->app['auth']->shouldUse('web');
+        $this->get($url)->assertOk()->assertDontSee('View detail image');
+        $this->assertArrayNotHasKey('detail', $product->fresh()->toArray());
+        Http::assertNothingSent();
+    }
+
+    public function test_hover_view_is_bound_to_the_main_color_and_does_not_enable_colors_without_mockups()
+    {
+        $variants = [];
+        foreach (['Mint', 'Butter', 'White'] as $index => $color) {
+            $variants[] = ['id' => 91 + $index, 'variant_id' => 4011 + $index, 'synced' => true, 'color' => $color, 'size' => 'M',
+                'retail_price' => '28.50', 'currency' => 'USD', 'out_of_stock' => false, 'discontinued' => false];
+        }
+        $product = $this->product('merchandise', ['variants' => $variants]);
+        $product->images()->update(['gallery_color' => 'Mint']);
+        $product->images()->create(['path' => 'shop/butter.png', 'source' => 'upload', 'position' => 2,
+            'alt' => 'Butter mockup', 'gallery_color' => 'Butter', 'checksum' => hash('sha256', 'butter'), 'width' => 100, 'height' => 100]);
+        $this->upload($product, 'merchandise')->assertRedirect();
+        $this->app['auth']->shouldUse('web');
+        $url = app(Storefront::class)->productUrl($product);
+        $response = $this->get($url)->assertOk();
+        $data = $response->viewData('product');
+        $this->assertSame(['Mint', 'Butter'], $data['galleryColors']);
+        $this->assertSame('Mint', $data['galleryColor']);
+        $this->assertSame([false, false, true], $data['gallery']->map(fn ($image) => $image['detail'] ?? false)->all());
+        $this->assertSame('Mint', $data['gallery']->last()['color']);
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@data-option-group="color"]//button[@data-option-value="White" and @disabled]'));
+        $this->assertCount(1, $xpath->query('//button[@aria-label="View detail image" and not(@hidden)]'));
+        $this->browserFixture('colors-gallery', $response->getContent(), app(Closeups::class)->for($product));
+        $product->images()->delete();
+        $response = $this->get($url)->assertOk();
+        $this->assertSame([], $response->viewData('product')['galleryColors']);
+        $this->assertCount(0, $response->viewData('product')['gallery'], 'Without a main gallery color, do not guess which color the hover image belongs to.');
+        @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@data-add-to-bag]//button[@type="submit" and @disabled]'));
+        $this->assertCount(3, $xpath->query('//*[@data-option-group="color"]//button[@disabled]'));
     }
 
     /** @dataProvider kinds */

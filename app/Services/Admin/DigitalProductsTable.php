@@ -55,7 +55,7 @@ class DigitalProductsTable
         $mainImages = app(DigitalMedia::class)->mainUrls($products->getCollection());
 
         // Load only the requested purchase list, rather than every buyer for every row.
-        $selection = $request->validate(['purchases' => 'nullable|integer|min:1', 'purchases_page' => 'nullable|integer|min:1|max:1000000']);
+        $selection = $request->validate(['purchases' => 'nullable|integer|min:1', 'purchases_page' => 'nullable|integer|min:1|max:1000000', 'topics' => 'nullable|string|in:1']);
         $purchaseProduct = null;
         $purchases = null;
         if (!empty($selection['purchases'])) {
@@ -65,7 +65,8 @@ class DigitalProductsTable
                 ->orderByDesc('created_at')->orderByDesc('id')->paginate(AdminPagination::PER_PAGE, ['*'], 'purchases_page')
                 ->appends($returnFilters + ['purchases' => $purchaseProduct->id])->fragment('digital-purchases-modal');
         }
-        return compact('kind', 'filters', 'returnFilters', 'products', 'mainImages', 'purchaseProduct', 'purchases');
+        $topics = app(DigitalTopics::class)->all($kind);
+        return compact('kind', 'filters', 'returnFilters', 'products', 'mainImages', 'purchaseProduct', 'purchases', 'topics');
     }
 
     public function redirect(string $kind, array $filters)

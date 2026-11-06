@@ -381,7 +381,30 @@ relation. Closing the modal returns to the directory without its modal query. Na
 publication forms save the explicit desired state under a product lock and use the
 one shared page alert. The old authenticated Ajax DataTables and status responses
 remain available for existing callers, but these index pages no longer initialize
-DataTables. Creation, topics, download routes and mobile payloads are unchanged.
+DataTables. Download routes and mobile payloads are unchanged.
+
+Both directories include **Manage topics**, using the same
+`admin.pages.digital.topics.modal` and `Services/Admin/DigitalTopics`. The shared
+modal contains a new-topic field and create button, then one name/save form and
+confirmed delete action per topic. Keep the default 500px modal width, shared small
+inputs, extra-small save/delete icon actions and 4px row gaps. Omit the repeated
+list heading and footer; the standard close control and Escape dismiss it. Longer
+lists scroll within the smaller of 40vh and 240px. It uses the standard modal,
+inputs, buttons and table action component, with no separate topic index views or
+custom control styling.
+eBooks and eScores retain separate topic tables and product assignments. Both
+product creation and editing validate selected topic IDs against the matching
+family; the existing editor shows and saves eScore topics as well as eBook topics.
+
+Topic writes retain validated directory filters and return with `topics=1` to reopen
+the modal. Closing that returned modal reloads the directory without its modal
+query, so table sorting cannot reopen it accidentally. Named validation bags and
+old-input selection affect only the submitted form. Names are trimmed and checked
+for duplicate names/route slugs; deletion and pivot detachment run in one
+transaction. Existing topic write routes, admin authentication/CSRF, slug binding
+and public/mobile models remain intact. Old topic index routes redirect to the
+matching directory/modal. The Shop submenu is Merchandise, eBooks, eScores, one
+shared divider, then Orders. No migration or frontend build is required.
 
 ## DataTables awaiting migration
 

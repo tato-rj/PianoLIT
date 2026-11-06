@@ -86,13 +86,45 @@ class ShopProductPageTest extends ReviewTestCase
             ->assertDontSee('flipbook-model', false);
         $this->assertDatabaseCount('purchases', 0);
 
+        $this->saveBrowserPreview($class, $response);
+    }
+
+    private function saveBrowserPreview($class, $response, string $suffix = ''): void
+    {
         // Optional disposable HTML for browser QA, using public sample images.
         if ($directory = getenv('PIANOLIT_SHOP_BROWSER_FIXTURES')) {
             if (! is_dir($directory)) mkdir($directory, 0700, true);
             $html = str_replace(['http://localhost/', 'http://shop.localhost/', 'href="/css/', 'src="/js/'], ['http://shop.pianolit.test/', 'http://shop.pianolit.test/', 'href="http://shop.pianolit.test/css/', 'src="http://shop.pianolit.test/js/'], $response->getContent());
             $html = preg_replace('~http://shop\.pianolit\.test/storage/previews/[^"< ]+~', 'http://shop.pianolit.test/images/misc/score1.png', $html);
-            file_put_contents($directory.'/'.($class === eBook::class ? 'ebook' : 'escore').'.html', $html);
+            file_put_contents($directory.'/'.($class === eBook::class ? 'ebook' : 'escore').$suffix.'.html', $html);
         }
+    }
+
+    /** @dataProvider products */
+    public function test_shared_details_keep_editorial_content_specs_and_topic_links_once($class)
+    {
+        $attributes = ['author' => 'Example author', 'pages_count' => 24];
+        if ($class === eScore::class) $attributes['audio_path'] = 'samples/piano.mp3';
+        $product = $this->product($class, $attributes);
+        $topicClass = $class === eBook::class ? \App\Shop\eBookTopic::class : \App\Shop\eScoreTopic::class;
+        $topic = $topicClass::create(['name' => 'Practice & theory', 'slug' => 'practice-theory']);
+        $product->topics()->attach($topic);
+        $response = $this->get($product->showRoute())->assertOk()->assertSee('accordion--minimal', false)->assertSee('Instant digital download');
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@id="product-details-about"]//h3[text()="Inside this edition"]'));
+        $this->assertCount(1, $xpath->query('//*[@id="product-details-about"]//p[text()="Music for your next practice"]'));
+        $this->assertCount(1, $xpath->query('//*[@id="product-details-about"]//a[@href="'.$product->indexRoute().'?'.http_build_query(['topics' => [$topic->slug]]).'"]'));
+        $this->assertCount(1, $xpath->query('//*[@id="product-details-specifications"]//dd[text()="24 pages"]'));
+        $this->assertCount(1, $xpath->query('//*[@id="product-details-specifications"]//dt[text()="'.($class === eScore::class ? 'Composer' : 'Author').'"]'));
+        $this->assertCount(1, $xpath->query('//*[@id="product-details-membership"]'));
+        $this->assertCount(0, $xpath->query('//*[@id="product-details-fitting" or @id="product-details-quality-returns" or @id="product-about-title"]'));
+        $this->assertSame(1, substr_count($response->getContent(), 'A thoughtfully selected collection.'));
+        if ($class === eScore::class) {
+            $this->assertCount(1, $xpath->query('//button[@data-product-audio]'));
+            $this->assertCount(1, $xpath->query('//*[@id="product-details-specifications"]//dd[text()="Listening sample"]'));
+            $this->assertCount(1, $xpath->query('//*[@data-audio-error]//*[@role="alert"]'));
+        }
+        $this->saveBrowserPreview($class, $response, '-details');
     }
 
     /** @dataProvider products */
@@ -193,7 +225,7 @@ class ShopProductPageTest extends ReviewTestCase
         $this->assertDatabaseCount('purchases', 0);
         $user->purchases()->create(['item_id' => $product->id, 'item_type' => $class, 'cost' => 12]);
         $this->get($product->showRoute())->assertOk()->assertSee('Download it again')
-            ->assertSee('href="http://localhost/profile/downloads"', false)->assertDontSee('Download now');
+            ->assertSee('href="http://localhost/profile/downloads"', false)->assertDontSee('Download now')->assertDontSee('id="product-details-membership"', false);
         $this->assertDatabaseCount('purchases', 1);
     }
 

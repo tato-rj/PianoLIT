@@ -1,9 +1,0 @@
-@component('components.dialogs.modal', ['id' => 'add-modal', 'header' => 'New topic'])
-@slot('body')
-<form method="POST" action="{{route('admin.ebooks.topics.store')}}">
-	@csrf
-	@input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Create a new topic here'])
-	@submit(['label' => 'Create topic', 'block' => true])
-</form>
-@endslot
-@endcomponent

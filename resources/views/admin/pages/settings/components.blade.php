@@ -43,6 +43,7 @@
               'gallery' => collect([
                 ['url' => asset('images/shop/demo/shirt-mint.png'), 'alt' => 'Sample piano T-shirt'],
                 ['url' => asset('images/shop/demo/shirt-mint.png'), 'alt' => 'Sample piano T-shirt'],
+                ['url' => asset('images/shop/demo/shirt-heather.png'), 'alt' => 'Sample T-shirt detail image', 'detail' => true],
               ]),
               'hasPreview' => false,
             ]])
@@ -112,6 +113,12 @@
     @component('admin.pages.settings.sample', ['label' => 'Shop product details', 'usage' => 'shop.storefront.components.product-details · fictional material example with one section open at a time', 'properties' => 'font-size,padding,color,border'])
       <div class="shop-storefront" data-ds-preview>
         @include('shop.storefront.components.product-details', ['product' => ['name' => 'Sample piano T-shirt', 'category' => 't-shirts', 'materials' => [['label' => null, 'text' => '100% cotton']], 'sizeChart' => $shopSizeChartPreview], 'digitalProduct' => null, 'detailsId' => 'ds-shop-product-details', 'sizeChartId' => 'ds-shop-size-chart'])
+      </div>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Digital product details', 'usage' => 'shop.storefront.components.product-details · the same accordion with digital specifications', 'properties' => 'font-size,padding,color,border'])
+      @php($digitalDetailsPreview = (new \App\Shop\eScore(['title' => 'Piano pieces', 'description' => '<p>Five piano pieces with fingering suggestions.</p>', 'author' => 'Example composer', 'pages_count' => 12, 'audio_path' => 'sample.mp3']))->setRelation('topics', new \Illuminate\Database\Eloquent\Collection))
+      <div class="shop-storefront" data-ds-preview>
+        @include('shop.storefront.components.product-details', ['product' => ['subtitle' => 'A collection of piano pieces'], 'digitalProduct' => $digitalDetailsPreview, 'productKind' => 'eScore', 'formats' => 'PDF', 'membershipNotice' => '', 'detailsId' => 'ds-shop-digital-details'])
       </div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Account and hubs menu', 'usage' => 'components.account.menu · account and hubs offcanvas', 'properties' => 'width,padding,color,border-radius,box-shadow'])
