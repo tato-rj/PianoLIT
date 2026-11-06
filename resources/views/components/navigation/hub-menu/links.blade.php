@@ -1,13 +1,13 @@
 @php
     $hubLinks = [
-        ['label' => 'Home', 'url' => \App\Support\ProfileUrl::base()],
-        ['label' => 'Web app', 'url' => route('webapp.discover')],
-        ['label' => 'iOS app', 'url' => config('app.stores.ios'), 'external' => true],
-        ['label' => 'Learn', 'url' => route('learn.home')],
-        ['label' => 'Games', 'url' => route('games.home')],
-        ['label' => 'Shop', 'url' => route('shop.home')],
-        ['label' => 'Metronome', 'url' => route('metronome.home')],
-        ['label' => 'Blog', 'url' => route('posts.index')],
+        ['label' => 'Home', 'icon' => 'home', 'url' => \App\Support\ProfileUrl::base()],
+        ['label' => 'Web app', 'icon' => 'pianolit', 'url' => route('webapp.discover')],
+        ['label' => 'iOS app', 'icon' => 'brand-apple', 'url' => config('app.stores.ios'), 'external' => true],
+        ['label' => 'Learn', 'icon' => 'graduation-cap', 'url' => route('learn.home')],
+        ['label' => 'Games', 'icon' => 'trophy', 'url' => route('games.home')],
+        ['label' => 'Shop', 'icon' => 'shopping-basket', 'url' => route('shop.home')],
+        ['label' => 'Metronome', 'icon' => 'metronome', 'url' => route('metronome.home')],
+        ['label' => 'Blog', 'icon' => 'newspaper', 'url' => route('posts.index')],
     ];
 @endphp
 <nav class="hub-menu__links" aria-label="PianoLIT hubs">
@@ -27,6 +27,7 @@
                 @endphp
                 <li class="nav-item">
                     <a href="{{ $hubLink['url'] }}" class="hub-menu__link d-flex align-items-center gap-3" @if($currentHub) aria-current="true" @endif @if($hubLink['external'] ?? false) target="_blank" rel="noopener noreferrer" @endif>
+                        @icon($hubLink['icon'], ['mr' => 0, 'classes' => 'hub-menu__icon icon-fw flex-shrink-0'])
                         <span class="me-auto">{{ $hubLink['label'] }}</span>
                         @icon('chevron-right', ['mr' => 0, 'classes' => 'hub-menu__arrow'])
                     </a>

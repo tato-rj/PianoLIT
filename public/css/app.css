@@ -32385,7 +32385,7 @@ body.score-editor-fullscreen-open .playlist-player--piece {
   }
 }
 .checkout-wallets {
-  margin-bottom: 28px;
+  margin-bottom: 8px;
 }
 
 .checkout-wallets[data-wallet-state=loading] {
@@ -32433,6 +32433,9 @@ body.score-editor-fullscreen-open .playlist-player--piece {
   }
 }
 @media (max-width: 767.98px) {
+  .checkout-wallets {
+    margin-bottom: 0;
+  }
   .checkout-modal.checkout-modal--shop .checkout-layout {
     gap: 0;
   }

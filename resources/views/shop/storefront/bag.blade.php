@@ -27,12 +27,11 @@
                         </form>
                         <form action="{{ route('shop.bag.remove', ['merchandise' => $line['product']['id'], 'variant' => $line['variant']['id']]) }}" method="POST">
                             @csrf @method('DELETE')
-                            <button class="btn btn-red btn-sm" type="submit" aria-label="Remove {{ $line['product']['name'] }} ({{ $line['variant']['color'] }} / {{ $line['variant']['size'] }})">@icon('trash-2', ['mr' => 0])</button>
+                            <button class="btn btn-link btn-sm text-danger p-0" type="submit" aria-label="Remove {{ $line['product']['name'] }} ({{ $line['variant']['color'] }} / {{ $line['variant']['size'] }})">@icon('x', ['mr' => 1])remove</button>
                         </form>
                     </div>
                 </article>
             @endforeach
-            <a class="d-inline-flex align-items-center gap-2 mt-3" href="{{ route('shop.home') }}">@icon('arrow-left') Continue shopping</a>
         </div>
         <aside class="col-12 col-lg-4" aria-label="Order summary">
             <div class="shop-summary border rounded-sm">

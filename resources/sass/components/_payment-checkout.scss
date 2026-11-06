@@ -1,5 +1,5 @@
 // Shared wallet presentation also appears in the merchandise bag.
-.checkout-wallets { margin-bottom: 28px; }
+.checkout-wallets { margin-bottom: 8px; }
 .checkout-wallets[data-wallet-state='loading'] { height: 0; overflow: hidden; visibility: hidden; margin: 0; }
 .checkout-payment-divider { display: flex; align-items: center; gap: 16px; margin: 20px 0 0; color: var(--color-text-muted); }
 .checkout-payment-divider::before, .checkout-payment-divider::after { content: ''; height: 1px; background: var(--color-border); flex: 1; }
@@ -11,6 +11,7 @@
     .checkout-summary-toggle .app-icon { display: none; }
 }
 @media (max-width: 767.98px) {
+    .checkout-wallets { margin-bottom: 0; }
     .checkout-modal.checkout-modal--shop {
         .checkout-layout { gap: 0; }
         .checkout-summary { padding: 0; background: transparent; }

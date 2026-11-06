@@ -18,7 +18,7 @@
         @include('shop.storefront.components.quantity', ['quantity' => 1])
         <div class="d-flex flex-row-reverse flex-md-column align-items-center align-items-md-end justify-content-between gap-3 mt-3">
           @include('shop.storefront.components.quantity', ['quantity' => 1, 'compact' => true])
-          <button type="button" class="btn btn-red btn-sm" aria-label="Remove sample product">@icon('trash-2', ['mr' => 0])</button>
+          <button type="button" class="btn btn-link btn-sm text-danger p-0" aria-label="Remove sample product">@icon('x', ['mr' => 1])remove</button>
         </div>
         <div class="d-flex flex-wrap gap-2 mt-4">
           @include('shop.storefront.components.option', ['option' => 'Mint', 'swatch' => \App\Services\Shop\MerchandiseColors::codes(['color_code' => '#b9d8d1']), 'selected' => true])

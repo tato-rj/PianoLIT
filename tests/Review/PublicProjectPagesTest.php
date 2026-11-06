@@ -252,7 +252,7 @@ class PublicProjectPagesTest extends ReviewTestCase
             $this->assertSame(1, $xpath->query('//script[contains(@src,"js/components/account-menu.js")]')->length);
             $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//div[contains(@class,"offcanvas-body")]//form')->length);
             $this->assertSame(8, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a/*[contains(@class,"hub-menu__arrow")]')->length);
-            $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//*[contains(@class,"hub-menu__icon")]')->length);
+            $this->assertSame(8, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//*[contains(@class,"hub-menu__icon") and @aria-hidden="true"]')->length);
         }
     }
 
