@@ -58,6 +58,8 @@ class MerchandiseStorefrontTest extends ReviewTestCase
         $this->digitalProduct(eBook::class);
         $url = app(Storefront::class)->productUrl($current);
         $response = $this->get($url)->assertOk()->assertSee('You may also like');
+        $response->assertSee('href="'.app(Storefront::class)->categoryUrl('t-shirts').'" class="text-nowrap">View all</a>', false)
+            ->assertDontSee('data-product-row-controls', false)->assertDontSee('PianoLITProductRow', false);
         $related = $response->viewData('relatedProducts');
         $this->assertCount(Storefront::RELATED_LIMIT, $related);
         $this->assertSame($expected->reverse()->take(Storefront::RELATED_LIMIT)->pluck('id')->values()->all(), $related->pluck('id')->all());

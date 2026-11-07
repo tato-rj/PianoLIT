@@ -1,6 +1,6 @@
 <section id="chord-editor" aria-labelledby="chord-editor-title">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-        <div><h2 id="chord-editor-title" class="h5 mb-2">Choose your notes</h2><p class="small text-muted mb-0">Tap the piano keys or build your chord by note name.</p></div>
+        <h2 id="chord-editor-title" class="h5 mb-0">Choose your notes</h2>
         <button type="button" class="btn btn-secondary btn-sm" id="chord-clear">@icon('rotate-ccw')Clear notes</button>
     </div>
     @component('components.navigation.tab-navigation', [
@@ -19,29 +19,28 @@
                         @include('tools.chord-finder.inputs.chord-note', ['note' => $note, 'octave' => $octave])
                     @endforeach
                 </div>
-                <p class="small text-muted mt-3 mb-0">Select a letter, then use ♭ and ♯ to lower or raise it. Double flats and sharps are supported.</p>
             </div>
         </div>
     @endcomponent
-    <div class="d-flex flex-wrap align-items-center gap-2 mt-4" aria-live="polite">
+    <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 mt-4" aria-live="polite">
         <span class="small text-muted" id="chord-selection-count">No notes selected</span><div class="d-flex flex-wrap gap-2" id="chord-selected-notes"></div>
     </div>
-    <div id="chord-error" class="alert alert-danger mt-4 mb-0" role="alert" hidden></div>
-    <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
-        <button type="button" class="btn btn-primary" id="submit-notes">Find chords @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>
-        <button type="button" class="btn btn-secondary" id="chord-example">Try C major</button>
+    <div id="chord-error" class="mt-4" hidden>
+        @alert(['color' => 'red', 'message' => '<span data-chord-error-message></span>'])
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+        <button type="button" class="btn btn-primary" id="submit-notes" aria-haspopup="dialog" aria-controls="chord-results-modal">Find chords @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>
     </div>
     <div id="chord-options" class="mt-4" hidden>
-        @component('components.layout.accordion', ['id' => 'chord-options-accordion'])
-            @component('components.layout.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling & root (optional)'])
-                <div id="options-container" hidden>
-                    <h3 class="h6 mb-2">Note names</h3>
-                    <p class="small text-muted mb-3">Change a spelling if you need an enharmonic equivalent.</p>
-                    <div id="options-buttons" class="row g-3"></div>
-                </div>
-                <div id="root-container" class="row mt-4" hidden>
-                    <div class="col-sm-6">@select(['bag' => 'default', 'id' => 'chord-root', 'name' => 'root', 'label' => 'Root note (optional)', 'choices' => ['' => 'Auto detect'], 'required' => false])</div>
-                    <p class="small text-muted mb-0 mt-2">Have a root in mind? Choose it here, or let us compare all possibilities.</p>
+        @component('components.layout.accordion', ['id' => 'chord-options-accordion', 'variant' => 'minimal'])
+            @component('components.layout.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling & root', 'indicator' => 'plus-minus'])
+                <div class="d-flex flex-wrap align-items-end gap-3">
+                    <div id="options-container" hidden>
+                        <div id="options-buttons" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+                    <div id="root-container" class="chord-finder__root" hidden>
+                        @select(['bag' => 'default', 'id' => 'chord-root', 'name' => 'root', 'label' => 'Root', 'choices' => ['' => 'Auto detect'], 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])
+                    </div>
                 </div>
             @endcomponent
         @endcomponent

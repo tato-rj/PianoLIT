@@ -7,7 +7,7 @@
   @endforeach
   @endisset
 >
-  <div class="modal-dialog {{ ($centered ?? false) ? 'modal-dialog-centered' : '' }} modal-{{array_find($options ?? null, ['size'])}}">
+  <div class="modal-dialog {{ ($centered ?? false) ? 'modal-dialog-centered' : '' }} {{ ($scrollable ?? false) ? 'modal-dialog-scrollable' : '' }} modal-{{array_find($options ?? null, ['size'])}}">
     <div class="modal-content border-0" style="border-radius: var(--radius-modal)">
       <div class="modal-header
         bg-{{array_find($options ?? null, ['header', 'background'])}}

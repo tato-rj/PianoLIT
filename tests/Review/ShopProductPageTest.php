@@ -57,10 +57,13 @@ class ShopProductPageTest extends ReviewTestCase
         $this->product($class, ['title' => 'Unpublished edition', 'published_at' => null]);
         $this->product($class === eBook::class ? eScore::class : eBook::class, ['title' => 'Different category']);
         $response = $this->get($current->showRoute())->assertOk()->assertSee('You may also like')->assertDontSee('More to explore');
+        $response->assertSee('href="'.$current->indexRoute().'" class="text-nowrap">View all</a>', false)
+            ->assertDontSee('data-product-row-controls', false)->assertDontSee('PianoLITProductRow', false);
         $this->assertSame([$related->showRoute()], $response->viewData('relatedProducts')->pluck('url')->all());
         $html = $response->getContent();
         $this->assertLessThan(strpos($html, 'id="reviews"'), strpos($html, 'id="product-related-title"'));
         $this->assertSame(1, substr_count($html, 'data-product-row>'));
+        $this->saveBrowserPreview($class, $response, '-related');
     }
 
     /** @dataProvider products */

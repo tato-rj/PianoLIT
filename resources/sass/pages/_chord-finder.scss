@@ -5,7 +5,10 @@
         gap: 1rem;
         @media (min-width: 576px) { grid-template-columns: repeat(7, minmax(0, 1fr)); }
     }
-    #chord-editor, #chord-results-title { scroll-margin-top: 24px; }
+    &__spelling { width: 5.5rem; }
+    &__root { width: 10rem; }
+    &__match { min-width: 10rem; }
+    #chord-editor { scroll-margin-top: 24px; }
     #chord-label { min-height: 1.5rem; }
     .keyboard-key { touch-action: manipulation; }
 }

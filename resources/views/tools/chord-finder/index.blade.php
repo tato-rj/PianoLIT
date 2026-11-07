@@ -19,28 +19,29 @@
     ]])
     <header class="learn-home__intro mb-5">
         <h1 class="mb-3">Chord Finder</h1>
-        <p class="text-muted mb-0">Choose notes to find possible chords, hear them, and see their intervals.</p>
+        <p class="text-muted mb-0">Select at least three notes to find a chord.</p>
     </header>
 
     @component('components.layout.editorial')
         <div id="notes-container" data-url="{{ route('tools.chord-finder.analyse') }}">
             @include('tools.chord-finder.empty')
-            <div id="chord-results" class="mt-5" aria-live="polite" aria-busy="false"></div>
         </div>
-        <section class="mt-5 border-top pt-4" aria-labelledby="chord-guide-title">
-            <h2 id="chord-guide-title" class="h5 mb-3">How to use the chord finder</h2>
-            <p class="text-muted">Choose at least three different notes. A piano key can have more than one name: C♯ and D♭ sound the same, but their spelling changes how a chord is named. Use the note-name options if you want a particular spelling.</p>
-            <p class="text-muted mb-0">Several chords can share the same notes. We’ll show the most likely matches first, followed by other possibilities. Select any result to hear it and explore its intervals.</p>
-        </section>
         <div class="mt-5">@include('components.newsletter.invitation', ['headingId' => 'chord-newsletter-title', 'preview' => false])</div>
         @slot('sidebar')
-            <div class="mb-4"><h2 class="h5 mb-2">Explore PianoLIT</h2><p class="text-muted small mb-0">Music courses, eBooks, and sheet music.</p></div>
             @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot
     @endcomponent
 </div>
+@component('components.dialogs.modal', ['id' => 'chord-results-modal', 'header' => 'Chord results', 'centered' => true, 'scrollable' => true, 'options' => ['size' => 'xl']])
+    @slot('body')
+        <div id="chord-results" aria-busy="false"></div>
+    @endslot
+    @slot('footer')
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">@icon('arrow-left')Edit notes</button>
+    @endslot
+@endcomponent
 <template id="chord-spelling-template">
-    <div class="col-6 col-sm-4 col-xl-3">@select(['bag' => 'default', 'id' => 'chord-spelling', 'name' => 'spelling', 'label' => 'Note name', 'choices' => [], 'required' => false])</div>
+    <div class="chord-finder__spelling">@select(['bag' => 'default', 'id' => 'chord-spelling', 'name' => 'spelling', 'label' => 'Note name', 'choices' => [], 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])</div>
 </template>
 <template id="chord-note-pill">@pill(['label' => '<span data-note-label></span>', 'theme' => 'grey'])</template>
 @endsection

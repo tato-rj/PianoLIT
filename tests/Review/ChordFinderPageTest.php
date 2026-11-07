@@ -57,6 +57,9 @@ class ChordFinderPageTest extends ReviewTestCase
         $this->assertSame(14, $xpath->query('//button[@data-step and @disabled and @aria-label]')->length);
         $this->assertSame(2, $xpath->query('//*[@id="chord-input-tabs"]//*[@role="tab" and @aria-controls]')->length);
         $this->assertSame(1, $xpath->query('//select[@id="chord-root" and contains(@class,"form-control")]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="chord-results-modal" and @aria-labelledby="chord-results-modal-title"]//*[@id="chord-results"]')->length);
+        $this->assertSame(1, $xpath->query('//button[@id="submit-notes" and @aria-haspopup="dialog" and @aria-controls="chord-results-modal"]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="chord-example"]')->length);
     }
 
     public function test_each_inversion_has_its_own_accessible_explanations()
@@ -77,6 +80,10 @@ class ChordFinderPageTest extends ReviewTestCase
             $this->assertSame('#'.$control->getAttribute('aria-controls'), $control->getAttribute('href'), 'Keep existing open-page result handlers usable.');
             $this->assertSame(1, $xpath->query('//*[@id="'.$control->getAttribute('aria-controls').'" and contains(@class,"chord-info")]')->length);
         }
+        $this->assertSame(0, $xpath->query('//*[@id="chord-output-piano"]')->length);
+        $this->assertSame(0, $xpath->query('//button[@data-chord-stop]')->length);
+        $this->assertSame(1, $xpath->query('//button[@data-chord-play]//*[@data-chord-stop-label and @hidden]')->length);
+        $this->assertSame(1, $xpath->query('//button[@data-chord-play]//*[@data-chord-play-label and not(@hidden)]')->length);
     }
 
     public function test_missing_intervals_are_explained_without_empty_or_invented_intervals()

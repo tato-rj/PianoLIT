@@ -99,7 +99,7 @@
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Related products', 'usage' => 'shop.storefront.components.product-row · same-category products above reviews', 'properties' => 'font-size,gap,padding'])
       <div class="shop-storefront" data-ds-preview>
-        @php($relatedRowPreview = collect(range(1, 6))->map(fn ($number) => array_replace($shopGridPreview->first(), ['name' => 'Sample T-shirt '.$number])))
+        @php($relatedRowPreview = collect(range(1, 6))->map(fn ($number) => array_replace($shopGridPreview->first(), ['name' => 'Sample T-shirt '.$number, 'category' => 't-shirts'])))
         @include('shop.storefront.components.product-row', ['rowId' => 'ds-related-products', 'products' => $relatedRowPreview])
       </div>
     @endcomponent
@@ -425,7 +425,7 @@
   </div>
 </section>
 
-@component('components.dialogs.modal', ['id' => 'ds-example-modal', 'header' => 'Sample dialog', 'centered' => true, 'options' => ['body' => ['padding' => 3]]])
+@component('components.dialogs.modal', ['id' => 'ds-example-modal', 'header' => 'Sample dialog', 'centered' => true, 'scrollable' => true, 'options' => ['body' => ['padding' => 3]]])
     @slot('body')
         This is a preview of PianoLIT’s shared modal. Try closing it with the button, the backdrop or Escape.
     @endslot

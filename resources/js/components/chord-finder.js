@@ -71,8 +71,9 @@
             const $submit = $('#submit-notes');
             const submitHtml = $submit.html();
             const $results = $('#chord-results');
+            const $modal = $('#chord-results-modal');
             const selectedKeys = new Map();
-            let requestVersion = 0, pending = null, timers = [], playing = false;
+            let requestVersion = 0, pending = null, timers = [], playing = false, currentVoicing = [];
 
             function mode() { return $('#chord-input-tabs .active').attr('href') === '#chord-note-names' ? 'button' : 'keyboard'; }
             function keyboardNotes() { return Array.from(selectedKeys.values()).sort(function (a, b) { return a.index - b.index; }); }
@@ -81,22 +82,28 @@
                 return $('.chord-note').toArray().filter(function (el) { return $(el).find('.chord-note-toggle').attr('aria-pressed') === 'true'; })
                     .map(function (el) { const steps = Number(el.dataset.steps); return el.dataset.letter + (steps > 0 ? '+'.repeat(steps) : '-'.repeat(-steps)); });
             }
-            function error(message) { $('#chord-error').text(message || '').prop('hidden', !message); }
+            function error(message) {
+                $('#chord-error').prop('hidden', !message).find('[data-chord-error-message]').text(message || '');
+            }
             function audioStatus(message) {
                 $('#chord-audio-status, #chord-result-audio-status').empty().prop('hidden', true);
                 const $status = $results.find('#chord-result-audio-status');
-                ($status.length ? $status : $('#chord-audio-status')).text(message || '').prop('hidden', !message);
+                ($modal.hasClass('show') && $status.length ? $status : $('#chord-audio-status')).text(message || '').prop('hidden', !message);
             }
             function stopPlayback() {
                 timers.forEach(clearTimeout); timers = [];
                 if (playing && win.piano && typeof win.piano.releaseAll === 'function') win.piano.releaseAll();
                 playing = false;
-                $('[data-chord-stop]').prop('disabled', true);
+                $results.find('[data-chord-play-label]').prop('hidden', false);
+                $results.find('[data-chord-stop-label]').prop('hidden', true);
+                $results.find('[data-chord-play]').attr('aria-label', 'Play chord');
             }
             function invalidate() {
                 requestVersion++;
                 if (pending) { pending.cancel(); pending = null; }
                 stopPlayback();
+                currentVoicing = [];
+                audioStatus('');
                 $results.empty().attr('aria-busy', 'false');
                 $submit.prop('disabled', false).html(submitHtml);
                 error('');
@@ -142,7 +149,7 @@
                 $root.val(current.includes(root) ? root : '');
                 $('#root-container').prop('hidden', current.length < 3);
                 $('#chord-options').prop('hidden', mode() === 'keyboard' ? !current.length : current.length < 3);
-                $('#chord-options-panel-heading .accordion-button').text(mode() === 'keyboard' ? 'Note spelling & root (optional)' : 'Root note (optional)');
+                $('#chord-options-panel-heading .accordion-button').contents().filter(function () { return this.nodeType === 3; }).first().replaceWith(mode() === 'keyboard' ? 'Note spelling & root' : 'Root note');
                 $inputKeys.each(function () {
                     const selected = selectedKeys.get(pitch(this.dataset.name));
                     const active = !!selected && selected.key === this;
@@ -224,18 +231,6 @@
                 $('.chord-note [data-step]').prop('disabled', true);
                 invalidate(); renderSelection(); audioStatus('');
             });
-            $('#chord-example').on('click', function () {
-                const example = function () {
-                    selectedKeys.clear();
-                    ['c', 'e', 'g'].forEach(function (name) {
-                        const key = $inputKeys.filter('[data-name="' + name + '"]').first()[0];
-                        selectedKeys.set(pitch(name), {key: key, index: $inputKeys.index(key), spelling: name});
-                    });
-                    invalidate(); renderSelection(); submit();
-                };
-                if (mode() === 'keyboard') example();
-                else $('#chord-input-tabs-chord-keyboard').one('shown.bs.tab', example).tab('show');
-            });
             $submit.on('click', submit);
             function submit() {
                 const selected = notes();
@@ -249,9 +244,8 @@
                     .then(function (response) {
                         if (version !== requestVersion) return;
                         $results.html(response.data);
-                        chooseChord($results.find('.chords-results button').first(), false);
-                        const heading = document.getElementById('chord-results-title');
-                        if (heading) { heading.focus({preventScroll: true}); heading.scrollIntoView({behavior: 'auto', block: 'start'}); }
+                        chooseChord($results.find('.chords-results button').first());
+                        win.bootstrap.Modal.getOrCreateInstance($modal[0]).show($submit[0]);
                     }).catch(function (failure) {
                         if (version !== requestVersion || win.axios.isCancel(failure)) return;
                         const data = failure.response && failure.response.data;
@@ -261,36 +255,38 @@
                         pending = null; $submit.prop('disabled', false).html(submitHtml); $results.attr('aria-busy', 'false');
                     });
             }
-            function chooseChord($button, play) {
+            function chooseChord($button) {
                 if (!$button.length) return;
                 stopPlayback();
+                audioStatus('');
                 $results.find('.chords-results button').removeClass('btn-primary').addClass('btn-secondary').attr('aria-pressed', 'false');
                 $button.removeClass('btn-secondary').addClass('btn-primary').attr('aria-pressed', 'true');
                 $results.find('.chord-info').hide();
                 $(document.getElementById($button.attr('aria-controls'))).show();
-                $('#chord-playing-title').text($button.text().trim());
-                const voiced = voice(JSON.parse($button.attr('data-notes')), $button.attr('data-bass')).filter(Boolean);
-                const $keys = $('#chord-output-piano .keyboard-key');
-                $keys.children('.dot').hide(); $('#chord-label').empty();
-                voiced.forEach(function (note) {
+                $('#chord-playing-title').text($button.find('[data-chord-name]').text().trim());
+                currentVoicing = voice(JSON.parse($button.attr('data-notes')), $button.attr('data-bass')).filter(Boolean);
+                $('#chord-label').empty();
+                currentVoicing.forEach(function (note) {
                     pill('#chord-label', note.name[0].toUpperCase() + note.name.slice(1));
-                    let $key = $keys.filter(function () { return pitch(this.dataset.name) === note.pitch && Number(this.dataset.octave) === note.octave; }).first();
-                    if (!$key.length) $key = $keys.filter(function () { return pitch(this.dataset.name) === note.pitch; }).first();
-                    $key.children('.dot').show();
                 });
-                if (!play || !readyAudio()) return;
-                resumeAudio(); playing = true; $('[data-chord-stop]').prop('disabled', false);
+                $results.find('[data-chord-play]').prop('disabled', !currentVoicing.length);
+            }
+            $results.on('click', '.chords-results button', function () { chooseChord($(this)); });
+            $results.on('click', '[data-chord-play]', function () {
+                if (playing) { stopPlayback(); return; }
+                if (!currentVoicing.length || !readyAudio()) return;
+                resumeAudio(); playing = true;
+                $results.find('[data-chord-play-label]').prop('hidden', true);
+                $results.find('[data-chord-stop-label]').prop('hidden', false);
+                $(this).attr('aria-label', 'Stop playback');
+                const voiced = currentVoicing.slice();
                 voiced.forEach(function (note, index) { timers.push(setTimeout(function () { win.piano.triggerAttackRelease(note.tone, '8n'); }, index * 220)); });
                 timers.push(setTimeout(function () { win.piano.triggerAttackRelease(voiced.map(function (note) { return note.tone; }), '1n'); }, voiced.length * 220 + 100));
                 timers.push(setTimeout(stopPlayback, voiced.length * 220 + 2100));
-            }
-            $results.on('click', '.chords-results button', function () { chooseChord($(this), true); });
-            $results.on('click', '[data-chord-stop]', stopPlayback);
-            $results.on('click', '[data-chord-edit]', function (event) {
-                event.preventDefault();
-                stopPlayback(); document.getElementById('chord-editor-title').scrollIntoView({block: 'start'}); $('#chord-clear').trigger('focus');
             });
-            $results.on('pointerdown', '.keyboard-key', function () { stopPlayback(); resumeAudio(); });
+            $modal.on('shown.bs.modal', function () { $results.find('.chords-results button').first().trigger('focus'); });
+            $modal.on('hide.bs.modal', stopPlayback);
+            $modal.on('hidden.bs.modal', function () { audioStatus(''); $submit.trigger('focus'); });
             $(win).on('pagehide', stopPlayback);
             $(document).on('visibilitychange', function () { if (document.hidden) stopPlayback(); });
             $(document).on('show.bs.modal show.bs.offcanvas', stopPlayback);
