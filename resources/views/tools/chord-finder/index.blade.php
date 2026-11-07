@@ -41,7 +41,7 @@
     @endslot
 @endcomponent
 <template id="chord-spelling-template">
-    <div class="chord-finder__spelling">@select(['bag' => 'default', 'id' => 'chord-spelling', 'name' => 'spelling', 'label' => 'Note name', 'choices' => [], 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])</div>
+    <div class="chord-finder__spelling">@select(['bag' => 'default', 'id' => 'chord-spelling', 'name' => 'spelling', 'label' => 'First note', 'choices' => [], 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])</div>
 </template>
 <template id="chord-note-pill">@pill(['label' => '<span data-note-label></span>', 'theme' => 'grey'])</template>
 @endsection

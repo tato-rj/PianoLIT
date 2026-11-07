@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-07 — Numbered note-spelling labels (P3, complete locally)
+
+- **Request / change:** Chord Finder's spelling fields use First note, Second note, Third note and subsequent ordinal labels in keyboard order, through Twelfth note. Note spellings remain in the existing select options; changing a spelling keeps the ordinal label. Updated `resources/js/components/chord-finder.js`, its public copy/Mix hash and the shared field template in `tools.chord-finder.index`.
+- **Verification / compatibility:** Existing focused JavaScript regressions, script syntax, asset copy/hash checks and whitespace checks pass. Local browser verification confirms G–Bb–D labels and a manual Bb → A# change without relabeling the field. Screenshot: `/Users/arthur/.codex/visualizations/2026/11/07/01a1b717-c32a-7f20-b51b-9986555aad8d/chord-note-labels.png`. Shared selects, spelling suggestions, root selection, analysis, playback and mobile/API behavior remain intact. No migration is required; production deployment remains pending.
+
 ### 2026-11-07 — Shop products ordered by latest update (P3, complete locally)
 
 - **Request / change:** `Services/Shop/Storefront::matches` now sorts the combined merchandise/eBook/eScore catalog by `updated_at` descending. Existing model-type/ID tie breakers remain in place. Category/search results and related products reuse this shared order; existing related/pagination fixtures now set `updated_at` explicitly.

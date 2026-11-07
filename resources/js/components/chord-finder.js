@@ -154,15 +154,15 @@
             }
             function renderSpellings() {
                 const $options = $('#options-buttons').empty();
-                keyboardNotes().forEach(function (item) {
+                const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth', 'Eleventh', 'Twelfth'];
+                keyboardNotes().forEach(function (item, index) {
                     const field = document.getElementById('chord-spelling-template').content.firstElementChild.cloneNode(true);
                     const select = field.querySelector('select');
                     const id = 'chord-spelling-' + pitch(item.spelling);
                     select.id = id; select.name = id; select.dataset.pitch = String(pitch(item.spelling));
                     const label = field.querySelector('label');
                     label.htmlFor = id;
-                    // Preserve the note letter's case while keeping a flat accidental lowercase.
-                    label.querySelector('small').textContent = item.key.dataset.name[0].toUpperCase() + item.key.dataset.name.slice(1);
+                    label.querySelector('small').textContent = ordinals[index] + ' note';
                     JSON.parse(item.key.dataset.names).forEach(function (name) {
                         const option = document.createElement('option');
                         option.value = name; option.textContent = name[0].toUpperCase() + name.slice(1);
