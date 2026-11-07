@@ -9,7 +9,7 @@
         </div>
         <div class="col-12 col-md-6 col-lg-5">
             <button type="button" class="btn btn-raw mb-1" data-bs-toggle="modal" data-bs-target="#product-share-modal">@icon('share-2')Share</button>
-            <h2>{{ $product['name'] }}</h2>
+            <h3>{{ $product['name'] }}</h3>
             @include('shop.components.reviews.summary', ['reviewUrl' => '#reviews', 'compact' => false])
             @if($digitalProduct)
                 @include('shop.storefront.components.product-price')
