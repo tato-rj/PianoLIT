@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-07 — Compact Other possibilities chord buttons (P3, complete locally)
+
+- **Request / change:** Matched the reference in `tools.chord-finder.results.chords`: Other possibilities use the shared secondary `btn-sm` size, inherited chord-name text, no extra gap between name and omission, and `opacity-6` on the small omission label. The play/stop icon remains on the right. Updated the design-token guidance.
+- **Verification / compatibility:** All **52 isolated chord tests / 429 assertions** and whitespace checks pass. Local browser verification confirms the F#–A–D example, compact F#mb6/no 5th button, selection, playback/Stop state and matching explanation. Proof: `/Users/arthur/.codex/visualizations/2026/11/07/01a1b717-c32a-7f20-b51b-9986555aad8d/chord-other-possibilities.png`. Best matches, ranking, modal layout, control data/ARIA, playback and mobile/API contracts remain intact. No asset build or migration is required; production deployment remains pending.
+
 ### 2026-11-07 — Numbered note-spelling labels (P3, complete locally)
 
 - **Request / change:** Chord Finder's spelling fields use First note, Second note, Third note and subsequent ordinal labels in keyboard order, through Twelfth note. Note spellings remain in the existing select options; changing a spelling keeps the ordinal label. Updated `resources/js/components/chord-finder.js`, its public copy/Mix hash and the shared field template in `tools.chord-finder.index`.

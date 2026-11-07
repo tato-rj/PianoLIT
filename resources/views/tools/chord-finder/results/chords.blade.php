@@ -14,11 +14,11 @@
             <h3 class="h6 mb-2">{{ $heading }}</h3>
             <div class="chords-results d-flex flex-wrap gap-2">
                 @foreach($matches as $inversion)
-                    <button type="button" class="btn btn-secondary mw-100 d-flex align-items-center justify-content-between gap-3" href="#{{ $inversion['id'] }}" aria-label="Play {{ strip_tags($inversion['label']['full_shorthand']) }} chord" aria-pressed="false" aria-controls="{{ $inversion['id'] }}" data-chord-play data-notes="{{ json_encode($inversion['chord']) }}" data-bass="{{ $request['strict'] && $request['tool'] !== 'button' ? $inversion['label']['bass'] : '' }}">
-                        <span class="d-flex flex-column align-items-start gap-1">
-                            <span data-chord-name class="h5 text-nowrap mb-0">{!! $inversion['label']['full_shorthand'] !!}</span>
+                    <button type="button" class="btn btn-secondary {{ $group === 'other' ? 'btn-sm ' : '' }}mw-100 d-flex align-items-center justify-content-between gap-3" href="#{{ $inversion['id'] }}" aria-label="Play {{ strip_tags($inversion['label']['full_shorthand']) }} chord" aria-pressed="false" aria-controls="{{ $inversion['id'] }}" data-chord-play data-notes="{{ json_encode($inversion['chord']) }}" data-bass="{{ $request['strict'] && $request['tool'] !== 'button' ? $inversion['label']['bass'] : '' }}">
+                        <span class="d-flex flex-column align-items-start{{ $group === 'best' ? ' gap-1' : '' }}">
+                            <span data-chord-name class="{{ $group === 'best' ? 'h5 ' : '' }}text-nowrap mb-0">{!! $inversion['label']['full_shorthand'] !!}</span>
                             @if(!empty($inversion['label']['omissions']))
-                                <span class="small text-nowrap">no {{ collect($inversion['label']['omissions'])->map(function ($note) { return $note['degree'] === 3 ? '3rd' : '5th'; })->implode(', ') }}</span>
+                                <span class="small text-nowrap{{ $group === 'other' ? ' opacity-6' : '' }}">no {{ collect($inversion['label']['omissions'])->map(function ($note) { return $note['degree'] === 3 ? '3rd' : '5th'; })->implode(', ') }}</span>
                             @endif
                         </span>
                         <span data-chord-play-icon>@icon('play', ['mr' => 0])</span>

@@ -1021,7 +1021,10 @@ suggestions do not change the server’s ranking rules. The editor remains avail
 notes, an example, inline errors and an Edit notes link from the results.
 
 Results reuse the shared accordion components for interval explanations; each
-inversion/step must have a unique target. Result buttons retain their `data-notes`
+inversion/step must have a unique target. Other possibilities use shared secondary
+buttons in `btn-sm`, with the chord name in inherited button text, a tightly stacked
+omission label using `small opacity-6`, and the play/stop icon on the right.
+Result buttons retain their `data-notes`
 and legacy `href` attributes alongside accessible state/controls. Displaying a
 result does not start audio: selecting a chord plays its ascending notes and
 then the full chord through the existing sampler. Slash-chord bass notes affect
