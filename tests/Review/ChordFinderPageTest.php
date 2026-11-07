@@ -75,15 +75,19 @@ class ChordFinderPageTest extends ReviewTestCase
             $id = $control->getAttribute('aria-controls');
             $this->assertSame('#'.$id, $control->getAttribute('data-bs-target'));
             $this->assertSame(1, $xpath->query('//*[@id="'.$id.'" and @aria-labelledby]')->length);
+            $this->assertSame('false', $control->getAttribute('aria-expanded'), 'Explanations start collapsed.');
         }
         foreach ($xpath->query('//button[@data-notes and @aria-controls]') as $control) {
             $this->assertSame('#'.$control->getAttribute('aria-controls'), $control->getAttribute('href'), 'Keep existing open-page result handlers usable.');
             $this->assertSame(1, $xpath->query('//*[@id="'.$control->getAttribute('aria-controls').'" and contains(@class,"chord-info")]')->length);
+            $this->assertTrue($control->hasAttribute('data-chord-play'));
+            $this->assertSame(1, $xpath->query('.//*[@data-chord-stop-icon and @hidden]', $control)->length);
+            $this->assertSame(1, $xpath->query('.//*[@data-chord-play-icon and not(@hidden)]', $control)->length);
         }
-        $this->assertSame(0, $xpath->query('//*[@id="chord-output-piano"]')->length);
+        $this->assertSame(24, $xpath->query('//*[@id="chord-output-piano" and @role="img"]//*[@inert and @aria-hidden="true"]//*[@data-name and @data-octave]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="chord-output-piano"]//*[@tabindex or @role="button"]')->length);
         $this->assertSame(0, $xpath->query('//button[@data-chord-stop]')->length);
-        $this->assertSame(1, $xpath->query('//button[@data-chord-play]//*[@data-chord-stop-label and @hidden]')->length);
-        $this->assertSame(1, $xpath->query('//button[@data-chord-play]//*[@data-chord-play-label and not(@hidden)]')->length);
+        $this->assertSame(0, $xpath->query('//button[@data-chord-play and not(@data-notes)]')->length);
     }
 
     public function test_missing_intervals_are_explained_without_empty_or_invented_intervals()

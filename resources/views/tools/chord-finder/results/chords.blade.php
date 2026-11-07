@@ -11,10 +11,14 @@
                 <h3 class="{{ $group === 'best' ? 'h5' : 'h6' }} mb-3">{{ $heading }}</h3>
                 <div class="chords-results d-flex flex-wrap gap-3">
                     @foreach($matches as $inversion)
-                        <button type="button" class="btn btn-secondary d-flex align-items-center justify-content-between gap-4 {{ $group === 'best' ? 'chord-finder__match' : '' }}" href="#{{ $inversion['id'] }}" aria-label="View {{ strip_tags($inversion['label']['full_shorthand']) }} chord" aria-pressed="false" aria-controls="{{ $inversion['id'] }}" data-notes="{{ json_encode($inversion['chord']) }}" data-bass="{{ $request['strict'] && $request['tool'] !== 'button' ? $inversion['label']['bass'] : '' }}"><span data-chord-name class="{{ $group === 'best' ? 'h3 mb-0' : '' }}">{!! $inversion['label']['full_shorthand'] !!}</span>@icon('chevron-right', ['mr' => 0])</button>
+                        <button type="button" class="btn btn-secondary d-flex align-items-center justify-content-between gap-4 {{ $group === 'best' ? 'chord-finder__match' : '' }}" href="#{{ $inversion['id'] }}" aria-label="Play {{ strip_tags($inversion['label']['full_shorthand']) }} chord" aria-pressed="false" aria-controls="{{ $inversion['id'] }}" data-chord-play data-notes="{{ json_encode($inversion['chord']) }}" data-bass="{{ $request['strict'] && $request['tool'] !== 'button' ? $inversion['label']['bass'] : '' }}">
+                            <span data-chord-name class="{{ $group === 'best' ? 'h3 mb-0' : '' }}">{!! $inversion['label']['full_shorthand'] !!}</span>
+                            <span data-chord-play-icon>@icon('play', ['mr' => 0])</span>
+                            <span data-chord-stop-icon hidden>@icon('square', ['mr' => 0])</span>
+                        </button>
                     @endforeach
                 </div>
-        </div>
+            </div>
         </div>
     @endif
 @endforeach

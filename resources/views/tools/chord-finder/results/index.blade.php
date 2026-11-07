@@ -1,12 +1,14 @@
 <section aria-label="Chord possibilities" data-chord-results>
     @include('tools.chord-finder.results.chords')
     <div class="border-top pt-4 mb-4">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-            <div><h3 class="h3 mb-2" id="chord-playing-title"></h3><div id="chord-label" class="d-flex flex-wrap gap-2"></div></div>
-            <button type="button" class="btn btn-primary btn-sm" data-chord-play aria-label="Play chord" disabled>
-                <span data-chord-play-label>@icon('play')Play chord</span>
-                <span data-chord-stop-label hidden>@icon('square')Stop playback</span>
-            </button>
+        <div class="mb-4">
+            <h3 class="h3 mb-2" id="chord-playing-title"></h3>
+            <div id="chord-label" class="d-flex flex-wrap gap-2"></div>
+        </div>
+        <div id="chord-output-piano" role="img" aria-label="Selected notes">
+            <div inert aria-hidden="true">
+                @include('components.music.piano.keyboard', ['centered' => true, 'responsive' => true, 'octaves' => [3 => [], 4 => []]])
+            </div>
         </div>
         <p id="chord-result-audio-status" class="small text-muted mt-3 mb-0" role="status" hidden></p>
     </div>
