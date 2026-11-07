@@ -582,6 +582,9 @@
                 if (palette && this.root.contains(palette)) return;
                 const thickness = event.target.closest('.score-width-control');
                 if (thickness && this.root.contains(thickness)) return;
+                // Turning the score page keeps the current annotation tool active.
+                const pageButton = event.target.closest('button[data-prev], button[data-next]');
+                if (pageButton && this.root.contains(pageButton)) return;
                 this.selectTool('read');
             }, true);
             this.all('[data-undo]:not([data-bs-toggle="modal"])').forEach(el => el.addEventListener('click', () => { this.finishText(); this.store.undo(); }));

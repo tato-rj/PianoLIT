@@ -59,6 +59,64 @@ module.exports = async function () {
     }, {}, {});
     assert.strictEqual(subscriber.canExport, true, 'Subscribers retain score export');
 
+    // Exercise capture-phase pointerdown and the real page-button handlers: it
+    // used to switch to Read before the page button's click could render.
+    const pageEditor = Object.create(Editor.prototype), pageControls = {}, pageListeners = {};
+    const pageControl = selector => pageControls[selector] || (pageControls[selector] = {
+        listeners: {}, style: {}, value: selector === '[data-color]' ? '#e53935' : '.006',
+        addEventListener(type, handler) { this.listeners[type] = handler; },
+        setAttribute(name, value) { this[name] = value; },
+        getBoundingClientRect: () => ({left: 0, top: 0, width: 500, height: 800}),
+        setPointerCapture() {}, hasPointerCapture: () => false,
+        contains: target => target.onSheet,
+    });
+    pageEditor.find = pageControl; pageEditor.all = () => [];
+    pageEditor.root = {contains: target => target.owned};
+    pageEditor.sheet = pageControl('.score-sheet'); pageEditor.svg = pageControl('.score-markings');
+    pageEditor.scroller = {clientWidth: 680};
+    pageEditor.canvas = {getContext: () => ({drawImage() {}})};
+    pageEditor.pdf = {numPages: 3, getPage: async () => ({
+        getViewport: ({scale}) => ({width: 612 * scale, height: 792 * scale}),
+        render: () => ({promise: Promise.resolve()})
+    })};
+    pageEditor.page = 1; pageEditor.zoom = .75; pageEditor.renderId = 0;
+    pageEditor.ready = true; pageEditor.tool = 'read'; pageEditor.pointerId = null;
+    pageEditor.store = new Markings(() => {}); pageEditor.store.load({revision: 0, marks: []});
+    for (const method of ['bindPinchZoom', 'updatePaletteColor', 'controls', 'paint', 'positionText']) pageEditor[method] = () => {};
+    pageEditor.beginText = mark => pageEditor.addMark(Object.assign(mark, {text: '1'}));
+    const originalDocumentListener = document.addEventListener, originalWindowListener = window.addEventListener;
+    document.addEventListener = (type, handler) => { pageListeners[type] = handler; };
+    window.addEventListener = () => {};
+    pageEditor.bind();
+    document.addEventListener = originalDocumentListener; window.addEventListener = originalWindowListener;
+    for (const tool of ['pen', 'text', 'highlight', 'erase']) {
+        pageEditor.selectTool(tool);
+        for (const [selector, expectedPage] of [['[data-next]', 2], ['[data-prev]', 1]]) {
+            const button = Object.assign(pageControl(selector), {owned: true});
+            // The actual target may be the Lucide SVG/path inside the button.
+            const target = {closest: value => value === 'button[data-prev], button[data-next]' ? button : null};
+            pageListeners.pointerdown({target});
+            await button.listeners.click();
+            assert.strictEqual(pageEditor.page, expectedPage, tool + ': page buttons still turn the score');
+            assert.strictEqual(pageEditor.tool, tool, tool + ': page turns keep the selected tool');
+            if (tool !== 'erase') {
+                pageEditor.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 1,
+                    target: {closest: () => null}, preventDefault() {}});
+                pageEditor.finishStroke();
+                const mark = pageEditor.store.marks[pageEditor.store.marks.length - 1];
+                assert.strictEqual(mark.page, expectedPage, 'Writing continues immediately on the destination page');
+                assert.strictEqual(mark.type, tool === 'pen' ? 'stroke' : tool);
+                assert.strictEqual(mark.color, '#e53935', 'Page turns retain the selected color');
+                if (tool === 'pen') assert.strictEqual(mark.width, .006, 'Page turns retain pencil thickness');
+            }
+        }
+        pageListeners.pointerdown({target: {closest: () => null}});
+        assert.strictEqual(pageEditor.tool, 'read', 'Clicks outside the score still deselect the tool');
+        pageEditor.tool = tool;
+        pageListeners.pointerdown({target: {closest: value => value === 'button[data-prev], button[data-next]' ? {owned: false} : null}});
+        assert.strictEqual(pageEditor.tool, 'read', 'Page buttons outside this editor do not retain its tool');
+    }
+
     const guest = Object.create(Editor.prototype);
     guest.url = ''; guest.page = 1; guest.pdf = null;
     guest.root = {getAttribute: () => '/free-pick.pdf'};

@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-06 — Keep score annotation tools selected across page turns (P3, complete locally)
+
+- **Evidence / fix:** The score editor's document-level `pointerdown` handler treated Previous/Next as clicks outside the sheet and switched to Read before their click handlers rendered the page. `resources/js/views/score-editor.js` now exempts this editor's two page buttons, including their nested icons. Pencil, text, highlighter and eraser remain selected when moving in either direction; clicks outside the editor still deselect the tool.
+- **Compatibility:** Page rendering still completes pending strokes/text on their original page. Existing markings, autosave, selected color/thickness, access controls, mobile/API contracts and media delivery remain unchanged. The public script and its Mix content hash are rebuilt; no migration or configuration change is needed.
+- **Verification / limits:** Focused score-editor checks and the full JavaScript regression command pass. New checks exercise capture-phase pointerdown followed by the real page-button handlers and PDF rendering, immediate writing on each destination page, retained color/pencil thickness and controls outside this editor. Production build, CSS regressions, asset-copy/hash/syntax checks and whitespace checks pass; Webpack reports 284 child-compilation warnings. Browser/touch-device acceptance and production deployment remain pending.
+
 ### 2026-11-06 — Hover images in detail galleries, scoped to the main color (P3, complete locally)
 
 - **Request / implementation:** `Shop\ProductPage` now appends each valid owned hover image as the last selectable detail-gallery view, without duplicating an existing URL or changing the main image. Merchandise entries use the initial main gallery color; the existing controller hides that thumbnail/image when another color is selected and restores it when returning. Digital and non-color products include it normally. The shared gallery gives the extra thumbnail the accessible name View detail image, and its Design System example uses the same metadata.
