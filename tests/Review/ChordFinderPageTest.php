@@ -50,7 +50,7 @@ class ChordFinderPageTest extends ReviewTestCase
         $response = $this->get(route('tools.chord-finder.index'))->assertOk()->assertSee('Choose your notes')
             ->assertSee('data-url="http://learn.localhost/chord-finder/analyse"', false)
             ->assertSee('href="http://learn.localhost"', false)
-            ->assertSee('data-url="http://learn.localhost/subscriptions/modal"', false);
+            ->assertDontSee('id="chord-newsletter-title"', false);
         $xpath = $this->xpath($response->getContent());
         $this->assertSame(24, $xpath->query('//*[@id="chord-input-piano"]//*[@data-name and @data-octave]')->length);
         $this->assertSame(7, $xpath->query('//button[contains(@class,"chord-note-toggle") and @aria-pressed="false"]')->length);

@@ -298,15 +298,13 @@
             }
             function renderResultPiano(selected) {
                 const $piano = $results.find('#chord-output-piano');
-                $piano.attr('aria-label', 'Selected notes: ' + selected.map(function (item) { return human(item.note) + item.octave; }).join(', '));
-                $piano.find('.keyboard-key').each(function () {
-                    const key = this;
-                    $(key).children('.dot').toggle(selected.some(function (item) {
-                        return item.pitch === pitch(key.dataset.name) && item.octave === Number(key.dataset.octave);
-                    }));
-                });
+                $piano.attr('aria-label', 'Selected notes: ' + selected.map(function (item) {
+                    const name = human(item.note || item.name);
+                    return name[0].toUpperCase() + name.slice(1) + item.octave;
+                }).join(', '));
+                highlightResultNotes(selected);
             }
-            function highlightPlaybackNotes(notes) {
+            function highlightResultNotes(notes) {
                 const $piano = $results.find('#chord-output-piano'), $keys = $piano.find('.keyboard-key');
                 $keys.children('.dot').hide();
                 notes.forEach(function (note) {
@@ -335,6 +333,8 @@
                 if (playing && playingButton === this) { stopPlayback(); return; }
                 const $button = $(this);
                 chooseChord($button);
+                resultSelection = currentVoicing.slice();
+                renderResultPiano(resultSelection);
                 if (!currentVoicing.length || !readyAudio()) return;
                 resumeAudio(); playing = true; playingButton = this;
                 $button.find('[data-chord-play-icon]').prop('hidden', true);
@@ -343,7 +343,7 @@
                 $results.find('#chord-output-piano').attr('aria-label', 'Playing ' + $button.find('[data-chord-name]').text().trim());
                 cancelPlayback = playbackSequence(currentVoicing.slice(), {
                     play: function (notes, duration) { win.piano.triggerAttackRelease(notes, duration); },
-                    highlight: highlightPlaybackNotes,
+                    highlight: highlightResultNotes,
                     finish: stopPlayback
                 });
             });

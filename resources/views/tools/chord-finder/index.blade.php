@@ -26,7 +26,6 @@
         <div id="notes-container" data-url="{{ route('tools.chord-finder.analyse') }}">
             @include('tools.chord-finder.empty')
         </div>
-        <div class="mt-5">@include('components.newsletter.invitation', ['headingId' => 'chord-newsletter-title', 'preview' => false])</div>
         @slot('sidebar')
             @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot

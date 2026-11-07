@@ -34,7 +34,7 @@ module.exports = function () {
     const callbacks = {
         play: (notes, duration) => events.push(['audio', notes, duration]),
         highlight: notes => events.push(['dots', notes.map(note => note.tone)]),
-        finish: () => events.push(['restore selection'])
+        finish: () => events.push(['finish playback'])
     };
     tool.playbackSequence(voiced, callbacks, clock);
     assert.deepStrictEqual(scheduled.map(timer => timer.delay), [0, 220, 440, 760, 2760]);
@@ -45,8 +45,8 @@ module.exports = function () {
         ['audio', 'A#3', '8n'], ['dots', ['A#3']],
         ['audio', 'D4', '8n'], ['dots', ['D4']],
         ['audio', ['G3', 'A#3', 'D4'], '1n'], ['dots', ['G3', 'A#3', 'D4']],
-        ['restore selection']
-    ], 'Audio and dots advance together, followed by restoration of the input selection.');
+        ['finish playback']
+    ], 'Audio and dots advance together through the full chord before playback finishes.');
     scheduled.length = 0; events.length = 0;
     const cancel = tool.playbackSequence(voiced, callbacks, clock);
     scheduled[0].callback();

@@ -1,5 +1,15 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-06 — Keep the selected chord's dots after playback (P3, complete locally)
+
+- **Change:** Choosing a result now saves its voicing as the modal keyboard's resting selection. Natural completion, manual Stop and dismissal retain that chord's full dots and accessible note label, matching its name and intervals. Initial results still show the submitted pitches/octaves; editing or searching again preserves the original main-page selection. Resting and animated dots share the same octave/fallback rendering. Updated the standalone source/public script, Mix hash, regression wording and project guidance; naming explanations and audio voicing/timing are unchanged.
+- **Verification:** The full JavaScript suite (150 tests plus existing regression checks), asset copy/hash/syntax validation and whitespace checks pass. Browser checks confirm Gm → Bb6 leaves Bb3/D4/G4 after natural completion and rapid switching/manual Stop, while the input remains G3/Bb3/D4. A new search restores the submitted input diagram. Proof: `/Users/arthur/.codex/visualizations/2026/11/07/01a1b421-55a9-70f0-a11e-9a6e7330323c/chord-finder/selected-chord-dots-persist.jpg`. Production deployment remains pending.
+
+### 2026-11-06 — Remove the Chord Finder newsletter card (P3, complete locally)
+
+- **Change:** Removed the newsletter invitation from the Chord Finder view and recorded the page-specific preference in `AGENTS.md`. Shared newsletter components and other pages are unchanged.
+- **Verification:** All 28 isolated chord tests / 221 assertions pass. Local browser verification confirms the card is absent; proof is `chord-finder-without-newsletter.jpg` in `/Users/arthur/.codex/visualizations/2026/11/07/01a1b421-55a9-70f0-a11e-9a6e7330323c/chord-finder/`. No asset build or migration is required. Production deployment remains pending.
+
 ### 2026-11-06 — Synchronized chord highlights and compact result sections (P3, complete locally)
 
 - **Request / change:** Yellow keyboard dots now follow each arpeggio note and then show the full chord, using the same callbacks as audio playback. Stop, switching results, dismissal and natural completion cancel pending updates and restore the submitted note selection. The large result modal replaces the extra-large layout: compact match groups, aligned columns, the chord summary beside its keyboard on desktop, and dividers between choices, keyboard and explanations. Phone sections share one left edge; match groups wrap naturally without breaking chord symbols.
