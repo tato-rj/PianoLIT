@@ -42,20 +42,32 @@ class Label
 	public function chords()
 	{
 		foreach ($this->array as $index => $chord) {
+			$candidates = [];
 			foreach ($chord['inversions'] as $key => $inversion) {
-				$this->array[$index]['inversions'][$key]['label'] = $this->read($inversion);
-				$this->array[$index]['inversions'][$key]['chord'] = $this->fixInversion($inversion);
+				foreach (Omissions::qualities($inversion['intervals']) as $quality) {
+					$candidate = $inversion;
+					$candidate['label'] = $this->read($inversion, $quality);
+					$candidate['label']['omissions'] = Omissions::describe($inversion, $candidate['label']);
+					$candidate['label']['quality_ambiguous'] = $quality !== null;
+					$candidate['analysis_chord'] = $inversion['chord'];
+					$candidate['chord'] = $this->fixInversion($inversion);
+					$candidates[] = $candidate;
+				}
 			}
+			$this->array[$index]['inversions'] = $candidates;
 		}
 
 		return $this->array;
 	}
 
-	public function read($inversion)
+	public function read($inversion, $assumedQuality = null)
 	{		
 		$root = $this->root($inversion);
 		$bass = $this->bass()['bass'] && $this->bass()['bass'][0] != $root['root'][0] ? '/' . $this->bass()['bass'] : null;
 		$type = $this->core($inversion);
+		if ($assumedQuality !== null) {
+			$type = ['type' => $assumedQuality, 'type_shorthand' => $assumedQuality === 'minor' ? 'm' : ''];
+		}
 		$seventh = $this->seventh($inversion);
 		$sus = $this->sus($inversion);
 		$ext = $this->extensions($inversion);

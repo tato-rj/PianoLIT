@@ -425,7 +425,7 @@
   </div>
 </section>
 
-@component('components.dialogs.modal', ['id' => 'ds-example-modal', 'header' => 'Sample dialog', 'centered' => true, 'scrollable' => true, 'options' => ['body' => ['padding' => 3]]])
+@component('components.dialogs.modal', ['id' => 'ds-example-modal', 'header' => 'Sample dialog', 'centered' => true])
     @slot('body')
         This is a preview of PianoLIT’s shared modal. Try closing it with the button, the backdrop or Escape.
     @endslot

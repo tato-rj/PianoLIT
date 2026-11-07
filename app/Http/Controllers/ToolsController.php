@@ -22,6 +22,7 @@ class ToolsController extends Controller
 			'notes.*' => ['bail', 'required', 'string', 'regex:'.$notation],
 			'root' => ['nullable', 'string', 'regex:'.$notation],
 			'tool' => ['bail', 'nullable', 'string', 'in:button,keyboard'],
+			'key_signature' => ['nullable', 'integer', 'between:-7,7'],
 		]);
 		abort_if(array_keys($data['notes']) !== range(0, count($data['notes']) - 1), 422, 'Please provide a list of notes.');
 		$normalize = function ($note) { return str_replace('s', '+', strtolower($note)); };

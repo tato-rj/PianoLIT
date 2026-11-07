@@ -400,6 +400,9 @@ class Validator
 
 	public function missingThird($intervals)
 	{
+		// Root, fifth and seventh form an identifiable shell with ambiguous quality.
+		if (Omissions::seventhShell($intervals)) return false;
+
 		$hasThird = $hasSecondOrFourth = $hasTenth = false;
 
 		foreach ($intervals as $interval) {

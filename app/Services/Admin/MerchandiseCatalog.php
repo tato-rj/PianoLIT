@@ -46,17 +46,19 @@ class MerchandiseCatalog
         $images = app(MerchandiseImages::class);
         $deadline = microtime(true) + 12;
         try {
-            foreach ($candidates as $url) {
-                if (in_array(hash('sha256', $url), $known, true)) continue;
+            foreach ($candidates as $sourceKey => $candidate) {
+                $url = $candidate['url'];
+                if (in_array($sourceKey, $known, true)) continue;
                 if (!$images->allowedUrl($url) || count($assets) >= MerchandiseImages::MAX_IMAGES || microtime(true) >= $deadline) { $warnings++; continue; }
                 try {
-                    $assets[] = $images->fromPrintful($url, $name, max(1, min(5, (int) ceil($deadline - microtime(true)))));
+                    $assets[] = $images->fromPrintful($url, $name, max(1, min(5, (int) ceil($deadline - microtime(true)))))
+                        + ['printful_colors' => $candidate['colors']];
                 } catch (PrintfulException $exception) {
                     $warnings++;
                 }
             }
             $usedPaths = [];
-            $product = DB::transaction(function () use ($existing, $revision, $id, $storeId, $name, $providerName, $slug, $variants, $catalogRows, $assets, &$usedPaths, &$warnings) {
+            $product = DB::transaction(function () use ($existing, $revision, $id, $storeId, $name, $providerName, $slug, $variants, $catalogRows, $candidates, $assets, &$usedPaths, &$warnings) {
                 if (!$existing) {
                     $inserted = DB::table('merchandise_products')->insertOrIgnore([
                         'printful_store_id' => $storeId, 'printful_product_id' => $id, 'name' => $name, 'printful_name' => $providerName, 'slug' => $slug,
@@ -69,12 +71,22 @@ class MerchandiseCatalog
                 if (!$existing && !$inserted) return $product;
                 if ($existing) $this->checkRevision($product, $revision);
                 if ($product->trashed()) $product->restore();
+                // Refresh labels on saved references without downloading their bytes again.
+                foreach ($product->images()->withTrashed()->where('source', 'printful')->get() as $image) {
+                    if (isset($candidates[$image->source_key])) {
+                        $image->fill(['printful_colors' => $candidates[$image->source_key]['colors']])->save();
+                    }
+                }
                 $position = (int) $product->images()->withTrashed()->max('position');
                 $activeCount = $product->images()->where('source', 'printful')->count();
                 foreach ($assets as $asset) {
-                    if ($product->images()->withTrashed()->where('source', 'printful')->where(function ($query) use ($asset) {
+                    $duplicate = $product->images()->withTrashed()->where('source', 'printful')->where(function ($query) use ($asset) {
                         $query->where('source_key', $asset['source_key'])->orWhere('checksum', $asset['checksum']);
-                    })->exists()) continue;
+                    })->first();
+                    if ($duplicate) {
+                        $duplicate->fill(['printful_colors' => array_values(array_unique(array_merge($duplicate->printful_colors ?? [], $asset['printful_colors'])))])->save();
+                        continue;
+                    }
                     if ($activeCount >= MerchandiseImages::MAX_IMAGES) { $warnings++; continue; }
                     $image = $product->images()->create($asset + ['position' => ++$position]);
                     $usedPaths[] = $asset['path'];
@@ -148,17 +160,23 @@ class MerchandiseCatalog
 
     private function mockups(array $remote): array
     {
-        $urls = [];
-        if (is_string($remote['sync_product']['thumbnail_url'] ?? null)) $urls[] = $remote['sync_product']['thumbnail_url'];
+        $mockups = [];
+        $add = function (string $url, ?string $color = null) use (&$mockups) {
+            $key = hash('sha256', $url);
+            if (!isset($mockups[$key])) $mockups[$key] = ['url' => $url, 'colors' => []];
+            if ($color !== null && !in_array($color, $mockups[$key]['colors'], true)) $mockups[$key]['colors'][] = $color;
+        };
+        if (is_string($remote['sync_product']['thumbnail_url'] ?? null)) $add($remote['sync_product']['thumbnail_url']);
         foreach ($remote['sync_variants'] as $variant) {
+            $color = is_string($variant['color'] ?? null) ? trim(mb_substr($variant['color'], 0, 255)) : '';
             foreach (is_array($variant['files'] ?? null) ? $variant['files'] : [] as $file) {
                 // Print-file previews are artwork, not product mockups.
                 if (!is_array($file) || ($file['type'] ?? '') !== 'preview') continue;
                 $url = $file['preview_url'] ?? $file['thumbnail_url'] ?? null;
-                if (is_string($url) && $url !== '') $urls[] = $url;
+                if (is_string($url) && $url !== '') $add($url, $color !== '' ? $color : null);
             }
         }
-        return array_values(array_unique($urls));
+        return $mockups;
     }
 
     public function change(MerchandiseProduct $product, int $revision, callable $change, string $bag = 'merchandise'): MerchandiseProduct

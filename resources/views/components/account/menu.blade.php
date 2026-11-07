@@ -38,7 +38,7 @@
     <div class="offcanvas-body account-navigation__body">
         <nav class="account-menu__links" aria-label="Your account">
             @if($account)
-                <a class="account-menu__link" href="{{ $preview ? '#ds-components' : route('users.profile') }}" @if($currentAccountItem === 'profile') aria-current="page" @endif>
+                <a class="account-menu__link {{ $currentAccountItem === 'profile' ? 'text-primary' : '' }}" href="{{ $preview ? '#ds-components' : route('users.profile') }}" @if($currentAccountItem === 'profile') aria-current="page" @endif>
                     @icon('user-round', ['mr' => 0])<span>My profile</span>
                 </a>
             @else
@@ -48,7 +48,7 @@
             @endif
             @if($shortcuts['membership'])
                 @if($shortcuts['membershipUrl'])
-                <a class="account-menu__link" href="{{ $shortcuts['membershipUrl'] }}" @if($currentAccountItem === 'membership') aria-current="page" @endif>
+                <a class="account-menu__link {{ $currentAccountItem === 'membership' ? 'text-primary' : '' }}" href="{{ $shortcuts['membershipUrl'] }}" @if($currentAccountItem === 'membership') aria-current="page" @endif>
                     @icon('credit-card', ['mr' => 0])<span>My membership</span>
                 </a>
                 @else
@@ -56,12 +56,12 @@
                 @endif
             @endif
             @if($shortcuts['downloads'])
-                <a class="account-menu__link" href="{{ $preview ? '#ds-components' : route('users.purchases') }}" @if($currentAccountItem === 'downloads') aria-current="page" @endif>
+                <a class="account-menu__link {{ $currentAccountItem === 'downloads' ? 'text-primary' : '' }}" href="{{ $preview ? '#ds-components' : route('users.purchases') }}" @if($currentAccountItem === 'downloads') aria-current="page" @endif>
                     @icon('download', ['mr' => 0])<span>My downloads</span>
                 </a>
             @endif
             @if($shortcuts['orders'])
-                <a class="account-menu__link" href="{{ $preview ? '#ds-components' : route('users.orders') }}" @if($currentAccountItem === 'orders') aria-current="page" @endif>
+                <a class="account-menu__link {{ $currentAccountItem === 'orders' ? 'text-primary' : '' }}" href="{{ $preview ? '#ds-components' : route('users.orders') }}" @if($currentAccountItem === 'orders') aria-current="page" @endif>
                     @icon('package', ['mr' => 0])<span>Track your orders</span>
                 </a>
             @endif
@@ -71,7 +71,7 @@
     </div>
 
     <div class="account-menu__footer">
-        <a class="account-menu__link" href="{{ $preview ? '#ds-components' : route('contact') }}" @if($currentAccountItem === 'support') aria-current="page" @endif>
+        <a class="account-menu__link {{ $currentAccountItem === 'support' ? 'text-primary' : '' }}" href="{{ $preview ? '#ds-components' : route('contact') }}" @if($currentAccountItem === 'support') aria-current="page" @endif>
             @icon('circle-help', ['mr' => 0])<span>Help &amp; Support</span>
         </a>
         @if($account)

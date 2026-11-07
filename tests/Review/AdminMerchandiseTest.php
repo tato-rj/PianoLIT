@@ -410,6 +410,84 @@ class AdminMerchandiseTest extends ReviewTestCase
         Http::assertSentCount(4);
     }
 
+    public function test_reference_color_labels_follow_preview_urls_and_stay_out_of_shared_json()
+    {
+        $second = $this->remote['sync_variants'][0];
+        $second['id'] = 92;
+        $second['color'] = 'Heather & Dust';
+        $second['files'] = [['type' => 'preview', 'preview_url' => 'https://files.cdn.printful.com/mockup/back.png']];
+        $this->remote['sync_variants'][] = $second;
+        $product = $this->imported();
+        $front = $product->images()->where('source_key', hash('sha256', 'https://files.cdn.printful.com/mockup/front.png'))->firstOrFail();
+        $back = $product->images()->where('source_key', hash('sha256', 'https://files.cdn.printful.com/mockup/back.png'))->firstOrFail();
+        $this->assertSame(['Black'], $front->printful_colors);
+        $this->assertSame(['Black', 'Heather & Dust'], $back->printful_colors);
+        foreach ([$front, $back] as $image) {
+            $this->assertNull($image->gallery_color);
+            $this->assertArrayNotHasKey('printful_colors', $image->toArray());
+        }
+        $this->assertArrayNotHasKey('files', $product->variants[0]);
+        $html = $this->get($this->action('edit', $product))->assertOk()->getContent();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame('Black, Heather & Dust', $xpath->query('//article[@aria-label="Printful mockup '.$back->id.'"]/p')->item(0)->textContent);
+        $this->assertStringContainsString('Black, Heather &amp; Dust', $html);
+    }
+
+    public function test_reference_thumbnail_without_a_preview_color_link_has_an_explicit_unavailable_label()
+    {
+        array_pop($this->remote['sync_variants'][0]['files']);
+        $product = $this->imported();
+        $front = $product->images()->where('source_key', hash('sha256', 'https://files.cdn.printful.com/mockup/front.png'))->firstOrFail();
+        // An old gallery assignment and non-preview artwork cannot identify its color.
+        $front->update(['gallery_color' => 'Black']);
+        $this->assertSame([], $front->printful_colors);
+        $html = $this->get($this->action('edit', $product))->assertOk()->getContent();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame('Color unavailable', $xpath->query('//article[@aria-label="Printful mockup '.$front->id.'"]/p')->item(0)->textContent);
+        $this->remote['sync_variants'][0]['color'] = null;
+        $this->post($this->action('refresh', $product), ['revision' => $product->revision])->assertRedirect();
+        $this->assertSame([[], []], $product->images()->get()->pluck('printful_colors')->all());
+    }
+
+    public function test_refresh_backfills_reference_colors_without_downloads_or_changes_to_uploaded_galleries()
+    {
+        $product = $this->imported();
+        $upload = $this->uploaded($product);
+        $product->images()->where('source', 'printful')->update(['printful_colors' => null]);
+        $files = Storage::disk('public')->allFiles();
+        $ids = $product->images()->pluck('id')->all();
+        $this->remote['sync_variants'][0]['color'] = 'Ivory';
+        Http::swap(new \Illuminate\Http\Client\Factory);
+        $this->fakePrintful();
+        $this->post($this->action('refresh', $product), ['revision' => $product->revision])->assertRedirect();
+        $this->assertSame([['Ivory'], ['Ivory']], $product->images()->where('source', 'printful')->get()->pluck('printful_colors')->all());
+        $this->assertSame('Black', $upload->fresh()->gallery_color);
+        $this->assertNull($upload->fresh()->printful_colors);
+        $this->assertSame($ids, $product->images()->pluck('id')->all());
+        $this->assertSame($files, Storage::disk('public')->allFiles());
+        Http::assertNotSent(fn ($request) => strpos($request->url(), 'https://files.cdn.printful.com/') === 0);
+        $this->remote['sync_variants'][0]['color'] = 'Pink';
+        $this->withExceptionHandling()->postJson($this->action('refresh', $product), ['revision' => $product->revision])->assertUnprocessable();
+        $this->assertSame([['Ivory'], ['Ivory']], $product->images()->where('source', 'printful')->get()->pluck('printful_colors')->all());
+    }
+
+    public function test_identical_reference_bytes_keep_all_provider_color_labels()
+    {
+        $second = $this->remote['sync_variants'][0];
+        $second['id'] = 92;
+        $second['color'] = 'Ivory';
+        $second['files'] = [['type' => 'preview', 'preview_url' => 'https://files.cdn.printful.com/mockup/another-back.png']];
+        $this->remote['sync_variants'][] = $second;
+        $product = $this->imported();
+        $this->assertSame(2, $product->images()->count());
+        $back = $product->images()->where('source_key', hash('sha256', 'https://files.cdn.printful.com/mockup/back.png'))->firstOrFail();
+        $this->assertSame(['Black', 'Ivory'], $back->printful_colors);
+    }
+
     public function test_catalog_colors_match_variant_ids_instead_of_names_or_response_order()
     {
         $second = $this->remote['sync_variants'][0];

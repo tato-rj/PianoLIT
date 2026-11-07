@@ -31,9 +31,9 @@
         @endslot
     @endcomponent
 </div>
-@component('components.dialogs.modal', ['id' => 'chord-results-modal', 'header' => 'Chord results', 'centered' => true, 'scrollable' => true, 'options' => ['size' => 'lg', 'body' => ['padding' => 0]]])
+@component('components.dialogs.modal', ['id' => 'chord-results-modal', 'header' => 'Chord results', 'centered' => true, 'options' => ['size' => 'lg']])
     @slot('body')
-        <div id="chord-results" class="px-3 pb-3" aria-busy="false"></div>
+        <div id="chord-results" aria-busy="false"></div>
     @endslot
     @slot('footer')
         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">@icon('arrow-left')Edit notes</button>

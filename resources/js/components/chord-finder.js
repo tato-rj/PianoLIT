@@ -188,7 +188,7 @@
                 $root.val(current.includes(root) ? root : '');
                 $('#root-container').prop('hidden', current.length < 3);
                 $('#chord-options').prop('hidden', mode() === 'keyboard' ? !current.length : current.length < 3);
-                $('#chord-options-panel-heading .accordion-button').contents().filter(function () { return this.nodeType === 3; }).first().replaceWith(mode() === 'keyboard' ? 'Note spelling & root' : 'Root note');
+                $('#chord-options-panel-heading .accordion-button').contents().filter(function () { return this.nodeType === 3; }).first().replaceWith(mode() === 'keyboard' ? 'Note spelling, root & key' : 'Root & key');
                 $inputKeys.each(function () {
                     const selected = selectedKeys.get(pitch(this.dataset.name));
                     const active = !!selected && selected.key === this;
@@ -261,7 +261,7 @@
                     win.piano.triggerAttackRelease(tones[value] + $note.attr('data-octave'), '8n');
                 }
             }
-            $('#chord-root').on('change', invalidate);
+            $('#chord-root, #chord-key-signature').on('change', invalidate);
             $('#chord-input-tabs [data-bs-toggle="tab"]').on('shown.bs.tab', function () { invalidate(); renderSelection(); });
             $('#chord-clear').on('click', function () {
                 selectedKeys.clear();
@@ -279,7 +279,7 @@
                 pending = win.axios.CancelToken.source();
                 $submit.prop('disabled', true).text('Finding chords…');
                 $results.attr('aria-busy', 'true');
-                win.axios.get($container.attr('data-url'), {params: {notes: selected, root: $('#chord-root').val() || null, tool: mode()}, cancelToken: pending.token, timeout: 20000})
+                win.axios.get($container.attr('data-url'), {params: {notes: selected, root: $('#chord-root').val() || null, key_signature: $('#chord-key-signature').val() || null, tool: mode()}, cancelToken: pending.token, timeout: 20000})
                     .then(function (response) {
                         if (version !== requestVersion) return;
                         $results.html(response.data);

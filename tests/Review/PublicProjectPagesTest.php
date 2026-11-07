@@ -4,10 +4,11 @@ namespace Tests\Review;
 
 use App\User;
 use App\Providers\RouteServiceProvider;
+use App\Services\CampaignAttribution;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollection;
-use Illuminate\Support\Facades\{DB, Redis};
+use Illuminate\Support\Facades\Redis;
 use Stevebauman\Location\Facades\Location;
 
 class PublicProjectPagesTest extends ReviewTestCase
@@ -141,18 +142,21 @@ class PublicProjectPagesTest extends ReviewTestCase
         $response = $this->get($origin)->assertOk()
             ->assertDontSee('images/shop/coming-soon.webp', false)
             ->assertSee('<link rel="canonical" href="'.$origin.'"', false);
+        $xpath = $this->xpath($response->getContent());
         if ($hub === 'learn') {
             $response->assertSee('PianoLIT Learn')->assertSee('Interactive tools')->assertSee('Courses &amp; guides', false)->assertDontSee('Coming up soon!');
         } elseif ($hub === 'games') {
             $response->assertSee('PianoLIT Games')->assertSee('Set up game')->assertDontSee('Coming up soon!');
-            $this->assertSame(11, $this->xpath($response->getContent())->query('//*[@data-game-card]')->length);
+            $this->assertSame(11, $xpath->query('//*[@data-game-card]')->length);
         } else {
-            $response->assertSee('Coming up soon!')
-                ->assertDontSee('images/home/editorial/'.$hub.'.webp', false)
-                ->assertDontSee('images/home/projects/'.$hub.'.svg', false);
-            $this->assertSame(0, $this->xpath($response->getContent())->query('//main//img')->length);
+            $response->assertViewIs('shop.storefront.index')->assertSee('PianoLIT Shop')
+                ->assertSee('Search products')->assertDontSee('Coming up soon!');
+            foreach (['t-shirts', 'stickers', 'ebooks', 'escores'] as $category) {
+                $this->assertSame(1, $xpath->query('//nav[@aria-label="Product categories"]/a[@href="'.$origin.'/'.$category.'"]')->length);
+            }
+            $this->assertSame(1, $xpath->query('//nav[@aria-label="Product categories"]/a[@href="'.$origin.'" and @aria-current="page"]')->length);
+            $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header")]//a[@href="'.$origin.'/bag"]')->length);
         }
-        $xpath = $this->xpath($response->getContent());
         $this->assertSame(1, $xpath->query('//header[contains(@class, "site-header")]')->length);
         $this->assertSame($website, $xpath->query('//header//a[@aria-label="PianoLIT home"]')->item(0)->getAttribute('href'));
         $this->assertSame($hub === 'learn' ? 1 : 0, $xpath->query('//header//a[@href="https://www.youtube.com/pianolit"]')->length);
@@ -161,7 +165,7 @@ class PublicProjectPagesTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('//header//button[contains(@class, "account-circle")]')->length);
         $this->assertSame(0, $xpath->query('//header//*[@data-games-profile]')->length);
         $response->assertSee('data-lucide-name="user-round"', false);
-        $this->assertSame(1, $xpath->query('//main//a[@href="'.$website.'"]')->length);
+        $this->assertSame(1, $xpath->query('//main//nav[@aria-label="Breadcrumb"]//a[@href="'.$website.'"]')->length);
         $this->assertSame(1, $xpath->query('//footer[contains(@class, "site-footer")]')->length);
         foreach (['support', 'privacy-policy', 'terms-of-service'] as $path) {
             $this->assertSame(1, $xpath->query('//footer//a[@href="'.$website.'/'.$path.'"]')->length);
@@ -324,18 +328,39 @@ class PublicProjectPagesTest extends ReviewTestCase
         }
     }
 
-    public function test_hub_campaign_arrivals_stay_anonymous_and_host_local()
+    public function test_hub_campaign_touches_stay_in_host_local_sessions_without_sql_arrivals()
     {
+        $this->assertFalse(config('attribution.enabled'));
+        $this->assertTrue(config('attribution.conversion_links_enabled'));
         foreach (['shop', 'games', 'learn', 'blog', 'metronome'] as $hub) {
             $origin = 'http://'.$hub.'.localhost/';
+            $sessionKey = CampaignAttribution::PENDING_SESSION.'.'.hash('sha256', $hub.'.localhost');
+            $this->get($origin)->assertOk()->assertDontSee('data-campaign-measurement', false);
+            $this->withCookie(config('session.cookie'), session()->getId());
+            $firstTouch = null;
             for ($visit = 0; $visit < 2; $visit++) {
-                $this->get($origin.'?utm_source=newsletter&utm_campaign=projects')->assertOk()
-                    ->assertDontSee('Campaign link measurement');
+                $campaign = $visit === 0 ? 'projects' : 'replacement';
+                $this->get($origin.'?utm_source=newsletter&utm_campaign='.$campaign)->assertOk()
+                    ->assertDontSee('Campaign link measurement')
+                    ->assertCookieMissing(CampaignAttribution::VISIT_COOKIE)
+                    ->assertCookieMissing(CampaignAttribution::CONSENT_COOKIE)
+                    ->assertSessionHas($sessionKey, function ($touch) use ($origin) {
+                        return $touch['landing_url'] === $origin
+                            && $touch['parameters']['utm_source'] === 'newsletter'
+                            && $touch['parameters']['utm_campaign'] === 'projects';
+                    });
+                $this->withCookie(config('session.cookie'), session()->getId());
+                $touch = session($sessionKey);
+                if ($firstTouch === null) $firstTouch = $touch;
+                $this->assertSame($firstTouch['visit_id'], $touch['visit_id']);
+                $this->assertSame($firstTouch['captured_at'], $touch['captured_at']);
+                $this->assertDatabaseCount('campaign_visits', 0);
             }
-            $this->assertDatabaseHas('campaign_visits', ['landing_url' => $origin, 'user_id' => null, 'consented_at' => null]);
         }
-        $this->assertDatabaseCount('campaign_visits', 5);
-        $this->assertSame(0, DB::table('campaign_visits')->whereNotNull('user_id')->count());
+        $touches = session(CampaignAttribution::PENDING_SESSION);
+        $this->assertCount(5, $touches);
+        $this->assertCount(5, array_unique(array_column($touches, 'visit_id')));
+        $this->assertDatabaseCount('google_analytics_conversions', 0);
     }
 
     public function test_excluded_account_remains_excluded_on_games()

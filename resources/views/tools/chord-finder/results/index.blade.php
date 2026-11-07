@@ -19,6 +19,7 @@
     <div id="info-container">
         @foreach($request['chords'] as $chord)
             @foreach($chord['inversions'] as $inversion)
+                @php($analysisNotes = $inversion['analysis_chord'] ?? $inversion['chord'])
                 <section data-chord-explanation style="display: none;" id="{{ $inversion['id'] }}" aria-label="Chord explanation: {{ strip_tags($inversion['label']['full_shorthand']) }}">
                     <div class="row g-3">
                         <div class="col-sm-4 text-start">
@@ -26,11 +27,14 @@
                             <ul class="list-unstyled small mb-0">
                                 @foreach($inversion['intervals'] as $interval)
                                     <li class="border-bottom py-2">
-                                        <span class="text-muted">{{ chordToHumans($inversion['chord'][0]) }} → {{ chordToHumans($inversion['chord'][$loop->iteration]) }}</span>
+                                        <span class="text-muted">{{ chordToHumans($analysisNotes[0]) }} → {{ chordToHumans($analysisNotes[$loop->iteration]) }}</span>
                                         <strong class="d-block mt-1">{{ $interval['name'] }}</strong>
                                     </li>
                                 @endforeach
                             </ul>
+                            @foreach($inversion['label']['omissions'] ?? [] as $omitted)
+                                <p class="small text-muted mt-2 mb-0">{{ $omitted['note'] }} ({{ $omitted['degree'] === 3 ? '3rd' : '5th' }}) omitted.</p>
+                            @endforeach
                         </div>
                         @include('tools.chord-finder.results.labels.accordion', ['index' => $inversion['id'], 'chordlabel' => $inversion['label']])
                     </div>

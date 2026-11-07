@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class ChordFinder
 {
-	protected $notes, $results, $root, $bass, $tool;
+	protected $notes, $results, $root, $bass, $tool, $keySignature;
 
 	public function cleaner()
 	{
@@ -30,7 +30,7 @@ class ChordFinder
 
 	public function ranking()
 	{
-		return new Ranking($this->results, $this->root);
+		return new Ranking($this->results, $this->root, $this->keySignature);
 	}
 
 	public function tool($tool)
@@ -55,6 +55,7 @@ class ChordFinder
 		$this->notes = $request->notes;
 		$this->root($request->root);
 		$this->tool($request->tool);
+		$this->keySignature = $request->filled('key_signature') ? (int) $request->key_signature : null;
 
 		return $this;
 	}
@@ -71,6 +72,7 @@ class ChordFinder
 		$query .= "root={$this->root}&";
 
 		$query .= "tool={$this->tool}&";
+		if ($this->keySignature !== null) $query .= "key_signature={$this->keySignature}&";
 
 		$query .= 'dev';
 

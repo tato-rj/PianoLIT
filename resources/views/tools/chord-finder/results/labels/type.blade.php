@@ -1,5 +1,13 @@
 @component('tools.chord-finder.results.labels.accordion-cell', ['title' => '3rd AND 5th', 'index' => $index, 'step' => $step])
 	<p>Once each interval has been named, we first need to determine if the chord is major, minor, diminished or augmented. To do that, all we need is the <strong>3rd</strong> and the <strong>5th</strong>.</p>
+	@if($chordlabel['quality_ambiguous'] ?? false)
+		<p>This reading assumes an omitted <strong>{{ $chordlabel['type'] }} 3rd, {{ $chordlabel['omissions'][0]['note'] }}</strong>. The selected notes contain the root, perfect 5th and {{ $chordlabel['seventh'] }}.</p>
+		@if(!empty($chordlabel['inferred_from_key']))
+			<p class="m-0">{{ $chordlabel['omissions'][0]['note'] }} belongs to the <strong>{{ $chordlabel['inferred_from_key'] }}</strong> key signature, so this reading ranks first. The other quality remains possible if the missing note has an accidental.</p>
+		@else
+			<p class="m-0">Without the 3rd, these notes can fit either a major or a minor chord. A key signature or the surrounding music can help choose between them.</p>
+		@endif
+	@else
 	@php
 		$third = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 3);
 		$fifth = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 5);
@@ -30,5 +38,6 @@
 
 	@if($chordlabel['type'] == 'half diminished')
 	<p class="mb-0 mt-3">A chord with a diminished 5th and minor 7th is also referred to as a <u>minor 7th with a flat 5</u>. In this case, we can call this chord a <strong class="text-nowrap">{{$chordlabel['root']}} {{$chordlabel['seventh']}} b5</strong>. <i class="text-muted">(special thanks to our user Paul for pointing that out!)</i></p>
+	@endif
 	@endif
 @endcomponent

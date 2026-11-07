@@ -106,7 +106,10 @@ class AccountNavigationTest extends ReviewTestCase
             ['localhost', 'home', 'Home'],
             ['localhost', 'privacy', null],
             ['my.localhost', 'webapp.discover', 'Web app'],
+            ['games.localhost', 'games.home', 'Games'],
+            ['metronome.localhost', 'metronome.home', 'Metronome'],
             ['learn.localhost', 'crashcourses.show', 'Learn'],
+            ['shop.localhost', 'shop.home', 'Shop'],
             ['shop.localhost', 'ebooks.show', 'Shop'],
             ['blog.localhost', 'posts.show', 'Blog'],
         ] as [$host, $routeName, $expected]) {
@@ -121,7 +124,14 @@ class AccountNavigationTest extends ReviewTestCase
             $xpath = new \DOMXPath($dom);
             $current = $xpath->query('//*[@id="public-hub-menu"]//a[@aria-current]');
             $this->assertCount($expected === null ? 0 : 1, $current, $routeName);
-            if ($expected !== null) $this->assertSame($expected, trim($current->item(0)->textContent), $routeName);
+            if ($expected !== null) {
+                $this->assertSame($expected, trim($current->item(0)->textContent), $routeName);
+                $this->assertContains('text-primary', explode(' ', $current->item(0)->getAttribute('class')), $routeName);
+            }
+            $this->assertCount($expected === null ? 0 : 1, $xpath->query('//*[@id="public-hub-menu"]//a[contains(concat(" ", normalize-space(@class), " "), " text-primary ")]'), $routeName);
+            $isHub = in_array($expected, ['Home', 'Web app', 'Games', 'Metronome', 'Learn', 'Shop', 'Blog'], true);
+            $this->assertCount($isHub ? 1 : 0, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//summary/*[contains(@class,"icon-layers") and contains(@class,"text-primary")]'), $routeName);
+            $this->assertCount(0, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//summary[@aria-current or contains(@class,"text-primary")]'), $routeName);
             $this->assertCount(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//details[not(@open)]/summary/span[normalize-space(.)="PianoLIT Hubs"]'));
             $this->assertCount(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//summary[contains(@class,"account-menu__link")]/*[contains(@class,"icon-layers")]'));
             $this->assertCount(1, $xpath->query('//div[contains(@class,"account-menu__footer")]/a[normalize-space(.)="Help & Support"]/following-sibling::form//button[normalize-space(.)="Log out"]'));

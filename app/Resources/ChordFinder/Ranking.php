@@ -4,12 +4,13 @@ namespace App\Resources\ChordFinder;
 
 class Ranking
 {
-	protected $chords, $strict;
+	protected $chords, $strict, $keySignature;
 
-	public function __construct(array $chords, $root)
+	public function __construct(array $chords, $root, ?int $keySignature = null)
 	{
 		$this->chords = $chords;
 		$this->strict = ! is_null($root);
+		$this->keySignature = $keySignature;
 	}
 
 	public function apply()
@@ -53,6 +54,26 @@ class Ranking
 
 				if (! in_array(3, $intervals))
 					$ranking -= 1;
+
+				$degrees = Omissions::degrees($inversion['intervals']);
+				if (Omissions::seventhShell($inversion['intervals'])) {
+					// One omitted third is a simpler reading than several absent
+					// tones in an extended chord. Both possible qualities tie.
+					$ranking = 2;
+				} elseif (!isset($degrees[5])) {
+					// Root/third/seventh is also a common incomplete seventh chord.
+					$ranking += isset($degrees[3], $degrees[7]) ? (count($degrees) === 2 ? 2 : 1) : -1;
+				}
+				if (array_intersect([9, 11, 13], $intervals) && !isset($degrees[7])) {
+					$ranking -= 1;
+				}
+				if ($this->keySignature !== null && ($inversion['label']['quality_ambiguous'] ?? false)) {
+					$third = $inversion['label']['omissions'][0]['note'];
+					if (KeySignature::contains($this->keySignature, $third)) {
+						$ranking += 1;
+						$this->chords[$index]['inversions'][$key]['label']['inferred_from_key'] = KeySignature::choices()[$this->keySignature];
+					}
+				}
 
 				$this->chords[$index]['inversions'][$key]['ranking'] = $ranking;
 			}

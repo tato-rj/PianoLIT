@@ -33,13 +33,16 @@
     </div>
     <div id="chord-options" class="mt-4" hidden>
         @component('components.layout.accordion', ['id' => 'chord-options-accordion', 'variant' => 'minimal'])
-            @component('components.layout.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling & root', 'indicator' => 'plus-minus'])
+            @component('components.layout.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling, root & key', 'indicator' => 'plus-minus'])
                 <div class="d-flex flex-wrap align-items-end gap-3">
                     <div id="options-container" hidden>
                         <div id="options-buttons" class="d-flex flex-wrap gap-2"></div>
                     </div>
                     <div id="root-container" class="chord-finder__root" hidden>
                         @select(['bag' => 'default', 'id' => 'chord-root', 'name' => 'root', 'label' => 'Root', 'choices' => ['' => 'Auto detect'], 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])
+                    </div>
+                    <div>
+                        @select(['bag' => 'default', 'id' => 'chord-key-signature', 'name' => 'key_signature', 'label' => 'Key signature', 'choices' => \App\Resources\ChordFinder\KeySignature::choices(), 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])
                     </div>
                 </div>
             @endcomponent

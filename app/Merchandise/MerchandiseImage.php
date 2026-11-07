@@ -10,7 +10,8 @@ class MerchandiseImage extends Model
     use SoftDeletes;
 
     protected $guarded = ['id'];
-    protected $hidden = ['gallery_color'];
+    protected $hidden = ['gallery_color', 'printful_colors'];
+    protected $casts = ['printful_colors' => 'array'];
 
     public function getUrlAttribute(): string
     {
