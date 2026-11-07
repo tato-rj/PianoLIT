@@ -97,8 +97,6 @@
             loading.hidden = true;
             host.hidden = false;
             const size = dimensions();
-            // Open at the first spread on wide screens; the cover remains reachable.
-            current = size.display === 'double' && images.length > 2 ? 2 : 1;
             try {
                 if (!root.jQuery || !root.jQuery.fn.turn) throw new Error('Page turning unavailable');
                 $book = root.jQuery(book);
@@ -184,6 +182,15 @@
         });
         element.querySelector('[data-book-retry]').addEventListener('click', function () {
             images.filter(img => img.hidden || !img.naturalWidth).forEach(img => { img.src = img.dataset.previewSrc; });
+        });
+        modal.addEventListener('show.bs.modal', function () {
+            // Reset before the opening transition so the previous spread never flashes.
+            current = 1;
+            if ($book) {
+                $book.turn('page', 1);
+                $book.turn('stop');
+            }
+            update();
         });
         modal.addEventListener('shown.bs.modal', function () {
             open = true;

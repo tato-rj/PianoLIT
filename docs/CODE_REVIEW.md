@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-06 — Always open book previews on the cover (P3, complete locally)
+
+- **Request / change:** `resources/js/views/shop-product.js` now initializes every flipbook at page 1, including desktop spreads. Each subsequent modal opening resets to the cover before the opening transition and stops the reset animation. This supersedes the November 6 initial-spread and page-preservation behavior recorded below. The shared public/Design System preview retains normal page turning, responsive sizing, keyboard controls, reduced motion, image retry and its readable fallback. Original PDFs, saved preview images, product data and mobile/API contracts are unchanged.
+- **Verification:** Focused preview/audio checks and the full JavaScript regression command pass. Coverage includes cover-first desktop/phone/one-page previews, opening during image loading, cover reset before reopening and fallback reopening. Production build, CSS regressions, asset-copy/hash/syntax checks and whitespace checks pass; source/public JavaScript and its Mix hash are updated. Browser QA on the existing local seven-page eScore confirms the cover on initial opening, pages 2–3 after Next, and the cover again after closing/reopening. Proof: `/Users/arthur/.codex/visualizations/2026/11/07/01a1b38a-b7ce-7971-ac0d-e238003d020f/flipbook-cover/cover-on-reopen.png`.
+- **Remaining:** Production deployment and physical touch-device acceptance remain pending. No migration, provider request, real purchase or product-data mutation was needed.
+
 ### 2026-11-06 — Keep score annotation tools selected across page turns (P3, complete locally)
 
 - **Evidence / fix:** The score editor's document-level `pointerdown` handler treated Previous/Next as clicks outside the sheet and switched to Read before their click handlers rendered the page. `resources/js/views/score-editor.js` now exempts this editor's two page buttons, including their nested icons. Pencil, text, highlighter and eraser remain selected when moving in either direction; clicks outside the editor still deselect the tool.

@@ -60,6 +60,7 @@ async function preview({pending = false, fallback = false, width = 1000, count =
     }};
     if (!fallback) { root.jQuery = () => api; root.jQuery.fn = {turn() {}}; }
     init(root);
+    await modal.fire('show.bs.modal');
     await modal.fire('shown.bs.modal');
     await Promise.resolve();
     return {root, nodes, modal, book, images, calls, options: () => options};
@@ -69,10 +70,13 @@ async function run() {
     let p = await preview();
     assert(p.options().height > 0);
     assert.equal(p.nodes.host.style.width, p.options().width + 'px', 'cover centering must not shrink the measured book host');
-    assert.equal(p.nodes.previous.disabled, false);
-    assert.equal(p.book.children[0].attrs['aria-hidden'], 'true');
-    assert.equal(p.book.children[2].attrs['aria-hidden'], 'false');
-    assert.equal(p.nodes.counter.textContent, 'Pages 2–3 of 5');
+    assert.equal(p.options().page, 1, 'wide flipbooks initialize on the cover');
+    assert.equal(p.nodes.previous.disabled, true);
+    assert.equal(p.book.children[0].attrs['aria-hidden'], 'false');
+    assert.equal(p.book.children[2].attrs['aria-hidden'], 'true');
+    assert.equal(p.nodes.counter.textContent, 'Page 1 of 5');
+    await p.nodes.next.fire('click');
+    assert.equal(p.nodes.counter.textContent, 'Pages 2–3 of 5', 'the first turn opens the first interior spread');
     await p.nodes.previous.fire('click');
     assert.equal(p.nodes.counter.textContent, 'Page 1 of 5', 'the cover remains reachable');
     assert.equal(p.nodes.previous.disabled, true);
@@ -90,8 +94,11 @@ async function run() {
     await p.modal.fire('hide.bs.modal');
     await p.nodes.previous.fire('click');
     assert.equal(p.nodes.counter.textContent, beforeClose, 'dismissed books cannot keep turning');
+    await p.modal.fire('show.bs.modal');
+    assert.equal(p.nodes.counter.textContent, 'Page 1 of 5', 'reopening resets to the cover before the modal becomes visible');
     await p.modal.fire('shown.bs.modal');
-    assert.equal(p.nodes.counter.textContent, beforeClose, 'reopening retains the current page');
+    assert.equal(p.nodes.counter.textContent, 'Page 1 of 5', 'resizing on open preserves the cover');
+    assert.equal(p.nodes.previous.disabled, true);
 
     p = await preview({width: 360, reducedMotion: true});
     assert.equal(p.options().page, 1);
@@ -101,6 +108,10 @@ async function run() {
     await p.modal.fire('keydown', {key: 'ArrowRight', target: {tagName: 'BUTTON'}, preventDefault() { prevented = true; }});
     assert.equal(prevented, true);
     assert.equal(p.nodes.counter.textContent, 'Page 2 of 5');
+    await p.modal.fire('hide.bs.modal');
+    await p.modal.fire('show.bs.modal');
+    await p.modal.fire('shown.bs.modal');
+    assert.equal(p.nodes.counter.textContent, 'Page 1 of 5', 'phone flipbooks also reopen on the cover');
 
     p = await preview({count: 1});
     assert.equal(p.options().display, 'single');
@@ -109,16 +120,25 @@ async function run() {
 
     p = await preview({pending: true});
     await p.modal.fire('hide.bs.modal');
+    await p.modal.fire('show.bs.modal');
     await p.modal.fire('shown.bs.modal');
     await p.images[0].fire('load');
     await Promise.resolve();
     assert.equal(p.calls.filter(call => typeof call[0] === 'object').length, 1, 'closing and reopening during image loading must initialize once');
     assert.equal(p.nodes.loading.hidden, true);
+    assert.equal(p.options().page, 1, 'opening during image loading still starts on the cover');
 
     p = await preview({fallback: true});
+    assert.equal(p.nodes.counter.textContent, 'Page 1 of 5');
+    assert.equal(p.book.children[0].hidden, false);
+    assert.equal(p.book.children[1].hidden, true);
+    await p.nodes.next.fire('click');
     assert.equal(p.nodes.counter.textContent, 'Page 2 of 5');
-    assert.equal(p.book.children[0].hidden, true);
-    assert.equal(p.book.children[1].hidden, false);
+    await p.modal.fire('hide.bs.modal');
+    await p.modal.fire('show.bs.modal');
+    await p.modal.fire('shown.bs.modal');
+    assert.equal(p.nodes.counter.textContent, 'Page 1 of 5', 'the readable fallback also reopens on the cover');
+    assert.equal(p.book.children[0].hidden, false);
     await p.images[1].fire('error');
     assert.equal(p.nodes.error.hidden, false);
     await p.images[1].fire('load');
@@ -157,7 +177,7 @@ async function run() {
     await pending;
     assert.equal(button.attrs['aria-pressed'], 'false', 'late playback completion must not restore playing state after leaving');
     assert.equal(button.disabled, false);
-    console.log('Passed: open-book preview, cover access, arrows/keyboard, mobile resize, reduced motion, reopen race, readable fallback, image errors and cancellable audio.');
+    console.log('Passed: cover-first book preview, cover reset on reopening, arrows/keyboard, mobile resize, reduced motion, reopen race, readable fallback, image errors and cancellable audio.');
 }
 
 if (require.main === module) run().catch(error => { console.error(error); process.exitCode = 1; });
