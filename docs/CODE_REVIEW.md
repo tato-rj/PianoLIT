@@ -1,5 +1,15 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-07 — Shop products ordered by latest update (P3, complete locally)
+
+- **Request / change:** `Services/Shop/Storefront::matches` now sorts the combined merchandise/eBook/eScore catalog by `updated_at` descending. Existing model-type/ID tie breakers remain in place. Category/search results and related products reuse this shared order; existing related/pagination fixtures now set `updated_at` explicitly.
+- **Verification / compatibility:** All **21 isolated storefront tests / 334 assertions** and whitespace checks pass. Filters, publication/store boundaries, 24-product pagination, routes and mobile/API contracts are unchanged. No migration or asset build is required. Production deployment remains pending.
+
+### 2026-11-07 — Open note-spelling and root controls (P3, complete locally)
+
+- **Request / change:** Replaced the spelling/root accordion in `tools.chord-finder.empty` with a regular heading and open flex row. Relevant selects appear directly when notes are selected; note-name mode shows its Root note section. Updated the source/public Chord Finder script to target the heading, its Mix hash and project/design guidance.
+- **Verification / compatibility:** All **52 isolated chord tests / 429 assertions**, asset copy/hash/syntax and whitespace checks pass. Browser checks confirm direct visibility, working spelling/root changes, note-name mode and wrapping at 390px with no horizontal overflow. Proof: `note-spelling-open.jpg` and `note-spelling-open-phone.jpg` in `/Users/arthur/.codex/visualizations/2026/11/07/01a1b421-55a9-70f0-a11e-9a6e7330323c/chord-finder/`. Existing select controls, analysis, playback and result explanations stay intact. No migration is required; production deployment remains pending.
+
 ### 2026-11-07 — Shorter key-signature explanation (P3, complete locally)
 
 - **Request / change:** Reduced `tools.chord-finder.key-signature-help` to three short paragraphs: the missing-note principle, one Dm7/D7 example and a brief note about musical context. The shared modal, link, input state and chord behavior remain unchanged.

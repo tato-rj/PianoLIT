@@ -41,18 +41,15 @@
         <button type="button" class="btn btn-primary" id="submit-notes" aria-haspopup="dialog" aria-controls="chord-results-modal">Find chords @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>
     </div>
     <div id="chord-options" class="mt-4" hidden>
-        @component('components.layout.accordion', ['id' => 'chord-options-accordion', 'variant' => 'minimal'])
-            @component('components.layout.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling & root', 'indicator' => 'plus-minus'])
-                <div class="d-flex flex-wrap align-items-end gap-3">
-                    <div id="options-container" hidden>
-                        <div id="options-buttons" class="d-flex flex-wrap gap-2"></div>
-                    </div>
-                    <div id="root-container" class="chord-finder__root" hidden>
-                        @select(['bag' => 'default', 'id' => 'chord-root', 'name' => 'root', 'label' => 'Root', 'choices' => ['' => 'Auto detect'], 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])
-                    </div>
-                </div>
-            @endcomponent
-        @endcomponent
+        <h3 id="chord-options-title" class="h6 mb-3">Note spelling &amp; root</h3>
+        <div class="d-flex flex-wrap align-items-end gap-3">
+            <div id="options-container" hidden>
+                <div id="options-buttons" class="d-flex flex-wrap gap-2"></div>
+            </div>
+            <div id="root-container" class="chord-finder__root" hidden>
+                @select(['bag' => 'default', 'id' => 'chord-root', 'name' => 'root', 'label' => 'Root', 'choices' => ['' => 'Auto detect'], 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])
+            </div>
+        </div>
     </div>
     <p id="chord-audio-status" class="small text-muted mt-3 mb-0" role="status" hidden></p>
     <noscript><p class="mt-3">Please enable JavaScript to select notes and find chords.</p></noscript>

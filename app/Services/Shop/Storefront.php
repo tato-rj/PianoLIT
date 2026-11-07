@@ -53,7 +53,7 @@ class Storefront
                 $matches = $matches->concat($query->get());
             }
         }
-        return $matches->sort(fn ($a, $b) => ($b->created_at <=> $a->created_at)
+        return $matches->sort(fn ($a, $b) => ($b->updated_at <=> $a->updated_at)
             ?: strcmp(get_class($a), get_class($b)) ?: ($b->id <=> $a->id))->values();
     }
 

@@ -50,7 +50,7 @@ class MerchandiseStorefrontTest extends ReviewTestCase
     {
         $current = $this->product(['name' => 'Current T-shirt']);
         $expected = collect();
-        for ($i = 0; $i < 14; $i++) $expected->push($this->product(['name' => 'Related T-shirt '.$i, 'created_at' => now()->subMinutes(20 - $i)]));
+        for ($i = 0; $i < 14; $i++) $expected->push($this->product(['name' => 'Related T-shirt '.$i, 'updated_at' => now()->subMinutes(20 - $i)]));
         $this->product(['name' => 'Other sticker']);
         $this->product(['name' => 'Other-store T-shirt', 'printful_store_id' => 99999]);
         $retired = $this->product(['name' => 'Retired T-shirt']);
@@ -108,10 +108,10 @@ class MerchandiseStorefrontTest extends ReviewTestCase
 
     public function test_catalog_uses_one_mixed_grid_with_24_products_per_page_and_stable_boundaries()
     {
-        $createdAt = now()->subDay();
-        for ($i = 0; $i < 17; $i++) $this->product(['name' => 'Piano T-shirt '.$i, 'created_at' => $createdAt]);
-        for ($i = 0; $i < 16; $i++) $this->digitalProduct(eBook::class, ['title' => 'Piano guide '.$i, 'created_at' => $createdAt]);
-        for ($i = 0; $i < 16; $i++) $this->digitalProduct(eScore::class, ['title' => 'Piano score '.$i, 'created_at' => $createdAt]);
+        $updatedAt = now()->subDay();
+        for ($i = 0; $i < 17; $i++) $this->product(['name' => 'Piano T-shirt '.$i, 'updated_at' => $updatedAt]);
+        for ($i = 0; $i < 16; $i++) $this->digitalProduct(eBook::class, ['title' => 'Piano guide '.$i, 'updated_at' => $updatedAt]);
+        for ($i = 0; $i < 16; $i++) $this->digitalProduct(eScore::class, ['title' => 'Piano score '.$i, 'updated_at' => $updatedAt]);
         $identities = collect();
         foreach ([1 => 24, 2 => 24, 3 => 1] as $page => $count) {
             $response = $this->get(route('shop.home', ['page' => $page]))->assertOk()

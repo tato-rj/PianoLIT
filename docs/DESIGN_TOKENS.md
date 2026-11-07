@@ -1009,7 +1009,7 @@ The circle's standalone script uses `mix()` and an explicit versioned asset entr
 The Chord Finder keeps its editor and results on this same open page surface.
 Use the shared segmented tabs for piano-keyboard versus note-name entry, standard
 buttons for note/accidental selection, shared `@pill` labels, and `@select` fields
-inside the optional spelling/root accordion. Keep the Key signature select above
+in an open spelling/root section with a regular heading, visible as notes are selected. Keep the Key signature select above
 both input modes, with the shared field label and a small “(why does it matter?)”
 link beside it. Its explanation uses `tools.chord-finder.key-signature-help` and
 the standard shared modal, without local padding or scrolling overrides. The piano
