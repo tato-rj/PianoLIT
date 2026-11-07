@@ -25,5 +25,36 @@ module.exports = function () {
     assert.deepStrictEqual(spelling(['c', 'd', 'e', 'g', 'a#']), ['c', 'd', 'e', 'g', 'bb']);
     assert.deepStrictEqual(spelling(['c', 'c#', 'g']), ['c', 'c#', 'g'], 'Leave unusual sets available for explicit spelling.');
     assert.deepStrictEqual(spelling([]), []);
+    const scheduled = [], events = [];
+    const clock = {
+        setTimeout: (callback, delay) => { const timer = {callback, delay}; scheduled.push(timer); return timer; },
+        clearTimeout: timer => { timer.canceled = true; }
+    };
+    const voiced = tool.voice(['g', 'bb', 'd']);
+    const callbacks = {
+        play: (notes, duration) => events.push(['audio', notes, duration]),
+        highlight: notes => events.push(['dots', notes.map(note => note.tone)]),
+        finish: () => events.push(['restore selection'])
+    };
+    tool.playbackSequence(voiced, callbacks, clock);
+    assert.deepStrictEqual(scheduled.map(timer => timer.delay), [0, 220, 440, 760, 2760]);
+    scheduled.forEach(timer => timer.callback());
+    assert.deepStrictEqual(events, [
+        ['dots', []],
+        ['audio', 'G3', '8n'], ['dots', ['G3']],
+        ['audio', 'A#3', '8n'], ['dots', ['A#3']],
+        ['audio', 'D4', '8n'], ['dots', ['D4']],
+        ['audio', ['G3', 'A#3', 'D4'], '1n'], ['dots', ['G3', 'A#3', 'D4']],
+        ['restore selection']
+    ], 'Audio and dots advance together, followed by restoration of the input selection.');
+    scheduled.length = 0; events.length = 0;
+    const cancel = tool.playbackSequence(voiced, callbacks, clock);
+    scheduled[0].callback();
+    cancel();
+    const afterStop = events.slice();
+    scheduled.forEach(timer => timer.callback());
+    assert(scheduled.every(timer => timer.canceled));
+    assert.deepStrictEqual(events, afterStop, 'Stop, switching chords and dismissal cannot leave old audio or dot updates queued.');
+    console.log('Passed: synchronized note/chord highlights, natural completion and canceled playback callbacks.');
     console.log('Passed: chord spellings, double accidentals, ascending inversions, extended notes and slash-chord bass playback.');
 };

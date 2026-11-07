@@ -79,7 +79,7 @@ class ChordFinderPageTest extends ReviewTestCase
         }
         foreach ($xpath->query('//button[@data-notes and @aria-controls]') as $control) {
             $this->assertSame('#'.$control->getAttribute('aria-controls'), $control->getAttribute('href'), 'Keep existing open-page result handlers usable.');
-            $this->assertSame(1, $xpath->query('//*[@id="'.$control->getAttribute('aria-controls').'" and contains(@class,"chord-info")]')->length);
+            $this->assertSame(1, $xpath->query('//*[@id="'.$control->getAttribute('aria-controls').'" and @data-chord-explanation]')->length);
             $this->assertTrue($control->hasAttribute('data-chord-play'));
             $this->assertSame(1, $xpath->query('.//*[@data-chord-stop-icon and @hidden]', $control)->length);
             $this->assertSame(1, $xpath->query('.//*[@data-chord-play-icon and not(@hidden)]', $control)->length);
