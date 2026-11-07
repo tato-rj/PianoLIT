@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class ChordFinder
 {
-	protected $notes, $results, $root, $bass, $tool, $keySignature;
+	protected $notes, $results, $root, $bass, $tool, $keySignature, $inputBass;
 
 	public function cleaner()
 	{
@@ -30,7 +30,7 @@ class ChordFinder
 
 	public function ranking()
 	{
-		return new Ranking($this->results, $this->root, $this->keySignature);
+		return new Ranking($this->results, $this->root, $this->keySignature, $this->inputBass);
 	}
 
 	public function tool($tool)
@@ -56,6 +56,9 @@ class ChordFinder
 		$this->root($request->root);
 		$this->tool($request->tool);
 		$this->keySignature = $request->filled('key_signature') ? (int) $request->key_signature : null;
+		// Keyboard notes arrive from lowest key to highest, before Cleaner sorts
+		// them for interval analysis. Note-name entry does not specify a bass.
+		$this->inputBass = $this->tool === 'keyboard' ? str_replace('s', '+', strtolower($this->notes[0])) : null;
 
 		return $this;
 	}

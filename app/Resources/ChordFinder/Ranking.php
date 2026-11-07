@@ -4,13 +4,14 @@ namespace App\Resources\ChordFinder;
 
 class Ranking
 {
-	protected $chords, $strict, $keySignature;
+	protected $chords, $strict, $keySignature, $inputBass;
 
-	public function __construct(array $chords, $root, ?int $keySignature = null)
+	public function __construct(array $chords, $root, ?int $keySignature = null, ?string $inputBass = null)
 	{
 		$this->chords = $chords;
 		$this->strict = ! is_null($root);
 		$this->keySignature = $keySignature;
+		$this->inputBass = $inputBass;
 	}
 
 	public function apply()
@@ -76,6 +77,14 @@ class Ranking
 				}
 
 				$this->chords[$index]['inversions'][$key]['ranking'] = $ranking;
+			}
+			if ($this->inputBass !== null && !$this->strict) {
+				// Break equal-score ties with the played bass, without promoting
+				// sparse extensions above stronger readings or guessing a quality.
+				usort($this->chords[$index]['inversions'], function ($a, $b) {
+					return ($b['ranking'] <=> $a['ranking'])
+						?: ((int) ($b['analysis_chord'][0] === $this->inputBass) <=> (int) ($a['analysis_chord'][0] === $this->inputBass));
+				});
 			}
 		}
 

@@ -7,6 +7,15 @@
         'id' => 'chord-input-tabs', 'label' => 'Choose how to enter notes', 'variant' => 'segmented', 'class' => 'mb-4',
         'items' => [['target' => 'chord-keyboard', 'label' => 'Piano keyboard'], ['target' => 'chord-note-names', 'label' => 'Note names']],
     ])
+        <div class="mb-4">
+            <div class="d-flex flex-wrap align-items-baseline gap-1">
+                @label(['id' => 'chord-key-signature', 'label' => 'Key signature'])
+                <a class="small" href="#chord-key-signature-help" data-bs-toggle="modal" role="button" aria-haspopup="dialog" aria-controls="chord-key-signature-help">(why does it matter?)</a>
+            </div>
+            <div class="d-flex">
+                @select(['bag' => 'default', 'id' => 'chord-key-signature', 'name' => 'key_signature', 'label' => null, 'choices' => \App\Resources\ChordFinder\KeySignature::choices(), 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])
+            </div>
+        </div>
         <div class="tab-content">
             <div class="tab-pane fade show active" id="chord-keyboard" role="tabpanel" aria-labelledby="chord-input-tabs-chord-keyboard">
                 <div class="keyboard-input" id="chord-input-piano">
@@ -33,16 +42,13 @@
     </div>
     <div id="chord-options" class="mt-4" hidden>
         @component('components.layout.accordion', ['id' => 'chord-options-accordion', 'variant' => 'minimal'])
-            @component('components.layout.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling, root & key', 'indicator' => 'plus-minus'])
+            @component('components.layout.accordion-item', ['id' => 'chord-options-panel', 'parentId' => 'chord-options-accordion', 'title' => 'Note spelling & root', 'indicator' => 'plus-minus'])
                 <div class="d-flex flex-wrap align-items-end gap-3">
                     <div id="options-container" hidden>
                         <div id="options-buttons" class="d-flex flex-wrap gap-2"></div>
                     </div>
                     <div id="root-container" class="chord-finder__root" hidden>
                         @select(['bag' => 'default', 'id' => 'chord-root', 'name' => 'root', 'label' => 'Root', 'choices' => ['' => 'Auto detect'], 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])
-                    </div>
-                    <div>
-                        @select(['bag' => 'default', 'id' => 'chord-key-signature', 'name' => 'key_signature', 'label' => 'Key signature', 'choices' => \App\Resources\ChordFinder\KeySignature::choices(), 'required' => false, 'classes' => 'form-control-sm', 'grid' => 'mb-0'])
                     </div>
                 </div>
             @endcomponent

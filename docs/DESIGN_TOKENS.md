@@ -67,10 +67,11 @@ Account actions retain 16px labels, 20px icons and 48px rows.
 `navigation.hub-menu.links` renders PianoLIT Hubs as a normal icon row using a
 native details/summary disclosure with a trailing chevron. It starts closed,
 works without JavaScript and resets closed when the offcanvas is dismissed.
-Its expanded destinations use 14px labels, compact 36px rows and a 2rem left margin to make their hierarchy clear. Lead each destination with a small, fixed-width icon matching its homepage card; Home uses the house icon. Keep the trailing arrows.
+Its expanded destinations use 14px labels, compact 36px rows and a 2rem left margin to make their hierarchy clear. Lead each destination with a small, fixed-width icon matching its homepage card. Keep the trailing arrows. Home is not a hub or menu destination; use the PianoLIT logo to return to the homepage.
 Only iOS opens another tab, with safe external-link attributes. Only one menu
-link is current: an account action suppresses its host hub highlight, and Home
-is current only on the homepage. Nested hub content retains its hub highlight.
+link is current when a menu destination applies: an account action suppresses
+its host hub highlight. The homepage has no highlighted menu item or Hubs icon.
+Nested hub content retains its hub highlight.
 Current links use `text-primary`. On a hub page, the Hubs layers icon also uses
 `text-primary` while its label stays neutral; the disclosure still starts closed.
 Opening it reveals the highlighted current hub. Account pages highlight their
@@ -1008,8 +1009,11 @@ The circle's standalone script uses `mix()` and an explicit versioned asset entr
 The Chord Finder keeps its editor and results on this same open page surface.
 Use the shared segmented tabs for piano-keyboard versus note-name entry, standard
 buttons for note/accidental selection, shared `@pill` labels, and `@select` fields
-inside the optional spelling/root accordion. The piano uses the shared responsive
-keyboard. Selecting the same pitch in another octave moves that selection rather
+inside the optional spelling/root accordion. Keep the Key signature select above
+both input modes, with the shared field label and a small “(why does it matter?)”
+link beside it. Its explanation uses `tools.chord-finder.key-signature-help` and
+the standard shared modal, without local padding or scrolling overrides. The piano
+uses the shared responsive keyboard. Selecting the same pitch in another octave moves that selection rather
 than adding a duplicate. For common chord shapes the keyboard suggests conventional
 enharmonic spellings (for example C–E♭–G), preferring fewer accidentals. It uses
 only existing keyboard aliases and leaves manual spelling choices intact. These

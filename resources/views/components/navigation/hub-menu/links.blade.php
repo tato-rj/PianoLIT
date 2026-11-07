@@ -1,6 +1,5 @@
 @php
     $hubLinks = [
-        ['label' => 'Home', 'icon' => 'home', 'url' => \App\Support\ProfileUrl::base()],
         ['label' => 'Web app', 'icon' => 'pianolit', 'url' => route('webapp.discover')],
         ['label' => 'iOS app', 'icon' => 'brand-apple', 'url' => config('app.stores.ios'), 'external' => true],
         ['label' => 'Learn', 'icon' => 'graduation-cap', 'url' => route('learn.home')],
@@ -13,9 +12,7 @@
     if (! ($designSystemPreview ?? false) && ! ($accountItemIsCurrent ?? false)) {
         foreach ($hubLinks as $hubLink) {
             if (empty($hubLink['external'])
-                && ($hubLink['label'] === 'Home'
-                    ? request()->routeIs('home')
-                    : request()->getHost() === parse_url($hubLink['url'], PHP_URL_HOST))) {
+                && request()->getHost() === parse_url($hubLink['url'], PHP_URL_HOST)) {
                 $currentHubUrl = $hubLink['url'];
                 break;
             }

@@ -188,7 +188,7 @@
                 $root.val(current.includes(root) ? root : '');
                 $('#root-container').prop('hidden', current.length < 3);
                 $('#chord-options').prop('hidden', mode() === 'keyboard' ? !current.length : current.length < 3);
-                $('#chord-options-panel-heading .accordion-button').contents().filter(function () { return this.nodeType === 3; }).first().replaceWith(mode() === 'keyboard' ? 'Note spelling, root & key' : 'Root & key');
+                $('#chord-options-panel-heading .accordion-button').contents().filter(function () { return this.nodeType === 3; }).first().replaceWith(mode() === 'keyboard' ? 'Note spelling & root' : 'Root note');
                 $inputKeys.each(function () {
                     const selected = selectedKeys.get(pitch(this.dataset.name));
                     const active = !!selected && selected.key === this;

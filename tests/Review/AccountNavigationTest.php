@@ -89,7 +89,7 @@ class AccountNavigationTest extends ReviewTestCase
         $this->app->instance('env', 'testing');
     }
 
-    public function test_account_pages_do_not_also_highlight_their_hub_and_home_only_marks_the_homepage()
+    public function test_account_pages_do_not_also_highlight_their_hub_and_homepage_has_no_current_item()
     {
         $user = $this->account();
         Model::withoutEvents(fn () => Membership::create(['user_id' => $user->id, 'source_type' => Stripe::class, 'source_id' => 999999]));
@@ -103,7 +103,7 @@ class AccountNavigationTest extends ReviewTestCase
             ['localhost', 'contact', 'Help & Support'],
             ['learn.localhost', 'contact', 'Help & Support'],
             ['my.localhost', 'webapp.membership.edit', 'My membership'],
-            ['localhost', 'home', 'Home'],
+            ['localhost', 'home', null],
             ['localhost', 'privacy', null],
             ['my.localhost', 'webapp.discover', 'Web app'],
             ['games.localhost', 'games.home', 'Games'],
@@ -129,9 +129,11 @@ class AccountNavigationTest extends ReviewTestCase
                 $this->assertContains('text-primary', explode(' ', $current->item(0)->getAttribute('class')), $routeName);
             }
             $this->assertCount($expected === null ? 0 : 1, $xpath->query('//*[@id="public-hub-menu"]//a[contains(concat(" ", normalize-space(@class), " "), " text-primary ")]'), $routeName);
-            $isHub = in_array($expected, ['Home', 'Web app', 'Games', 'Metronome', 'Learn', 'Shop', 'Blog'], true);
+            $isHub = in_array($expected, ['Web app', 'Games', 'Metronome', 'Learn', 'Shop', 'Blog'], true);
             $this->assertCount($isHub ? 1 : 0, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//summary/*[contains(@class,"icon-layers") and contains(@class,"text-primary")]'), $routeName);
             $this->assertCount(0, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//summary[@aria-current or contains(@class,"text-primary")]'), $routeName);
+            $this->assertCount(7, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a'), $routeName);
+            $this->assertCount(0, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//a[normalize-space(.)="Home"]'), $routeName);
             $this->assertCount(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//details[not(@open)]/summary/span[normalize-space(.)="PianoLIT Hubs"]'));
             $this->assertCount(1, $xpath->query('//nav[@aria-label="PianoLIT hubs"]//summary[contains(@class,"account-menu__link")]/*[contains(@class,"icon-layers")]'));
             $this->assertCount(1, $xpath->query('//div[contains(@class,"account-menu__footer")]/a[normalize-space(.)="Help & Support"]/following-sibling::form//button[normalize-space(.)="Log out"]'));

@@ -31,6 +31,7 @@
         @endslot
     @endcomponent
 </div>
+@include('tools.chord-finder.key-signature-help')
 @component('components.dialogs.modal', ['id' => 'chord-results-modal', 'header' => 'Chord results', 'centered' => true, 'options' => ['size' => 'lg']])
     @slot('body')
         <div id="chord-results" aria-busy="false"></div>

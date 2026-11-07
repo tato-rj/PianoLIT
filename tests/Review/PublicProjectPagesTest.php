@@ -69,6 +69,8 @@ class PublicProjectPagesTest extends ReviewTestCase
         $this->assertSame(7, $xpath->query('//a[@data-project]//img[@alt=""]')->length);
         $this->assertSame(1, $xpath->query('//header//span[contains(@class, "site-header__name") and text()="PianoLIT"]')->length);
         $this->assertSame(1, $xpath->query('//a[@data-project="ios" and @target="_blank" and @rel="noopener noreferrer"]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//*[@aria-current or contains(@class,"text-primary")]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//a[normalize-space(.)="Home"]')->length);
     }
 
     public function test_metronome_is_standalone_on_its_own_host_and_linked_from_the_homepage()
@@ -182,7 +184,6 @@ class PublicProjectPagesTest extends ReviewTestCase
             $scheme = parse_url($website, PHP_URL_SCHEME).'://';
             $host = parse_url($website, PHP_URL_HOST);
             $destinations = [
-                'Home' => $website,
                 'Web app' => $scheme.'my.'.$host,
                 'iOS app' => config('app.stores.ios'),
                 'Shop' => $scheme.'shop.'.$host,
@@ -212,7 +213,7 @@ class PublicProjectPagesTest extends ReviewTestCase
                 $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//button[@aria-label="Close account menu"]')->length);
                 $this->assertSame($prefix === 'my.' ? 1 : 0, $xpath->query('//template[@data-account-stationary-close]/button[@id="webapp-account-close" and @data-bs-dismiss="offcanvas" and @data-bs-target="#public-hub-menu" and contains(@class,"account-circle--close") and contains(@class,"rounded-circle") and contains(@class,"shadow")]')->length);
                 $this->assertSame(1, $xpath->query($buttonScope.'/button[@data-account-navigation-toggle]//*[contains(@class,"account-circle__close")]')->length);
-                $this->assertSame(8, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a')->length);
+                $this->assertSame(7, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a')->length);
                 $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a[@href="'.$destinations['Web app'].'" and not(@target) and not(@rel)]')->length);
                 foreach ($destinations as $label => $destination) {
                     $this->assertSame(1, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a[@href="'.$destination.'"]/span[text()="'.$label.'"]')->length, $origin.' → '.$label);
@@ -255,8 +256,8 @@ class PublicProjectPagesTest extends ReviewTestCase
             $this->assertSame($prefix === 'my.' ? 1 : 0, $xpath->query('//template[@data-account-stationary-close]/button[@aria-label="Close account menu"]')->length);
             $this->assertSame(1, $xpath->query('//script[contains(@src,"js/components/account-menu.js")]')->length);
             $this->assertSame(0, $xpath->query('//*[@id="public-hub-menu"]//div[contains(@class,"offcanvas-body")]//form')->length);
-            $this->assertSame(8, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a/*[contains(@class,"hub-menu__arrow")]')->length);
-            $this->assertSame(8, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//*[contains(@class,"hub-menu__icon") and @aria-hidden="true"]')->length);
+            $this->assertSame(7, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//a/*[contains(@class,"hub-menu__arrow")]')->length);
+            $this->assertSame(7, $xpath->query('//*[@id="public-hub-menu"]//nav[@aria-label="PianoLIT hubs"]//*[contains(@class,"hub-menu__icon") and @aria-hidden="true"]')->length);
         }
     }
 

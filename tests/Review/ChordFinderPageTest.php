@@ -113,6 +113,55 @@ class ChordFinderPageTest extends ReviewTestCase
         }
     }
 
+    public static function rootPositionVoicings()
+    {
+        return [
+            'G below C and D' => [['G', 'C', 'D'], ['Gsus4', 'Csus2']],
+            'C below D and G' => [['C', 'D', 'G'], ['Csus2', 'Gsus4']],
+            'sharp bass' => [['F+', 'B', 'C+'], ['F#sus4', 'Bsus2']],
+            'legacy sharp bass' => [['Fs', 'B', 'Cs'], ['F#sus4', 'Bsus2']],
+            'flat bass' => [['B-', 'E-', 'F'], ['Bbsus4', 'Ebsus2']],
+            'double sharp bass' => [['G++', 'C++', 'D++'], ['G##sus4', 'C##sus2']],
+            'sixth versus minor seventh' => [['C', 'E', 'G', 'A'], ['C6', 'Am7']],
+        ];
+    }
+
+    /** @dataProvider rootPositionVoicings */
+    public function test_keyboard_best_matches_put_the_root_in_the_bass_first($notes, $expected)
+    {
+        foreach (['http://learn.localhost/chord-finder/analyse', 'http://localhost/tools/chord-finder/analyse'] as $url) {
+            $query = http_build_query(['notes' => $notes, 'tool' => 'keyboard']);
+            $result = $this->getJson($url.'?'.$query.'&dev=1')->assertOk()->json();
+            $best = collect($result['chords'])->flatMap(function ($chord) { return $chord['inversions']; })
+                ->where('ranking', $result['most_relevant'])->map(function ($inversion) { return strip_tags($inversion['label']['full_shorthand']); })->values()->all();
+            $this->assertSame($expected, $best, 'The played bass orders equally strong interpretations without removing alternatives.');
+            $response = $this->get($url.'?'.$query)->assertOk();
+            $buttons = $this->xpath($response->getContent())->query('//button[@data-chord-play]');
+            $this->assertSame('Play '.$expected[0].' chord', $buttons->item(0)->getAttribute('aria-label'));
+            $this->assertSame('Play '.$expected[1].' chord', $buttons->item(1)->getAttribute('aria-label'));
+        }
+    }
+
+    public function test_bass_preference_keeps_explicit_roots_unvoiced_input_and_stronger_readings()
+    {
+        $url = 'http://learn.localhost/chord-finder/analyse?';
+        $response = $this->get($url.http_build_query(['notes' => ['G', 'C', 'D'], 'tool' => 'keyboard', 'root' => 'C']))->assertOk();
+        $buttons = $this->xpath($response->getContent())->query('//button[@data-chord-play]');
+        $this->assertSame('Play Csus2/G chord', $buttons->item(0)->getAttribute('aria-label'));
+        $this->assertSame('G', $buttons->item(0)->getAttribute('data-bass'));
+
+        foreach (['button', null] as $tool) {
+            $response = $this->get($url.http_build_query(['notes' => ['G', 'C', 'D'], 'tool' => $tool]))->assertOk();
+            $buttons = $this->xpath($response->getContent())->query('//button[@data-chord-play]');
+            $this->assertSame('Play Csus2 chord', $buttons->item(0)->getAttribute('aria-label'), 'Unvoiced note names must not acquire an assumed bass.');
+        }
+        foreach ([null => 'Dm7', 0 => 'Dm7', 1 => 'D7'] as $signature => $preferred) {
+            $response = $this->get($url.http_build_query(['notes' => ['A', 'C', 'D'], 'tool' => 'keyboard', 'key_signature' => $signature]))->assertOk();
+            $buttons = $this->xpath($response->getContent())->query('//button[@data-chord-play]');
+            $this->assertSame('Play '.$preferred.' chord', $buttons->item(0)->getAttribute('aria-label'), 'Sparse A-root extensions must not displace the D seventh shell.');
+        }
+    }
+
     public function test_ninth_chords_keep_the_extended_note_and_interval()
     {
         $result = $this->getJson(route('tools.chord-finder.analyse', ['notes' => ['C', 'E', 'G', 'B-', 'D'], 'root' => 'C', 'tool' => 'button', 'dev' => 1]))->assertOk()->json();
