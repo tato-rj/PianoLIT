@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: PianoLIT mobile API v2 — Discover, piece detail and Find my match
-  version: 1.2.0
+  title: PianoLIT mobile API v2 — Discover, piece detail, favorite folders and Find my match
+  version: 1.3.0
   description: Independent v2 login and Discover. Web and v2 share App\Services\Discover\Feed.
     Legacy /api routes remain supported indefinitely. Deployment/native verification
     is recorded in the manifest; downloading this specification does not authenticate
@@ -9,7 +9,8 @@ info:
     steps 1–4 keep their existing design; replace only their data/calculations. New
     match operations are implemented locally and disabled until media preparation
     and deployment verification. Piece detail uses the shared Pieces\PageContent,
-    WebTimeline, PieceRecommendations and native bearer identity.
+    WebTimeline, PieceRecommendations and native bearer identity. Favorite-folder writes
+    reuse website records and limits; they are implemented locally with deployment pending.
 servers:
 - url: https://pianolit.com/api/v2
   description: Login/Discover/history and piece detail are live; piece detail verified
@@ -18,11 +19,293 @@ servers:
 security:
 - MobileBearer: []
 x-handoff:
-  revision: 2026-11-04.1
+  revision: 2026-11-09.1
   status: draft
   implemented: true
   native_integration: pending
 paths:
+  /favorite-folders:
+    get:
+      operationId: listFavoriteFoldersV2
+      summary: List every owned folder and selected-piece state
+      description: Bearer only. Includes empty folders ordered by name then ID; no history/analytics writes.
+        Same shared records as website. Implemented locally, production deployment pending.
+      parameters:
+      - in: query
+        name: piece_id
+        required: true
+        schema:
+          type: string
+          pattern: ^[1-9][0-9]*$
+      responses:
+        '200':
+          description: Authoritative current state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteFolderListResponse'
+        '401':
+          description: 'unauthenticated: Missing/invalid/expired/revoked bearer; sign in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: Missing piece, missing folder or folder not owned. Malformed route paths
+            retain generic request_failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request: Invalid JSON/fields, name, ID string, duplicate name or UUID header.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: Obey Retry-After before retrying.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              description: Seconds until retry is permitted.
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: Retry later; preserve creation key/payload.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    post:
+      operationId: createFavoriteFolderV2
+      summary: Create a folder and optionally save one piece atomically
+      description: Bearer only; rejects unknown body properties. Trim name before validation (3–36 characters,
+        unique per account). Same website account limits. Optional account-scoped UUID Idempotency-Key active
+        for 24 hours from success; normalized name + optional piece ID determines payload identity. Same
+        key/data returns original folder with current state and 201, never reapplying later removals; deleted/non-owned
+        folder gives 404. Different data gives 409. Failed requests consume no key. After expiry a new request
+        is subject to name uniqueness/quotas. Without key no replay guarantee. Favorite writes share 30
+        requests/minute/account plus the outer v2 limiter. Deploy receipt migration before code; locally
+        implemented only. See examples/favorite-folders.md.
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Retain the same UUID and payload for retries of one submission; account scoped, 24-hour
+          active retention.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteFolderCreateRequest'
+            example:
+              name: Pieces to learn
+              piece_id: '1032'
+      responses:
+        '201':
+          description: Authoritative current state; creation replays also return 201.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteFolderMutationResponse'
+        '401':
+          description: 'unauthenticated: Missing/invalid/expired/revoked bearer; sign in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: 'favorite_folders_blocked, favorite_folder_limit_reached, favorite_saves_blocked
+            or favorite_piece_limit_reached: Same saved limits as website; removal stays allowed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: Missing piece, missing folder or folder not owned. Malformed route paths
+            retain generic request_failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request: Invalid JSON/fields, name, ID string, duplicate name or UUID header.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: 'idempotency_conflict: Active key reused with different validated request data.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: Obey Retry-After before retrying.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              description: Seconds until retry is permitted.
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: Retry later; preserve creation key/payload.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /favorite-folders/{folder}/pieces/{piece}:
+    parameters:
+    - in: path
+      name: folder
+      required: true
+      schema:
+        type: string
+        pattern: ^[1-9][0-9]*$
+    - in: path
+      name: piece
+      required: true
+      schema:
+        type: string
+        pattern: ^[1-9][0-9]*$
+    put:
+      operationId: saveFavoriteV2
+      summary: Ensure the piece is in this owned folder
+      description: Bearer only. No body or empty JSON object. Idempotent, returns current heart and folder
+        counts. Checks folder ownership on every request; never affects another folder. Already-present
+        PUT succeeds under lowered quotas; DELETE bypasses addition restrictions. Shared owner lock and
+        membership uniqueness prevent duplicate records. 30 writes/minute/account plus outer v2 limit; removals
+        are still throttled. Locally implemented; deployment pending.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Authoritative current state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteFolderMutationResponse'
+        '401':
+          description: 'unauthenticated: Missing/invalid/expired/revoked bearer; sign in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: 'favorite_folders_blocked, favorite_folder_limit_reached, favorite_saves_blocked
+            or favorite_piece_limit_reached: Same saved limits as website; removal stays allowed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: Missing piece, missing folder or folder not owned. Malformed route paths
+            retain generic request_failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request: Invalid JSON/fields, name, ID string, duplicate name or UUID header.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: Obey Retry-After before retrying.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              description: Seconds until retry is permitted.
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: Retry later; preserve creation key/payload.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    delete:
+      operationId: removeFavoriteV2
+      summary: Remove the piece from this owned folder only
+      description: Bearer only. No body or empty JSON object. Idempotent, returns current heart and folder
+        counts. Checks folder ownership on every request; never affects another folder. Already-present
+        PUT succeeds under lowered quotas; DELETE bypasses addition restrictions. Shared owner lock and
+        membership uniqueness prevent duplicate records. 30 writes/minute/account plus outer v2 limit; removals
+        are still throttled. Locally implemented; deployment pending.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Authoritative current state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteFolderMutationResponse'
+        '401':
+          description: 'unauthenticated: Missing/invalid/expired/revoked bearer; sign in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: Missing piece, missing folder or folder not owned. Malformed route paths
+            retain generic request_failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request: Invalid JSON/fields, name, ID string, duplicate name or UUID header.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: Obey Retry-After before retrying.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              description: Seconds until retry is permitted.
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: Retry later; preserve creation key/payload.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
   /auth/login:
     post:
       operationId: loginV2
@@ -1873,6 +2156,124 @@ components:
             suzuki:
               type: string
               nullable: true
+    FavoriteFolderForPiece:
+      type: object
+      required:
+      - id
+      - name
+      - piece_count
+      - has_piece
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]*$
+        name:
+          type: string
+        piece_count:
+          type: integer
+          minimum: 0
+        has_piece:
+          type: boolean
+    FavoriteFolderChange:
+      type: object
+      required:
+      - id
+      - name
+      - piece_count
+      - has_piece
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]*$
+        name:
+          type: string
+        piece_count:
+          type: integer
+          minimum: 0
+        has_piece:
+          type: boolean
+          nullable: true
+    FavoriteFolderCreateRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 36
+          description: Trimmed; unique within account using existing database comparison.
+        piece_id:
+          type: string
+          pattern: ^[1-9][0-9]*$
+    FavoriteFolderListResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - piece_id
+          - is_favorited
+          - favorite_folder_ids
+          - folders
+          - can_create_folder
+          properties:
+            piece_id:
+              type: string
+              pattern: ^[1-9][0-9]*$
+            is_favorited:
+              type: boolean
+            favorite_folder_ids:
+              type: array
+              uniqueItems: true
+              items:
+                type: string
+                pattern: ^[1-9][0-9]*$
+            folders:
+              type: array
+              items:
+                $ref: '#/components/schemas/FavoriteFolderForPiece'
+            can_create_folder:
+              type: boolean
+        meta: &id001
+          $ref: '#/components/schemas/ResponseMeta'
+    FavoriteFolderMutationResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - piece_id
+          - is_favorited
+          - favorite_folder_ids
+          - folder
+          - can_create_folder
+          properties:
+            piece_id:
+              type: string
+              pattern: ^[1-9][0-9]*$
+              nullable: true
+            is_favorited:
+              type: boolean
+              nullable: true
+            favorite_folder_ids:
+              type: array
+              uniqueItems: true
+              items:
+                type: string
+                pattern: ^[1-9][0-9]*$
+            folder:
+              $ref: '#/components/schemas/FavoriteFolderChange'
+            can_create_folder:
+              type: boolean
+        meta: *id001
     PieceAccount:
       type: object
       required:

@@ -97,7 +97,7 @@
         },
         "account": {
             "is_favorited": false,
-            "favorite_writes_supported": false,
+            "favorite_writes_supported": true,
             "annotations_supported": false,
             "history_path": "/api/v2/pieces/1/view"
         },

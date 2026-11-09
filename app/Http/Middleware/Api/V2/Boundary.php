@@ -15,7 +15,7 @@ class Boundary
         try {
             $response = $next($request);
         } catch (Throwable $error) {
-            if (!$error instanceof \App\Services\Api\V2\MatchTourFailure) report($error);
+            if (!$error instanceof \App\Services\Api\V2\MatchTourFailure && !$error instanceof \App\Services\Api\V2\FavoriteFailure) report($error);
             $response = Response::exception($error);
         }
         $response->headers->set('Cache-Control', 'no-store, private');

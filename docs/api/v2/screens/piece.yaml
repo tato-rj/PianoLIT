@@ -24,7 +24,7 @@ response_sections:
   piece: Display title, catalogue, shared artwork, current Free Pick identity and full composer biography/lifespan/country plus the existing summary fields.
   metadata: Raw/short/long names, nickname, key, collection/movement, period, difficulty, saved composition/publication years, tags and the existing estimated page-count label.
   about: Existing piece description or explicit composer-biography fallback, for-whom copy and RCM/ABRSM/Suzuki labels. Missing data stays null.
-  account: Favorite state only for the verified account and existing folder-owned favorites. Favorite/annotation writes are explicitly unsupported. history_path is origin-relative /api/v2/pieces/{id}/view.
+  account: Favorite state only for the verified account and existing folder-owned favorites. favorite_writes_supported is true for the new favorite-folder contracts (locally implemented, deployment pending); annotations_supported remains false. history_path is origin-relative /api/v2/pieces/{id}/view.
   access: Native full_media boolean and basis, independent of browser Access Limits and of row position.
   media: Nullable performance/synthesia, lesson groups, audio full/right/left tracks, listening moments and PDF/external purchase information.
   timeline: Nullable composer period plus an events array; date-only precision is preserved, and absent years/dates are not invented.

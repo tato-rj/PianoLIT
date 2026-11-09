@@ -6,7 +6,7 @@ class Response
 {
     public static function exception(\Throwable $error)
     {
-        if ($error instanceof MatchTourFailure) {
+        if ($error instanceof MatchTourFailure || $error instanceof FavoriteFailure) {
             return self::error($error->errorCode, $error->getMessage(), $error->status);
         }
         if ($error instanceof \Illuminate\Validation\ValidationException) {
@@ -25,9 +25,9 @@ class Response
         return self::error('server_error', 'Please try again later.', 500);
     }
 
-    public static function data(array $data)
+    public static function data(array $data, int $status = 200)
     {
-        return response()->json(['data' => $data, 'meta' => self::meta()]);
+        return response()->json(['data' => $data, 'meta' => self::meta()], $status);
     }
 
     public static function error(string $code, string $message, int $status, array $fields = [])

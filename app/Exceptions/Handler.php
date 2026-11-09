@@ -15,7 +15,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        \App\Services\Api\V2\FavoriteFailure::class,
     ];
 
     /**

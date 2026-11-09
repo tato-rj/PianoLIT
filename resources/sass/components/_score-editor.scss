@@ -281,7 +281,9 @@
         z-index: $zindex-fixed;
         left: 50%;
         bottom: 12px;
-        bottom: calc(12px + env(safe-area-inset-bottom) + var(--score-menu-height) + var(--piece-player-height, 0px));
+        // The measured menu height already includes its bottom safe-area gap.
+        // When the menu is hidden/fullscreen, keep the controls above that area.
+        bottom: calc(max(max(12px, env(safe-area-inset-bottom, 0px)), 8px + var(--score-menu-height)) + var(--piece-player-height, 0px));
         transform: translateX(-50%);
         display: flex;
         align-items: center;

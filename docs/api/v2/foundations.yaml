@@ -36,7 +36,7 @@ implemented:
     client_storage: Keychain only. No password persistence; no secrets in logs, YAML or UserDefaults.
     upgrade: One existing-password sign-in when an upgraded installation has no v2 credential; no secure silent exchange exists for legacy local IDs alone.
     registration: Retain the existing signup/recovery interfaces; authenticate the just-entered password through v2 afterward. Legacy signup JSON does not establish v2 identity.
-    account_fields: Submitted user_id is ignored, never used as an override; history always belongs to the verified token principal.
+    account_fields: Submitted user_id never overrides the verified token principal. Existing reads ignore it; strict favorite-write bodies reject unknown fields.
   data:
     source: App\Services\Discover\Feed is used by web and v2; legacy selection remains unchanged.
     levels: App\Services\Discover\Levels supplies both web and v2 grouping/order.
@@ -52,7 +52,7 @@ implemented:
     isolation: Clone public-cache models before adding presentation attributes. No shared model appends/hidden-field changes.
   navigation:
     targets: Explicit kind/entity/query plus public web_url fallback; never attach bearer credentials to fallback or media URLs.
-    incomplete_flows: Piece detail/search/playback/favorites/membership are still separate migrations. A Discover summary cannot initialize the full legacy PieceVC model.
+    incomplete_flows: Piece detail and favorite folders have separate documented contracts; favorite-folder deployment remains pending. Search/playback integration and membership remain separate work. A Discover summary cannot initialize the full legacy PieceVC model.
 verification:
   local: Isolated SQLite tests cover login compatibility, rejection of spoofed identity, lifetime/revocation, errors/throttling, shared content IDs/artwork, account isolation, Free Pick rotation and immutable legacy cache objects.
   deployment: See manifest runtime verification; local checks alone do not prove production deployment.

@@ -34,6 +34,30 @@ enum V2ClientError: Error {
     case http(Int, V2Failure?)
     case keychain(OSStatus)
     case invalidResponse
+    case rateLimited(retryAfter: TimeInterval?)
+}
+
+struct V2FavoriteFolder: Decodable, Sendable {
+    let id: String
+    let name: String
+    let piece_count: Int
+    let has_piece: Bool? // nil only when creating without a selected piece
+}
+
+struct V2FavoriteFolderList: Decodable, Sendable {
+    let piece_id: String
+    let is_favorited: Bool
+    let favorite_folder_ids: [String]
+    let folders: [V2FavoriteFolder]
+    let can_create_folder: Bool
+}
+
+struct V2FavoriteFolderChange: Decodable, Sendable {
+    let piece_id: String?
+    let is_favorited: Bool?
+    let favorite_folder_ids: [String]
+    let folder: V2FavoriteFolder
+    let can_create_folder: Bool
 }
 
 struct V2Target: Decodable, Sendable {
@@ -238,6 +262,38 @@ actor PianoLITV2Client {
         _ = try await authenticated("pieces/\(pieceID)/view", method: "POST")
     }
 
+    func favoriteFolders(pieceID: String) async throws -> V2FavoriteFolderList {
+        try validatePieceID(pieceID)
+        let bytes = try await authenticated("favorite-folders", method: "GET",
+            query: [URLQueryItem(name: "piece_id", value: pieceID)])
+        return try JSONDecoder().decode(V2Envelope<V2FavoriteFolderList>.self, from: bytes).data
+    }
+
+    func saveFavorite(folderID: String, pieceID: String) async throws -> V2FavoriteFolderChange {
+        try await changeFavorite(folderID: folderID, pieceID: pieceID, method: "PUT")
+    }
+
+    func removeFavorite(folderID: String, pieceID: String) async throws -> V2FavoriteFolderChange {
+        try await changeFavorite(folderID: folderID, pieceID: pieceID, method: "DELETE")
+    }
+
+    private func changeFavorite(folderID: String, pieceID: String, method: String) async throws -> V2FavoriteFolderChange {
+        try validatePieceID(folderID)
+        try validatePieceID(pieceID)
+        let bytes = try await authenticated("favorite-folders/\(folderID)/pieces/\(pieceID)", method: method)
+        return try JSONDecoder().decode(V2Envelope<V2FavoriteFolderChange>.self, from: bytes).data
+    }
+
+    // Keep the same UUID and payload for all retries of one submission.
+    func createFavoriteFolder(name: String, pieceID: String?, idempotencyKey: UUID) async throws -> V2FavoriteFolderChange {
+        struct Payload: Encodable { let name: String; let piece_id: String? }
+        if let pieceID { try validatePieceID(pieceID) }
+        let body = try JSONEncoder().encode(Payload(name: name, piece_id: pieceID))
+        let bytes = try await authenticated("favorite-folders", method: "POST", body: body,
+            idempotencyKey: idempotencyKey)
+        return try JSONDecoder().decode(V2Envelope<V2FavoriteFolderChange>.self, from: bytes).data
+    }
+
     private func validatePieceID(_ id: String) throws {
         guard !id.isEmpty, id.utf8.allSatisfy({ $0 >= 48 && $0 <= 57 }), id.first != "0" else {
             throw V2ClientError.invalidResponse
@@ -254,11 +310,13 @@ actor PianoLITV2Client {
         if let credential { _ = try await send("auth/logout", method: "POST", body: nil, bearer: credential) }
     }
 
-    private func authenticated(_ path: String, method: String) async throws -> Data {
+    private func authenticated(_ path: String, method: String, body: Data? = nil,
+                               query: [URLQueryItem] = [], idempotencyKey: UUID? = nil) async throws -> Data {
         guard let credential = session?.access_token else { throw V2ClientError.signInRequired }
         let current = generation
         do {
-            let bytes = try await send(path, method: method, body: nil, bearer: credential)
+            let bytes = try await send(path, method: method, body: body, bearer: credential,
+                query: query, idempotencyKey: idempotencyKey)
             try Task.checkCancellation()
             guard generation == current else { throw CancellationError() }
             return bytes
@@ -272,16 +330,26 @@ actor PianoLITV2Client {
         }
     }
 
-    private func send(_ path: String, method: String, body: Data?, bearer: String?) async throws -> Data {
-        var request = URLRequest(url: base.appendingPathComponent(path))
+    private func send(_ path: String, method: String, body: Data?, bearer: String?,
+                      query: [URLQueryItem] = [], idempotencyKey: UUID? = nil) async throws -> Data {
+        guard var components = URLComponents(url: base.appendingPathComponent(path), resolvingAgainstBaseURL: false) else {
+            throw V2ClientError.invalidResponse
+        }
+        if !query.isEmpty { components.queryItems = query }
+        guard let url = components.url else { throw V2ClientError.invalidResponse }
+        var request = URLRequest(url: url)
         request.httpMethod = method
         request.httpBody = body
         request.timeoutInterval = 30
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         if body != nil { request.setValue("application/json", forHTTPHeaderField: "Content-Type") }
         if let bearer { request.setValue("Bearer \(bearer)", forHTTPHeaderField: "Authorization") }
+        if let idempotencyKey { request.setValue(idempotencyKey.uuidString, forHTTPHeaderField: "Idempotency-Key") }
         let (bytes, response) = try await transport.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw V2ClientError.invalidResponse }
+        if http.statusCode == 429 {
+            throw V2ClientError.rateLimited(retryAfter: http.value(forHTTPHeaderField: "Retry-After").flatMap(TimeInterval.init))
+        }
         guard (200...299).contains(http.statusCode) else {
             throw V2ClientError.http(http.statusCode, try? JSONDecoder().decode(V2Failure.self, from: bytes))
         }

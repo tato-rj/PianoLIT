@@ -66,9 +66,8 @@ class PieceResponse
                 'rankings' => $piece->rankings,
             ],
             'account' => [
-                'is_favorited' => $user->favorites()->where('pieces.id', $piece->id)->whereNotNull('favorite_folder_id')->exists(),
-                // Writes need their own owned v2 contracts; no browser/session URLs.
-                'favorite_writes_supported' => false, 'annotations_supported' => false,
+                'is_favorited' => count(app(FavoriteFolders::class)->folderIds($user, $piece->id)) > 0,
+                'favorite_writes_supported' => true, 'annotations_supported' => false,
                 'history_path' => '/api/v2/pieces/'.$piece->id.'/view',
             ],
             'access' => $access,

@@ -1,0 +1,129 @@
+{
+  "synthetic": true,
+  "cases": [
+    {
+      "http_status": 401,
+      "response": {
+        "error": {
+          "code": "unauthenticated",
+          "message": "Please sign in again.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "http_status": 404,
+      "response": {
+        "error": {
+          "code": "not_found",
+          "message": "This item is unavailable.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "http_status": 422,
+      "response": {
+        "error": {
+          "code": "invalid_request",
+          "message": "Please check the highlighted fields.",
+          "fields": {
+            "name": [
+              "The name must be at least 3 characters."
+            ]
+          }
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "http_status": 403,
+      "response": {
+        "error": {
+          "code": "favorite_folders_blocked",
+          "message": "Favorite folders are currently locked.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "http_status": 403,
+      "response": {
+        "error": {
+          "code": "favorite_folder_limit_reached",
+          "message": "You have reached your favorite-folder limit.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "http_status": 403,
+      "response": {
+        "error": {
+          "code": "favorite_saves_blocked",
+          "message": "You have reached the limit of pieces in this folder.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "http_status": 403,
+      "response": {
+        "error": {
+          "code": "favorite_piece_limit_reached",
+          "message": "You have reached the limit of pieces in this folder.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "http_status": 409,
+      "response": {
+        "error": {
+          "code": "idempotency_conflict",
+          "message": "This Idempotency-Key was used with different request data.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "http_status": 429,
+      "response": {
+        "error": {
+          "code": "rate_limited",
+          "message": "Too many requests. Please try again later.",
+          "fields": {}
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "headers": {
+        "Retry-After": "60"
+      }
+    }
+  ]
+}

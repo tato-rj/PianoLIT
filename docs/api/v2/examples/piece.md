@@ -84,10 +84,11 @@ Recommendations and release draws reuse the current web services, including
 existing per-request random choices; they are not a separate native catalogue.
 
 `account.is_favorited` is read from the verified account's existing folder-owned
-favorites. `favorite_writes_supported` and `annotations_supported` are currently
-false. Keep those writes disabled until their separate authenticated v2 contracts
-exist; do not submit native actions to browser session/CSRF routes or assume a
-submitted legacy user ID is v2 authentication.
+favorites. In revision 2026-11-09.1, `favorite_writes_supported` is true and
+[the favorite-folder operations](favorite-folders.md) provide authenticated writes
+using these same records; deployment/native acceptance of that addition remains
+pending. `annotations_supported` remains false. Never submit native actions to
+browser session/CSRF routes or treat a submitted legacy user ID as authentication.
 
 The GET does **not** record a view. After the native page successfully opens,
 call the existing `recordConfirmedOpen(pieceID:)` client method, which sends:

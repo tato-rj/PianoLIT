@@ -1,6 +1,6 @@
 schema_version: 1
-revision: 2026-11-04.1
-updated_on: '2026-11-04'
+revision: 2026-11-09.1
+updated_on: '2026-11-09'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -17,7 +17,11 @@ runtime:
     errors and side-effect-free reads. Synthetic account/token SQL writes were rolled
     back. Find my match remains disabled and unverified pending its separate deployment/media
     activation; expanded composer-pool acceptance is unchanged. No staging URL or
-    native-device acceptance is verified.'
+    native-device acceptance is verified. Favorite folders were implemented and verified
+    locally on 2026-11-09, including concurrent writes on a disposable MySQL 8.4.2
+    instance. Their production receipt migration/deployment and native acceptance
+    remain pending. The earlier piece-detail production verification
+    does not cover its new favorite_writes_supported flag.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -30,6 +34,8 @@ entrypoints:
   match_examples: examples/find-my-match.md
   piece: screens/piece.yaml
   piece_examples: examples/piece.md
+  favorite_folders: screens/favorite-folders.yaml
+  favorite_examples: examples/favorite-folders.md
 files:
 - path: README.md
 - path: foundations.yaml
@@ -49,6 +55,10 @@ files:
 - path: examples/piece.md
 - path: fixtures/piece-full.json
 - path: fixtures/piece-blocked.json
+- path: screens/favorite-folders.yaml
+- path: examples/favorite-folders.md
+- path: fixtures/favorite-folders-flow.json
+- path: fixtures/favorite-folders-errors.json
 features:
 - id: foundations
   document: foundations.yaml
@@ -77,6 +87,14 @@ features:
   ios_status: pending_integration
   depends_on:
   - foundations
+- id: favorite_folders
+  document: screens/favorite-folders.yaml
+  status: draft
+  backend_status: implemented_locally
+  ios_status: pending_integration
+  depends_on:
+  - foundations
+  - piece
 consumer_rules:
 - Read README.md, the concrete OpenAPI operations and examples/PianoLITV2Client.swift
   for the connection procedure.
@@ -100,7 +118,23 @@ consumer_rules:
 - Find my match endpoints in this revision are implemented locally, not production
   verified. Preserve the completed native steps 1–4 and replace their data/calculations
   only; connect mood and the native piece target after deployment verification.
+- Favorite-folder operations and the enabled piece-detail favorite-write flag are
+  implemented locally in this revision. Deploy the receipt migration/code and verify
+  HTTPS before native integration against production; see examples/favorite-folders.md.
 changelog:
+- revision: 2026-11-09.1
+  changes:
+  - Added bearer-authenticated list, idempotent folder-piece PUT/DELETE and atomic
+    folder creation using shared website folders, saved-piece records and server account
+    limits.
+  - Added account-scoped 24-hour UUID retry receipts, current-state responses, ownership
+    checks, stable quota/conflict errors and write throttling.
+  - Enabled piece-detail favorite_writes_supported and aligned is_favorited with owned-folder
+    membership; added OpenAPI schemas, typed Swift methods and synthetic flow/error
+    fixtures.
+  - Implemented and verified locally, including MySQL concurrency; production
+    migration/deployment and native acceptance remain pending. All previous published revisions and legacy
+    contracts are preserved.
 - revision: 2026-11-04.1
   changes:
   - Added authenticated GET /pieces/{piece} for complete read-only piece-page metadata,

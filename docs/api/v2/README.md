@@ -1,9 +1,14 @@
 # PianoLIT iOS v2 connection
 
-Revision **2026-11-04.1** adds the **live, production-verified** native piece page
-at `GET /api/v2/pieces/{id}`, using the existing v2 sign-in and shared web content
-sources. See [piece integration](examples/piece.md), the full/blocked synthetic
-fixtures and `piece(id:)` / `V2PieceDetail` in the Swift connection example.
+Revision **2026-11-09.1** adds favorite-folder list/save/remove/create operations
+and enables the piece-detail favorite-write flag. These changes are implemented
+and verified locally, including disposable MySQL concurrency checks. Their
+production migration/deployment and native acceptance remain pending. See [favorite-folder integration](examples/favorite-folders.md).
+
+The existing native piece page at `GET /api/v2/pieces/{id}` was production
+verified on November 4. See [piece integration](examples/piece.md), the full/blocked
+synthetic fixtures and `piece(id:)` / `V2PieceDetail` in the Swift example. That
+earlier verification does not establish live favorite-write support.
 
 Login, Discover and confirmed-open history remain available. Find my match from
 2026-11-03 is still disabled by default and awaits its separate media preparation,
@@ -40,7 +45,8 @@ The new app changes its network adapter, not the user's account or password:
 `examples/PianoLITV2Client.swift` is a concrete URLSession/Keychain adapter with
 Codable models, HTTP/error handling, redirect refusal and account-switch guards.
 Add it to the **new app** target and call `signIn(email:password:)`, `discover()`,
-`piece(id:)` and `signOut()` from the existing controllers. It has been type-checked in Swift 5
+`piece(id:)` and `signOut()` from the existing controllers. The new favorite-folder
+methods are listed in [their guide](examples/favorite-folders.md). It has been type-checked in Swift 5
 language mode; it has not been integrated into the unavailable iOS repository or
 verified on an iPhone/iPad. Keep the existing iOS deployment target.
 
@@ -100,8 +106,9 @@ native bearer session with a browser. Never attach a bearer to that URL, artwork
 legacy `card.source` or arbitrary response-supplied origins.
 
 A card is **not** the full legacy PieceVC model. Load `GET /api/v2/pieces/{id}` for the new native detail model and explicit
-media modes described in [the piece guide](examples/piece.md). Search, favorite/annotation
-writes and membership mutations remain separate migrations. Existing native
+media modes described in [the piece guide](examples/piece.md). Favorite writes
+use [the new folder operations](examples/favorite-folders.md) after their deployment.
+Search, annotation writes and membership mutations remain separate migrations. Existing native
 screens may retain explicitly identified legacy calls until their v2 replacement
 is verified; do not call them authenticated v2 or derive full access from a row
 position. The old app's row-zero Free Pick bypass must not be copied.

@@ -144,6 +144,13 @@ transitions. Reserve document space with `--webapp-menu-space`, independently of
 the visible `--webapp-menu-height` used by fixed audio and score controls, so
 hiding the menu never changes the scroll range.
 
+Outside full-screen score reading, the score controls share the menu's centered
+640px maximum width and safe-area-aware 12px side insets. Keep an 8px gap above
+the visible menu, allowing for an open audio player. Its measured height already
+includes the bottom safe area; do not add that inset again. When the menu hides,
+the controls settle above the bottom safe area. Keep score page spacing constant
+during this movement and use two control rows within the shared width.
+
 On `my.*` only, the shared account control uses the `webapp-navigation` variant
 in the fifth bottom-navigation slot. The web-app header contains only its logo;
 other sites keep their existing header account control. The tab has no border or

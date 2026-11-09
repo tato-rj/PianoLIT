@@ -1,13 +1,41 @@
+// Keep the score controls and navigation on the same safe-area-aware rails.
+.webapp-navigation,
+.score-editor:not(.is-fullscreen) .score-footer {
+    left: max(12px, env(safe-area-inset-left, 0px));
+    right: max(12px, env(safe-area-inset-right, 0px));
+    width: auto;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.score-editor:not(.is-fullscreen) {
+    padding-bottom: calc(126px + var(--webapp-menu-space, var(--score-menu-height)));
+
+    .score-footer {
+        transform: none;
+        flex-wrap: wrap;
+    }
+
+    .score-view-controls,
+    .score-footer-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    @media (max-width: 360px) {
+        .score-view-controls { gap: 4px; }
+        .score-control-group { gap: 1px; }
+        .score-fullscreen-button { margin-left: 0; }
+        .score-zoom-label { min-width: 40px; }
+    }
+}
+
 .webapp-navigation {
     --webapp-navigation-bottom: max(12px, env(safe-area-inset-bottom, 0px));
     --webapp-navigation-selected: #e4e4e4;
     position: fixed;
     z-index: 1030;
     bottom: var(--webapp-navigation-bottom);
-    left: max(12px, env(safe-area-inset-left, 0px));
-    right: max(12px, env(safe-area-inset-right, 0px));
-    max-width: 640px;
-    margin: 0 auto;
     padding: 5px;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-pill);

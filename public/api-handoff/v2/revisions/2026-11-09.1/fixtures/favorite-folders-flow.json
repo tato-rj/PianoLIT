@@ -1,0 +1,315 @@
+{
+  "synthetic": true,
+  "note": "Fictional IDs/names only. No real accounts, tokens, cookies or media. Requests carry the existing bearer at runtime.",
+  "exchanges": [
+    {
+      "case": "empty_account",
+      "request": {
+        "method": "GET",
+        "path": "/api/v2/favorite-folders?piece_id=1032"
+      },
+      "http_status": 200,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": false,
+          "favorite_folder_ids": [],
+          "folders": [],
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "create_empty_folder",
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/favorite-folders",
+        "body": {
+          "name": "Pieces to learn"
+        }
+      },
+      "http_status": 201,
+      "response": {
+        "data": {
+          "piece_id": null,
+          "is_favorited": null,
+          "favorite_folder_ids": [],
+          "folder": {
+            "id": "12",
+            "name": "Pieces to learn",
+            "piece_count": 0,
+            "has_piece": null
+          },
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "include_empty_folder",
+      "request": {
+        "method": "GET",
+        "path": "/api/v2/favorite-folders?piece_id=1032"
+      },
+      "http_status": 200,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": false,
+          "favorite_folder_ids": [],
+          "folders": [
+            {
+              "id": "12",
+              "name": "Pieces to learn",
+              "piece_count": 0,
+              "has_piece": false
+            }
+          ],
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "save",
+      "request": {
+        "method": "PUT",
+        "path": "/api/v2/favorite-folders/12/pieces/1032"
+      },
+      "http_status": 200,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": true,
+          "favorite_folder_ids": [
+            "12"
+          ],
+          "folder": {
+            "id": "12",
+            "name": "Pieces to learn",
+            "piece_count": 1,
+            "has_piece": true
+          },
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "repeated_save",
+      "request": {
+        "method": "PUT",
+        "path": "/api/v2/favorite-folders/12/pieces/1032"
+      },
+      "http_status": 200,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": true,
+          "favorite_folder_ids": [
+            "12"
+          ],
+          "folder": {
+            "id": "12",
+            "name": "Pieces to learn",
+            "piece_count": 1,
+            "has_piece": true
+          },
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "atomic_create_and_save",
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/favorite-folders",
+        "body": {
+          "name": "Reading",
+          "piece_id": "1032"
+        },
+        "headers": {
+          "Idempotency-Key": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      },
+      "http_status": 201,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": true,
+          "favorite_folder_ids": [
+            "12",
+            "13"
+          ],
+          "folder": {
+            "id": "13",
+            "name": "Reading",
+            "piece_count": 1,
+            "has_piece": true
+          },
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "multiple_folders",
+      "request": {
+        "method": "GET",
+        "path": "/api/v2/favorite-folders?piece_id=1032"
+      },
+      "http_status": 200,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": true,
+          "favorite_folder_ids": [
+            "12",
+            "13"
+          ],
+          "folders": [
+            {
+              "id": "12",
+              "name": "Pieces to learn",
+              "piece_count": 1,
+              "has_piece": true
+            },
+            {
+              "id": "13",
+              "name": "Reading",
+              "piece_count": 1,
+              "has_piece": true
+            }
+          ],
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "remove_one_folder",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/v2/favorite-folders/12/pieces/1032"
+      },
+      "http_status": 200,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": true,
+          "favorite_folder_ids": [
+            "13"
+          ],
+          "folder": {
+            "id": "12",
+            "name": "Pieces to learn",
+            "piece_count": 0,
+            "has_piece": false
+          },
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "remove_last_folder",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/v2/favorite-folders/13/pieces/1032"
+      },
+      "http_status": 200,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": false,
+          "favorite_folder_ids": [],
+          "folder": {
+            "id": "13",
+            "name": "Reading",
+            "piece_count": 0,
+            "has_piece": false
+          },
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "repeated_remove",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/v2/favorite-folders/13/pieces/1032"
+      },
+      "http_status": 200,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": false,
+          "favorite_folder_ids": [],
+          "folder": {
+            "id": "13",
+            "name": "Reading",
+            "piece_count": 0,
+            "has_piece": false
+          },
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "case": "creation_replay_after_removal",
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/favorite-folders",
+        "body": {
+          "name": "Reading",
+          "piece_id": "1032"
+        },
+        "headers": {
+          "Idempotency-Key": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      },
+      "http_status": 201,
+      "response": {
+        "data": {
+          "piece_id": "1032",
+          "is_favorited": false,
+          "favorite_folder_ids": [],
+          "folder": {
+            "id": "13",
+            "name": "Reading",
+            "piece_count": 0,
+            "has_piece": false
+          },
+          "can_create_folder": true
+        },
+        "meta": {
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    }
+  ]
+}
