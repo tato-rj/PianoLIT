@@ -85,9 +85,9 @@ class PieceRecommendationsTest extends ReviewTestCase
         $this->assertLessThanOrEqual(18, $counts[1]);
     }
 
-    public function test_guest_and_signed_in_pages_render_one_recommendation_section_with_five_compact_tabs()
+    public function test_guest_and_signed_in_tabs_show_four_stacked_cards_and_links_to_more_results()
     {
-        foreach (['Minuet in G', 'Little prelude', 'Morning song', 'Evening dance'] as $name) {
+        foreach (['Minuet in G', 'Little prelude', 'Morning song', 'Evening dance', 'Waltz', 'March'] as $name) {
             $this->makePiece($name, ['happy', 'dreamy']);
         }
         $user = Model::withoutEvents(function () { return create(User::class)->setAppends(['full_name']); });
@@ -108,18 +108,29 @@ class PieceRecommendationsTest extends ReviewTestCase
                 $this->assertSame($id.'-tab', $panel->getAttribute('aria-labelledby'));
                 $this->assertSame($index === 0 ? 'tab-pane active' : 'tab-pane ', $panel->getAttribute('class'));
                 $links = $xpath->query('//div[@id="'.$id.'"]//a[contains(concat(" ",normalize-space(@class)," ")," discover-compact-card ")]');
-                $this->assertCount($row['pieces']->count(), $links);
-                foreach ($row['pieces'] as $cardIndex => $card) {
+                $this->assertCount(4, $links);
+                $this->assertSame(4, $xpath->query('//div[@id="'.$id.'"]/ul/li')->length);
+                $this->assertSame(0, $xpath->query('//div[@id="'.$id.'"]//*[contains(@class,"card-scroll-row") or contains(@class,"dragscroll")]')->length);
+                foreach ($row['pieces']->take(4) as $cardIndex => $card) {
                     $this->assertSame(route('webapp.pieces.show', $card), $links[$cardIndex]->getAttribute('href'));
                     $this->assertStringContainsString($card->name, $links[$cardIndex]->textContent);
                     $this->assertStringContainsString($card->composer->short_name, $links[$cardIndex]->textContent);
                     $this->assertStringContainsString(ucfirst($card->extended_level_name), $links[$cardIndex]->textContent);
                 }
-                if (! $row['pieces']->isEmpty()) $response->assertSee('href="'.e($row['url']).'"', false);
-                if (empty($row['term'])) continue;
-                $this->get($row['url'])->assertOk()->assertSee('name="search" value="'.$row['term'].'"', false);
-                $results = $this->getJson($row['url'])->assertOk();
-                $this->assertSame($signedIn ? 5 : 3, substr_count($results->getContent(), 'data-sort-name='));
+                $more = $xpath->query('//div[@id="'.$id.'"]/a')->item(0);
+                $url = $row['key'] === 'same-composer'
+                    ? route('webapp.search.results', ['search' => $this->composer->name, 'model' => Composer::class])
+                    : $row['url'];
+                $this->assertSame($url, $more->getAttribute('href'));
+                $this->assertSame('See more', trim($more->textContent));
+                if ($row['key'] === 'best-matches') {
+                    $this->assertCount(6, $this->get($url)->assertOk()->viewData('similar'));
+                    continue;
+                }
+                $term = $row['term'] ?? $this->composer->name;
+                $this->get($url)->assertOk()->assertSee('name="search" value="'.$term.'"', false);
+                $results = $this->getJson($url)->assertOk();
+                $this->assertSame($signedIn ? 7 : 3, substr_count($results->getContent(), 'data-sort-name='));
             }
         }
     }

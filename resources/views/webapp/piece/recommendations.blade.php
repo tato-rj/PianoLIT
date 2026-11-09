@@ -28,14 +28,17 @@
         @foreach($matchRows as $matchRow)
         <div class="tab-pane {{ $matchRow['key'] === 'best-matches' ? 'active' : '' }}" id="piece-recommendations-{{ $matchRow['key'] }}" role="tabpanel" aria-labelledby="piece-recommendations-{{ $matchRow['key'] }}-tab" tabindex="0">
             @if($matchRow['pieces']->isNotEmpty())
-            <div class="discover-for-you__rail custom-scroll dragscroll dragscroll-horizontal card-scroll-row" role="region" aria-label="{{ $matchRow['title'] }}" tabindex="0">
-                <div class="d-flex gap-3 pb-2">
-                    @foreach($matchRow['pieces'] as $recommendationPiece)
-                        @include('webapp.discover.cards.compact-piece', ['piece' => $recommendationPiece, 'showMedia' => true])
-                    @endforeach
-                    @include('components.navigation.rail-view-all', ['url' => $matchRow['url'], 'context' => $matchRow['title']])
-                </div>
-            </div>
+            <ul class="piece-recommendations-list list-unstyled d-flex flex-column gap-3 mb-3" aria-label="{{ $matchRow['title'] }}">
+                @foreach($matchRow['pieces']->take(4) as $recommendationPiece)
+                <li>
+                    @include('webapp.discover.cards.compact-piece', ['piece' => $recommendationPiece, 'showMedia' => true])
+                </li>
+                @endforeach
+            </ul>
+            @php($seeMoreUrl = $matchRow['key'] === 'same-composer'
+                ? route('webapp.search.results', ['search' => $piece->composer->name, 'model' => \App\Composer::class])
+                : $matchRow['url'])
+            <a class="link-primary d-inline-flex align-items-center gap-2" href="{{ $seeMoreUrl }}" aria-label="See more: {{ $matchRow['title'] }}">See more @icon('arrow-right', ['mr' => 0])</a>
             @else
             <p class="text-muted mb-0">No matching pieces found</p>
             @endif

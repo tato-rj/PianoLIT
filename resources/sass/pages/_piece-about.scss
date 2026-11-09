@@ -1,3 +1,8 @@
+.piece-recommendations-list .discover-compact-card {
+    width: 100%;
+    min-width: 0;
+}
+
 .piece-about-media {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

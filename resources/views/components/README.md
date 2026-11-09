@@ -39,7 +39,7 @@ Frequently edited files:
 - Link-sharing modal: `media/link-share.blade.php` and its reusable `media/link-share-options.blade.php` body, `resources/js/components/link-share.js` and `resources/sass/components/_link-share.scss`; the Design System renders the same dialog. The entire readonly URL field and copy icon copy the canonical link, with a brief Bootstrap Copied! tooltip. Pass `useOldInput => false` for this generated URL. Optional `shareData` from `LinkShare::forMessage` lets product pages reuse the dialog with their product name and canonical URL while retaining the existing piece-sharing copy.
 - Profile/Support section menu: `navigation/section-navigation.blade.php`
 - Discover and piece recommendation buttons: `navigation/pill-tabs.blade.php`, sharing `.pill-filters` and native Bootstrap tab behavior
-- Row-end View all links: `navigation/rail-view-all.blade.php`, used after cards inside the piece recommendation rails
+- Row-end View all links: `navigation/rail-view-all.blade.php`, used after cards inside the piece collection rail. More like this uses four stacked compact cards and a See more query link in `webapp/piece/recommendations.blade.php`.
 - Accordions, including Support's `variant => minimal`: `layout/accordion.blade.php`, `layout/accordion-item.blade.php` and `resources/sass/components/_accordion.scss`
 - Account prompts: `account/access-modal.blade.php`, `account/signup-card.blade.php`
 - Account and Game player dropdown surface: `account/menu-panel.blade.php`
