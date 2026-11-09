@@ -127,13 +127,16 @@ body-level script stack. Design System specimens reuse these same components
 with fictitious details and inert actions.
 
 The `my.*` menu is a floating white capsule with shared border, pill-radius,
-shadow and text tokens, a gray current-tab pill and the existing blue active icon
-and label. Its surface uses 82% white with an 18px backdrop blur, including the
+shadow and text tokens, an `#e4e4e4` current-tab pill sampled from Arthur's Amex
+reference and the existing blue active icon and label. The same selection color
+applies at every viewport width. Its surface uses 82% white with an 18px backdrop blur, including the
 Safari prefix. Keep an opaque fallback when blur is unsupported or reduced
 transparency is requested. `webapp.layouts.menu` supplies both the live navigation and its inert
 Design System specimen; `components/_webapp-navigation.scss` owns its finish.
-Its five slots remain readable at 320px. Keep safe-area edge gaps and a 44px
-account target. Below 992px, `components/webapp-navigation.js` hides it after a
+Below 992px, show only the five icons/avatar, with 44px targets and explicit
+accessible link/button names; hide every label, including the account name.
+Desktop retains the labels. Keep safe-area edge gaps. Below 992px,
+`components/webapp-navigation.js` hides it after a
 quick downward scroll and reveals it after a short upward scroll. Slow reading,
 small reversals and rubber-band overscroll do not toggle it. Focus, overlays and
 page restoration reveal it; desktop stays visible and reduced motion removes

@@ -1,5 +1,6 @@
 .webapp-navigation {
     --webapp-navigation-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+    --webapp-navigation-selected: #e4e4e4;
     position: fixed;
     z-index: 1030;
     bottom: var(--webapp-navigation-bottom);
@@ -65,7 +66,7 @@
 }
 
 .webapp-navigation .menu-link.active {
-    background: var(--color-border);
+    background: var(--webapp-navigation-selected);
 }
 
 .account-page--prepared #webapp .webapp-menu-items {
@@ -96,12 +97,10 @@
     .webapp-navigation .menu-link { transition: none; }
 }
 
-// Keep all five web tabs legible with the longer Collections label.
-@media (max-width: 360px) {
-    .webapp-navigation .webapp-menu-label { font-size: 10.5px; }
-}
-
 @media (max-width: 991.98px) {
+    .webapp-navigation .webapp-menu-label { display: none; }
+    .webapp-navigation .menu-link { min-height: 44px; }
+
     .playlist-player,
     .score-editor .score-footer { transition: bottom 220ms ease; }
 

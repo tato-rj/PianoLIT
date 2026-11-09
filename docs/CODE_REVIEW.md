@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-09 — Mobile navigation icons and lighter selection (P3, complete locally)
+
+- **Request / change:** The shared floating navigation hides every label below 992px, including the account label, while keeping 44px targets and explicit accessible names. Desktop retains labels. The selected pill uses `#e4e4e4`, sampled from the neutral area of Arthur's Amex reference, at every width. The existing translucent surface, blur, routes and scroll behavior remain intact; the Design System reuses this component.
+- **Verification / remaining work:** Isolated Mix CSS build, warning-free CSS checks, asset/hash checks and whitespace checks pass. Browser checks at 390px confirm all five labels are hidden, the navigation is 56px tall and links retain accessible names and 44px targets. At 1360px, labels remain visible; both widths render the selected pill as `rgb(228, 228, 228)`. Updated the three CSS outputs, hashes and design guidance. Proof: `floating-menu-icons-mobile.jpg` and `floating-menu-selection-desktop.jpg` in `/Users/arthur/.codex/visualizations/2026/11/09/01a1c1c1-3321-7b83-b0ff-9718f633ea63/`. Production deployment and physical-iPhone acceptance remain pending.
+
 ### 2026-11-09 — Translucent floating menu (P3, complete locally)
 
 - **Request / change:** Updated the shared `components/_webapp-navigation.scss` surface to 82% white with an 18px backdrop blur, following the second reference. Includes the Safari-prefixed filter, an opaque fallback and reduced-transparency preference support. The menu contents retain full opacity; geometry, active state and scroll behavior are unchanged. The Design System uses this same component.
