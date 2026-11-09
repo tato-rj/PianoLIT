@@ -192,7 +192,7 @@
 }
 .playlist-player {
     position: fixed;
-    bottom: var(--playlist-menu-height, 82px);
+    bottom: var(--webapp-menu-height, var(--playlist-menu-height, 82px));
     left: 0;
     right: 0;
     z-index: 100;

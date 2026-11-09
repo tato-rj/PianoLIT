@@ -168,6 +168,9 @@
         @endforeach
       </div>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Floating web app navigation', 'usage' => 'webapp.layouts.menu · phone scroll hides and reveals the menu', 'editable' => false])
+      @include('webapp.layouts.menu', ['navigationPreview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Transparent hub branding', 'usage' => '@brandIcon · transparent / account-circle', 'properties' => 'color,box-shadow'])
       <div class="row g-3">
         @foreach(['bg-primary text-white', 'bg-light text-black'] as $brandingSurface)

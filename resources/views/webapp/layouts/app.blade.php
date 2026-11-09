@@ -7,7 +7,7 @@
 
     <meta charset="utf-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0{{ request()->routeIs('webapp.explore') ? ', shrink-to-fit=no' : '' }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover{{ request()->routeIs('webapp.explore') ? ', shrink-to-fit=no' : '' }}">
     <meta name="HandheldFriendly" content="true" />
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -141,23 +141,7 @@
         }
     });
     </script>
-    <script type="text/javascript">
-    // ADJUST THE BOTTOM MARGIN OF THE PAGE ACCORDING TO THE HEIGHT OF THE MENU ON THE WEBAPP
-    $('main').css('margin-bottom', $('#menu').height() / 2);
-    (function () {
-        var menu = document.getElementById('menu');
-        if (!menu) return;
-        function syncMenuHeight() {
-            document.documentElement.style.setProperty('--webapp-menu-height', menu.getBoundingClientRect().height + 'px');
-        }
-        syncMenuHeight();
-        if (window.ResizeObserver) {
-            new ResizeObserver(syncMenuHeight).observe(menu);
-        } else {
-            window.addEventListener('resize', syncMenuHeight);
-        }
-    }());
-    </script>
+    <script src="{{ mix('js/components/webapp-navigation.js') }}"></script>
 
 
     @stack('scripts')

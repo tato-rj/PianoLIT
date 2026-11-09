@@ -1,5 +1,6 @@
-<div class="text-center position-relative" id="menu-{{str_slug($label)}}">
-	<a class="menu-link {{url()->current() == $url || ($label === 'Explore' && request()->routeIs('webapp.composers.*')) ? 'active' : null}}" href="{{$url}}">
+@php($menuItemActive = ($navigationPreview ?? false) ? $label === 'Discover' : (url()->current() == $url || ($label === 'Explore' && request()->routeIs('webapp.composers.*'))))
+<div class="text-center position-relative" @unless($navigationPreview ?? false) id="menu-{{str_slug($label)}}" @endunless>
+	<a class="menu-link {{ $menuItemActive ? 'active' : '' }}" href="{{ ($navigationPreview ?? false) ? '#' : $url }}" @if($menuItemActive) aria-current="page" @endif>
 		<div class="webapp-menu-icon-row">@icon($icon, ['classes' => 'menu-icon', 'mr' => 0])</div>
 		<div><small class="webapp-menu-label">{{$label}}</small></div>
 		<small>@icon('circle', ['color' => 'orange', 'styles' => 'position: absolute;

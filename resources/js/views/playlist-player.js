@@ -63,8 +63,8 @@
         if (piecePage) doc.documentElement.style.setProperty('--piece-player-height', height + 'px');
         if (main) {
             // Piece pages keep their existing spacing and reserve the audio band once.
-            if (piecePage) main.style.marginBottom = height ? 'calc(' + (originalMargin || '0px') + ' + ' + height + 'px)' : originalMargin;
-            else main.style.marginBottom = (menuHeight + height + 32) + 'px';
+            if (piecePage) main.style.marginBottom = height ? 'calc(' + (originalMargin || 'var(--webapp-menu-space, 82px) + 16px') + ' + ' + height + 'px)' : originalMargin;
+            else main.style.marginBottom = 'calc(var(--webapp-menu-space, ' + menuHeight + 'px) + ' + (height + 32) + 'px)';
         }
     }
     function syncVolume() {

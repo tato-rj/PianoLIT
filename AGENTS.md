@@ -144,6 +144,8 @@ Public editorial ads always use `components.promotions.ads` with `variant => car
 
 ## Project map
 
+As of 2026-11-09, the `my.*` bottom menu uses the shared floating `webapp.layouts.menu` capsule and Design System specimen. Preserve its five destinations, labels, account tab and current-page state. Below 992px, the versioned `components/webapp-navigation.js` slides it down after a quick downward scroll and reveals it after a short upward scroll; slow reading, small jitter and iOS overscroll must not toggle it. Desktop remains visible. Keep safe-area insets, reduced motion, keyboard/overlay visibility and restoration. `--webapp-menu-space` reserves constant page space, while `--webapp-menu-height` moves fixed audio/score controls with the visible menu; never shrink document content when hiding it. This is local; production deployment and physical-iPhone acceptance remain pending.
+
 Titles and headings throughout the UI and emails must never end with a sentence period. Keep sentence punctuation in body copy and preserve meaningful internal punctuation in names/catalogues. Apply this rule to every new or edited title.
 
 Public homepage, hub and card/article titles use normal letter spacing. Do not compress the lettering to fit; keep the homepage headline's two explicit lines and its existing font-size tokens, giving its Bootstrap column enough room.

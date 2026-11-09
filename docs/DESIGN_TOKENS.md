@@ -126,6 +126,21 @@ retain their existing presentation. `layouts.menu.user` pushes one panel to the
 body-level script stack. Design System specimens reuse these same components
 with fictitious details and inert actions.
 
+The `my.*` menu is a floating white capsule with shared border, pill-radius,
+shadow and text tokens, a gray current-tab pill and the existing blue active icon
+and label. Its surface uses 82% white with an 18px backdrop blur, including the
+Safari prefix. Keep an opaque fallback when blur is unsupported or reduced
+transparency is requested. `webapp.layouts.menu` supplies both the live navigation and its inert
+Design System specimen; `components/_webapp-navigation.scss` owns its finish.
+Its five slots remain readable at 320px. Keep safe-area edge gaps and a 44px
+account target. Below 992px, `components/webapp-navigation.js` hides it after a
+quick downward scroll and reveals it after a short upward scroll. Slow reading,
+small reversals and rubber-band overscroll do not toggle it. Focus, overlays and
+page restoration reveal it; desktop stays visible and reduced motion removes
+transitions. Reserve document space with `--webapp-menu-space`, independently of
+the visible `--webapp-menu-height` used by fixed audio and score controls, so
+hiding the menu never changes the scroll range.
+
 On `my.*` only, the shared account control uses the `webapp-navigation` variant
 in the fifth bottom-navigation slot. The web-app header contains only its logo;
 other sites keep their existing header account control. The tab has no border or

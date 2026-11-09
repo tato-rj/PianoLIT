@@ -293,6 +293,7 @@
             this.win.addEventListener('scroll', () => this.scroll(), {passive: true});
             this.win.addEventListener('resize', () => this.schedule(), {passive: true});
             this.win.addEventListener('pageshow', () => { this.away = false; this.distance = 0; this.lastY = this.scrollY(); this.schedule(); });
+            this.doc.addEventListener('transitionend', event => { if (event.target.matches('#menu')) this.schedule(); });
             ['focusin', 'focusout', 'fullscreenchange', 'webkitfullscreenchange', 'shown.bs.tab'].forEach(name => this.doc.addEventListener(name, () => this.schedule()));
             this.doc.addEventListener('keydown', event => { if (event.key === 'Tab') { this.keyboardFocus = true; this.schedule(); } });
             ['pointerdown', 'touchstart'].forEach(name => this.doc.addEventListener(name, () => { this.keyboardFocus = false; }, {passive: true, capture: true}));

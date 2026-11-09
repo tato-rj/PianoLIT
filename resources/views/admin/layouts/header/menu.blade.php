@@ -17,6 +17,7 @@
         'dropdown' => [
           ['name' => 'Google Analytics', 'route' => route('admin.analytics.google')],
           ['name' => 'Campaign conversions', 'route' => route('admin.analytics.campaigns')],
+          [],
           ['name' => 'Users', 'route' => route('admin.analytics.users')],
           ['name' => 'Memberships', 'route' => route('admin.analytics.memberships')],
           ['name' => 'Pieces', 'route' => route('admin.analytics.pieces')],
@@ -45,11 +46,13 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Repertoire', 'icon' => 'music',
         'dropdown' => [
           ['route' => route('admin.pieces.index'), 'name' => 'Pieces'],
-          ['route' => route('admin.timeline-events.index'), 'name' => 'Timeline events'],
-          ['route' => route('admin.playlists.index'), 'name' => 'Playlists'],
           ['route' => route('admin.composers.index'), 'name' => 'Composers'],
-          ['route' => route('admin.pianists.index'), 'name' => 'Pianists'],
+          [],
           ['route' => route('admin.tags.index'), 'name' => 'Tags'],
+          ['route' => route('admin.playlists.index'), 'name' => 'Playlists'],
+          [],
+          ['route' => route('admin.pianists.index'), 'name' => 'Pianists'],
+          ['route' => route('admin.timeline-events.index'), 'name' => 'Timeline events'],
         ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Shop', 'icon' => 'shopping-cart',
@@ -59,9 +62,8 @@
           ['name' => 'eScores', 'route' => route('admin.escores.index')],
           [],
           ['name' => 'Orders', 'route' => route('admin.shop-orders.index')],
+          ['name' => 'Reviews', 'route' => route('admin.reviews.index')],
         ]])
-
-        @include('admin.layouts.header.item', ['route' => route('admin.reviews.index'), 'name' => 'Reviews', 'icon' => 'star-half'])
 
         @include('admin.layouts.header.divider', ['label' => 'FREE CONTENT'])
 
