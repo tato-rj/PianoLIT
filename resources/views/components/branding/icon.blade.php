@@ -1,3 +1,8 @@
+@if($standalone ?? false)
+<span class="error-page__brand-mark" aria-hidden="true" data-brand="{{ ($admin ?? false) ? 'admin' : 'regular' }}">
+    {!! file_get_contents(resource_path('images/brand/'.(($admin ?? false) ? 'admin-icon.svg' : 'app-icon.svg'))) !!}
+</span>
+@else
 @php($impostor = session()->has('impersonator'))
 <div class="position-relative"
 @if($tilt ?? false)
@@ -21,3 +26,4 @@
 ">
 @endif
 </div>
+@endif

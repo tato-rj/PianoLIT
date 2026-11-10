@@ -28,7 +28,7 @@
     </div>
 
     <nav class="design-system__nav" aria-label="Design system sections">
-      @foreach(['brand' => 'PianoLIT icons', 'typography' => 'Typography', 'colors' => 'Colors', 'spacing' => 'Spacing', 'surfaces' => 'Borders & shadows', 'buttons' => 'Buttons', 'inputs' => 'Inputs', 'components' => 'Components', 'tables' => 'Tables', 'icons' => 'Icons'] as $anchor => $label)
+      @foreach(['brand' => 'PianoLIT icons', 'typography' => 'Typography', 'colors' => 'Colors', 'spacing' => 'Spacing', 'surfaces' => 'Borders & shadows', 'buttons' => 'Buttons', 'inputs' => 'Inputs', 'components' => 'Components', 'tables' => 'Tables', 'icons' => 'Icons', 'error-pages' => 'Error pages'] as $anchor => $label)
         <a href="#ds-{{ $anchor }}">{{ $label }}</a>
       @endforeach
     </nav>
@@ -40,6 +40,7 @@
     @include('admin.pages.settings.surfaces')
     @include('admin.pages.settings.controls')
     @include('admin.pages.settings.components')
+    @include('admin.pages.settings.error-pages')
 
     <p class="design-system__note">Shared defaults: <code>resources/sass/shared/_tokens.scss</code>. Shared styles: <code>resources/sass/shared/</code>. Reusable components: <code>resources/sass/components/</code>. This gallery uses the admin stylesheet; public-only examples are identified in their section.</p>
   </div>

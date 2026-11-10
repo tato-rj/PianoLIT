@@ -1,3 +1,1 @@
-@extends('errors::custom-layout')
-
-@section('code', '500')
+@include('errors.page', ['status' => 500])

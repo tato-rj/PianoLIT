@@ -55,10 +55,16 @@ class Handler extends ExceptionHandler
             return $response->header('Cache-Control', 'no-store, private');
         }
 
-        if (onWebapp() && $this->codeIs(404, $exception))
+        if (onWebapp() && $request->expectsJson() && $this->codeIs(404, $exception))
             return redirect(route('webapp.discover'));
 
         return parent::render($request, $exception);
+    }
+
+    protected function getHttpExceptionView($exception)
+    {
+        $view = parent::getHttpExceptionView($exception);
+        return view()->exists($view) ? $view : 'errors::page';
     }
 
     /**

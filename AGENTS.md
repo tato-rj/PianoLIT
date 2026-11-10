@@ -6,6 +6,8 @@ Use clear, simple, literal language everywhere on PianoLIT: public pages, hubs, 
 
 Use the existing shared page alert for success and errors. Never add a second page-level alert or error summary that repeats a message already shown by the layout. Keep field-level validation on the shared fields.
 
+The November 10 shared full-page error redesign is an explicit exception to the literal-copy rule: use light humor and the shared cat illustration with clear, accurate recovery instructions. All browser hubs use `errors.page`, with the existing admin logo only on the configured admin host. Preserve HTTP status/headers, JSON/API responses and session recovery. Keep the page independent of database/session/Mix/remote assets, and keep animations finite and reduced-motion aware. Rebuild its embedded CSS and static nginx fallbacks together with `npm run errors:build`. See `docs/ERROR_PAGES.md`; production activation is pending.
+
 ## Purpose and compatibility
 
 As of 2026-11-05, Arthur selected US-only physical merchandise delivery for launch. Production `shop-checkout.countries` is `['US']`; keep this allowlist in the shared checkout country/recipient path so foreign addresses cannot obtain new merchandise quotes. Preserve provider US subdivisions, independent digital billing countries, historical paid-order fulfillment, and local/test offline destination fixtures. The config/test change is deployed in `9ce9acbb2`; no new environment variable, migration or provider mutation is needed. This shipping choice does not resolve the separate tax-registration review for existing international subscriptions or downloads. See `docs/SHOP_CHECKOUT.md`.
