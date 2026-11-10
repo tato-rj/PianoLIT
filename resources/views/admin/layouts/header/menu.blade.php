@@ -67,10 +67,7 @@
 
         @include('admin.layouts.header.divider', ['label' => 'FREE CONTENT'])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Blog', 'icon' => 'newspaper',
-        'dropdown' => [
-          ['route' => route('admin.posts.index'), 'name' => 'Posts'],
-        ]])
+        @include('admin.layouts.header.item', ['route' => route('admin.posts.index'), 'name' => 'Blog', 'icon' => 'newspaper'])
 
         @include('admin.layouts.header.item', ['route' => route('admin.quizzes.index'), 'name' => 'Quizzes', 'icon' => 'circle-help'])
 
