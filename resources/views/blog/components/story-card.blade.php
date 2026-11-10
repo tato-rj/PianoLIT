@@ -1,5 +1,5 @@
 <article class="blog-story card card-lift rounded border-0 shadow-light h-100">
-    <a href="{{ route('posts.show', $post->slug) }}" class="blog-story__link h-100 p-3">
+    <a href="{{ route('posts.show', $post->slug) }}" class="blog-story__link h-100">
         <div class="blog-story__image">
             <img src="{{ $post->cover_path ? $post->cover_image() : mix('images/home/projects/blog.svg') }}" alt="" width="800" height="500" loading="lazy" decoding="async">
         </div>

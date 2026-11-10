@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-10 — Flush blog-card cover images (P3, complete locally)
+
+- **Request / change:** Removed the shared story link's `p-3` inset in `resources/views/blog/components/story-card.blade.php` and moved its side/bottom spacing into `.blog-story__body` in `resources/sass/pages/_blog.scss`. The existing rounded, overflow-hidden card clips the image at the top; the image wrapper no longer rounds its bottom corners. Blog listings and related stories reuse this component. Text spacing, image proportions, routes and article content are preserved.
+- **Verification:** Production build and existing CSS/asset checks pass. The local blog preview confirms both images load, meet the card's top/left/right edges with measured 0px gaps, and have 0px image/wrapper radii under the card's 32px clipping radius. The compiled app stylesheet differs in exactly these two CSS rules. Retained only its generated output and manifest hash; unrelated build-mode changes were removed.
+- **Remaining work:** Production deployment. No migration, data change or mobile/API change is needed.
+
 ### 2026-11-10 — Dedicated Error pages settings page (P3, complete locally)
 
 - **Request / change:** Moved the 404, admin 500 and 413 design previews out of Design System into their own authenticated admin page at `/error-pages` (`admin.error-pages.index`). `Admin/ErrorPagesController` renders the standard admin layout, shared page title/breadcrumb and Bootstrap preview cards using the actual error templates. Settings → Error pages links directly to this route and receives the current-page state. Removed the section and section-navigation link from Design System, superseding the earlier anchor shortcut.

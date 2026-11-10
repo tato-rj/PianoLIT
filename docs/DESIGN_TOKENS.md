@@ -944,7 +944,9 @@ The restored Blog directory uses the shared public header/footer, topic buttons
 and a server-paginated, uniform story-card grid: three columns on wide screens,
 two on tablets and one on phones, without a featured story.
 `blog.components.story-card` keeps titles visible and limits descriptions in CSS,
-without Masonry or JavaScript clamping. Cards show every story topic with the shared
+without Masonry or JavaScript clamping. Cover images meet the card's top and side
+edges, with top corners clipped to the shared card radius and square bottom corners.
+Only the text body is padded. Cards show every story topic with the shared
 `@pill` component above the date, with no repeated author icon/byline. Titles keep
 their normal color on hover; `.card-lift` shares the piece cards' 3px upward hover
 movement and reduced-motion behavior. The existing 12-story page size, published

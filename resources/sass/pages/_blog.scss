@@ -129,7 +129,6 @@
         position: relative;
         overflow: hidden;
         flex-shrink: 0;
-        border-radius: var(--radius-sm);
         background: var(--color-surface-subtle);
 
         img {
@@ -146,7 +145,7 @@
         align-items: flex-start;
         flex-grow: 1;
         min-width: 0;
-        padding: 16px 0 4px;
+        padding: 16px 16px 20px;
     }
     &__title {
         margin-bottom: 12px;
