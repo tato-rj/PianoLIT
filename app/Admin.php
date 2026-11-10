@@ -12,7 +12,7 @@ class Admin extends Authenticatable
     use Notifiable;
 
     protected $guarded = [];
-    protected $hidden = ['password', 'remember_token'];
+    // protected $hidden = ['password', 'remember_token'];
 
     public static function boot()
     {
