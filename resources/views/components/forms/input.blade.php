@@ -1,13 +1,14 @@
 @php
     $inputBag = $bag ?? 'default';
     $inputErrors = $errors->getBag($inputBag);
+    $inputErrorKey = $errorKey ?? $name;
     $oldInputValue = ($useOldInput ?? true) ? old($oldInputKey ?? $name) : null;
     $inputValue = is_scalar($oldInputValue) ? $oldInputValue : ($value ?? null);
 @endphp
 <div class="form-group {{$grid ?? null}}">
 	@include('components.forms.label', ['asterisk' => $asterisk ?? null])
 	<input 
-		class="form-control pianolit-input {{$classes ?? null}} {{validate($inputErrors, $name)}}"
+		class="form-control pianolit-input {{$classes ?? null}} {{validate($inputErrors, $inputErrorKey)}}"
 		@isset($id)
 		id="{{$id}}"
 		@endisset
@@ -28,7 +29,7 @@
 		@isset($describedBy)
 		aria-describedby="{{$describedBy}}"
 		@endisset
-		@if($inputErrors->has($name)) aria-invalid="true" @endif
+		@if($inputErrors->has($inputErrorKey)) aria-invalid="true" @endif
 		@if($designSystemPreview ?? false) data-ds-preview @endif
 		@if(! empty($limit))
 		maxlength="{{$limit}}"
@@ -38,5 +39,5 @@
 		value="{{$inputValue}}"
 	>
 
-	@include('components.forms.error', ['bag' => $inputBag, 'field' => $name])
+	@include('components.forms.error', ['bag' => $inputBag, 'field' => $inputErrorKey])
 </div>

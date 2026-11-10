@@ -48,6 +48,8 @@ class AdminInfographicsTest extends ReviewTestCase
         $this->assertCount(0, $xpath->query('//form//form'));
         $this->assertCount(0, $xpath->query('//form[@method="POST" and not(.//input[@name="_token"])]'));
         $this->assertCount(1, $xpath->query('//*[@id="infographic-topic-'.$topic->id.'"]'));
+        $this->assertCount(1, $xpath->query('//a[@href="'.route('admin.infographs.create').'" and contains(.,"Create infographic")]'));
+        $this->assertCount(0, $xpath->query('//*[@id="infographic-create-modal"]'));
         $this->assertCount(0, $xpath->query('//a[@href="'.route('admin.infographs.topics.index').'"]'));
         $this->assertCount(1, $this->xpath($this->get(route('admin.infographs.index', ['page' => 2])))->query('//table[@id="infographs-table"]/tbody/tr'));
         Http::assertNothingSent();
@@ -57,7 +59,7 @@ class AdminInfographicsTest extends ReviewTestCase
             $guide = Infograph::firstOrFail();
             $guide->update(['name' => 'Circle of fifths', 'downloads' => 1250, 'published_at' => now()]);
             foreach (['index' => route('admin.infographs.index'), 'topics' => route('admin.infographs.index', ['topics' => '1']),
-                'create' => route('admin.infographs.index', ['create' => '1']), 'edit' => route('admin.infographs.edit', $guide)] as $name => $url) {
+                'create' => route('admin.infographs.create'), 'edit' => route('admin.infographs.edit', $guide)] as $name => $url) {
                 $html = $this->get($url)->assertOk()->getContent();
                 $html = preg_replace('#https?://[^/" ]+/storage/infograph/[^" ]+#', '/poster.svg', $html);
                 $html = str_replace(['http://admin.localhost', 'http://localhost'], 'http://127.0.0.1:8878', $html);
@@ -82,6 +84,29 @@ class AdminInfographicsTest extends ReviewTestCase
         $this->withExceptionHandling();
         foreach (['sort' => 'name;drop', 'per_page' => 1000, 'search' => ['bad'], 'topics' => ['1'], 'topic_id' => 9999, 'gift' => 'invalid'] as $key => $value) {
             $this->getJson(route('admin.infographs.index', [$key => $value]))->assertUnprocessable();
+        }
+    }
+
+    public function test_create_page_and_edit_forms_retain_directory_state_and_use_one_save_footer()
+    {
+        $topic = $this->topic();
+        $guide = $this->infographic('Theory <guide>'); $guide->topics()->attach($topic);
+        $filters = ['search' => 'guide', 'sort' => 'name_asc', 'page' => 2];
+        $this->get(route('admin.infographs.index', $filters + ['create' => '1']))
+            ->assertRedirect(route('admin.infographs.create', $filters));
+        foreach (['create' => route('admin.infographs.create', $filters), 'edit' => route('admin.infographs.edit', ['infograph' => $guide] + $filters)] as $action => $url) {
+            $response = $this->get($url)->assertOk(); $xpath = $this->xpath($response);
+            $form = $xpath->query('//form[@enctype="multipart/form-data"]')->item(0);
+            $this->assertNotNull($form);
+            $this->assertSame(route('admin.infographs.'.($action === 'create' ? 'store' : 'update'), ($action === 'create' ? [] : ['infograph' => $guide]) + $filters), $form->getAttribute('action'));
+            $this->assertSame(route('admin.infographs.index', $filters), $xpath->query('//nav[@aria-label="Breadcrumb"]//a')->item(1)->getAttribute('href'));
+            $this->assertCount(1, $xpath->query('//form//fieldset//section[@aria-labelledby="infographic-details-title"]'));
+            $this->assertCount(1, $xpath->query('//form//fieldset//section[@aria-labelledby="infographic-artwork-title"]'));
+            $this->assertCount(1, $xpath->query('//form//fieldset//section[@aria-labelledby="infographic-topics-title"]'));
+            $this->assertCount(1, $xpath->query('//form/*[@data-table-save-actions]//button[@type="submit"]'));
+            $this->assertCount(0, $xpath->query('//form//form'));
+            $this->assertSame($action === 'create', $xpath->query('//input[@id="infographic-image"]')->item(0)->hasAttribute('required'));
+            $this->assertSame($action === 'edit', $xpath->query('//input[@id="infographic-topic-'.$topic->id.'"]')->item(0)->hasAttribute('checked'));
         }
     }
 
@@ -115,7 +140,8 @@ class AdminInfographicsTest extends ReviewTestCase
         $invalid = $this->xpath($response)->query('//input[contains(@class,"is-invalid")]');
         $this->assertCount(1, $invalid);
         $this->assertSame('infographic-topic-'.$other->id, $invalid->item(0)->getAttribute('id'));
-        $this->assertSame('', $this->xpath($response)->query('//input[@id="infographic-name"]')->item(0)->getAttribute('value'));
+        $create = $this->get(route('admin.infographs.create'))->assertOk();
+        $this->assertSame('', $this->xpath($create)->query('//input[@id="infographic-name"]')->item(0)->getAttribute('value'));
         foreach (['', ['bad'], str_repeat('x', 256), '!!!', 'Theory', 'Theory!'] as $name) {
             $this->postJson(route('admin.infographs.topics.store'), compact('name'))->assertUnprocessable()->assertJsonValidationErrors('name');
         }
@@ -144,15 +170,31 @@ class AdminInfographicsTest extends ReviewTestCase
         $this->assertSame([900, 1200], [(int) $infograph->fresh()->width, (int) $infograph->fresh()->height]);
     }
 
-    public function test_failed_upload_reopens_create_with_scoped_fields_and_validates_topic_ids()
+    public function test_failed_upload_returns_to_create_with_scoped_fields_and_validates_topic_ids()
     {
         $this->withExceptionHandling();
         $this->post(route('admin.infographs.store', ['search' => 'guide']), ['name' => 'Unfinished guide', 'description' => 'A useful reference.', 'topics' => [99999]])
-            ->assertRedirect(route('admin.infographs.index', ['search' => 'guide', 'create' => '1']))->assertSessionHasErrors(['cover_image', 'topics.0'], null, 'infographic');
-        $response = $this->get(route('admin.infographs.index', ['create' => '1']))->assertOk()->assertSee('Unfinished guide');
+            ->assertRedirect(route('admin.infographs.create', ['search' => 'guide']))->assertSessionHasErrors(['cover_image', 'topics.0'], null, 'infographic');
+        $response = $this->get(route('admin.infographs.create'))->assertOk()->assertSee('Unfinished guide');
         $this->assertCount(1, $this->xpath($response)->query('//span[contains(@class,"invalid-feedback") and contains(.,"topics.0")]'));
-        $this->assertSame('', $this->xpath($response)->query('//input[@id="infographic-topic-new"]')->item(0)->getAttribute('value'));
+        $this->assertCount(0, $this->xpath($response)->query('//*[@id="infographic-topics-modal"]'));
         $this->assertSame(0, Infograph::count());
+    }
+
+    public function test_failed_edit_retains_submitted_values_and_an_explicitly_empty_topic_selection()
+    {
+        $topic = $this->topic(); $guide = $this->infographic(); $guide->topics()->attach($topic);
+        $this->withExceptionHandling();
+        $filters = ['search' => 'guide', 'sort' => 'name_asc', 'page' => 2];
+        $this->patch(route('admin.infographs.update', ['infograph' => $guide] + $filters), ['name' => 'Changed guide', 'description' => 'x'])
+            ->assertRedirect(route('admin.infographs.edit', ['infograph' => $guide] + $filters))->assertSessionHasErrors('description', null, 'infographic');
+        $response = $this->get(route('admin.infographs.edit', ['infograph' => $guide] + $filters))->assertOk();
+        $xpath = $this->xpath($response);
+        $this->assertSame('Changed guide', $xpath->query('//input[@id="infographic-name"]')->item(0)->getAttribute('value'));
+        $this->assertSame('x', $xpath->query('//textarea[@id="infographic-description"]')->item(0)->textContent);
+        $this->assertCount(0, $xpath->query('//input[@name="topics[]" and @checked]'));
+        $this->assertSame('Circle of fifths', $guide->fresh()->name);
+        $this->assertSame(1, $guide->topics()->count());
     }
 
     public function test_status_forms_are_idempotent_and_clamp_pages_after_filter_changes()
@@ -209,6 +251,7 @@ class AdminInfographicsTest extends ReviewTestCase
         $this->get(route('admin.infographs.index'))->assertOk()->assertSee('No infographics yet')->assertSee('No topics yet.');
         auth('admin')->logout(); $this->withExceptionHandling();
         $this->get(route('admin.infographs.index'))->assertRedirect(route('admin.login.show'));
+        $this->get(route('admin.infographs.create'))->assertRedirect(route('admin.login.show'));
         $this->post(route('admin.infographs.topics.store'), ['name' => 'Private'])->assertRedirect(route('admin.login.show'));
         $this->assertSame(0, Topic::count());
     }

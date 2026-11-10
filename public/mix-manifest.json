@@ -103,7 +103,7 @@
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=528b1dc1ca49a59b27ec47e4a137dc61",
     "/js/views/collections.js": "/js/views/collections.js?id=35b84f2a9c77c85bfd001019c54aa645",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d71e1e4d85c5f",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395dad2bab13c94f3",
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=83d31eb609654d6cb677c82b58df437b",
     "/images/home/projects/webapp.svg": "/images/home/projects/webapp.svg?id=783b01de530636a2cff42009e3262582",
     "/images/home/projects/ios.svg": "/images/home/projects/ios.svg?id=57c661f519a0447fd52918c7e23e89ab",
     "/images/home/projects/shop.svg": "/images/home/projects/shop.svg?id=459602e30bb8e25e49ee41fd46b9ed16",
@@ -1766,5 +1766,7 @@
     "/css/vendor/flags/4x3/za.svg": "/css/vendor/flags/4x3/za.svg",
     "/css/vendor/flags/4x3/zm.svg": "/css/vendor/flags/4x3/zm.svg",
     "/css/vendor/flags/4x3/zw.svg": "/css/vendor/flags/4x3/zw.svg",
-    "/js/components/webapp-navigation.js": "/js/components/webapp-navigation.js?id=f6bf6c6c13f9d1c686355d61091c2a5d"
+    "/js/components/webapp-navigation.js": "/js/components/webapp-navigation.js?id=f6bf6c6c13f9d1c686355d61091c2a5d",
+    "/js/views/admin-quiz-editor.js": "/js/views/admin-quiz-editor.js?id=4a4aa567df1b9a745b326ea4af938027",
+    "/js/views/admin-post-editor.js": "/js/views/admin-post-editor.js?id=f888a4123af01f2db5a60c60ff2a8b8b"
 }

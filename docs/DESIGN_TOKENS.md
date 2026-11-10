@@ -347,6 +347,18 @@ Use `.admin-editor-grid` for a wide main column and narrower sidebar on desktop;
 it stacks on smaller screens. `.admin-editor-stack`, `.admin-editor-options` and
 `.admin-editor-save` supply the shared layout. Controls keep their standard
 components and finishes. The Design System previews the same section component.
+Blog Create/Edit share `admin.pages.blog.post.editor`: Post details and Topics use
+the main editor column, Cover image uses the sidebar, and Article content and
+References span the full width below. Keep the shared native cropper, fields,
+checkboxes, extra-small reference removal actions and `table-save-actions` footer;
+no blog-specific finishes or duplicated form layouts. Rich-text fields use the
+shared labeled component and preserve submitted values after validation.
+Infographic create/edit pages share `admin.pages.infographics.form`: Details uses
+the main editor column, Image and Topics use the sidebar, and the grid stacks on
+phones. Reuse shared fields, checkboxes and the JPG dropzone, plus
+`admin.components.table-save-actions` for status on the left and the primary
+create/save action on the right. Creation is a full page; topic management stays
+in the directory modal. Keep saved infographic artwork uncropped.
 The merchandise **Edit** page includes `admin.pages.merchandise.details`, using
 the shared editor section, inputs and textarea. Title and optional subtitle share
 a desktop row and stack on phones; the plain-text description spans the row.
@@ -1210,3 +1222,12 @@ merchandise and digital Design System specimens use this component.
 
 
 Customer merchandise tracking reuses the shared account shell, `profile-panel`, standard headings/buttons and eight-item pagination at `/profile/orders`. Keep My downloads separate, with no cross-links between the two pages. Both remain available as permanent icon buttons in the profile header; the downloads empty state offers only Explore infographics. All account menus reuse `components.account.menu`, whose Track your orders entry always links to main. The private Shop order view reuses the storefront shell and `shop.storefront.components.order-tracking` for carrier details, package items, safe external tracking links, delivery estimates and recent carrier events, without a second tracking app design. Receipt and email links lead to that same view; external carrier links open safely in a new tab.
+
+Admin quiz forms reuse `admin.components.editor.section`, `.admin-editor-grid`,
+`@input`, `@textarea`, `@select`, `components.forms.checkbox`, the existing image
+cropper and `admin.components.table-save-actions`. The shared input accepts an
+optional `errorKey` for nested request fields without changing their HTML names;
+its normal validation styling and error component remain authoritative. The
+shared image field also accepts `errorKey`, `bag`, `accept` and an accessible
+`label`, retaining existing defaults for other editors. No quiz-specific control
+finish or CSS override is introduced.

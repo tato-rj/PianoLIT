@@ -13,6 +13,7 @@ require('./admin-playlists')();
 require('./admin-pianists')();
 require('./pianists.test.cjs')();
 require('./admin-pianist-editor')();
+require('./admin-quiz-editor.test.cjs')();
 require('./google-auth');
 require('./apple-auth');
 const assert = require('assert');
@@ -67,6 +68,7 @@ async function main() {
     await require('./payment-checkout')();
     require('./composer-biography-admin')();
     require('./admin-text-improver')();
+    require('./admin-post-editor.test.cjs')();
     require('./admin-date-range')();
     require('./admin-daily-activity-chart')();
     await require('./admin-page-loading')();

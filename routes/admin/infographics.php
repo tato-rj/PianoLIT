@@ -4,6 +4,8 @@ Route::prefix('infographs')->name('infographs.')->group(function() {
 	
 	Route::get('', 'Admin\InfographicsController@index')->name('index');
 
+	Route::get('create', 'Admin\InfographicsController@create')->name('create');
+
 	Route::post('', 'Admin\InfographicsController@store')->name('store');
 
 	Route::prefix('topics')->name('topics.')->group(function() {

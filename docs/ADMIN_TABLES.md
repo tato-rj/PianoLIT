@@ -465,12 +465,21 @@ selected topic clears that filter and detaches its assignments transactionally,
 without deleting infographics. The old topic index redirects to this modal; the
 sidebar has one Infographics destination.
 
-Create and edit share fields and the existing compact JPG dropzone. Uploads are
-limited to 10 MB; the server reads their real dimensions. Edits without a new
-file retain the current image and dimensions. The shared modal previews the
-original and reports original/thumbnail dimensions. The editor reuses shared
-sections, breadcrumbs and buttons. No public/mobile model, original download
-endpoint, migration or new compiled asset is part of this change.
+Create infographic opens the full `admin.infographs.create` page; old
+`?create=1` links redirect there with directory filters. Create/edit share
+`admin.pages.infographics.form`, the Pieces editor grid and stacked sections,
+Details in the main column and Image/Topics alongside it. Both use shared fields,
+checkboxes, the compact JPG dropzone and the Composers save footer. They stack on
+phones. Validation returns to the matching editor with scoped errors and submitted
+values, including an explicitly empty topic selection; breadcrumbs and actions
+retain directory state. Topic management remains in the index modal.
+
+Uploads are limited to 10 MB; the server reads their real dimensions. Edits
+without a new file retain the current image and dimensions. Saved artwork remains
+uncropped and opens the original in a safe new tab. The shared directory modal
+previews the original and reports original/thumbnail dimensions. No public/mobile
+model, original download endpoint, migration or new compiled asset is part of
+this change.
 
 
 ## Blog posts and libraries
@@ -499,6 +508,18 @@ values/files and mobile serialization remain unchanged. Article sidebars reuse
 Learn. Public catalog promotions, other hubs' download offers and original media
 paths remain independent. This change requires no migration or asset build;
 production deployment remains pending.
+
+Create and Edit post share `admin.pages.blog.post.editor`, with the same editor
+sections/grid, labeled fields, native topic checkboxes, cover cropper and save
+footer as Pieces and Composers. Post details/Topics sit beside the cover; Article
+content and compact References use full-width sections below. Preserve filtered
+breadcrumbs/public previews, 16:9 cropped covers/thumbnails and rich-text HTML.
+Validation recovery keeps submitted or deliberately cleared values. Citation
+rows never reuse indexes after removal; optional blank references are normalized
+through `PostForm` before serialization. The versioned `admin-post-editor.js`
+owns pending-crop submission, cancellation, references and save status. This
+follow-up includes its built script plus the shared TinyMCE submit/leave repair;
+it needs no migration and remains local pending deployment.
 
 ## Quiz directory and management dialogs
 
@@ -533,3 +554,23 @@ media library is loaded, with its own 12-result paginator. Shared page alerts sh
 results; there is no second page-level summary. Quiz scoring, public/mobile JSON,
 existing media URLs and original question data stay unchanged. No migration is
 required; deployment is pending.
+
+### Quiz create and edit forms
+
+Both quiz forms reuse `admin.pages.quizzes.editor`, the shared editor grid and
+section component, labeled inputs/selects/checkboxes, the existing cover cropper,
+and the shared save footer. Details and Questions have native section links;
+editing retains a safe new-tab preview and the directory query in breadcrumbs
+and form actions. Cover cropping uses the local versioned assets and existing
+16:9 crop/thumbnail workflow. Canceling a selection removes the pending file.
+
+Questions have labeled answer fields and a native correct-answer radio group.
+The admin-only `quiz_editor` request marker selects the new conversion: blank
+answer slots are omitted and the selected answer receives the existing `[x]`
+marker before serialization. Existing marker-based admin submissions still work;
+shared Quiz/mobile JSON and public scoring/media parsing are unchanged. New
+question indices increase monotonically, while visible numbers update after
+removal, preventing an add-after-remove operation from overwriting a retained
+question. Field errors and old input restore question text, choices, level and
+explicitly unchecked topics. Quiz records and topic assignments save together in
+a database transaction. No migration or new public endpoint is required.

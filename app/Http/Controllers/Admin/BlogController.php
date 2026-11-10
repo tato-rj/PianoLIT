@@ -36,7 +36,7 @@ class BlogController extends Controller
                                                            ->cropped()
                                                            ->upload(),
                 'content' => $form->content,
-                'references' => $request->references ? serialize($request->references) : null,
+                'references' => $form->references ? serialize($form->references) : null,
                 'cover_credits' => $form->cover_credits,
                 'reading_time' => calculateReadingTime($form->content)
             ]);
@@ -71,7 +71,7 @@ class BlogController extends Controller
                                                            ->withThumbnail()
                                                            ->cropped()
                                                            ->upload(),
-                'references' => $request->references ? serialize($request->references) : null,
+                'references' => $form->references ? serialize($form->references) : null,
                 'reading_time' => calculateReadingTime($form->content),
                 'cover_credits' => $form->cover_credits
             ]);

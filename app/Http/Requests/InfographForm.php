@@ -15,7 +15,7 @@ class InfographForm extends FormRequest
         );
         $parameters = \App\Support\AdminTableFilters::query($filters);
         return $this->isMethod('POST')
-            ? route('admin.infographs.index', $parameters + ['create' => '1'])
+            ? route('admin.infographs.create', $parameters)
             : route('admin.infographs.edit', ['infograph' => $this->route('infograph')] + $parameters);
     }
     /**

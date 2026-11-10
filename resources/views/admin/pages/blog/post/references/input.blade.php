@@ -1,9 +1,8 @@
-<div class="form-group type-container {{$type ?? ''}} mb-2 reference-form" style="display: {{$display ?? null}}">
-
-	<input rows="1" class="form-control-sm form-control mb-1" placeholder="Reference" name="{{$name ?? null}}" value="{{$reference ?? null}}">
-
-	<a class="align-self-stretch btn btn-sm d-block w-100 btn-danger text-white me-1 remove-field mb-4">
-		<strong>Remove</strong>
-	</a>
-
+<div class="d-flex align-items-start gap-2" data-reference-row data-reference-index="{{ $referenceIndex }}">
+    <div class="flex-grow-1">
+        @input(['bag' => 'default', 'id' => 'post-reference-'.$referenceIndex, 'name' => 'references['.$referenceIndex.']', 'errorKey' => 'references.'.$referenceIndex, 'useOldInput' => false, 'label' => 'Reference', 'value' => $referenceValue, 'required' => false, 'limit' => 2000, 'placeholder' => 'Source or citation', 'grid' => 'mb-0'])
+    </div>
+    <div class="pt-4">
+        @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'size' => 'xs', 'label' => 'Remove reference', 'attributes' => ['data-remove-reference' => true]]])
+    </div>
 </div>

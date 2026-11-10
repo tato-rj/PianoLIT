@@ -5,7 +5,7 @@
 <div class="content-wrapper"><div class="container-fluid">
     @component('admin.components.page.title', [
         'title' => 'Infographics', 'subtitle' => 'Manage infographics, topics and publication.',
-        'action' => ['label' => 'Create infographic', 'modal' => 'infographic-create-modal'],
+        'action' => ['label' => 'Create infographic', 'url' => route('admin.infographs.create', $returnFilters)],
     ])
         <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#infographic-topics-modal">@icon('tag')Manage topics</button>
     @endcomponent
@@ -35,7 +35,6 @@
     @endcomponent
 </div></div>
 @include('admin.components.modals.delete', ['deleteDescription' => 'Delete this infographic?'])
-@include('admin.pages.infographics.create')
 @include('admin.pages.infographics.topics.modal')
 @include('admin.pages.infographics.preview')
 @endsection
@@ -44,7 +43,6 @@
 <script>
 (function () {
     const topics = document.getElementById('infographic-topics-modal');
-    const create = document.getElementById('infographic-create-modal');
     const preview = document.getElementById('item-preview');
     preview.addEventListener('show.bs.modal', function (event) {
         const trigger = event.relatedTarget;
@@ -65,18 +63,13 @@
         preview.querySelectorAll('img').forEach(function (image) { image.removeAttribute('src'); });
         preview.querySelectorAll('[data-dimensions]').forEach(function (label) { label.textContent = ''; });
     });
-    [topics, create].forEach(function (modal) {
-        modal.addEventListener('hidden.bs.modal', function () {
-            const url = new URL(window.location.href);
-            if (!url.searchParams.has('topics') && !url.searchParams.has('create')) return;
-            url.searchParams.delete('topics');
-            url.searchParams.delete('create');
-            window.location.assign(url);
-        });
+    topics.addEventListener('hidden.bs.modal', function () {
+        const url = new URL(window.location.href);
+        if (!url.searchParams.has('topics')) return;
+        url.searchParams.delete('topics');
+        window.location.assign(url);
     });
-    @if(request()->query('create') === '1')
-    window.bootstrap.Modal.getOrCreateInstance(create).show();
-    @elseif(request()->query('topics') === '1')
+    @if(request()->query('topics') === '1')
     window.bootstrap.Modal.getOrCreateInstance(topics).show();
     @endif
 })();

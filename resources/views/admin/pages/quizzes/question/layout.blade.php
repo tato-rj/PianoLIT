@@ -1,16 +1,16 @@
-<div class="rounded bg-light px-3 py-2 mb-3">
-	<div class="pb-1 mb-1 text-brand border-bottom">
-	  <p class="m-0"><strong>QUESTIONS</strong></p>
-	</div>
-  <p class="text-muted"><small>Insert <strong>[x]</strong> for a correct answer and <strong>[audio/url]</strong> to add an audio to a question</small></p>
-
-  @include('admin.pages.quizzes.question.input', [
-    'display' => 'none',
-    'type' => 'original-type'])
-
-  {{$slot ?? null}}
-
-  <a class="add-new-field text-warning cursor-pointer d-block text-center" data-type="itunes">
-    <small>@icon('plus', ['mr' => 2])Add a new one</small>
-  </a>
-</div>
+@component('admin.components.editor.section', ['id' => 'quiz-questions', 'sectionId' => 'quiz-questions', 'title' => 'Questions', 'description' => 'Enter at least two answers for each question and select the correct answer.'])
+    <p class="small text-muted">Add audio or an image by appending its path in brackets, for example <code>[/storage/quiz/audio/interval.mp3]</code>. Copy paths from the Quizzes page.</p>
+    @include('components.forms.error', ['field' => 'questions', 'errorClasses' => 'd-block'])
+    <div class="d-flex flex-column gap-4" data-quiz-questions>
+        @foreach($questionRows as $index => $row)
+            @if(is_array($row) && ctype_digit((string) $index))
+                @include('admin.pages.quizzes.question.input', ['questionIndex' => $index, 'row' => $row, 'number' => $loop->iteration])
+            @endif
+        @endforeach
+    </div>
+    <template data-quiz-question-template>
+        @include('admin.pages.quizzes.question.input', ['questionIndex' => '__INDEX__', 'row' => ['', '', '', '', ''], 'number' => 1, 'correctAnswers' => []])
+    </template>
+    <button type="button" class="btn btn-secondary btn-sm mt-3" data-add-question>@icon('plus')Add question</button>
+    <noscript><p class="small text-muted mt-2 mb-0">Enable JavaScript to add or remove questions.</p></noscript>
+@endcomponent

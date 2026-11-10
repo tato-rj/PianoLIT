@@ -23,7 +23,19 @@ class InfographicsController extends Controller
         if (request()->ajax())
             return Infograph::datatable();
 
+        if ($request->query('create') === '1') {
+            return redirect()->route('admin.infographs.create', AdminTableFilters::query($table->filters($request)));
+        }
+
         return view('admin.pages.infographics.index', $table->get($request));
+    }
+
+    public function create(Request $request, InfographicsTable $table)
+    {
+        $topics = Topic::ordered()->get();
+        $returnFilters = AdminTableFilters::query($table->filters($request));
+
+        return view('admin.pages.infographics.create', compact('topics', 'returnFilters'));
     }
 
     public function topics(Request $request, InfographicTopics $topics)

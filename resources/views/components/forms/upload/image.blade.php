@@ -1,6 +1,6 @@
 <div class="form-group mb-3">
   <div id="upload-box">
-    <input type="file" data-target="#image" id="image-input" name="{{$name}}" style="display:none;" />
+    <input type="file" data-target="#image" id="image-input" name="{{$name}}" style="display:none;" aria-label="{{ $label ?? 'Cover image' }}" @isset($accept) accept="{{ $accept }}" @endisset />
 
     <div class="position-relative image-container">
       @if($empty)
@@ -13,7 +13,7 @@
 
       <div class="controls d-flex justify-content-between mt-2">
         <button type="button" id="upload-button" class="btn btn-sm btn-warning">
-          @icon('folder-open', ['mr' => 2]){{$empty ? 'Choose image' : 'Change image'}}
+          @icon('folder-open', ['mr' => 2]){{ $buttonLabel ?? ($empty ? 'Choose image' : 'Change image') }}
         </button>
 
         <button type="button" id="confirm-button" style="display: none;" class="btn btn-sm btn-success">
@@ -27,9 +27,5 @@
     </div>
   </div>
 
-  @if ($errors->has($name))
-  <div class="invalid-feedback">
-    {{ $errors->first($name) }}
-  </div>
-  @endif
+  @include('components.forms.error', ['bag' => $bag ?? 'default', 'field' => $errorKey ?? $name, 'errorClasses' => 'd-block'])
 </div>

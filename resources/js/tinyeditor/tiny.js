@@ -1,4 +1,5 @@
 let formChanged = false;
+let editorSubmitting = false;
 
 tinymce.init({
     selector: 'textarea#editor',
@@ -18,7 +19,6 @@ tinymce.init({
     setup: function(editor) {
         editor.on('input change keyup', function(e) {
             formChanged = true;
-            console.log('Editor contents was modified. Contents: ' + editor.getContent());
         });
 
         editor.ui.registry.addMenuItem('subscribe', {
@@ -90,8 +90,14 @@ tinymce.init({
     }
 });
 
-window.onbeforeunload = function(event){
-  if (formChanged && event.target.activeElement.type != 'submit') {
-    return 'Are you sure you want to leave?';
-  }
+document.addEventListener('submit', function(event) {
+    if (!event.defaultPrevented && event.target.querySelector('textarea#editor')) editorSubmitting = true;
+});
+window.addEventListener('pageshow', function() { editorSubmitting = false; });
+window.onbeforeunload = function(event) {
+    if (formChanged && !editorSubmitting) {
+        event.preventDefault();
+        event.returnValue = '';
+        return '';
+    }
 };

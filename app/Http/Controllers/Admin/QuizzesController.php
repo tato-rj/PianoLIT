@@ -22,22 +22,25 @@ class QuizzesController extends Controller
     public function store(Request $request, QuizForm $form)
     {
         $filters = app(\App\Services\Admin\QuizzesTable::class)->filters(Request::create('/', 'GET', $request->query()));
-        $quiz = Quiz::create([
-            'creator_id' => auth()->guard('admin')->user()->id,
-            'slug' => str_slug($form->title),
-            'title' => $form->title,
-            'cover_path' => (new ImageUpload($request))->take('cover_image')
-                                                       ->for(Quiz::class)
-                                                       ->name(str_slug($form->title))
-                                                       ->withThumbnail()
-                                                       ->cropped()
-                                                       ->upload(),
-            'level_id' => $form->level_id,
-            'description' => $form->description,
-            'questions' => serialize($form->questions())
-        ]);
+        $quiz = \DB::transaction(function () use ($request, $form) {
+            $quiz = Quiz::create([
+                'creator_id' => auth()->guard('admin')->user()->id,
+                'slug' => str_slug($form->title),
+                'title' => $form->title,
+                'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                           ->for(Quiz::class)
+                                                           ->name(str_slug($form->title))
+                                                           ->withThumbnail()
+                                                           ->cropped()
+                                                           ->upload(),
+                'level_id' => $form->level_id,
+                'description' => $form->description,
+                'questions' => serialize($form->questions())
+            ]);
 
-        $quiz->topics()->attach($request->topics);
+            $quiz->topics()->attach($request->topics);
+            return $quiz;
+        });
 
         return app(\App\Services\Admin\QuizzesTable::class)->redirect($filters)->with('status', 'Quiz created.');
     }
@@ -59,21 +62,23 @@ class QuizzesController extends Controller
     public function update(Request $request, Quiz $quiz, QuizForm $form)
     {
         $returnFilters = \App\Support\AdminTableFilters::query(app(\App\Services\Admin\QuizzesTable::class)->filters(Request::create('/', 'GET', $request->query())));
-        $quiz->update([
-            'slug' => str_slug($form->title),
-            'title' => $form->title,
-            'level_id' => $form->level_id,
-            'description' => $form->description,
-            'questions' => serialize($form->questions()),
-            'cover_path' => (new ImageUpload($request))->take('cover_image')
-                                                       ->for($quiz)
-                                                       ->name(str_slug($form->title))
-                                                       ->withThumbnail()
-                                                       ->cropped()
-                                                       ->upload(),
-        ]);
+        \DB::transaction(function () use ($request, $quiz, $form) {
+            $quiz->update([
+                'slug' => str_slug($form->title),
+                'title' => $form->title,
+                'level_id' => $form->level_id,
+                'description' => $form->description,
+                'questions' => serialize($form->questions()),
+                'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                           ->for($quiz)
+                                                           ->name(str_slug($form->title))
+                                                           ->withThumbnail()
+                                                           ->cropped()
+                                                           ->upload(),
+            ]);
 
-        $quiz->topics()->sync($request->topics);
+            $quiz->topics()->sync($request->topics);
+        });
 
         return redirect(route('admin.quizzes.edit', ['quiz' => $quiz] + $returnFilters))->with('status', 'Quiz saved.');
     }
