@@ -2185,9 +2185,6 @@ button.bg-primary:focus {
   margin: 0 auto;
 }
 
-.score-editor:not(.is-fullscreen) {
-  padding-bottom: calc(126px + var(--webapp-menu-space, var(--score-menu-height)));
-}
 .score-editor:not(.is-fullscreen) .score-footer {
   transform: none;
   flex-wrap: wrap;
@@ -2252,6 +2249,10 @@ button.bg-primary:focus {
 
 #webapp main {
   margin-bottom: calc(var(--webapp-menu-space, 92px) + 16px);
+}
+
+#webapp main:has(.tab-pane.active > .score-editor) {
+  padding-bottom: 0;
 }
 
 .webapp-navigation .menu-link {

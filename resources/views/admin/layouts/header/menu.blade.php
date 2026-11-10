@@ -70,24 +70,11 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Blog', 'icon' => 'newspaper',
         'dropdown' => [
           ['route' => route('admin.posts.index'), 'name' => 'Posts'],
-          ['route' => route('admin.topics.index'), 'name' => 'Topics'],
-          ['route' => route('admin.posts.audio.index'), 'name' => 'Audio'],
-          ['route' => route('admin.posts.gifts.index'), 'name' => 'Gifts'],
         ]])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Quizzes', 'icon' => 'circle-help',
-        'dropdown' => [
-          ['route' => route('admin.quizzes.index'), 'name' => 'Quizzes'],
-          ['route' => route('admin.quizzes.topics.index'), 'name' => 'Topics'],
-          ['route' => route('admin.quizzes.media.audio'), 'name' => 'Audio'],
-          ['route' => route('admin.quizzes.media.images'), 'name' => 'Images'],
-        ]])
+        @include('admin.layouts.header.item', ['route' => route('admin.quizzes.index'), 'name' => 'Quizzes', 'icon' => 'circle-help'])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Infographics', 'icon' => 'pencil-ruler',
-        'dropdown' => [
-          ['route' => route('admin.infographs.index'), 'name' => 'Designs'],
-          ['route' => route('admin.infographs.topics.index'), 'name' => 'Topics'],
-        ]])
+        @include('admin.layouts.header.item', ['route' => route('admin.infographs.index'), 'name' => 'Infographics', 'icon' => 'pencil-ruler'])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Crash Courses', 'icon' => 'graduation-cap',
         'dropdown' => [

@@ -109,6 +109,7 @@
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Drag-and-drop upload', 'usage' => 'components.forms.upload.dropzone · shared file field finish'])
       @include('components.forms.upload.dropzone', ['id' => 'ds-dropzone', 'name' => 'ds_dropzone[]', 'label' => 'Product mockups', 'multiple' => true, 'accept' => 'image/jpeg,image/png,image/webp', 'designSystemPreview' => true])
+      @include('components.forms.upload.dropzone', ['id' => 'ds-audio-dropzone', 'name' => 'ds_audio', 'label' => 'Audio file', 'compact' => true, 'fileLabel' => 'audio file', 'filePluralLabel' => 'audio files', 'accept' => '.mp3,.wav,.ogg,.m4a', 'maxBytes' => 2097152, 'hint' => 'MP3, WAV, OGG or M4A · up to 2 MB', 'designSystemPreview' => true])
       <small>Sample only. Files are selected locally and are not uploaded.</small>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Checkboxes', 'usage' => '.form-check-input', 'properties' => 'width,height,border,border-radius,background-color'])

@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Infograph\{Infograph, Topic};
 use App\Files\Uploaders\ImageUpload;
 use App\Http\Requests\InfographForm;
+use App\Services\Admin\{InfographicsTable, InfographicTopics};
+use App\Support\AdminTableFilters;
+use Illuminate\Support\Facades\DB;
 
 class InfographicsController extends Controller
 {
@@ -15,90 +18,72 @@ class InfographicsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, InfographicsTable $table)
     {
         if (request()->ajax())
             return Infograph::datatable();
 
-        $topics = Topic::ordered()->get();
-
-        return view('admin.pages.infographics.index', compact('topics'));
+        return view('admin.pages.infographics.index', $table->get($request));
     }
 
-    public function topics()
+    public function topics(Request $request, InfographicTopics $topics)
     {
-        $topics = Topic::ordered()->get();
-
-        return view('admin.pages.infographics.topics.index', compact('topics'));
+        return redirect($topics->url($request));
     }
 
     public function store(Request $request, InfographForm $form)
     {
-        $infograph = Infograph::create([
+        $filters = app(InfographicsTable::class)->filters(Request::create('/', 'GET', $request->query()));
+        [$width, $height] = getimagesize($form->file('cover_image')->getRealPath());
+        $attributes = [
             'creator_id' => auth()->guard('admin')->user()->id,
             'name' => $form->name,
             'description' => $form->description,
-            'width' => $form->width,
-            'height' => $form->height,
+            'width' => $width,
+            'height' => $height,
             'slug' => str_slug($form->name),
             'cover_path' => (new ImageUpload($request))->take('cover_image')
                                                        ->for(Infograph::class)
                                                        ->name(str_slug($form->name))
                                                        ->withThumbnail()
                                                        ->upload()
-        ]);
+        ];
+        DB::transaction(function () use ($attributes, $form) {
+            $infograph = Infograph::create($attributes);
+            $infograph->topics()->attach($form->input('topics', []));
+        });
 
-        $infograph->topics()->attach($request->topics);
-
-        return redirect(route('admin.infographs.index'))->with('status', 'The infograph has been successfuly created!');
+        return redirect()->route('admin.infographs.index', AdminTableFilters::query($filters))->with('status', 'Infographic created.');
     }
 
-    public function topicStore(Request $request)
+    public function topicStore(Request $request, InfographicTopics $topics)
     {
-        $request->validate([
-            'name' => 'required|unique:infograph_topics|max:255',
-        ]);
-
-        Topic::create([
-            'slug' => str_slug($request->name),
-            'name' => $request->name,
-            'creator_id' => auth()->guard('admin')->user()->id
-        ]);
-
-        return redirect()->back()->with('status', "The topic has been successfully added!");
+        return $topics->save($request);
     }
 
-    public function topicUpdate(Request $request, Topic $topic)
+    public function topicUpdate(Request $request, Topic $topic, InfographicTopics $topics)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-        ]);
-        
-        $topic->update([
-            'slug' => str_slug($request->name),
-            'name' => $request->name
-        ]);
-
-        return redirect()->back()->with('status', "The topic has been successfully updated!");
+        return $topics->save($request, $topic);
     }
 
-    public function topicDestroy(Topic $topic)
+    public function topicDestroy(Request $request, Topic $topic, InfographicTopics $topics)
     {
-        $topic->delete();
-
-        return redirect()->back()->with('status', "The topic has been successfully deleted!");
+        return $topics->delete($request, $topic);
     }
 
-    public function edit(Infograph $infograph)
+    public function edit(Request $request, Infograph $infograph, InfographicsTable $table)
     {
         $topics = Topic::ordered()->get();
 
-        return view('admin.pages.infographics.edit', compact(['infograph', 'topics']));
+        $returnFilters = AdminTableFilters::query($table->filters($request));
+        return view('admin.pages.infographics.edit', compact('infograph', 'topics', 'returnFilters'));
     }
 
     public function update(Request $request, Infograph $infograph, InfographForm $form)
     {
-        $infograph->update([
+        $filters = app(InfographicsTable::class)->filters(Request::create('/', 'GET', $request->query()));
+        [$width, $height] = $form->hasFile('cover_image') ? getimagesize($form->file('cover_image')->getRealPath()) : [$infograph->width, $infograph->height];
+        $attributes = [
             'slug' => str_slug($form->name),
             'name' => $form->name,
             'description' => $form->description,
@@ -107,24 +92,38 @@ class InfographicsController extends Controller
                                                        ->name(str_slug($form->name))
                                                        ->withThumbnail()
                                                        ->upload(),
-            'width' => $form->width,
-            'height' => $form->height
-        ]);
+            'width' => $width,
+            'height' => $height
+        ];
+        DB::transaction(function () use ($infograph, $attributes, $form) {
+            Infograph::whereKey($infograph->id)->lockForUpdate()->firstOrFail();
+            $infograph->update($attributes);
+            $infograph->topics()->sync($form->input('topics', []));
+        });
 
-        $infograph->topics()->sync($request->topics);
-
-        return redirect(route('admin.infographs.edit', $infograph))->with('status', 'The infograph has been successfuly updated!');    
+        return redirect()->route('admin.infographs.edit', ['infograph' => $infograph] + AdminTableFilters::query($filters))->with('status', 'Infographic saved.');
     }
 
-    public function updateStatus(Infograph $infograph)
+    public function updateStatus(Request $request, Infograph $infograph, InfographicsTable $table)
     {
-        return $this->updateStatusFor($infograph);
+        $request->validate(['attribute' => 'nullable|string|in:published_at,giftable_at']);
+        if ($request->query('return_to') !== 'directory') return $this->updateStatusFor($infograph);
+        $filters = $table->filters(Request::create('/', 'GET', $request->query()));
+        $data = $request->validate(['attribute' => 'required|string|in:published_at,giftable_at', 'enabled' => 'required|boolean']);
+        DB::transaction(function () use ($infograph, $data) {
+            $record = Infograph::whereKey($infograph->id)->lockForUpdate()->firstOrFail();
+            $record->update([$data['attribute'] => $data['enabled'] ? ($record->{$data['attribute']} ?? now()) : null]);
+        });
+        return $table->redirect($filters)->with('status', 'Infographic status saved.');
     }
 
-    public function destroy(Infograph $infograph)
+    public function destroy(Request $request, Infograph $infograph, InfographicsTable $table)
     {
-        $infograph->delete();
+        $filters = $table->filters(Request::create('/', 'GET', $request->query()));
+        DB::transaction(function () use ($infograph) {
+            Infograph::whereKey($infograph->id)->lockForUpdate()->firstOrFail()->delete();
+        });
 
-        return redirect()->back()->with('status', 'The infograph has been successfuly deleted!');
+        return $table->redirect($filters)->with('status', 'Infographic deleted.');
     }
 }

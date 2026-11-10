@@ -89,7 +89,7 @@ class BlogSubdomainTest extends ReviewTestCase
         });
     }
 
-    public function test_blog_pages_keep_navigation_ajax_gifts_embedded_output_and_canonical_urls()
+    public function test_blog_pages_keep_navigation_ajax_embedded_output_and_canonical_urls_without_gifts()
     {
         $post = $this->article();
         $origin = 'http://blog.localhost';
@@ -99,7 +99,7 @@ class BlogSubdomainTest extends ReviewTestCase
             ->assertSee('href="http://blog.localhost/login"', false)
             ->assertSee('href="http://localhost/support"', false)
             ->assertSee('data-url="'.$origin.'/subscriptions/modal"', false)
-            ->assertSee('data-url="'.$origin.'/'.$post->slug.'/gift"', false);
+            ->assertDontSee('gift-container')->assertSee('Visit Shop')->assertSee('Visit Games')->assertSee('Visit Learn');
         foreach ([$index, $response] as $page) {
             $dom = new \DOMDocument; @$dom->loadHTML($page->getContent()); $xpath = new \DOMXPath($dom);
             $this->assertSame(0, $xpath->query('//header[contains(@class, "site-header")]//button[@data-view="newsletter-subscription"]')->length);
@@ -110,7 +110,7 @@ class BlogSubdomainTest extends ReviewTestCase
         $this->assertSame($origin.'/subscriptions', route('subscriptions.store'));
         $this->get($origin.'/subscriptions/modal?view=subscription')->assertOk()
             ->assertSee('action="'.$origin.'/newsletter/subscribe"', false);
-        $this->get(route('posts.gift', $post))->assertOk()->assertSee('blog-gift-modal')->assertSee($post->gift_path, false);
+        $this->withExceptionHandling()->get(route('posts.gift', $post))->assertStatus(410);
         $this->get(route('posts.app', $post))->assertOk()->assertSee('Existing article content.')->assertDontSee('navbar-brand');
         $json = $post->fresh()->toArray();
         $this->assertSame($origin.'/'.$post->slug.'/app', $json['app_url']);
@@ -121,23 +121,16 @@ class BlogSubdomainTest extends ReviewTestCase
         $this->assertStringContainsString('href="'.$origin.'/'.$post->slug.'"', $row);
     }
 
-    public function test_article_gift_form_queues_its_download_on_the_blog_host()
+    public function test_old_article_gift_forms_no_longer_send_downloads()
     {
         $post = $this->article(['gift_path' => '/storage/gifts/piano-poster.jpg']);
-        $response = $this->get(route('posts.gift', $post))->assertOk();
-        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
-        $form = $xpath->query('//form[@id="blog-gift-modal-form"]')->item(0);
-        $this->assertSame('http://blog.localhost/subscriptions', $form->getAttribute('action'));
-        $giftUrl = $xpath->query('.//input[@name="gift_url"]', $form)->item(0)->getAttribute('value');
-        $this->assertSame('http://blog.localhost/storage/gifts/piano-poster.jpg', $giftUrl);
-
-        $this->from(route('posts.show', $post))->post($form->getAttribute('action'), [
-            'email' => 'gift-reader@example.test', 'gift_url' => $giftUrl,
+        $this->withExceptionHandling()->get(route('posts.gift', $post))->assertStatus(410);
+        $this->from(route('posts.show', $post))->post('http://blog.localhost/subscriptions', [
+            'email' => 'gift-reader@example.test', 'gift_url' => 'http://blog.localhost/storage/gifts/piano-poster.jpg',
             'started_at' => now()->subSeconds(10)->toDateTimeString(),
-        ])->assertRedirect(route('posts.show', $post))->assertSessionHas('status');
-        \Mail::assertQueued(\App\Mail\Gift::class, function ($mail) use ($giftUrl) {
-            return $mail->hasTo('gift-reader@example.test') && $mail->gift_url === $giftUrl;
-        });
+        ])->assertStatus(410);
+        \Mail::assertNothingQueued();
+        \Mail::assertNothingSent();
     }
 
     /** @dataProvider domains */

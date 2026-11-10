@@ -2,66 +2,44 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Services\Admin\{BlogAudio, PostsTable};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class BlogMediaController extends Controller
 {
-    public function audio()
+    public function audio(Request $request, PostsTable $table)
     {
-    	$audio = \Storage::disk('public')->allFiles('blog/audio');
-
-    	return view('admin.pages.blog.audio.index', compact('audio'));
+        return redirect($table->modalUrl($request, 'audio'));
     }
 
-    public function storeAudio(Request $request)
+    public function storeAudio(Request $request, BlogAudio $audio)
     {
-        $audio = $request->file('file');
-
-    	if (\Storage::disk('public')->exists('blog/audio/' . $audio->getClientOriginalName()))
-    		abort(403, 'An audio with this name already exists');
-
-        $path = $request->file('file')->storeAs('blog/audio', $audio->getClientOriginalName(), 'public');
-
-        return asset('storage/' . $path);
+        return $audio->save($request);
     }
 
-    public function destroyAudio(Request $request)
+    public function updateAudio(Request $request, BlogAudio $audio)
     {
-    	if (! \Storage::disk('public')->exists($request->path))
-    		abort(404, 'This file doesn\'t exist');
+        return $audio->save($request, true);
+    }
 
-    	\Storage::disk('public')->delete($request->path);
-    	
-    	return response(200);
+    public function destroyAudio(Request $request, BlogAudio $audio)
+    {
+        return $audio->delete($request);
     }
 
     public function gifts()
     {
-        $gifts = \Storage::disk('public')->allFiles('gifts');
-
-        return view('admin.pages.blog.gifts.index', compact('gifts'));
+        return redirect()->route('admin.posts.index');
     }
 
-    public function storeGift(Request $request)
+    public function storeGift()
     {
-        $gift = $request->file('file');
-
-        if (\Storage::disk('public')->exists('gifts/' . $gift->getClientOriginalName()))
-            abort(403, 'A gift with this name already exists');
-
-        $path = $request->file('file')->storeAs('gifts', $gift->getClientOriginalName(), 'public');
-
-        return asset('storage/' . $path);
+        abort(410, 'Blog gifts are no longer available.');
     }
 
-    public function destroyGift(Request $request)
+    public function destroyGift()
     {
-        if (! \Storage::disk('public')->exists($request->path))
-            abort(404, 'This file doesn\'t exist');
-
-        \Storage::disk('public')->delete($request->path);
-        
-        return response(200);
+        abort(410, 'Blog gifts are no longer available.');
     }
 }

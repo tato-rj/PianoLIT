@@ -18,10 +18,10 @@
       'theme' => 'create',
       'title' => 'New blog post',
       'subtitle' => 'Use this page to create a new post.',
-      'breadcrumbs' => [['label' => 'Posts', 'url' => route('admin.posts.index')]]
+      'breadcrumbs' => [['label' => 'Posts', 'url' => route('admin.posts.index', $returnFilters)]]
     ])
 
-      <form id="create-post" class="row my-3" method="POST" action="{{route('admin.posts.store')}}" autocomplete="off" enctype="multipart/form-data">
+      <form id="create-post" class="row my-3" method="POST" action="{{route('admin.posts.store', $returnFilters)}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         <div class="col-12">
           <div class="rounded bg-light px-3 py-2 mb-3">
@@ -46,7 +46,6 @@
           @input(['bag' => 'default', 'name' => 'title', 'placeholder' => 'Post title', 'limit' => 120])
           @textarea(['bag' => 'default', 'name' => 'description', 'placeholder' => 'Post description', 'limit' => 238])
           @input(['bag' => 'default', 'name' => 'cover_credits', 'placeholder' => 'Cover image credits', 'limit' => 120, 'required' => false])
-          @input(['bag' => 'default', 'name' => 'gift_path', 'placeholder' => 'Gift path here', 'limit' => 180, 'required' => false])
         </div>
 
         <div class="col-12 mb-4">

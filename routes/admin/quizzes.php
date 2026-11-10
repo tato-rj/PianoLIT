@@ -19,6 +19,8 @@ Route::prefix('quiz')->name('quizzes.')->group(function() {
 		Route::get('images', 'Admin\QuizMediaController@images')->name('images');
 
 		Route::post('{type}/store', 'Admin\QuizMediaController@store')->name('store');
+
+		Route::patch('update', 'Admin\QuizMediaController@update')->name('update');
 		
 		Route::delete('destroy', 'Admin\QuizMediaController@destroy')->name('destroy');
 

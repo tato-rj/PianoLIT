@@ -1,4 +1,4 @@
-@php($feedbackEnabled = request()->routeIs('webapp.*') && !request()->routeIs('webapp.tour', 'webapp.membership.checkout', 'webapp.membership.success'))
+@php($feedbackEnabled = request()->routeIs('webapp.*') && !request()->routeIs('webapp.pieces.show', 'webapp.tour', 'webapp.membership.checkout', 'webapp.membership.success'))
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>

@@ -1,91 +1,35 @@
 @extends('admin.layouts.app')
 
-@section('head')
-@endsection
-
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
+<div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', [
-      'theme' => 'edit',
-      'title' => $infograph->title,
-      'subtitle' => 'Use this page to edit this infographic.',
-      'breadcrumbs' => [['label' => 'Infographics', 'url' => route('admin.infographs.index')]]
+        'title' => 'Edit infographic', 'subtitle' => $infograph->name,
+        'breadcrumbs' => [['label' => 'Infographics', 'url' => route('admin.infographs.index', $returnFilters)]],
     ])
-
-	<div class="row mb-5">
-		<div class="col-4">
-			<img src="{{storage($infograph->cover_path)}}" class="w-100">
-		</div>
-		<div class="col-8">
-			<div class="mb-4 bg-light rounded px-4 py-3">
-				<h6 class="text-grey">This infrograph has been downloaded <strong class="text-muted">{{$infograph->downloads}}</strong> {{str_plural('time', $infograph->downloads)}}.</h6>
-				<h6 class="text-grey m-0">The current score is <strong class="text-muted">{{$infograph->score}}</strong>.</h6>
-			</div>
-			<form method="POST" action="{{route('admin.infographs.update', $infograph)}}" enctype="multipart/form-data">
-				@method('PATCH')
-				@csrf
-				<div class="row g-2 form-group">
-					<div class="col">
-						<div class="form-group">
-							<input type="text" name="name" value="{{$infograph->name}}" placeholder="Infograph name" class="form-control" required>
-						</div>
-						<div class="row g-2">
-							<div class="col">
-								<div class="custom-file">
-									<input type="file" class="custom-file-input" name="cover_image" id="customFile">
-									<label class="custom-file-label truncate" for="customFile">Image</label>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col">
-						<div class="h-100">
-							<textarea name="description" class="form-control h-100" placeholder="Description (max. 238 characters)" required>{{$infograph->description}}</textarea>
-						</div>
-					</div>
-				</div>
-				<div class="form-group">
-				  <div class="rounded bg-light px-3 py-2 mb-3">
-				    <p class="text-brand border-bottom pb-1 mb-1"><strong>TOPICS</strong></p>
-				    <div class="d-flex flex-wrap">
-				        @foreach($topics as $topic)
-				        <div class="form-check mx-2 mb-2">
-				          <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($infograph->topics->contains($topic->id)) ? 'checked' : ''}}>
-				          <label class="form-check-label" for="{{$topic->name}}">{{$topic->name}}</label>
-				        </div>
-				        @endforeach
-				    </div>
-				  </div>
-				</div>
-				<div class="form-group text-end">
-					<button type="submit" class="btn btn-sm btn-default">Update infograph</button>
-				</div>
-
-				<input type="hidden" name="width" value="{{$infograph->width}}">
-				<input type="hidden" name="height" value="{{$infograph->height}}">
-			</form>
-		</div>
-	</div>
-  </div>
-</div>
-
-@endsection
-
-@section('scripts')
-<script type="text/javascript">
-$('input#customFile').change(function() {
-    var fr = new FileReader;
-    fr.onload = function() {
-        var img = new Image;
-        img.onload = function() {
-          $('input[name="width"]').val(img.width);
-          $('input[name="height"]').val(img.height);
-        };
-        img.src = fr.result;
-    };
-    fr.readAsDataURL(this.files[0]);
-});
-</script>
+    <div class="row g-4 mb-4 align-items-start">
+        <div class="col-lg-8">
+            @component('admin.components.editor.section', ['id' => 'infographic-details', 'title' => 'Infographic details'])
+                <form method="POST" action="{{ route('admin.infographs.update', ['infograph' => $infograph] + $returnFilters) }}" enctype="multipart/form-data">
+                    @csrf @method('PATCH')
+                    @include('admin.pages.infographics.fields')
+                    <div class="text-end"><button type="submit" class="btn btn-primary btn-sm">@icon('check')Save changes</button></div>
+                </form>
+            @endcomponent
+        </div>
+        <div class="col-lg-4">
+            @component('admin.components.editor.section', ['id' => 'infographic-preview', 'title' => 'Current image'])
+                @if($infograph->cover_path)
+                <a href="{{ storage($infograph->cover_path) }}" target="_blank" rel="noopener noreferrer" aria-label="Open current infographic image"><img src="{{ storage($infograph->cover_path) }}" alt="{{ $infograph->name }}" class="w-100 rounded"></a>
+                @else
+                <p class="text-muted">No image uploaded.</p>
+                @endif
+                <dl class="row small mt-3 mb-0">
+                    <dt class="col-6">Dimensions</dt><dd class="col-6 text-end">{{ number_format($infograph->width) }} × {{ number_format($infograph->height) }} px</dd>
+                    <dt class="col-6">Downloads</dt><dd class="col-6 text-end">{{ number_format($infograph->downloads) }}</dd>
+                    <dt class="col-6">Score</dt><dd class="col-6 text-end mb-0">{{ number_format($infograph->score) }}</dd>
+                </dl>
+            @endcomponent
+        </div>
+    </div>
+</div></div>
 @endsection

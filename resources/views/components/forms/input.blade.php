@@ -16,6 +16,7 @@
 		@if($disabled ?? false) disabled @endif
 		@if($readonly ?? false) readonly @endif
 		type="{{$type ?? 'text'}}" 
+		@isset($accept) accept="{{ $accept }}" @endisset
 		@if(! empty($type) && $type == 'number')
 		min="{{$min ?? 0}}"
 		step="{{$step ?? null}}"

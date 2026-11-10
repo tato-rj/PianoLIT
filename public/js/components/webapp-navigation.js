@@ -8,6 +8,7 @@
     if (!menu || menu.dataset.navigationReady) return;
     menu.dataset.navigationReady = 'true';
     const mobile = win.matchMedia('(max-width: 991.98px)');
+    const scoreControls = doc.querySelector('.score-editor .score-footer');
     let hidden = false;
     let space = -1;
     let direction = 0;
@@ -43,6 +44,11 @@
 
     function measure() {
         if (!mobile.matches) reveal();
+        if (scoreControls) {
+            const controlsHeight = scoreControls.getBoundingClientRect().height;
+            // Hidden tabs report zero; keep the last visible measurement.
+            if (controlsHeight) doc.documentElement.style.setProperty('--score-controls-space', Math.ceil(controlsHeight) + 'px');
+        }
         const height = menu.getBoundingClientRect().height;
         const next = height ? Math.ceil(height + (parseFloat(win.getComputedStyle(menu).bottom) || 0)) : 0;
         if (space !== next) { space = next; publishSpace(); }
@@ -80,7 +86,11 @@
     win.addEventListener('pageshow', () => { reveal(); measure(); });
     menu.addEventListener('focusin', reveal);
     ['show.bs.offcanvas', 'hidden.bs.offcanvas', 'show.bs.modal', 'hidden.bs.modal'].forEach(name => doc.addEventListener(name, reveal));
-    if (win.ResizeObserver) new win.ResizeObserver(measure).observe(menu);
+    if (win.ResizeObserver) {
+        const observer = new win.ResizeObserver(measure);
+        observer.observe(menu);
+        if (scoreControls) observer.observe(scoreControls);
+    }
     if (win.visualViewport) win.visualViewport.addEventListener('resize', measure, {passive: true});
     const popup = doc.getElementById('bottom-popup');
     if (popup && win.MutationObserver) {

@@ -20,11 +20,12 @@ module.exports = function () {
             addEventListener(name, fn) { events[name] = fn; }};
         return {root, input, inputEvents, formEvents, selection, events, classes, previews, message, clear};
     }
-    const multiple = field(10), single = field(1), disabled = field(1, true);
+    const multiple = field(10), single = field(1), disabled = field(1, true), audio = field(1);
+    Object.assign(audio.input.dataset, {fileLabel: 'audio file', filePluralLabel: 'audio files', maxBytes: '2097152'});
     const urls = new Set(), windowEvents = {};
     let sequence = 0;
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/components/file-dropzone.js'), 'utf8'), {
-        document: {querySelectorAll: () => [multiple.root, single.root, disabled.root], createElement() {
+        document: {querySelectorAll: () => [multiple.root, single.root, disabled.root, audio.root], createElement() {
             return {events: {}, addEventListener(name, fn) { this.events[name] = fn; }, remove() { this.parent.children = this.parent.children.filter(image => image !== this); }};
         }},
         URL: {createObjectURL() { const url = 'blob:preview-' + (++sequence); urls.add(url); return url; }, revokeObjectURL(url) { urls.delete(url); }},
@@ -111,5 +112,10 @@ module.exports = function () {
     assert.equal(disabled.input.files.length, 0);
     const textDrag = event([], ['text/plain']); multiple.events.dragenter(textDrag);
     assert.equal(textDrag.prevented, undefined, 'Text drags do not activate file handling');
+    audio.events.drop(event([{name: 'interval.wav', type: 'audio/wav', size: 1024}]));
+    assert.equal(audio.selection.textContent, 'interval.wav');
+    assert.equal(audio.previews.children.length, 0, 'Audio uses the same picker without image previews');
+    audio.input.files = [{name: 'large.wav', type: 'audio/wav', size: 2097153}]; audio.inputEvents.change();
+    assert.equal(audio.input.validationMessage, 'Choose audio files up to 2 MB each.');
     console.log('Passed: sequential and batch file additions, complete upload payloads/previews, field isolation, clear/replace behavior, URL cleanup and limits.');
 };

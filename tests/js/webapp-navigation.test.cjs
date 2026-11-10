@@ -1,7 +1,7 @@
 const assert = require('assert');
 const init = require('../../resources/js/components/webapp-navigation');
 
-function setup() {
+function setup(controlsHeight) {
     const events = {}, menuEvents = {}, documentEvents = {}, frames = [], values = {}, classes = new Set();
     let clock = 0, pinned = false, height = 68, bottom = '12px';
     const mobile = {matches: true};
@@ -9,8 +9,9 @@ function setup() {
         addEventListener: (name, callback) => { menuEvents[name] = callback; },
         getBoundingClientRect: () => ({height}),
         classList: {toggle(name, on) { if (on) classes.add(name); else classes.delete(name); }}};
+    const controls = controlsHeight === undefined ? null : {getBoundingClientRect: () => ({height: controlsHeight})};
     const doc = {activeElement: null, documentElement: {scrollHeight: 4800, style: {setProperty(name, value) { values[name] = value; }}},
-        querySelector: selector => selector === '[data-webapp-navigation]' ? menu : (pinned ? {} : null),
+        querySelector: selector => selector === '[data-webapp-navigation]' ? menu : selector === '.score-editor .score-footer' ? controls : (pinned ? {} : null),
         getElementById: () => null, addEventListener: (name, callback) => { documentEvents[name] = callback; }};
     const win = {document: doc, scrollY: 0, innerHeight: 800, performance: {now: () => clock},
         matchMedia: () => mobile, getComputedStyle: () => ({bottom}),
@@ -21,10 +22,20 @@ function setup() {
         hidden: () => classes.has('is-scrolled-away'),
         pin: value => { pinned = value; },
         dimensions: (h, b) => { height = h; bottom = b; api.measure(); },
+        controlsHeight: value => { controlsHeight = value; api.measure(); },
         scroll(y, ms = 16) { clock += ms; win.scrollY = y; events.scroll(); frames.splice(0).forEach(callback => callback()); }};
 }
 
 function main() {
+    const score = setup(108);
+    assert.strictEqual(score.values['--score-controls-space'], '108px', 'The score reserves its actual controls height.');
+    score.scroll(120);
+    assert.strictEqual(score.values['--score-controls-space'], '108px', 'Hiding navigation does not shrink the score clearance.');
+    score.controlsHeight(128);
+    assert.strictEqual(score.values['--score-controls-space'], '128px', 'Responsive control rows update their clearance.');
+    score.controlsHeight(0);
+    assert.strictEqual(score.values['--score-controls-space'], '128px', 'A hidden score tab retains its last visible clearance.');
+
     const app = setup();
     assert.strictEqual(app.values['--webapp-menu-height'], '80px', 'Player offset includes the floating gap.');
     app.scroll(120);

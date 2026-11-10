@@ -1,6 +1,5 @@
 @extends('layouts.app', ['title' => $post->title . ' | PianoLIT Blog',
 	'bodyClass' => 'blog-article',
-	'popup' => ['view' => 'gift'],
 	'shareable' => [
 		'keywords' => '',
 		'title' => $post->title,
@@ -94,14 +93,11 @@
         @endif
 
         @slot('sidebar')
-            @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
+            @include('components.promotions.hubs')
         @endslot
     @endcomponent
 </div>
 
-@if($post->hasGift())
-<div id="gift-container" data-url="{{route('posts.gift', $post)}}"></div>
-@endif
 @endsection
 
 @push('scripts')
@@ -112,8 +108,5 @@ $(document).ready(function() {
 	showScrollProgressBar($('#main-content'));
 });
 
-@if($post->hasGift())
-loadPopup($('#gift-container'));
-@endif
 </script>
 @endpush

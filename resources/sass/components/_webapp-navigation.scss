@@ -9,8 +9,6 @@
 }
 
 .score-editor:not(.is-fullscreen) {
-    padding-bottom: calc(126px + var(--webapp-menu-space, var(--score-menu-height)));
-
     .score-footer {
         transform: none;
         flex-wrap: wrap;
@@ -70,6 +68,12 @@
 
 #webapp main {
     margin-bottom: calc(var(--webapp-menu-space, 92px) + 16px);
+}
+
+// The score and navigation already reserve clearance for their fixed controls.
+// Feedback floats above them and does not need a third empty block here.
+#webapp main:has(.tab-pane.active > .score-editor) {
+    padding-bottom: 0;
 }
 
 .webapp-navigation .menu-link {

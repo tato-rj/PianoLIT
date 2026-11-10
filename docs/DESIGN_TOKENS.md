@@ -155,6 +155,14 @@ the visible menu, allowing for an open audio player. Its measured height already
 includes the bottom safe area; do not add that inset again. When the menu hides,
 the controls settle above the bottom safe area. Keep score page spacing constant
 during this movement and use two control rows within the shared width.
+Reserve navigation space once, in the page margin. The score editor reserves
+only the measured toolbar height through `--score-controls-space` (128px desktop
+and 108px phone fallbacks). The navigation controller observes the toolbar and
+keeps its last visible measurement while its tab is hidden. Piece pages omit
+the Feedback utility and its 56px page padding on every tab. Together with the
+existing message-row/page gaps, this leaves about 24px above the visible score
+controls at the end of the page; hidden navigation retains its clearance so
+scrolling does not move the document.
 
 On `my.*` only, the shared account control uses the `webapp-navigation` variant
 in the fifth bottom-navigation slot. The web-app header contains only its logo;

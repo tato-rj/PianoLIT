@@ -16,10 +16,10 @@
       'theme' => 'create',
       'title' => 'New quiz',
       'subtitle' => 'Use this page to create a new quiz.',
-      'breadcrumbs' => [['label' => 'Quizzes', 'url' => route('admin.quizzes.index')]]
+      'breadcrumbs' => [['label' => 'Quizzes', 'url' => route('admin.quizzes.index', $returnFilters)]]
     ])
 
-      <form id="create-quiz" class="row my-3" method="POST" action="{{route('admin.quizzes.store')}}" autocomplete="off" enctype="multipart/form-data">
+      <form id="create-quiz" class="row my-3" method="POST" action="{{route('admin.quizzes.store', $returnFilters)}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         <div class="col-lg-4 col-md-6 col-12 mb-4">
           @image(['name' => 'cover_image', 'image' => asset('images/misc/placeholder-image.png'), 'empty' => true])

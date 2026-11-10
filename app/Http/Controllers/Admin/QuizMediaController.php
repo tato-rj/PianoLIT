@@ -2,63 +2,45 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\Admin\{QuizMedia, QuizzesTable};
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class QuizMediaController extends Controller
 {
-    public function audio()
+    public function audio(Request $request, QuizzesTable $table)
     {
-        $files = [];
-
-        foreach (\Storage::disk('public')->allFiles('quiz/audio') as $index => $file) {
-            $files[$index]['file'] = $file;
-            $files[$index]['created_at'] = carbon(\Storage::disk('public')->lastModified($file))->toDateString();
-        }
-
-        $count = count($files);
-        $files = collect($files)->groupBy('created_at')->sortKeysDesc();
-
-    	return view('admin.pages.quizzes.audio.index', compact(['files', 'count']));
+        return redirect($table->url($request, 'audio'));
     }
 
-    public function images()
+    public function images(Request $request, QuizzesTable $table)
     {
-        $files = [];
-
-        foreach (\Storage::disk('public')->allFiles('quiz/images') as $index => $file) {
-            $files[$index]['file'] = $file;
-            $files[$index]['created_at'] = carbon(\Storage::disk('public')->lastModified($file))->toDateString();
-        }
-
-        $count = count($files);
-        $files = collect($files)->groupBy('created_at')->sortKeysDesc();
-
-        return view('admin.pages.quizzes.images.index', compact(['files', 'count']));
+        return redirect($table->url($request, 'images'));
     }
 
-    public function store(Request $request, $type)
+    public function store(Request $request, string $type, QuizMedia $media, QuizzesTable $table)
     {
-        if (! in_array($type, ['audio', 'images']))
-            abort(403, 'This is not a valid media type');
-
-        $file = $request->file('file');
-
-    	if (\Storage::disk('public')->exists('quiz/'.$type.'/' . $file->getClientOriginalName()))
-    		abort(403, 'A file with this name already exists');
-
-        $path = $request->file('file')->storeAs('quiz/'.$type, $file->getClientOriginalName(), 'public');
-
-        return asset('storage/' . $path);
+        $paths = $media->upload($request, $type);
+        if ($request->ajax()) return asset('storage/'.$paths[0]);
+        return redirect($table->url($request, $type))->with('status', count($paths) === 1 ? 'File uploaded.' : 'Files uploaded.');
     }
 
-    public function destroy(Request $request)
+    public function update(Request $request, QuizMedia $media, QuizzesTable $table)
     {
-    	if (! \Storage::disk('public')->exists($request->path))
-    		abort(404, 'This file doesn\'t exist');
+        $path = $media->path($request->input('path'));
+        $type = explode('/', $path)[1];
+        $media->upload($request, $type, $path);
+        return redirect($table->url($request, $type))->with('status', 'File replaced.');
+    }
 
-    	\Storage::disk('public')->delete($request->path);
-    	
-    	return response(200);
+    public function destroy(Request $request, QuizMedia $media, QuizzesTable $table)
+    {
+        $path = $media->path($request->input('path'));
+        $type = explode('/', $path)[1];
+        $url = $table->url($request, $type);
+        abort_unless(Storage::disk('public')->delete($path), 500, 'The file could not be deleted.');
+        if ($request->ajax()) return response(200);
+        return redirect($url)->with('status', 'File deleted.');
     }
 }

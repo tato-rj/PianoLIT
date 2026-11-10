@@ -17,6 +17,8 @@ Route::prefix('blog')->name('posts.')->group(function() {
 		Route::get('', 'Admin\BlogMediaController@audio')->name('index');
 
 		Route::post('store', 'Admin\BlogMediaController@storeAudio')->name('store');
+
+		Route::patch('update', 'Admin\BlogMediaController@updateAudio')->name('update');
 		
 		Route::delete('destroy', 'Admin\BlogMediaController@destroyAudio')->name('destroy');
 

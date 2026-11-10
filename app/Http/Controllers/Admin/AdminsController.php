@@ -58,30 +58,26 @@ class AdminsController extends Controller
         if (request()->ajax())
             return Post::datatable();
 
-        return view('admin.pages.blog.index');
+        return view('admin.pages.blog.index', app(\App\Services\Admin\PostsTable::class)->get($request));
     }
 
     /**
      * Display the quiz index page.
      */
-    public function quiz()
+    public function quiz(Request $request, \App\Services\Admin\QuizzesTable $table)
     {
         if (request()->ajax())
             return Quiz::datatable();
 
-        $levels = Level::all();
-
-        return view('admin.pages.quizzes.index', compact(['levels']));
+        return view('admin.pages.quizzes.index', $table->get($request));
     }
 
     /**
      * Display the quiz index page.
      */
-    public function quizTopics()
+    public function quizTopics(Request $request, \App\Services\Admin\QuizzesTable $table)
     {
-        $topics = QuizTopic::all();
-
-        return view('admin.pages.quizzes.topics.index', compact('topics'));
+        return redirect($table->url($request, 'topics'));
     }
 
     /**

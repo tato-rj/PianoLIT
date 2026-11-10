@@ -13,6 +13,8 @@
         var previewUrls = [];
         var previewGeneration = 0;
         var selectedFiles = [];
+        var fileLabel = input.dataset.fileLabel || 'image';
+        var filePluralLabel = input.dataset.filePluralLabel || 'images';
         function clearPreviews() {
             previewGeneration++;
             previewUrls.forEach(function (url) { URL.revokeObjectURL(url); });
@@ -51,8 +53,8 @@
             input.setCustomValidity('');
             var maxFiles = Number(input.dataset.maxFiles);
             var maxBytes = Number(input.dataset.maxBytes);
-            if (files.length > maxFiles) input.setCustomValidity('Choose up to ' + maxFiles + (maxFiles === 1 ? ' image.' : ' images.'));
-            else if (files.some(function (file) { return file.size > maxBytes; })) input.setCustomValidity('Choose images up to ' + Math.floor(maxBytes / 1048576) + ' MB each.');
+            if (files.length > maxFiles) input.setCustomValidity('Choose up to ' + maxFiles + ' ' + (maxFiles === 1 ? fileLabel : filePluralLabel) + '.');
+            else if (files.some(function (file) { return file.size > maxBytes; })) input.setCustomValidity('Choose ' + filePluralLabel + ' up to ' + Math.floor(maxBytes / 1048576) + ' MB each.');
             selection.textContent = files.length ? files.map(function (file) { return file.name; }).join(', ') : 'No files selected';
             if (clear) clear.hidden = !files.length;
             showPreviews(files);
@@ -105,7 +107,7 @@
                 input.files = event.dataTransfer.files;
                 input.dispatchEvent(new Event('change', {bubbles: true}));
             } catch (failure) {
-                input.setCustomValidity('Click the upload area to select your images.');
+                input.setCustomValidity('Click the upload area to select your ' + filePluralLabel + '.');
                 input.reportValidity();
             }
         });

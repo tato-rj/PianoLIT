@@ -18,10 +18,10 @@
       'theme' => 'edit',
       'title' => $post->title,
       'subtitle' => 'Use this page to edit this post.',
-      'breadcrumbs' => [['label' => 'Posts', 'url' => route('admin.posts.index')]]
+      'breadcrumbs' => [['label' => 'Posts', 'url' => route('admin.posts.index', $returnFilters)]]
     ])
 
-      <form class="row my-3" method="POST" action="{{route('admin.posts.update', $post->slug)}}" autocomplete="off" enctype="multipart/form-data">
+      <form class="row my-3" method="POST" action="{{route('admin.posts.update', ['post' => $post] + $returnFilters)}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
         <div class="col-12">
@@ -45,7 +45,6 @@
           @input(['bag' => 'default', 'value' => $post->title, 'name' => 'title', 'placeholder' => 'Post title', 'limit' => 120])
           @textarea(['bag' => 'default', 'value' => $post->description, 'name' => 'description', 'placeholder' => 'Post description', 'limit' => 238])
           @input(['bag' => 'default', 'value' => $post->cover_credits, 'name' => 'cover_credits', 'placeholder' => 'Cover image credits', 'limit' => 120, 'required' => false])
-          @input(['bag' => 'default', 'value' => $post->gift_path, 'name' => 'gift_path', 'placeholder' => 'Gift path here', 'limit' => 180, 'required' => false])
         </div>
         <div class="col-12 mb-4">
           @tinyeditor(['bag' => 'default', 'name' => 'content', 'value' => $post->content])
@@ -65,7 +64,7 @@
 
         <div class="col-12 text-end">
           <div class="d-flex justify-content-end">
-            <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="btn btn-outline-dark me-2">
+            <a href="{{route('posts.show', $post->slug)}}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark me-2">
               @if($post->published_at)
               @icon('globe', ['mr' => 2])Visit
               @else

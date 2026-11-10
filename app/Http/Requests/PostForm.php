@@ -27,7 +27,9 @@ class PostForm extends FormRequest
             'title' => 'required|min:4|max:120',
             'description' => 'required|max:238',
             'content' => 'required',
-            'cover_image' => 'required|sometimes|mimes:jpeg,jpg'
+            'cover_image' => 'required|sometimes|mimes:jpeg,jpg',
+            'topics' => 'nullable|array',
+            'topics.*' => 'integer|distinct|exists:topics,id',
         ];
     }
 }

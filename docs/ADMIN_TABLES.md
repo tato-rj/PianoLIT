@@ -447,3 +447,89 @@ Deletion uses the shared confirmation with its optional escaped `deleteDescripti
 to explain that the composer's assigned pieces are also removed. Piece-title
 links open `webapp.pieces.show` in a new tab with `noopener noreferrer`; explicit
 Edit links retain the admin editor. Public/mobile models and payloads are unchanged.
+
+## Infographics directory and topics
+
+Infographics uses `Services/Admin/InfographicsTable` and the shared table for SQL
+search by name, description, topic or ID; publication, topic and gift filters;
+fixed sorts; and 12-result pagination. `topic_id` is the directory filter, leaving
+`topic` available for the existing topic route binding. Row actions retain the
+current filters, and status/deletion returns clamp to the remaining page count.
+Native publication/gift forms submit an explicit desired state; old Ajax status
+requests and the datatable response remain available.
+
+Manage topics sits beside Create infographic. `InfographicTopics` handles compact
+native create, rename and confirmed delete forms, with scoped error bags and old
+input. All topic writes return to the directory with the modal open. Deleting a
+selected topic clears that filter and detaches its assignments transactionally,
+without deleting infographics. The old topic index redirects to this modal; the
+sidebar has one Infographics destination.
+
+Create and edit share fields and the existing compact JPG dropzone. Uploads are
+limited to 10 MB; the server reads their real dimensions. Edits without a new
+file retain the current image and dimensions. The shared modal previews the
+original and reports original/thumbnail dimensions. The editor reuses shared
+sections, breadcrumbs and buttons. No public/mobile model, original download
+endpoint, migration or new compiled asset is part of this change.
+
+
+## Blog posts and libraries
+
+The Posts directory uses `Services/Admin/PostsTable` with escaped SQL search,
+topic/publication filters, fixed sorting and the standard 12-row paginator.
+Rows retain public previews, editor links, explicit desired publication state
+and confirmed deletion. Row actions and editor return links retain directory
+filters; status/deletion returns clamp the page when results disappear.
+
+Create post, Manage audio and manager-only Manage topics share the page-header
+action row. The two compact Bootstrap modals use native CSRF forms and existing
+fields/actions. `manage=audio|topics` reopens the appropriate modal after a write
+or validation; scoped error bags retain only the submitted form's old values.
+Old audio/topic GET routes redirect to the directory/modal. Topic deletion
+detaches assignments in a transaction. Audio upload/replace/delete validates
+2 MB audio files and confines paths to `blog/audio`; replacements retain their
+URL, and new uploads never overwrite an existing filename. Native audio pauses
+on modal dismissal and when another preview starts.
+
+Blog gifts are retired. Editor fields, table badges, dedicated upload pages and
+automatic public prompts are removed; old public/admin gift writes return 410,
+while the old admin gift directory redirects to Posts. Historical database
+values/files and mobile serialization remain unchanged. Article sidebars reuse
+`components.promotions.hubs` and existing promotion cards for Shop, Games and
+Learn. Public catalog promotions, other hubs' download offers and original media
+paths remain independent. This change requires no migration or asset build;
+production deployment remains pending.
+
+## Quiz directory and management dialogs
+
+The quiz directory uses `Services/Admin/QuizzesTable` and the shared table,
+filters, switches, row actions and 12-result pagination. Search runs in SQL over
+title/description/ID with escaped LIKE wildcards; publication, topic and level
+filters combine with the fixed date/title/publication sorts. Quiz editors retain
+directory queries in their forms and breadcrumbs. Publication submits an explicit
+desired state under a quiz lock, preserving an existing publication date; removal
+and publication changes clamp the return page. The old authenticated DataTables
+and status responses remain available, without initializing DataTables here.
+
+Create quiz is followed by Manage audio, Manage topics and Manage images. These
+native links retain directory filters and select a standard modal with
+`manage=audio|topics|images`. Existing media/topic index routes redirect to the
+matching dialog. Closing a dialog returns to the directory without its modal
+query. The sidebar has one Quizzes link.
+
+Topics use compact create/name/save/delete forms, named validation bags and
+confirmed deletion with transactional pivot detachment. The `topic_id` filter is
+separate from the `{topic}` route binding, so editing a topic retains the selected
+filter. Deleting that selected topic clears only its filter.
+
+Media dialogs use the shared dropzone, 48px image previews/native audio controls,
+copy-path and extra-small replace/delete actions. Upload up to eight files per
+submission; every file is validated before saving. Images retain the 5 MB limit
+and audio the 2 MB limit. Replacement uses the same format and saved path, keeping
+existing question references. Deletion requires native confirmation. Media writes
+are bounded to saved quiz audio/image files, including canonical filesystem checks;
+validation reopens the affected form and independent media page. Only the selected
+media library is loaded, with its own 12-result paginator. Shared page alerts show
+results; there is no second page-level summary. Quiz scoring, public/mobile JSON,
+existing media URLs and original question data stay unchanged. No migration is
+required; deployment is pending.

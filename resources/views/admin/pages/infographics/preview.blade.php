@@ -1,20 +1,10 @@
-<div class="modal fade" id="item-preview" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content border-0 rounded-0">
-      <div>
-	<div class="position-fixed text-end" style="bottom: 30px; right: 50px;">
-		<div class="legend-thumbnail text-white mb-2">
-			<h5 class="m-0">Thumbnail</h5>
-			<h1 class="m-0 fw-bold"></h1>
-		</div>
-		<div class="legend-image text-white">
-			<h5 class="m-0">Full image</h5>
-			<h1 class="m-0 fw-bold"></h1>
-		</div>
-	</div>
-        <img src="" class="w-100 image">
-        <img src="" class="w-100 thumbnail d-none">
-      </div>
-    </div>
-  </div>
+@component('components.dialogs.modal', ['id' => 'item-preview', 'header' => 'Image preview'])
+@slot('body')
+<div class="d-flex flex-wrap gap-3 small text-muted mb-3">
+    <span>Full image: <span data-dimensions="image"></span></span>
+    <span>Thumbnail: <span data-dimensions="thumbnail"></span></span>
 </div>
+<img class="w-100 image rounded" alt="">
+<img class="thumbnail d-none" alt="" aria-hidden="true">
+@endslot
+@endcomponent

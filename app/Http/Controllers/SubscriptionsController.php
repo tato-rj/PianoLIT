@@ -30,6 +30,9 @@ class SubscriptionsController extends Controller
             return null;
 
         $view = $request->view;
+        if ($view === 'gift' && $request->getHost() === 'blog.'.config('app.short_url')) {
+            abort(410, 'Blog gifts are no longer available.');
+        }
         if ($view === 'blog-subscription' || ($view === 'subscription' && $request->getHost() === 'blog.'.config('app.short_url'))) {
             $view = 'newsletter-subscription';
         }
@@ -45,6 +48,9 @@ class SubscriptionsController extends Controller
      */
     public function store(Request $request, SubscriptionForm $form)
     {
+        if ($request->getHost() === 'blog.'.config('app.short_url') && $request->filled('gift_url')) {
+            abort(410, 'Blog gifts are no longer available.');
+        }
         // Already-open blog forms retain their host/CSRF endpoint and join PianoLIT news.
         if ($request->getHost() === 'blog.'.config('app.short_url') && !$request->gift_url) {
             $request->validate(['email' => 'required|string|email|max:254']);

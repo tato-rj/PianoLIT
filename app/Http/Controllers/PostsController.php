@@ -44,7 +44,7 @@ class PostsController extends Controller
 
     public function gift(Post $post)
     {
-        return view('blog.components.gift', compact('post'))->render();
+        abort(410, 'Blog gifts are no longer available.');
     }
 
     /**

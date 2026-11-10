@@ -3,115 +3,48 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Blog\Topic;
+use App\Services\Admin\{BlogTopics, PostsTable};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class TopicsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(Request $request, PostsTable $table)
     {
         $this->authorize('create', Topic::class);
-
-        $topics = Topic::all();
-
-        return view('admin.pages.blog.topics.index', compact('topics'));
+        return redirect($table->modalUrl($request, 'topics'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function store(Request $request, BlogTopics $topics)
     {
         $this->authorize('create', Topic::class);
-
-        $request->validate([
-            'name' => 'required|unique:topics|max:255',
-        ]);
-
-        Topic::create([
-            'slug' => str_slug($request->name),
-            'name' => $request->name,
-            'creator_id' => auth()->guard('admin')->user()->id
-        ]);
-
-        return redirect()->back()->with('status', "The topic has been successfully added!");
+        return $topics->save($request);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Blog\Topic  $topic
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Topic $topic)
+    public function create(Request $request, PostsTable $table)
     {
-        //
+        return $this->index($request, $table);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Blog\Topic  $topic
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Topic $topic)
+    public function show(Request $request, Topic $topic, PostsTable $table)
     {
-        //
+        return $this->index($request, $table);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Blog\Topic  $topic
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Topic $topic)
+    public function edit(Request $request, Topic $topic, PostsTable $table)
+    {
+        return $this->index($request, $table);
+    }
+
+    public function update(Request $request, Topic $topic, BlogTopics $topics)
     {
         $this->authorize('create', Topic::class);
-
-        $request->validate([
-            'name' => 'required|max:255',
-        ]);
-
-        $topic->update([
-            'slug' => str_slug($request->name),
-            'name' => $request->name
-        ]);
-
-        return redirect()->back()->with('status', "The topic has been successfully updated!");
+        return $topics->save($request, $topic);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Blog\Topic  $topic
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Topic $topic)
+    public function destroy(Request $request, Topic $topic, BlogTopics $topics)
     {
         $this->authorize('create', Topic::class);
-
-        $topic->delete();
-
-        return redirect()->back()->with('status', "The topic has been successfully deleted!");
+        return $topics->delete($request, $topic);
     }
 }
