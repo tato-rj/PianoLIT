@@ -20,7 +20,7 @@
 </figure>
 
 <section id="blog-post" class="blog-font w-100">
-	{!! $post->content !!}
+	{!! app(\App\Services\Blog\ArticleContent::class)->render($post->content) !!}
 </section>
 
 @endsection

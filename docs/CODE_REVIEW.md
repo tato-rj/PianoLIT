@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-10 — Open article content links in new tabs (P3, complete locally)
+
+- **Request / evidence:** The public article view emitted saved anchors unchanged, so sources without a target replaced the article. `Services/Blog/ArticleContent` now renders every article-content anchor with an `href` using `target="_blank"` and `rel="noopener noreferrer"`, including internal, relative, fragment, image and table links and anchors with an existing different target. Existing `nofollow`/`sponsored` relations survive; an explicit `opener` relation is removed. Both the public article and retained browser web-app view use this renderer.
+- **Compatibility / verification:** Three isolated `BlogArticleLinksTest` regressions pass (120 assertions), covering the screenshot's Academia source URL, same-tab/named targets, URL query entities, Unicode copy, download/image links, audio/iframe markup, repeat rendering and untouched surrounding navigation. Saved HTML/attributes, shared Post JSON and the native embedded `/app` article remain unchanged. PHP syntax and whitespace checks pass. No migration or asset build is needed.
+- **Remaining work:** Production deployment. Browser click-through and native WebView acceptance were not exercised; the server-rendered browser anchors were verified directly.
+
 ### 2026-11-10 — Flush blog-card cover images (P3, complete locally)
 
 - **Request / change:** Removed the shared story link's `p-3` inset in `resources/views/blog/components/story-card.blade.php` and moved its side/bottom spacing into `.blog-story__body` in `resources/sass/pages/_blog.scss`. The existing rounded, overflow-hidden card clips the image at the top; the image wrapper no longer rounds its bottom corners. Blog listings and related stories reuse this component. Text spacing, image proportions, routes and article content are preserved.

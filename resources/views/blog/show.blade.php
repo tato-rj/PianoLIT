@@ -57,7 +57,7 @@
             </figure>
 
             <div id="blog-content" class="blog-article__content">
-                {!! $post->content !!}
+                {!! app(\App\Services\Blog\ArticleContent::class)->render($post->content) !!}
             </div>
 
             @if($post->references)
