@@ -14,6 +14,7 @@ require('./admin-pianists')();
 require('./pianists.test.cjs')();
 require('./admin-pianist-editor')();
 require('./admin-quiz-editor.test.cjs')();
+require('./admin-quiz-media.test.cjs')().catch(error => { console.error(error); process.exitCode = 1; });
 require('./google-auth');
 require('./apple-auth');
 const assert = require('assert');

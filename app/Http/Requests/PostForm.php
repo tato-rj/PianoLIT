@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Services\Blog\PostPromotions;
+use Illuminate\Validation\Rule;
 
 class PostForm extends FormRequest
 {
@@ -29,6 +31,7 @@ class PostForm extends FormRequest
             'content' => 'required|string',
             'cover_image' => 'required|sometimes|mimes:jpeg,jpg',
             'cover_credits' => 'nullable|string|max:120',
+            'promotion' => ['sometimes', 'required', 'string', Rule::in(array_keys(PostPromotions::CHOICES))],
             'topics' => 'nullable|array',
             'topics.*' => 'integer|distinct|exists:topics,id',
             'references' => 'nullable|array|max:50',

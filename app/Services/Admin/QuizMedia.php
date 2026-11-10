@@ -18,25 +18,50 @@ class QuizMedia
 
     public function path($path): string
     {
-        abort_unless(is_string($path) && preg_match('#\Aquiz/(audio|images)/.+\z#D', $path)
-            && !preg_match('#[\\\\\x00-\x1f]|(?:^|/)\.{1,2}(?:/|$)#', $path), 404);
+        abort_unless($this->exists($path), 404);
+        return $path;
+    }
+
+    public function exists($path): bool
+    {
+        if (!is_string($path) || !preg_match('#\Aquiz/(audio|images)/.+\z#D', $path)
+            || preg_match('#[\\\\\x00-\x1f]|(?:^|/)\.{1,2}(?:/|$)#', $path)) return false;
         $disk = Storage::disk('public');
         $root = realpath($disk->path('quiz/'.explode('/', $path)[1]));
         $file = realpath($disk->path($path));
-        abort_unless($root && $file && is_file($file) && strpos($file, $root.DIRECTORY_SEPARATOR) === 0, 404);
-        return $path;
+        return $root && $file && is_file($file) && strpos($file, $root.DIRECTORY_SEPARATOR) === 0;
+    }
+
+    private function library(string $type)
+    {
+        $this->type($type);
+        $disk = Storage::disk('public');
+        return collect($disk->allFiles('quiz/'.$type))->map(fn ($path) => [
+            'path' => $path, 'name' => basename($path), 'modified' => $disk->lastModified($path),
+        ])->sort(function ($a, $b) {
+            return ($b['modified'] <=> $a['modified']) ?: strcmp($a['path'], $b['path']);
+        })->values();
+    }
+
+    public function choices(Request $request, string $type): array
+    {
+        $this->type($type);
+        $data = $request->validate(['search' => 'nullable|string|max:255', 'page' => 'nullable|integer|min:1|max:1000000']);
+        $search = trim($data['search'] ?? '');
+        $matches = $this->library($type)->filter(fn ($file) => $this->exists($file['path'])
+            && ($search === '' || mb_stripos($file['name'], $search) !== false))->values();
+        $page = min((int) ($data['page'] ?? 1), max(1, (int) ceil($matches->count() / AdminPagination::PER_PAGE)));
+        $files = new LengthAwarePaginator($matches->forPage($page, AdminPagination::PER_PAGE)->values(), $matches->count(), AdminPagination::PER_PAGE, $page, [
+            'path' => route('admin.quizzes.media.choose', $type), 'query' => ['search' => $search],
+        ]);
+        return compact('files', 'type', 'search');
     }
 
     public function files(Request $request, string $type, array $returnFilters)
     {
         $this->type($type);
         $data = $request->validate(['media_page' => 'nullable|integer|min:1|max:1000000']);
-        $disk = Storage::disk('public');
-        $files = collect($disk->allFiles('quiz/'.$type))->map(fn ($path) => [
-            'path' => $path, 'name' => basename($path), 'modified' => $disk->lastModified($path),
-        ])->sort(function ($a, $b) {
-            return ($b['modified'] <=> $a['modified']) ?: strcmp($a['path'], $b['path']);
-        })->values();
+        $files = $this->library($type);
         $page = min((int) ($data['media_page'] ?? 1), max(1, (int) ceil($files->count() / AdminPagination::PER_PAGE)));
         return new LengthAwarePaginator($files->forPage($page, AdminPagination::PER_PAGE)->values(), $files->count(), AdminPagination::PER_PAGE, $page, [
             'path' => route('admin.quizzes.index'), 'pageName' => 'media_page',

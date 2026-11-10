@@ -155,6 +155,9 @@ the visible menu, allowing for an open audio player. Its measured height already
 includes the bottom safe area; do not add that inset again. When the menu hides,
 the controls settle above the bottom safe area. Keep score page spacing constant
 during this movement and use two control rows within the shared width.
+At 992px and wider, keep the second row's score actions together at the right
+with their existing 8px gap and content widths. Phones retain the evenly sized
+action buttons.
 Reserve navigation space once, in the page margin. The score editor reserves
 only the measured toolbar height through `--score-controls-space` (128px desktop
 and 108px phone fallbacks). The navigation controller observes the toolbar and
@@ -163,6 +166,12 @@ the Feedback utility and its 56px page padding on every tab. Together with the
 existing message-row/page gaps, this leaves about 24px above the visible score
 controls at the end of the page; hidden navigation retains its clearance so
 scrolling does not move the document.
+
+Where Feedback is available, its launcher and confirmation share the floating
+menu's right edge at every width. `views/feedback.js` measures the rendered menu
+and publishes `--feedback-right`, so its centered desktop width and safe-area
+side insets are not duplicated in the Feedback stylesheet. Keep its existing
+vertical gap, scroll behavior and overlay suppression.
 
 On `my.*` only, the shared account control uses the `webapp-navigation` variant
 in the fifth bottom-navigation slot. The web-app header contains only its logo;

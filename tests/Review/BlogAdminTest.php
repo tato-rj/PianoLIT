@@ -57,7 +57,8 @@ class BlogAdminTest extends ReviewTestCase
         $this->assertCount(0, $xpath->query('//form//form'));
         $this->assertCount(0, $xpath->query('//form[@method="POST" and not(.//input[@name="_token"])]'));
         $this->assertCount(0, $xpath->query('//*[@id="blog"]//a[contains(@href,"gifts") or contains(@href,"audio") or contains(@href,"topics")]'));
-        $this->assertCount(24, $xpath->query('//table[@id="posts-table"]//a[@target="_blank" and @rel="noopener noreferrer" and contains(@href,"blog.localhost")]'));
+        $this->assertCount(0, $xpath->query('//table[@id="posts-table"]//a[contains(@href,"blog.localhost")]'));
+        $this->assertCount(12, $xpath->query('//table[@id="posts-table"]//button[@disabled and @aria-disabled="true"]'));
         $this->get(route('admin.posts.index', ['page' => 2]))->assertOk()->assertSee('Showing 13–13 of 13');
         $this->get(route('admin.posts.index', ['search' => 'no match']))->assertOk()->assertSee('No matching posts');
         $this->get(route('admin.posts.index', ['page' => 99]))->assertOk()->assertSee('No posts on this page');
@@ -90,6 +91,41 @@ class BlogAdminTest extends ReviewTestCase
         foreach ([['sort' => 'title;drop'], ['per_page' => 1000], ['topic' => ['bad']], ['manage' => ['bad']], ['search' => ['bad']]] as $bad) {
             $this->getJson(route('admin.posts.index', $bad))->assertUnprocessable();
         }
+    }
+
+    public function test_draft_public_navigation_is_disabled_and_returns_when_published()
+    {
+        $draft = $this->postRecord(['title' => 'Draft article', 'slug' => 'draft-article']);
+        $published = $this->postRecord(['title' => 'Published article', 'slug' => 'published-article', 'published_at' => now(), 'created_at' => now()->subDay()]);
+        $index = $this->get(route('admin.posts.index'))->assertOk();
+        $xpath = $this->xpath($index);
+        $this->assertCount(0, $xpath->query('//a[@href="'.route('posts.show', $draft).'"]'));
+        $this->assertCount(1, $xpath->query('//span[contains(@class,"admin-table__primary") and text()="Draft article"]'));
+        $this->assertCount(1, $xpath->query('//button[@aria-label="Preview Draft article" and @disabled and @aria-disabled="true"]'));
+        $this->assertCount(1, $xpath->query('//a[@href="'.route('admin.posts.edit', $draft).'"]'));
+        $this->assertCount(1, $xpath->query('//input[@aria-label="Published: Draft article" and not(@disabled)]'));
+        $this->assertCount(2, $xpath->query('//a[@href="'.route('posts.show', $published).'" and @target="_blank" and @rel="noopener noreferrer"]'));
+
+        $editor = $this->get(route('admin.posts.edit', $draft))->assertOk();
+        $this->assertCount(1, $this->xpath($editor)->query('//*[@id="page-title"]//button[@disabled and @aria-disabled="true"]'));
+        $legacy = view('admin.pages.blog.table.actions', ['item' => $draft])->render();
+        $this->assertStringNotContainsString(route('posts.show', $draft), $legacy);
+        $this->assertStringContainsString('aria-disabled="true"', $legacy);
+
+        if ($directory = getenv('BLOG_DRAFT_PREVIEW_DIR')) {
+            foreach (['index' => $index, 'editor' => $editor] as $name => $page) {
+                file_put_contents($directory.'/'.$name.'.html', str_replace(['http://admin.localhost', 'http://localhost'], 'http://127.0.0.1:8775', $page->getContent()));
+            }
+        }
+        $statusUrl = route('admin.posts.update-status', ['post' => $draft, 'return_to' => 'directory']);
+        $this->patch($statusUrl, ['published' => '1'])->assertRedirect(route('admin.posts.index'));
+        $index = $this->get(route('admin.posts.index'))->assertOk();
+        $this->assertCount(2, $this->xpath($index)->query('//a[@href="'.route('posts.show', $draft).'"]'));
+        $editor = $this->get(route('admin.posts.edit', $draft))->assertOk();
+        $this->assertCount(1, $this->xpath($editor)->query('//*[@id="page-title"]//a[@href="'.route('posts.show', $draft).'" and @rel="noopener noreferrer"]'));
+        $this->patch($statusUrl, ['published' => '0'])->assertRedirect(route('admin.posts.index'));
+        $index = $this->get(route('admin.posts.index'))->assertOk();
+        $this->assertCount(0, $this->xpath($index)->query('//a[@href="'.route('posts.show', $draft).'"]'));
     }
 
     public function test_topics_save_delete_and_validation_return_to_the_correct_modal()

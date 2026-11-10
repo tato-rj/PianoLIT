@@ -16,7 +16,7 @@
       'theme' => 'edit',
       'title' => $crashcourse->title, 
       'subtitle' => 'Use this page to edit this course.', 
-      'breadcrumbs' => [['label' => 'Crash courses', 'url' => route('admin.crashcourses.index')]]
+      'breadcrumbs' => [['label' => 'Crash courses', 'url' => route('admin.crashcourses.index', $returnFilters)]]
     ])
 
     <div class="row">

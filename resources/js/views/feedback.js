@@ -266,17 +266,22 @@
             this.frame = this.win.requestAnimationFrame(() => { this.frame = null; this.update(); });
         }
         update() {
-            let blocked = this.blocked(), bottom = 0;
+            let blocked = this.blocked(), bottom = 0, right;
             if (!blocked) {
                 Array.from(this.doc.querySelectorAll('#menu')).forEach(element => {
                     if (this.resize && !this.observed.has(element)) { this.observed.add(element); this.resize.observe(element); }
                     if (!this.visible(element)) return;
                     const position = this.win.getComputedStyle(element).position;
-                    if (position === 'fixed' || position === 'sticky') bottom = Math.max(bottom, this.win.innerHeight - element.getBoundingClientRect().top);
+                    if (position === 'fixed' || position === 'sticky') {
+                        const rect = element.getBoundingClientRect();
+                        bottom = Math.max(bottom, this.win.innerHeight - rect.top);
+                        right = Math.max(0, (this.doc.documentElement.clientWidth || this.win.innerWidth) - rect.right);
+                    }
                 });
                 if (bottom > this.win.innerHeight * .6) blocked = true;
             }
             if (this.bottom !== bottom) { this.bottom = bottom; this.element.style.setProperty('--feedback-bottom', Math.ceil(bottom) + 'px'); }
+            if (Number.isFinite(right) && this.right !== right) { this.right = right; this.element.style.setProperty('--feedback-right', right + 'px'); }
             this.button.hidden = blocked;
             this.button.classList.toggle('is-scrolled-away', !blocked && this.mobile.matches && this.away && !(this.keyboardFocus && this.doc.activeElement === this.button));
             if (blocked) this.confirmation.hidden = true;

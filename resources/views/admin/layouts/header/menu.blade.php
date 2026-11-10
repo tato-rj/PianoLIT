@@ -76,7 +76,6 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Crash Courses', 'icon' => 'graduation-cap',
         'dropdown' => [
           ['name' => 'Courses', 'route' => route('admin.crashcourses.index')],
-          ['name' => 'Topics', 'route' => route('admin.crashcourses.topics.index')],
           ['name' => 'Subscriptions', 'route' => route('admin.crashcourses.subscriptions.index')]
         ]])
 

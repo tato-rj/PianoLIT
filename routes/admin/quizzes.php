@@ -13,6 +13,8 @@ Route::prefix('quiz')->name('quizzes.')->group(function() {
 	Route::post('images/remove', 'Admin\QuizzesController@removeImage')->name('remove-image');
 
 	Route::prefix('media')->name('media.')->group(function() {
+
+		Route::get('{type}/choose', 'Admin\QuizMediaController@choose')->name('choose');
 	
 		Route::get('audio', 'Admin\QuizMediaController@audio')->name('audio');
 

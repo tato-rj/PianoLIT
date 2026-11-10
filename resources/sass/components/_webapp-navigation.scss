@@ -20,6 +20,10 @@
         justify-content: space-between;
     }
 
+    @media (min-width: 992px) {
+        .score-footer-actions { justify-content: flex-end; }
+    }
+
     @media (max-width: 360px) {
         .score-view-controls { gap: 4px; }
         .score-control-group { gap: 1px; }

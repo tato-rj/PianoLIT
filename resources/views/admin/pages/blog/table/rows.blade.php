@@ -4,7 +4,11 @@
     <td class="text-nowrap">{{ optional($post->created_at)->format('M j, Y') ?: 'Not set' }}</td>
     <td>
         <div class="admin-table__account">
-            <a href="{{ route('posts.show', $post) }}" target="_blank" rel="noopener noreferrer" class="admin-table__primary clamp-2">{{ $post->title }}</a>
+            @if($post->published_at)
+                <a href="{{ route('posts.show', $post) }}" target="_blank" rel="noopener noreferrer" class="admin-table__primary clamp-2">{{ $post->title }}</a>
+            @else
+                <span class="admin-table__primary clamp-2">{{ $post->title }}</span>
+            @endif
             @if($post->topics->isNotEmpty())<small>{{ $post->topics->pluck('name')->join(', ') }}</small>@endif
         </div>
     </td>
@@ -21,7 +25,7 @@
     <td>
         <div class="d-flex flex-nowrap align-items-center justify-content-end gap-2">
             @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.posts.edit', $parameters), 'attributes' => ['aria-label' => 'Edit '.$post->title]]])
-            @include('admin.components.table-action', ['tableAction' => ['kind' => 'other', 'label' => 'Preview '.$post->title, 'icon' => 'eye', 'iconOnly' => true, 'url' => route('posts.show', $post), 'attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer']]])
+            @include('admin.pages.blog.table.preview', ['previewPost' => $post])
             @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'class' => 'delete', 'attributes' => ['data-url' => route('admin.posts.destroy', $parameters), 'data-bs-toggle' => 'modal', 'data-bs-target' => '#delete-modal', 'aria-label' => 'Delete '.$post->title]]])
         </div>
     </td>

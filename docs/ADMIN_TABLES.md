@@ -81,6 +81,9 @@ Optional parameters:
   Changing filters or sorting resets this list’s page parameter; paginator
   links retain applied filters. Sort links preserve other query parameters.
 - `showReset` and `resetUrl`: override automatic reset visibility/destination.
+- `sortQuery`: optional validated directory query for sortable headings. The
+  component drops the list's page key. Use it to omit transient modal parameters
+  without losing search, filters, sorting or page size.
 - `filterAction`: an optional form action with a section fragment, for a directory
   inside a report. Keep `action` without a fragment for sortable header URLs.
 - `emptyAction`: an optional trusted `url` / `label` map for the shared empty-state
@@ -521,6 +524,26 @@ owns pending-crop submission, cancellation, references and save status. This
 follow-up includes its built script plus the shared TinyMCE submit/leave repair;
 it needs no migration and remains local pending deployment.
 
+The post editor's Promotion section selects one hub (Shop, Games, Learn, Web app
+or Metronome), the existing Shop/Games/Learn group, or No promotion. The shared
+select restores old input on validation. `Services/Blog/PostPromotions` owns the
+fixed choices and named routes; `blog_post_promotions` stores one web-only choice
+per post with a cascading owner foreign key. Saves share the post's details/topics
+transaction and lock; older forms omitting the field preserve the saved setting.
+Public articles reuse promotion cards, with an optional sidebar in the shared
+editorial layout. No promotion uses the full content width. Missing settings
+retain the previous three cards, and GETs never create rows. Model JSON and
+embedded/mobile articles remain independent. Install
+`2026_11_10_010000_create_blog_post_promotions.php` before deploying matching code
+(installed locally; production pending). No asset build is needed.
+
+Draft blog posts render their title as plain text and Preview as a native
+disabled button without a public URL, including the editor header and retained
+DataTables actions. The shared feature preview partial delegates to the normal
+table-action renderer. Edit and publication remain available. Published posts
+restore their public title/preview links with safe new-tab attributes. Public
+draft authorization and legacy/mobile contracts remain independent.
+
 ## Quiz directory and management dialogs
 
 The quiz directory uses `Services/Admin/QuizzesTable` and the shared table,
@@ -574,3 +597,56 @@ removal, preventing an add-after-remove operation from overwriting a retained
 question. Field errors and old input restore question text, choices, level and
 explicitly unchecked topics. Quiz records and topic assignments save together in
 a database transaction. No migration or new public endpoint is required.
+
+
+## Crash Courses directory and topics
+
+Crash Courses uses `Services/Admin/CrashCoursesTable` and the shared table for SQL
+search by title, description, topic or ID, publication/topic filters, fixed sorts
+and 12-result pagination. Lesson and active-subscription counts are SQL
+aggregates; directory rendering does not load subscriptions per row. Row actions
+retain public previews, Edit and confirmed Delete. Native publication forms save
+an explicit state under a course lock, preserving an existing publication date.
+Status/delete returns clamp the filtered page, and editor breadcrumbs/forms keep
+the directory query. Existing authenticated DataTables/status requests remain
+available without loading DataTables on this index.
+
+Manage topics sits beside Create course. Its compact native create/name/save/
+confirmed-delete forms use the shared modal, input and action components.
+`CrashCourseTopics` scopes validation and old input to the submitted form,
+validates names and slug collisions, and reopens the modal with directory state.
+The directory uses `topic_id` separately from the slug-bound `{topic}` route.
+Deleting the selected topic clears only that filter. Topic deletion transactionally
+detaches its assignments through the corrected inverse pivot keys, preserving
+other topics and courses. The old topic index redirects to the modal, and its
+sidebar entry and unused standalone views are removed. Existing subscriptions,
+lessons, public/media routes and shared/mobile serialization remain unchanged.
+No migration or asset build is required; production deployment is pending.
+
+### Question audio and image selection
+
+Every quiz question has Choose audio and Choose image buttons. Both open one
+shared modal with the matching existing library, shared search form, 12-file
+pagination, image thumbnails or native audio previews, and a file-selection
+action. The selected filename and preview appear on that question; Remove media
+clears the pending attachment. A question retains the existing single-media
+format, so choosing another file replaces its attachment. Library reads use the
+admin-only `admin.quizzes.media.choose` route, never navigate away from the draft,
+and do not upload, rename or delete files.
+
+`Services/Admin/QuizQuestionMedia` separates the editor's question text from its
+hidden selection and converts them back into the original bracketed reference on
+save. Existing bracket-based submissions and public/mobile serialization remain
+unchanged. URL-encode new file references so spaces, brackets and hashes in
+filenames work. New selections must resolve to existing, canonical quiz-library
+files; reject external URLs, other storage areas and path escapes. An unchanged
+saved reference can be retained even when its original file is missing, with an
+explicit unavailable preview; it can still be removed or replaced. Validation
+restores both the draft text and selected media.
+
+The picker aborts superseded/closed requests and rejects late replies for another
+or removed question. Search, pagination, retry and selection share the current
+modal context. Pause native audio when changing libraries, removing media or
+closing the dialog; return focus to the question's opening button. The standard
+shared alert renders load failures. No migration, CSS override or public API
+change is required.

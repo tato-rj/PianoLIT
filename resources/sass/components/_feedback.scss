@@ -10,7 +10,7 @@
         --radius-button: 999px;
         position: fixed;
         z-index: 1020;
-        right: calc(16px + env(safe-area-inset-right, 0px));
+        right: var(--feedback-right, calc(16px + env(safe-area-inset-right, 0px)));
         bottom: unquote(
             'max(calc(var(--feedback-bottom) + 12px), calc(env(safe-area-inset-bottom, 0px) + 12px))'
         );
@@ -38,7 +38,7 @@
     .feedback-confirmation {
         position: fixed;
         z-index: 1020;
-        right: calc(16px + env(safe-area-inset-right, 0px));
+        right: var(--feedback-right, calc(16px + env(safe-area-inset-right, 0px)));
         bottom: unquote(
             'max(calc(var(--feedback-bottom) + 60px), calc(env(safe-area-inset-bottom, 0px) + 60px))'
         );

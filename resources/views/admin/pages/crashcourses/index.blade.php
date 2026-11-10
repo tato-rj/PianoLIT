@@ -1,39 +1,54 @@
 @extends('admin.layouts.app')
 
-@section('head')
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
-@endsection
-
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
-    @include('admin.components.page.title', [
-      'icon' => 'graduation-cap', 
-      'title' => 'Crash Courses', 
-      'subtitle' => 'Manage the crash courses available on the website.',
-      'action' => ['label' => 'Create a new Crash Course', 'url' => route('admin.crashcourses.create')]
+@php($filtered = $filters['search'] !== '' || $filters['status'] !== '' || $filters['topic_id'] !== '')
+<div class="content-wrapper"><div class="container-fluid">
+    @component('admin.components.page.title', [
+        'title' => 'Crash Courses', 'subtitle' => 'Manage courses, lessons and topics.',
     ])
-
-    @datatable(['table' => 'crash_courses', 'columns' => ['Date', 'Title', 'Number of lessons', 'Active subscriptions', 'Published', '']])
-
-  </div>
-</div>
-
-@include('admin.components.modals.delete')
+        <a href="{{ route('admin.crashcourses.create', $returnFilters) }}" class="btn btn-dark btn-sm">@icon('plus')Create course</a>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#crashcourse-topics-modal">@icon('tag')Manage topics</button>
+    @endcomponent
+    @component('admin.components.table', [
+        'id' => 'crashcourses-table', 'label' => 'Crash courses', 'items' => $crashcourses,
+        'action' => route('admin.crashcourses.index'), 'state' => $filters, 'sortQuery' => $returnFilters,
+        'search' => ['label' => 'Find a course', 'placeholder' => 'Title, description, topic or ID'],
+        'filters' => [
+            ['name' => 'status', 'label' => 'Publication', 'options' => ['' => 'All statuses', 'published' => 'Published', 'draft' => 'Draft']],
+            ['name' => 'topic_id', 'label' => 'Topic', 'options' => ['' => 'All topics'] + $topics->pluck('name', 'id')->all()],
+        ],
+        'sorts' => \App\Services\Admin\CrashCoursesTable::SORTS,
+        'showReset' => $filtered || $filters['sort'] !== 'date_desc' || $filters['per_page'] !== \App\Support\AdminPagination::PER_PAGE,
+        'columns' => [
+            ['label' => 'Date', 'sort' => ['asc' => 'date_asc', 'desc' => 'date_desc']],
+            ['label' => 'Course', 'sort' => ['asc' => 'title_asc', 'desc' => 'title_desc']],
+            ['label' => 'Lessons', 'sort' => ['asc' => 'lessons_asc', 'desc' => 'lessons_desc']],
+            ['label' => 'Active subscriptions', 'sort' => ['asc' => 'active_asc', 'desc' => 'active_desc']],
+            ['label' => 'Publication', 'sort' => ['asc' => 'published_asc', 'desc' => 'published_desc']],
+            ['label' => 'Actions', 'hidden' => true],
+        ],
+        'emptyTitle' => $crashcourses->total() ? 'No courses on this page' : ($filtered ? 'No matching courses' : 'No courses yet'),
+        'emptyDescription' => $filtered ? 'Try another search or clear the filters.' : 'Create a course to add its lessons.',
+        'emptyAction' => $crashcourses->total() ? ['label' => 'First page', 'url' => $crashcourses->url(1)] : null,
+    ])
+        @include('admin.pages.crashcourses.table.rows')
+    @endcomponent
+</div></div>
+@include('admin.components.modals.delete', ['deleteDescription' => 'Delete this crash course?'])
+@include('admin.pages.crashcourses.topics.modal')
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
-
-<script type="text/javascript">
-(new DataTable('#crash_courses-table')).columns([
-  {data: 'created_at', class: 'text-nowrap'},
-  {data: 'title', name: 'crash_courses.title', class: 'dataTables_main_column'},
-  {data: 'lessons', orderable: false, searchable: false},
-  {data: 'active_subscriptions', orderable: false, searchable: false},
-  {data: 'published', orderable: false, searchable: false},
-  {data: 'action', orderable: false, searchable: false},
-]).create();
+<script>
+(function () {
+    const modal = document.getElementById('crashcourse-topics-modal');
+    modal.addEventListener('hidden.bs.modal', function () {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get('manage') !== 'topics') return;
+        url.searchParams.delete('manage');
+        window.history.replaceState(null, '', url);
+    });
+    if (@json(request('manage')) === 'topics') window.bootstrap.Modal.getOrCreateInstance(modal).show();
+})();
 </script>
 @endsection

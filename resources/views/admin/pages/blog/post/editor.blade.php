@@ -23,7 +23,11 @@
         'breadcrumbs' => [['label' => 'Posts', 'url' => route('admin.posts.index', $returnFilters)]],
     ])
         @if($editing)
-        <a href="{{ route('posts.show', $post) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary">@icon($post->published_at ? 'globe' : 'eye'){{ $post->published_at ? 'View post' : 'Preview' }}</a>
+            @if($post->published_at)
+                <a href="{{ route('posts.show', $post) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary">@icon('globe')View post</a>
+            @else
+                <button type="button" class="btn btn-sm btn-secondary" disabled aria-disabled="true" title="Publish this post to view it.">@icon('eye')Preview</button>
+            @endif
         @endif
     @endcomponent
 
@@ -53,6 +57,10 @@
                     @image(['name' => $editing ? '' : 'cover_image', 'errorKey' => 'cover_image', 'accept' => '.jpg,.jpeg', 'buttonLabel' => $editing && $post->cover_path ? 'Change image' : 'Choose image', 'image' => $editing && $post->cover_path ? $post->cover_image() : asset('images/misc/placeholder-image-wide.png'), 'empty' => false, 'alt' => $editing ? 'Cover image for '.$post->title : 'No cover image selected'])
                     <p class="small text-muted mb-3">JPG · up to 1 MB. Confirm the crop before saving.</p>
                     @input(['bag' => 'default', 'id' => 'post-cover-credits', 'name' => 'cover_credits', 'label' => 'Image credits (optional)', 'placeholder' => 'Photographer or image source', 'value' => $hasOldInput ? '' : optional($post)->cover_credits, 'limit' => 120, 'required' => false])
+                @endcomponent
+                @component('admin.components.editor.section', ['id' => 'post-promotion', 'title' => 'Promotion', 'description' => 'Choose where this post directs readers.'])
+                    @select(['bag' => 'default', 'id' => 'post-promotion-destination', 'name' => 'promotion', 'label' => 'Destination', 'choices' => \App\Services\Blog\PostPromotions::CHOICES, 'value' => $promotionChoice])
+                    <p class="small text-muted mb-0">Shown on the article page. Changes take effect when you save.</p>
                 @endcomponent
             </div>
         </div>

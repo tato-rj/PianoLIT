@@ -16,10 +16,10 @@
       'theme' => 'create',
       'title' => 'New Crash Course',
       'subtitle' => 'Use this page to create a new course.',
-      'breadcrumbs' => [['label' => 'Crash courses', 'url' => route('admin.crashcourses.index')]]
+      'breadcrumbs' => [['label' => 'Crash courses', 'url' => route('admin.crashcourses.index', $returnFilters)]]
     ])
 
-      <form id="create-quiz" class="row" method="POST" action="{{route('admin.crashcourses.store')}}" autocomplete="off" enctype="multipart/form-data">
+      <form id="create-quiz" class="row" method="POST" action="{{route('admin.crashcourses.store', $returnFilters)}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         <div class="col-lg-4 col-md-6 col-12 mb-4">
           @image(['name' => 'cover_image', 'image' => asset('images/misc/placeholder-image.png'), 'empty' => true])

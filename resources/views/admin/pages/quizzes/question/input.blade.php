@@ -6,6 +6,12 @@
             if ($key != 0 && is_string($answer) && strpos($answer, '[x]') !== false) $selectedAnswer = $key;
         }
     }
+    $questionValue = is_scalar($row[0] ?? '') ? (string) ($row[0] ?? '') : '';
+    $mediaHelper = app(\App\Services\Admin\QuizQuestionMedia::class);
+    $parts = $separateMedia ? ['text' => $questionValue, 'media' => ''] : $mediaHelper->split($questionValue);
+    $mediaValue = $questionMedia[$questionIndex] ?? $parts['media'];
+    $mediaValue = is_string($mediaValue) ? $mediaValue : '';
+    $mediaSelection = $mediaHelper->selection($mediaValue);
 @endphp
 <fieldset class="border-top pt-3" data-quiz-question data-question-index="{{ $questionIndex }}">
     <legend class="visually-hidden" data-question-legend>Question {{ $number }}</legend>
@@ -13,7 +19,8 @@
         <h3 class="h5 mb-0" data-question-number>Question {{ $number }}</h3>
         @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'label' => 'Remove question '.$number, 'size' => 'xs', 'attributes' => ['data-remove-question' => true]]])
     </div>
-    @input(['bag' => 'default', 'id' => 'quiz-question-'.$questionIndex, 'name' => 'questions['.$questionIndex.'][0]', 'label' => 'Question', 'placeholder' => 'Enter a question', 'value' => is_scalar($row[0] ?? '') ? $row[0] : '', 'useOldInput' => false, 'errorKey' => 'questions.'.$questionIndex.'.0', 'required' => true])
+    @input(['bag' => 'default', 'id' => 'quiz-question-'.$questionIndex, 'name' => 'questions['.$questionIndex.'][0]', 'label' => 'Question', 'placeholder' => 'Enter a question', 'value' => $parts['text'], 'useOldInput' => false, 'errorKey' => 'questions.'.$questionIndex.'.0', 'required' => true])
+    @include('admin.pages.quizzes.question.media')
     <div class="row g-3">
         @for($answerIndex = 1; $answerIndex <= max(4, count($row) - 1); $answerIndex++)
         <div class="col-md-6">

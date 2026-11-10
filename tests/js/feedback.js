@@ -167,13 +167,14 @@ function floatingChecks() {
         ResizeObserver: class { constructor(callback) { this.callback = callback; } observe() {} },
         MutationObserver: class { constructor(callback) { this.callback = callback; } observe() {} }};
     const menu = new Element();
-    menu.getBoundingClientRect = () => ({width: 390, height: 82, top: win.innerHeight - 82, bottom: win.innerHeight});
+    menu.getBoundingClientRect = () => ({width: Math.min(640, win.innerWidth - 24), height: 82, right: win.innerWidth / 2 + Math.min(640, win.innerWidth - 24) / 2, top: win.innerHeight - 82, bottom: win.innerHeight});
     obstacles.push(menu);
     const floating = new Floating(root, win);
     function flush() { const callbacks = [...frames.values()]; frames.clear(); callbacks.forEach(callback => callback()); }
     function scroll(y) { win.scrollY = y; events.scroll(); flush(); }
     assert(!button.hidden); assert(!button.classList.contains('is-scrolled-away'));
     assert.strictEqual(root.style['--feedback-bottom'], '82px');
+    assert.strictEqual(root.style['--feedback-right'], '12px', 'Feedback follows the mobile menu edge.');
     scroll(100); assert(button.classList.contains('is-scrolled-away'));
     scroll(95); assert(button.classList.contains('is-scrolled-away'), 'Small upward movement cannot flicker the button');
     scroll(75); assert(!button.classList.contains('is-scrolled-away'));
@@ -181,7 +182,8 @@ function floatingChecks() {
     scroll(110); assert(button.classList.contains('is-scrolled-away'));
     scroll(0); assert(!button.classList.contains('is-scrolled-away'), 'Returning to the top always shows it');
 
-    mobile.matches = false; events.resize(); flush(); scroll(400);
+    mobile.matches = false; win.innerWidth = 1360; events.resize(); flush(); scroll(400);
+    assert.strictEqual(root.style['--feedback-right'], '360px', 'Feedback follows the centered desktop menu edge.');
     assert(!button.hidden); assert(!button.classList.contains('is-scrolled-away'), 'Desktop never hides while scrolling');
     const overlay = new Element();
     docEvents['show.bs.modal']({target: overlay}); assert(button.hidden, 'Hide before an opening modal can cover it');
@@ -194,7 +196,7 @@ function floatingChecks() {
     body.classList.add('score-editor-fullscreen-open'); floating.update(); assert(button.hidden); body.classList.remove('score-editor-fullscreen-open');
     docEvents.webkitbeginfullscreen(); assert(button.hidden); docEvents.webkitendfullscreen(); flush(); assert(!button.hidden);
 
-    mobile.matches = true; doc.activeElement = {matches: () => true}; docEvents.focusin(); flush(); assert(button.hidden);
+    mobile.matches = true; win.innerWidth = 390; doc.activeElement = {matches: () => true}; docEvents.focusin(); flush(); assert(button.hidden);
     doc.activeElement = null; docEvents.focusout(); flush(); assert(!button.hidden);
     win.visualViewport.height = 500; win.visualViewport.fire('resize'); flush(); assert(button.hidden, 'A keyboard can shrink the visual viewport without a focus event');
     win.visualViewport.height = 844; win.visualViewport.fire('resize'); flush(); assert(!button.hidden);

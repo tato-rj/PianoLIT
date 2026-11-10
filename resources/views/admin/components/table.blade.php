@@ -38,7 +38,7 @@
                 @endphp
                 <th scope="col" class="{{ $column['class'] ?? '' }}" @if(!empty($column['sort'])) aria-sort="{{ $direction === 'asc' ? 'ascending' : ($direction === 'desc' ? 'descending' : 'none') }}" @endif>
                     @if($nextSort)
-                    <a href="{{ $action.'?'.http_build_query(array_merge(request()->except($pageName), ['sort' => $nextSort])) }}" class="admin-table__sort">
+                    <a href="{{ $action.'?'.http_build_query(array_merge(array_diff_key($sortQuery ?? request()->except($pageName), [$pageName => true]), ['sort' => $nextSort])) }}" class="admin-table__sort">
                         {{ $column['label'] }}<span aria-hidden="true">{{ $direction === 'asc' ? '↑' : ($direction === 'desc' ? '↓' : '↕') }}</span><span class="visually-hidden">, sort {{ $direction === 'asc' ? 'descending' : 'ascending' }}</span>
                     </a>
                     @else<span @if(!empty($column['hidden'])) class="visually-hidden" @endif>{{ $column['label'] }}</span>@endif

@@ -14,6 +14,9 @@
     $questionRows = is_array($questionRows) ? $questionRows : [];
     $correctAnswers = $hasOldInput ? old('correct_answers', []) : [];
     $correctAnswers = is_array($correctAnswers) ? $correctAnswers : [];
+    $questionMedia = old('question_media', []);
+    $questionMedia = is_array($questionMedia) ? $questionMedia : [];
+    $separateMedia = $hasOldInput && session()->hasOldInput('question_media');
 @endphp
 <div class="content-wrapper"><div class="container-fluid">
     @component('admin.components.page.title', [
@@ -49,6 +52,7 @@
         @endcomponent
         @if($editing)<p class="small text-muted mt-3">Created by {{ optional($quiz->creator)->name ?: 'Unknown creator' }}.</p>@endif
     </form>
+    @include('admin.pages.quizzes.media.picker')
 </div></div>
 @endsection
 

@@ -24,7 +24,7 @@
         ['label' => $post->title],
     ]])
 
-    @component('components.layout.editorial')
+    @component('components.layout.editorial', ['showSidebar' => count($promotionCards) > 0])
         @if(! empty($preview))
             <div class="alert alert-warning mb-4" role="alert">
                 @icon('triangle-alert', ['mr' => 2])This post is <u>not published</u>. Only admins can see this page.
@@ -93,7 +93,7 @@
         @endif
 
         @slot('sidebar')
-            @include('components.promotions.hubs')
+            @include('components.promotions.hubs', ['hubs' => $promotionCards])
         @endslot
     @endcomponent
 </div>

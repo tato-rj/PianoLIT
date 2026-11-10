@@ -25,6 +25,6 @@ class CrashCourseTopic extends PianoLit
 
     public function crashcourses()
     {
-        return $this->belongsToMany(CrashCourse::class, 'crash_course_crash_course_topic', 'crash_course_id', 'topic_id');
+        return $this->belongsToMany(CrashCourse::class, 'crash_course_crash_course_topic', 'topic_id', 'crash_course_id');
     }
 }

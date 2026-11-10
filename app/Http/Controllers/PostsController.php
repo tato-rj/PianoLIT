@@ -31,15 +31,17 @@ class PostsController extends Controller
     public function show(Post $post)
     {
         $suggestions = $post->suggestions(8)->get();
+        $promotions = app(\App\Services\Blog\PostPromotions::class);
+        $promotionCards = $promotions->cards($promotions->choiceFor($post));
 
         if (! $post->published_at) {
             if (auth()->guard('admin')->check())
-                return view('blog.show', compact(['post', 'suggestions']))->with('preview', true);
+                return view('blog.show', compact('post', 'suggestions', 'promotionCards'))->with('preview', true);
 
             abort(404);
         }
 
-        return view('blog.show', compact(['post', 'suggestions']));
+        return view('blog.show', compact('post', 'suggestions', 'promotionCards'));
     }
 
     public function gift(Post $post)

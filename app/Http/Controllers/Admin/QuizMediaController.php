@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class QuizMediaController extends Controller
 {
+    public function choose(Request $request, string $type, QuizMedia $media)
+    {
+        return response()->view('admin.pages.quizzes.media.choices', $media->choices($request, $type))
+            ->header('X-Quiz-Media-Library', '1')
+            ->header('Cache-Control', 'private, no-store');
+    }
+
     public function audio(Request $request, QuizzesTable $table)
     {
         return redirect($table->url($request, 'audio'));

@@ -59,7 +59,8 @@ class AdminQuizEditorTest extends ReviewTestCase
         $xpath = $this->xpath($response);
         $this->assertSame(1, $xpath->query('//input[@name="correct_answers[0]" and @value="1" and @checked]')->length);
         $this->assertSame(1, $xpath->query('//input[@name="questions[0][1]" and @value="C"]')->length);
-        $this->assertSame(1, $xpath->query('//input[@name="questions[0][0]" and contains(@value,"/storage/quiz/images/note.png")]')->length);
+        $this->assertSame(1, $xpath->query('//input[@name="questions[0][0]" and @value="Name this note"]')->length);
+        $this->assertSame(1, $xpath->query('//input[@name="question_media[0]" and @value="/storage/quiz/images/note.png"]')->length);
     }
 
     public function test_sparse_question_indices_and_correct_choices_save_in_existing_public_format()
@@ -146,5 +147,78 @@ class AdminQuizEditorTest extends ReviewTestCase
         }
         $this->assertSame('Reading notes', $quiz->fresh()->title);
         $this->assertSame([$old->id], $quiz->topics()->pluck('quiz_topics.id')->all());
+    }
+
+    public function test_media_picker_is_scoped_searchable_paginated_and_read_only()
+    {
+        for ($i = 0; $i < 13; $i++) Storage::disk('public')->put('quiz/images/'.sprintf('%02d', $i).'.png', 'image');
+        Storage::disk('public')->put('quiz/audio/other.wav', 'audio');
+        $response = $this->get(route('admin.quizzes.media.choose', 'images'))->assertOk()->assertHeader('X-Quiz-Media-Library', '1');
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+        $this->assertSame(12, $this->xpath($response)->query('//button[@data-select-quiz-media]')->length);
+        $response->assertDontSee('other.wav');
+        $response = $this->get(route('admin.quizzes.media.choose', ['type' => 'images', 'page' => 2]))->assertOk();
+        $this->assertSame(1, $this->xpath($response)->query('//button[@data-select-quiz-media]')->length);
+        Storage::disk('public')->put('quiz/images/100% note.png', 'image');
+        $response = $this->get(route('admin.quizzes.media.choose', ['type' => 'images', 'search' => '%']))->assertOk()->assertSee('100% note.png');
+        $this->assertSame(1, $this->xpath($response)->query('//button[@data-select-quiz-media]')->length);
+        $this->get(route('admin.quizzes.media.choose', ['type' => 'images', 'search' => 'missing']))->assertOk()->assertSee('No files match this search.');
+        $this->assertSame(0, Quiz::count());
+        $this->withExceptionHandling()->get(route('admin.quizzes.media.choose', 'other'))->assertNotFound();
+        $this->getJson(route('admin.quizzes.media.choose', ['type' => 'images', 'page' => 'bad']))->assertStatus(422);
+        auth('admin')->logout();
+        $this->get(route('admin.quizzes.media.choose', 'images'))->assertRedirect();
+    }
+
+    public function test_chosen_image_audio_and_removal_keep_the_existing_saved_question_format()
+    {
+        $quiz = $this->quiz();
+        Storage::disk('public')->put('quiz/images/note [sharp] #1.png', 'image');
+        Storage::disk('public')->put('quiz/audio/interval.wav', 'audio');
+        $image = '/storage/quiz/images/note%20%5Bsharp%5D%20%231.png';
+        $response = $this->get(route('admin.quizzes.media.choose', 'images'))->assertOk();
+        $this->assertSame(1, $this->xpath($response)->query('//button[@data-path="'.$image.'"]')->length);
+        $this->patch(route('admin.quizzes.update', $quiz), $this->data(['question_media' => [0 => $image]]))->assertRedirect();
+        $quiz = $quiz->fresh();
+        $this->assertSame('Which note? ['.$image.']', $quiz->questions[0]['Q']);
+        $this->assertSame($image, $quiz->questions()[0]['image']);
+        $this->assertSame(1, $quiz->getAnswer(0));
+        $this->patch(route('admin.quizzes.update', $quiz), $this->data(['question_media' => [0 => '/storage/quiz/audio/interval.wav']]))->assertRedirect();
+        $quiz = $quiz->fresh();
+        $this->assertSame('/storage/quiz/audio/interval.wav', $quiz->questions()[0]['audio']);
+        $this->assertNull($quiz->questions()[0]['image']);
+        $this->patch(route('admin.quizzes.update', $quiz), $this->data(['question_media' => [0 => '']]))->assertRedirect();
+        $this->assertSame('Which note?', $quiz->fresh()->questions[0]['Q']);
+    }
+
+    public function test_media_validation_restores_selection_and_rejects_foreign_or_escaped_paths()
+    {
+        $quiz = $this->quiz();
+        Storage::disk('public')->put('quiz/images/note.png', 'image');
+        $this->withExceptionHandling()->from(route('admin.quizzes.edit', $quiz))->patch(route('admin.quizzes.update', $quiz), $this->data(['title' => 'x', 'question_media' => [0 => '/storage/quiz/images/note.png']]))
+            ->assertSessionHasErrors('title');
+        $response = $this->get(route('admin.quizzes.edit', $quiz))->assertOk();
+        $xpath = $this->xpath($response);
+        $this->assertSame(1, $xpath->query('//input[@name="questions[0][0]" and @value="Which note?"]')->length);
+        $this->assertSame(1, $xpath->query('//input[@name="question_media[0]" and @value="/storage/quiz/images/note.png"]')->length);
+        foreach (['https://other.example/storage/quiz/images/note.png', '/storage/quiz/images/%2e%2e/private.png', '/storage/private.png', '/storage/quiz/images/missing.png'] as $value) {
+            $this->patch(route('admin.quizzes.update', $quiz), $this->data(['question_media' => [0 => $value]]))->assertSessionHasErrors('question_media.0');
+        }
+        Storage::disk('public')->put('private.png', 'private');
+        symlink(Storage::disk('public')->path('private.png'), Storage::disk('public')->path('quiz/images/escape.png'));
+        $this->patch(route('admin.quizzes.update', $quiz), $this->data(['question_media' => [0 => '/storage/quiz/images/escape.png']]))->assertSessionHasErrors('question_media.0');
+        unlink(Storage::disk('public')->path('quiz/images/escape.png'));
+        $this->get(route('admin.quizzes.media.choose', 'images'))->assertOk()->assertDontSee('escape.png');
+    }
+
+    public function test_missing_saved_media_can_be_retained_or_explicitly_removed()
+    {
+        $quiz = $this->quiz();
+        $this->patch(route('admin.quizzes.update', $quiz), $this->data(['question_media' => [0 => '/storage/quiz/images/note.png']]))->assertRedirect();
+        $this->assertSame('Which note? [/storage/quiz/images/note.png]', $quiz->fresh()->questions[0]['Q']);
+        $response = $this->get(route('admin.quizzes.edit', $quiz->fresh()))->assertOk()->assertSee('File unavailable.');
+        $this->assertSame(0, $this->xpath($response)->query('//img[@data-question-media-image and @src]')->length);
+        $this->patch(route('admin.quizzes.update', $quiz->fresh()), $this->data(['question_media' => [0 => '']]))->assertRedirect();
+        $this->assertSame('Which note?', $quiz->fresh()->questions[0]['Q']);
     }
 }

@@ -1,4 +1,4 @@
-        <form method="POST" action="{{route('admin.crashcourses.update', $crashcourse)}}" autocomplete="off" enctype="multipart/form-data">
+        <form method="POST" action="{{route('admin.crashcourses.update', ['crashcourse' => $crashcourse] + $returnFilters)}}" autocomplete="off" enctype="multipart/form-data">
           @csrf
           @method('PATCH')
             @image(['name' => null, 'image' => $crashcourse->cover_image(), 'empty' => true])

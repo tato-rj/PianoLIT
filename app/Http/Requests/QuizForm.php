@@ -31,7 +31,11 @@ class QuizForm extends FormRequest
                 }
                 $answers[] = $value;
             }
-            $quiz[] = ['Q' => $question[0], 'A' => $answers];
+            $text = $question[0];
+            if (is_array($this->input('question_media'))) {
+                $text = app(\App\Services\Admin\QuizQuestionMedia::class)->join($text, (string) $this->input('question_media.'.$index, ''));
+            }
+            $quiz[] = ['Q' => $text, 'A' => $answers];
         }
         return $quiz;
     }
@@ -51,6 +55,8 @@ class QuizForm extends FormRequest
             'quiz_editor' => 'sometimes|in:1',
             'correct_answers' => 'nullable|array',
             'correct_answers.*' => 'nullable|integer|min:1',
+            'question_media' => 'nullable|array',
+            'question_media.*' => 'nullable|string|max:2048',
             'cover_image' => 'sometimes|required|image|mimes:jpeg,jpg|max:1024',
         ];
     }
@@ -65,6 +71,13 @@ class QuizForm extends FormRequest
                     continue;
                 }
                 if (!is_array($row)) continue;
+                if (is_array($this->input('question_media'))) {
+                    $value = $this->input('question_media.'.$index) ?? '';
+                    $quiz = $this->route('quiz');
+                    if (is_string($value) && !app(\App\Services\Admin\QuizQuestionMedia::class)->allowed($value, $quiz instanceof \App\Quiz\Quiz ? $quiz : null, $index)) {
+                        $validator->errors()->add('question_media.'.$index, 'This file is unavailable. Choose another file or remove the media.');
+                    }
+                }
                 $answers = [];
                 foreach ($row as $key => $value) {
                     if (!ctype_digit((string) $key)) {

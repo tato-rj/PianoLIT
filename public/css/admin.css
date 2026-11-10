@@ -29413,6 +29413,11 @@ button.bg-primary:focus {
   width: 100%;
   justify-content: space-between;
 }
+@media (min-width: 992px) {
+  .score-editor:not(.is-fullscreen) .score-footer-actions {
+    justify-content: flex-end;
+  }
+}
 @media (max-width: 360px) {
   .score-editor:not(.is-fullscreen) .score-view-controls {
     gap: 4px;

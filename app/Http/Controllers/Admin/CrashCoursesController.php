@@ -7,26 +7,30 @@ use App\Http\Controllers\Controller;
 use App\CrashCourse\{CrashCourse, CrashCourseTopic};
 use App\Mail\CrashCourseFeedbackEmail;
 use App\Files\Uploaders\ImageUpload;
+use App\Services\Admin\CrashCoursesTable;
+use Illuminate\Support\Facades\DB;
 
 class CrashCoursesController extends Controller
 {
-    public function index()
+    public function index(Request $request, CrashCoursesTable $table)
     {
         if (request()->ajax())
             return CrashCourse::datatable();
 
-        return view('admin.pages.crashcourses.index');
+        return view('admin.pages.crashcourses.index', $table->get($request));
     }
 
-    public function create()
+    public function create(Request $request, CrashCoursesTable $table)
     {
         $topics = CrashCourseTopic::all();
+        $returnFilters = $table->state($request);
 
-        return view('admin.pages.crashcourses.create', compact(['topics']));
+        return view('admin.pages.crashcourses.create', compact('topics', 'returnFilters'));
     }
 
     public function store(Request $request)
     {
+        $returnFilters = app(CrashCoursesTable::class)->state($request);
         $request->validate([
             'title' => 'required|min:4|max:120',
             'description' => 'required|max:238',
@@ -48,7 +52,7 @@ class CrashCoursesController extends Controller
 
         $crashcourse->topics()->attach($request->topics);
 
-        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', 'The crashcourse has been successfuly created!');
+        return redirect(route('admin.crashcourses.edit', ['crashcourse' => $crashcourse] + $returnFilters))->with('status', 'Course created.');
     }
 
     public function feedbackPreview(CrashCourse $crashcourse)
@@ -63,15 +67,17 @@ class CrashCoursesController extends Controller
         return back()->with('status', 'A preview was sent to ' . $request->email);
     }
 
-    public function edit(CrashCourse $crashcourse)
+    public function edit(Request $request, CrashCourse $crashcourse, CrashCoursesTable $table)
     {
         $topics = CrashCourseTopic::all();
+        $returnFilters = $table->state($request);
 
-        return view('admin.pages.crashcourses.edit.index', compact(['crashcourse', 'topics']));
+        return view('admin.pages.crashcourses.edit.index', compact('crashcourse', 'topics', 'returnFilters'));
     }
 
     public function update(Request $request, CrashCourse $crashcourse)
     {
+        $returnFilters = app(CrashCoursesTable::class)->state($request);
         $request->validate([
             'title' => 'required|min:4|max:120',
             'description' => 'required|max:238',
@@ -92,18 +98,28 @@ class CrashCoursesController extends Controller
 
         $crashcourse->topics()->sync($request->topics);
 
-        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', 'The course has been successfuly updated!');
+        return redirect(route('admin.crashcourses.edit', ['crashcourse' => $crashcourse] + $returnFilters))->with('status', 'Course saved.');
     }
 
-    public function updateStatus(CrashCourse $crashcourse)
+    public function updateStatus(Request $request, CrashCourse $crashcourse, CrashCoursesTable $table)
     {
+        if ($request->input('return_to') === 'directory') {
+            $filters = $table->filters(Request::create('/', 'GET', $request->query()));
+            $data = $request->validate(['published' => 'required|boolean']);
+            DB::transaction(function () use ($crashcourse, $data) {
+                $record = CrashCourse::whereKey($crashcourse->id)->lockForUpdate()->firstOrFail();
+                $record->update(['published_at' => $data['published'] ? ($record->published_at ?? now()) : null]);
+            });
+            return $table->redirect($filters)->with('status', 'Publication saved.');
+        }
         return $this->updateStatusFor($crashcourse);
     }
 
-    public function destroy(CrashCourse $crashcourse)
+    public function destroy(Request $request, CrashCourse $crashcourse, CrashCoursesTable $table)
     {
-        $crashcourse->delete();
+        $filters = $table->filters(Request::create('/', 'GET', $request->query()));
+        DB::transaction(fn () => $crashcourse->delete());
 
-        return redirect()->back()->with('status', 'The course has been successfuly deleted!');
+        return $table->redirect($filters)->with('status', 'Course deleted.');
     }
 }

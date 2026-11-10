@@ -49,7 +49,7 @@ class BlogPostEditorTest extends ReviewTestCase
                 ->assertSee('Post details')->assertSee('Article content')->assertSee('Cover image')->assertSee('References')
                 ->assertSee('data-table-save-actions', false)->assertDontSee('Gift path here')->assertDontSee('cropperjs/1.4.3');
             $xpath = $this->xpath($response);
-            $this->assertCount(5, $xpath->query('//section[contains(@class,"admin-editor-section")]'));
+            $this->assertCount(6, $xpath->query('//section[contains(@class,"admin-editor-section")]'));
             $this->assertCount(1, $xpath->query('//form[@id="post-editor"]//input[@name="_token"]'));
             $this->assertCount(0, $xpath->query('//form//form'));
             $this->assertCount(1, $xpath->query('//label[@for="editor"]'));
@@ -60,7 +60,8 @@ class BlogPostEditorTest extends ReviewTestCase
             if ($kind === 'edit') {
                 $this->assertSame($post->content, $xpath->query('//textarea[@name="content"]')->item(0)->textContent);
                 $this->assertSame('First saved source', $xpath->query('//input[@id="post-reference-0"]')->item(0)->getAttribute('value'));
-                $this->assertCount(1, $xpath->query('//a[@href="'.route('posts.show', $post).'" and @target="_blank" and @rel="noopener noreferrer"]'));
+                $this->assertCount(0, $xpath->query('//a[@href="'.route('posts.show', $post).'"]'));
+                $this->assertCount(1, $xpath->query('//*[@id="page-title"]//button[@disabled and @aria-disabled="true"]'));
             }
             if ($directory = getenv('BLOG_POST_EDITOR_PREVIEW_DIR')) {
                 $html = str_replace(['http://admin.localhost', 'http://localhost'], 'http://127.0.0.1:8771', $response->getContent());

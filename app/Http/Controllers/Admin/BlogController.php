@@ -8,6 +8,7 @@ use App\Http\Requests\PostForm;
 use App\Files\Uploaders\ImageUpload;
 use App\Blog\{Topic, Post};
 use App\Services\Admin\PostsTable;
+use App\Services\Blog\PostPromotions;
 use Illuminate\Support\Facades\DB;
 
 class BlogController extends Controller
@@ -16,8 +17,9 @@ class BlogController extends Controller
     {
         $topics = Topic::orderBy('name')->get();
         $returnFilters = $table->state($request);
+        $promotionChoice = PostPromotions::DEFAULT_CHOICE;
 
-        return view('admin.pages.blog.post.create', compact('topics', 'returnFilters'));
+        return view('admin.pages.blog.post.create', compact('topics', 'returnFilters', 'promotionChoice'));
     }
 
     public function store(Request $request, PostForm $form)
@@ -42,6 +44,7 @@ class BlogController extends Controller
             ]);
 
             $post->topics()->attach($request->topics);
+            if ($form->has('promotion')) app(PostPromotions::class)->save($post, $form->promotion);
         });
 
         return redirect()->route('admin.posts.index', $returnFilters)->with('status', 'Post created.');
@@ -51,8 +54,9 @@ class BlogController extends Controller
     {
         $topics = Topic::orderBy('name')->get();
         $returnFilters = $table->state($request);
+        $promotionChoice = app(PostPromotions::class)->choiceFor($post);
 
-        return view('admin.pages.blog.post.edit', compact('post', 'topics', 'returnFilters'));
+        return view('admin.pages.blog.post.edit', compact('post', 'topics', 'returnFilters', 'promotionChoice'));
     }
 
     public function update(Request $request, Post $post, PostForm $form)
@@ -77,6 +81,7 @@ class BlogController extends Controller
             ]);
 
             $post->topics()->sync($request->topics);
+            if ($form->has('promotion')) app(PostPromotions::class)->save($post, $form->promotion);
         });
 
         return redirect()->route('admin.posts.edit', ['post' => $post->fresh()] + $returnFilters)->with('status', 'Post saved.');
