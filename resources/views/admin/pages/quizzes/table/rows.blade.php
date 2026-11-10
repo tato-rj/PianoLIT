@@ -16,7 +16,7 @@
         </form>
     </td>
     <td><div class="d-flex flex-nowrap align-items-center justify-content-end gap-2">
-        @include('admin.components.table-action', ['tableAction' => ['label' => 'Preview '.$quiz->title, 'url' => route('quizzes.show', $quiz), 'icon' => 'eye', 'iconOnly' => true, 'attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer']]])
+        @include('admin.pages.quizzes.table.preview', ['previewQuiz' => $quiz])
         @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.quizzes.edit', ['quiz' => $quiz] + $returnFilters), 'attributes' => ['aria-label' => 'Edit '.$quiz->title]]])
         @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'class' => 'delete', 'attributes' => ['data-url' => route('admin.quizzes.destroy', ['quiz' => $quiz] + $returnFilters), 'data-bs-toggle' => 'modal', 'data-bs-target' => '#delete-modal', 'aria-label' => 'Delete '.$quiz->title]]])
     </div></td>

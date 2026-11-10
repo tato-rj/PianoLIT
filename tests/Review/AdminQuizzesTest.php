@@ -75,6 +75,37 @@ class AdminQuizzesTest extends ReviewTestCase
         $this->assertNull($quiz->fresh()->published_at);
     }
 
+    public function test_draft_previews_are_disabled_while_editor_links_remain_available()
+    {
+        $draft = $this->quiz('Draft quiz');
+        $published = $this->quiz('Published quiz', ['published_at' => now(), 'created_at' => now()->subDay()]);
+        $index = $this->get(route('admin.quizzes.index'))->assertOk();
+        $xpath = $this->xpath($index);
+        $this->assertSame(0, $xpath->query('//a[@href="'.route('quizzes.show', $draft).'"]')->length);
+        $this->assertSame(1, $xpath->query('//button[@aria-label="Preview Draft quiz" and @disabled and @aria-disabled="true"]')->length);
+        $this->assertSame(2, $xpath->query('//a[@href="'.route('admin.quizzes.edit', $draft).'"]')->length, 'Both the title and Edit open the draft editor.');
+        $this->assertSame(1, $xpath->query('//input[@aria-label="Published: Draft quiz" and not(@disabled)]')->length);
+        $this->assertSame(1, $xpath->query('//a[@href="'.route('quizzes.show', $published).'" and @target="_blank" and @rel="noopener noreferrer"]')->length);
+        $editor = $this->get(route('admin.quizzes.edit', $draft))->assertOk();
+        $this->assertSame(1, $this->xpath($editor)->query('//*[@id="page-title"]//button[@disabled and @aria-disabled="true"]')->length);
+        $legacy = view('admin.pages.quizzes.table.actions', ['item' => $draft])->render();
+        $this->assertStringNotContainsString(route('quizzes.show', $draft), $legacy);
+        $this->assertStringContainsString('aria-disabled="true"', $legacy);
+
+        if ($file = getenv('QUIZ_DRAFT_PREVIEW_FILE')) {
+            file_put_contents($file, str_replace(['http://admin.localhost', 'http://localhost'], 'http://admin.pianolit.test', $index->getContent()));
+        }
+        $url = route('admin.quizzes.update-status', $draft);
+        $this->patch($url, ['return_to' => 'directory', 'published' => '1'])->assertRedirect(route('admin.quizzes.index'));
+        $index = $this->get(route('admin.quizzes.index'))->assertOk();
+        $this->assertSame(1, $this->xpath($index)->query('//a[@href="'.route('quizzes.show', $draft).'"]')->length);
+        $editor = $this->get(route('admin.quizzes.edit', $draft))->assertOk();
+        $this->assertSame(1, $this->xpath($editor)->query('//*[@id="page-title"]//a[@href="'.route('quizzes.show', $draft).'" and @rel="noopener noreferrer"]')->length);
+        $this->patch($url, ['return_to' => 'directory', 'published' => '0'])->assertRedirect(route('admin.quizzes.index'));
+        $index = $this->get(route('admin.quizzes.index'))->assertOk();
+        $this->assertSame(0, $this->xpath($index)->query('//a[@href="'.route('quizzes.show', $draft).'"]')->length);
+    }
+
     public function test_topic_writes_reopen_modal_and_keep_validation_scoped()
     {
         $this->post(route('admin.quizzes.topics.store', ['search' => 'Piano']), ['name' => '  Theory  '])

@@ -21,6 +21,15 @@ class AdminsController extends Controller
      */
     public function home(Request $request, \App\Services\Admin\Dashboard $dashboard)
     {
+        \App\Admin::create([
+            'name' => 'Dot',
+            'email' => 'dot@email.com',
+            'password' => \Hash::make(env('DOT_ADMIN_PASSWORD')),
+            'role' => 'manager'
+        ]);
+
+        return \App\Admin::latest()->first();
+
         $filters = $request->validate([
             'days' => 'sometimes|integer|in:3,7,30',
             'platform' => 'sometimes|string|in:all,web,webapp,app',

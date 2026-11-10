@@ -25,7 +25,11 @@
         'breadcrumbs' => [['label' => 'Quizzes', 'url' => route('admin.quizzes.index', $returnFilters)]],
     ])
         @if($editing)
-        <a href="{{ route('quizzes.show', $quiz) }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">@icon($quiz->published_at ? 'external-link' : 'eye'){{ $quiz->published_at ? 'View quiz' : 'Preview quiz' }}</a>
+            @if($quiz->published_at)
+                <a href="{{ route('quizzes.show', $quiz) }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">@icon('external-link')View quiz</a>
+            @else
+                <button type="button" class="btn btn-secondary btn-sm" disabled aria-disabled="true" title="Publish this quiz to view it.">@icon('eye')Preview quiz</button>
+            @endif
         @endif
         <a href="#quiz-details" class="btn btn-secondary btn-sm">Details</a>
         <a href="#quiz-questions" class="btn btn-secondary btn-sm">Questions</a>

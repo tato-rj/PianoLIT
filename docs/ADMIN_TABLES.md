@@ -546,6 +546,13 @@ draft authorization and legacy/mobile contracts remain independent.
 
 ## Quiz directory and management dialogs
 
+Draft quizzes render public Preview controls as native disabled buttons without
+URLs in both table paths and the editor header. Published quizzes retain safe
+new-tab public links. Titles and Edit continue opening the admin editor; keep
+publication controls available. The feature preview partial uses the shared
+table-action renderer and standard disabled styles. Public authorization and
+mobile/API contracts remain unchanged.
+
 The quiz directory uses `Services/Admin/QuizzesTable` and the shared table,
 filters, switches, row actions and 12-result pagination. Search runs in SQL over
 title/description/ID with escaped LIKE wildcards; publication, topic and level

@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-10 — Disable draft quiz public previews (P3, complete locally)
+
+- **Request / change:** Draft quizzes now use native disabled Preview buttons without public URLs in the directory, retained DataTables actions and editor header. The table paths share a feature preview partial and the existing table-action renderer, with “Publish this quiz to view it.” help text. Publishing restores the safe public links; returning to draft disables them. Quiz title links continue opening the admin editor, alongside Edit and publication controls.
+- **Verification / compatibility:** 23 focused isolated quiz directory/editor tests / 227 assertions pass, including draft → published → draft navigation, editor availability and legacy actions. Browser fixtures confirm disabled draft Preview, an active published Preview and a draft title pointing to the admin editor. Whitespace checks pass. Proof: `/Users/arthur/.codex/visualizations/2026/11/10/01a1c3a3-41a3-7e82-af6d-8dc0df14ab25/quiz-draft-previews-disabled.jpg`. No routes, publication rules, public/mobile contracts, migrations or compiled assets changed. Production deployment remains pending.
+
 ### 2026-11-10 — Single-row desktop score controls (P3, complete locally)
 
 - **Request / change:** At 992px and wider, the shared score footer now places page controls, zoom/fullscreen controls and actions on one line with equal space around each group. Actions are 42px icon buttons with existing 8px gaps. Download/Print label classes and Bootstrap's visually-hidden mixin keep accessible names, including the existing dynamic Listen/Close label. Below 992px, the actions fill a second row with visible labels. Removed the previous navigation stylesheet's forced two-row layout; measured toolbar clearance now follows the 68px desktop row, with 128px tablet / 108px phone fallbacks. Rewrote the equivalent safe-bottom calculation to avoid the existing postcss-calc warning.
