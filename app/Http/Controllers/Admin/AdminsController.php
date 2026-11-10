@@ -28,7 +28,7 @@ class AdminsController extends Controller
         //     'role' => 'manager'
         // ]);
 
-        // return \App\Admin::latest()->first();
+        return \App\Admin::latest()->first();
 
         $filters = $request->validate([
             'days' => 'sometimes|integer|in:3,7,30',
