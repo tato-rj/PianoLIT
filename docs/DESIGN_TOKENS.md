@@ -154,13 +154,15 @@ Outside full-screen score reading, the score controls share the menu's centered
 the visible menu, allowing for an open audio player. Its measured height already
 includes the bottom safe area; do not add that inset again. When the menu hides,
 the controls settle above the bottom safe area. Keep score page spacing constant
-during this movement and use two control rows within the shared width.
-At 992px and wider, keep the second row's score actions together at the right
-with their existing 8px gap and content widths. Phones retain the evenly sized
-action buttons.
+during this movement. At 992px and wider, keep one line with space around three
+groups: page controls, zoom/fullscreen controls and actions. Actions use 42px
+icon buttons with 8px gaps; visually hide their text through Bootstrap's shared
+mixin so Listen/Close and Print retain accessible names. Below 992px, page/zoom
+stay on the first row and the actions fill the second row with their labels
+visible. Keep the mobile buttons flexible across that full-width row.
 Reserve navigation space once, in the page margin. The score editor reserves
-only the measured toolbar height through `--score-controls-space` (128px desktop
-and 108px phone fallbacks). The navigation controller observes the toolbar and
+only the measured toolbar height through `--score-controls-space` (68px desktop,
+128px tablet and 108px phone fallbacks). The navigation controller observes the toolbar and
 keeps its last visible measurement while its tab is hidden. Piece pages omit
 the Feedback utility and its 56px page padding on every tab. Together with the
 existing message-row/page gaps, this leaves about 24px above the visible score

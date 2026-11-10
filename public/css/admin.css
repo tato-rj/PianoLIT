@@ -29406,17 +29406,6 @@ button.bg-primary:focus {
 
 .score-editor:not(.is-fullscreen) .score-footer {
   transform: none;
-  flex-wrap: wrap;
-}
-.score-editor:not(.is-fullscreen) .score-view-controls,
-.score-editor:not(.is-fullscreen) .score-footer-actions {
-  width: 100%;
-  justify-content: space-between;
-}
-@media (min-width: 992px) {
-  .score-editor:not(.is-fullscreen) .score-footer-actions {
-    justify-content: flex-end;
-  }
 }
 @media (max-width: 360px) {
   .score-editor:not(.is-fullscreen) .score-view-controls {

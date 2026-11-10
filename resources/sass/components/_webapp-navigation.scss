@@ -11,17 +11,6 @@
 .score-editor:not(.is-fullscreen) {
     .score-footer {
         transform: none;
-        flex-wrap: wrap;
-    }
-
-    .score-view-controls,
-    .score-footer-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    @media (min-width: 992px) {
-        .score-footer-actions { justify-content: flex-end; }
     }
 
     @media (max-width: 360px) {

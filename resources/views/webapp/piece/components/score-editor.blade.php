@@ -115,11 +115,11 @@
                 <button type="button" @if($audioPreviewSeconds === 0) data-bs-toggle="modal" data-bs-target="{{ $accessPolicy->promptTarget(auth('web')->user(), 'audio', $piece) }}" @else id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" @endif data-access-action="audio" class="score-listen-button">@include('webapp.piece.components.listen-button-content')</button>
             @endif
             @if(! $hasScoreExportAccess)
-                <button type="button" {!! $scoreExportAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></button>
+                <button type="button" {!! $scoreExportAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span class="score-action-label">Download</span></button>
             @else
-            <a href="{{ storage($piece->score_path) }}" target="_blank" rel="noopener" class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></a>
+            <a href="{{ storage($piece->score_path) }}" target="_blank" rel="noopener" class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span class="score-action-label">Download</span></a>
             @endif
-            <button type="button" data-print class="score-action-button" title="Print all score pages with markings" @if(! $hasScoreExportAccess) {!! $scoreExportAttributes !!} @endif>@icon('printer', ['mr' => 0])<span>Print</span></button>
+            <button type="button" data-print class="score-action-button" title="Print all score pages with markings" @if(! $hasScoreExportAccess) {!! $scoreExportAttributes !!} @endif>@icon('printer', ['mr' => 0])<span class="score-action-label">Print</span></button>
             <button type="button" class="score-action-button score-metronome-button" aria-label="Metronome" title="Metronome" aria-expanded="false" aria-controls="score-metronome-panel">@icon('metronome', ['mr' => 0])</button>
         </div>
         <div id="score-metronome-panel" class="score-metronome-panel animate__animated animate__bounceInUp" role="group" aria-label="Metronome" hidden>
