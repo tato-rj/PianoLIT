@@ -23,8 +23,9 @@ disabled by reduced-motion preferences.
 Styles come from `resources/sass/errors.scss`, using the shared design tokens,
 Bootstrap buttons and shared button foundations. Rebuild the checked-in CSS with
 `npm run errors:styles`; ordinary development/production builds include this step.
-Settings → Design System shows the actual 404, admin 500 and 413 templates in
-isolated, inert previews.
+Settings → Error pages (`admin.error-pages.index`, `/error-pages`) has its own
+admin page showing the actual 404, admin 500 and 413 templates in isolated, inert
+previews. It is separate from Design System.
 
 ## Errors generated before Laravel
 

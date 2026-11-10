@@ -9,7 +9,7 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Settings', 'icon' => 'settings',
         'dropdown' => [
           ['route' => route('admin.design-system.index'), 'name' => 'Design System'],
-          ['route' => route('admin.design-system.index').'#ds-error-pages', 'name' => 'Error pages'],
+          ['route' => route('admin.error-pages.index'), 'name' => 'Error pages'],
           ['route' => route('admin.access-limits.index'), 'name' => 'Access Limits'],
           ['route' => route('admin.emails.index'), 'name' => 'Emails'],
         ]])

@@ -87,19 +87,30 @@ class ErrorPagesTest extends ReviewTestCase
         $this->assertStringContainsString('href="/login?restart_session=1"', $html);
     }
 
-    public function test_design_system_previews_the_real_templates_without_active_actions()
+    public function test_error_pages_have_their_own_admin_page_with_the_real_previews()
     {
         config(['app.short_url' => 'pianolit.test']);
-        $html = view('admin.pages.settings.error-pages')->render();
+        $this->withExceptionHandling()->get(route('admin.error-pages.index'))->assertRedirect(route('admin.login.show'));
+        $this->actingAs(create(\App\Admin::class), 'admin');
+        $response = $this->get(route('admin.error-pages.index'))->assertOk();
+        $response->assertViewIs('admin.pages.settings.error-pages');
+        $html = $response->getContent();
         $dom = new \DOMDocument;
         @$dom->loadHTML($html);
         $xpath = new \DOMXPath($dom);
         $frames = $xpath->query('//iframe[@sandbox and @inert]');
         $this->assertSame(3, $frames->length);
+        $this->assertSame(1, $xpath->query('//ul[@id="settings" and contains(@class, "show")]')->length);
+        $this->assertSame(1, $xpath->query('//a[@href="'.route('admin.error-pages.index').'" and @aria-current="page"]')->length);
+        $this->assertSame(0, $xpath->query('//a[@href="'.route('admin.design-system.index').'" and @aria-current="page"]')->length);
         foreach ($frames as $index => $frame) {
             $page = $frame->getAttribute('srcdoc');
             $this->assertStringContainsString('data-brand="'.($index === 1 ? 'admin' : 'regular').'"', $page);
             $this->assertStringContainsString('error-page__illustration', $page);
         }
+        $designSystem = $this->get(route('admin.design-system.index'))->assertOk()->getContent();
+        $this->assertStringNotContainsString('id="error-page-previews"', $designSystem);
+        $this->assertStringNotContainsString('id="ds-error-pages"', $designSystem);
+        $this->assertStringNotContainsString('error page preview', $designSystem);
     }
 }

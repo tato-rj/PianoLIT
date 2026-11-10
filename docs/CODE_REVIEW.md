@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-10 — Dedicated Error pages settings page (P3, complete locally)
+
+- **Request / change:** Moved the 404, admin 500 and 413 design previews out of Design System into their own authenticated admin page at `/error-pages` (`admin.error-pages.index`). `Admin/ErrorPagesController` renders the standard admin layout, shared page title/breadcrumb and Bootstrap preview cards using the actual error templates. Settings → Error pages links directly to this route and receives the current-page state. Removed the section and section-navigation link from Design System, superseding the earlier anchor shortcut.
+- **Verification / compatibility:** The updated isolated `ErrorPagesTest` suite passes: 6 tests / 1,005 assertions. Coverage verifies admin sign-in, the dedicated view, three sandboxed inert previews and their brands, the active Settings link, and absence of error previews from Design System, alongside existing error-response checks. PHP syntax and whitespace checks pass. Browser visual verification could not run because the available browser-control connection failed. No asset build or migration is needed; production deployment remains pending.
+
 ### 2026-11-10 — Settings shortcut to error-page previews (P3, complete locally)
 
 - **Request / change:** Added **Error pages** immediately below Design System in the shared Settings sidebar, linking to `admin.design-system.index#ds-error-pages`. It opens the existing shared 404, admin 500 and 413 preview section directly, with no additional route or duplicated gallery.
