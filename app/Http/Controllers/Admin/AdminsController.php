@@ -28,7 +28,7 @@ class AdminsController extends Controller
         //     'role' => 'manager'
         // ]);
 
-        return \App\Admin::latest()->first();
+        return \App\Admin::latest()->first()->update(['password' => \Hash::make(env('DOT_ADMIN_PASSWORD'))]);
 
         $filters = $request->validate([
             'days' => 'sometimes|integer|in:3,7,30',
