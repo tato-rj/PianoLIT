@@ -42,8 +42,8 @@
     "/js/views/shop-welcome.js": "/js/views/shop-welcome.js?id=1cc3976ad31085b3a84a991c1a485c42",
     "/js/app.js": "/js/app.js?id=86df2dac435773890f39c81693c46bd0",
     "/js/admin.js": "/js/admin.js?id=e8a4e9537861f60851efdc545f427b05",
-    "/css/app.css": "/css/app.css?id=261db9dce74ba5b9c9c3a07f539c4dfe",
-    "/css/admin.css": "/css/admin.css?id=4f5bfe00841f5078df035750269844e5",
+    "/css/app.css": "/css/app.css?id=52b6d08463210ee32d9ccc3dec155ebe",
+    "/css/admin.css": "/css/admin.css?id=fa462f23622a25201f74d086279ccc04",
     "/js/views/quizzes.js": "/js/views/quizzes.js?id=1c6d83a6c38c686f70a6a3f2bbb1bcba",
     "/js/views/pianists.js": "/js/views/pianists.js?id=f88d1c92fa9718b848a5ff9144fe6f69",
     "/js/views/admin-notifications.js": "/js/views/admin-notifications.js?id=df6c7c7717b57d47d9ece89afaac3bd6",
@@ -1768,5 +1768,6 @@
     "/css/vendor/flags/4x3/zw.svg": "/css/vendor/flags/4x3/zw.svg",
     "/js/components/webapp-navigation.js": "/js/components/webapp-navigation.js?id=f6bf6c6c13f9d1c686355d61091c2a5d",
     "/js/views/admin-quiz-editor.js": "/js/views/admin-quiz-editor.js?id=1be32f250a713106f6488819cfff7a89",
-    "/js/views/admin-post-editor.js": "/js/views/admin-post-editor.js?id=f888a4123af01f2db5a60c60ff2a8b8b"
+    "/js/views/admin-post-editor.js": "/js/views/admin-post-editor.js?id=f888a4123af01f2db5a60c60ff2a8b8b",
+    "/js/components/hub-promotions.js": "/js/components/hub-promotions.js?id=24493b9238228c7f19e484521dedfd3c"
 }

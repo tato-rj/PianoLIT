@@ -979,6 +979,20 @@ heading rhythm, and responsive YouTube/Vimeo framing. These rules are scoped to
 the public article; mobile embeds retain their existing typography and media.
 Stored article HTML, cover credits and references are preserved.
 
+Article hub promotions opt into `components.promotions.hubs` with `persistent: true`.
+At 992px and wider the existing cards stick 24px from the viewport top within the
+editorial sidebar, returning to their normal position on upward scrolling. A tall
+group scrolls within the available viewport so every destination remains reachable.
+Below 992px the same cards form a full-width bottom bar with only its top corners
+rounded, 44px actions and safe-area padding. Single promotions show their title and
+action; the previous three-hub group shows three compact actions. The versioned
+`components/hub-promotions.js` measures the bar on size/font changes and restoration
+to reserve its exact height after the footer. No promotion reserves no space.
+Other editorial sidebars and embedded articles retain their existing behavior.
+The Design System specimen passes `preview: true` to keep the example in normal
+flow and avoid attaching the live height observer. Public articles explicitly pass
+`preview: false`, including authorized draft previews.
+
 `components.newsletter.subscribe-button` supplies the shared brand-blue Subscribe
 pill with a white mail icon for contextual newsletter invitations, outside the
 site header. It matches the homepage YouTube button's compact size, semibold type,

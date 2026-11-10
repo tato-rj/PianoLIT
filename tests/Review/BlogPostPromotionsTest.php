@@ -48,6 +48,9 @@ class BlogPostPromotionsTest extends ReviewTestCase
         $page = $this->get(route('posts.show', $post))->assertOk();
         $this->assertCount(3, $this->xpath($page)->query('//aside//article[contains(@class,"promo-card")]'));
         $this->assertDatabaseCount('blog_post_promotions', 0);
+        if ($directory = getenv('BLOG_PROMOTION_PREVIEW_DIR')) {
+            file_put_contents($directory.'/default.html', $page->getContent());
+        }
     }
 
     public static function destinations(): array
@@ -88,10 +91,19 @@ class BlogPostPromotionsTest extends ReviewTestCase
         $page = $this->get(route('posts.show', $post))->assertOk();
         $xpath = $this->xpath($page);
         $this->assertCount(0, $xpath->query('//aside'));
+        $page->assertDontSee('data-hub-promotions')->assertDontSee('js/components/hub-promotions.js');
         $this->assertCount(1, $xpath->query('//div[contains(@class,"col-12") and contains(@class,"editorial-layout__content")]'));
+        if ($directory = getenv('BLOG_PROMOTION_PREVIEW_DIR')) {
+            file_put_contents($directory.'/none.html', $page->getContent());
+        }
         $service->save($post, 'default');
         $page = $this->get(route('posts.show', $post))->assertOk();
         $this->assertCount(3, $this->xpath($page)->query('//aside//article[contains(@class,"promo-card")]'));
+
+        $post->update(['published_at' => null]);
+        $draft = $this->get(route('posts.show', $post))->assertOk()->assertSee('not published');
+        $this->assertCount(1, $this->xpath($draft)->query('//aside//div[@data-hub-promotions]'));
+        $this->assertCount(0, $this->xpath($draft)->query('//aside//*[@data-ds-preview]'));
     }
 
     public function test_native_create_and_edit_save_the_choice_and_older_forms_preserve_it()

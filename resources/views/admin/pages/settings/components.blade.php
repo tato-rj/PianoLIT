@@ -275,6 +275,9 @@
     @component('admin.pages.settings.sample', ['label' => 'Public promotion card', 'usage' => 'components.cards.promotion · components.layout.editorial sidebar', 'properties' => 'color,background-color,border,border-radius'])
       @include('components.cards.promotion', ['preview' => true, 'category' => 'Crash courses', 'color' => 'mint', 'title' => 'Discover a new side of music', 'description' => 'Daily lessons delivered to your inbox.', 'action' => 'Start learning', 'url' => route('crashcourses.index')])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Article promotion · sticky sidebar / mobile bottom bar', 'usage' => 'components.promotions.hubs · persistent', 'properties' => 'color,background-color,border,border-radius'])
+      @include('components.promotions.hubs', ['persistent' => true, 'preview' => true, 'hubs' => app(\App\Services\Blog\PostPromotions::class)->cards('learn')])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Public hub header', 'usage' => 'components.layout.hub-header · introduction', 'properties' => 'padding,font-size,color'])
       @component('components.layout.hub-header', ['heading' => 'PianoLIT Learn', 'preview' => true])
         A shared introduction for public hubs. Learn and Blog keep YouTube in the top site header.

@@ -1,5 +1,5 @@
 @extends('layouts.app', ['title' => $post->title . ' | PianoLIT Blog',
-	'bodyClass' => 'blog-article',
+	'bodyClass' => 'blog-article'.(count($promotionCards) ? ' blog-article--promoted' : ''),
 	'shareable' => [
 		'keywords' => '',
 		'title' => $post->title,
@@ -93,7 +93,7 @@
         @endif
 
         @slot('sidebar')
-            @include('components.promotions.hubs', ['hubs' => $promotionCards])
+            @include('components.promotions.hubs', ['hubs' => $promotionCards, 'persistent' => true, 'preview' => false])
         @endslot
     @endcomponent
 </div>

@@ -27111,6 +27111,91 @@ body.admin-dashboard-page .admin-main {
   line-height: var(--line-height-body);
 }
 
+.hub-promotions--persistent {
+  position: sticky;
+  top: 1.5rem;
+  max-height: calc(100vh - 3rem);
+  max-height: calc(100dvh - 3rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.hub-promotions--persistent > .promo-card:last-child {
+  margin-bottom: 0 !important;
+}
+.hub-promotions--persistent[data-ds-preview] {
+  position: relative;
+  top: auto;
+  max-height: none;
+}
+
+@media (max-width: 991.98px) {
+  .blog-article--promoted {
+    --hub-promotions-height: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+  .blog-article--promoted #app {
+    padding-bottom: var(--hub-promotions-height);
+  }
+  .blog-article--promoted .editorial-layout > aside {
+    margin-top: 0;
+  }
+  .hub-promotions--persistent {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 1020;
+    display: flex;
+    gap: 0.5rem;
+    max-height: 30vh;
+    max-height: 30dvh;
+    padding: 0.5rem max(0.75rem, env(safe-area-inset-right, 0px)) calc(0.5rem + env(safe-area-inset-bottom, 0px)) max(0.75rem, env(safe-area-inset-left, 0px));
+    border: 1px solid var(--color-border);
+    border-bottom: 0;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    background: var(--color-surface);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+  }
+  .hub-promotions--persistent > .promo-card {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0;
+    border-radius: 0 !important;
+    background: transparent;
+  }
+  .hub-promotions--persistent > .promo-card > p, .hub-promotions--persistent > .promo-card > .promo-card__image-link {
+    display: none;
+  }
+  .hub-promotions--persistent > .promo-card > h3, .hub-promotions--persistent > .promo-card > .h3 {
+    margin: 0 !important;
+    font-size: var(--font-size-sm);
+  }
+  .hub-promotions--persistent > .promo-card .pastel-card__action {
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+  .hub-promotions--persistent.hub-promotions--multiple > .promo-card > h3, .hub-promotions--persistent.hub-promotions--multiple > .promo-card > .h3 {
+    display: none;
+  }
+  .hub-promotions--persistent.hub-promotions--multiple > .promo-card .pastel-card__action {
+    flex: 1;
+    flex-shrink: 1;
+    padding-inline: 0.5rem;
+    font-size: var(--font-size-xs);
+  }
+  .hub-promotions--persistent.hub-promotions--multiple > .promo-card .pastel-card__action .app-icon {
+    display: none;
+  }
+  .hub-promotions--persistent[data-ds-preview] {
+    inset: auto;
+  }
+}
+
 .resource-card {
   color: var(--color-text);
   text-decoration: none;
