@@ -126,6 +126,12 @@
 }
 
 @media (max-width: 991.98px) {
+    .webapp-navigation {
+        // Let the capsule sit into the home-indicator inset, like native bars.
+        // Its inner padding keeps the icon targets above the indicator itself.
+        --webapp-navigation-bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px));
+    }
+
     .webapp-navigation .webapp-menu-label { display: none; }
     .webapp-navigation .menu-link { min-height: 44px; }
 

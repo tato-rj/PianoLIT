@@ -135,7 +135,12 @@ transparency is requested. `webapp.layouts.menu` supplies both the live navigati
 Design System specimen; `components/_webapp-navigation.scss` owns its finish.
 Below 992px, show only the five icons/avatar, with 44px targets and explicit
 accessible link/button names; hide every label, including the account name.
-Desktop retains the labels. Keep safe-area edge gaps. Below 992px,
+Desktop retains the labels and the full bottom safe-area inset, with a 12px
+minimum gap. Below 992px, the capsule sits
+12px into the bottom safe-area inset, with an 8px minimum bottom gap. A 34px
+iPhone inset therefore leaves 22px below the capsule, following the lower
+placement in Arthur's Safari/YouTube references. Keep the internal 5px padding
+and 44px targets. Below 992px,
 `components/webapp-navigation.js` hides it after a
 quick downward scroll and reveals it after a short upward scroll. Slow reading,
 small reversals and rubber-band overscroll do not toggle it. Focus, overlays and

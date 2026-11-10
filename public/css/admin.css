@@ -29528,6 +29528,9 @@ button.bg-primary:focus {
   }
 }
 @media (max-width: 991.98px) {
+  .webapp-navigation {
+    --webapp-navigation-bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px));
+  }
   .webapp-navigation .webapp-menu-label {
     display: none;
   }
