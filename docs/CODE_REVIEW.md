@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-10 — Settings shortcut to error-page previews (P3, complete locally)
+
+- **Request / change:** Added **Error pages** immediately below Design System in the shared Settings sidebar, linking to `admin.design-system.index#ds-error-pages`. It opens the existing shared 404, admin 500 and 413 preview section directly, with no additional route or duplicated gallery.
+- **Verification / compatibility:** Rendered the sidebar and verified its native link and the destination section. The shared error-preview regression and whitespace checks pass. Existing admin access and navigation remain unchanged. No asset build or migration is needed; production deployment remains pending.
+
 ### 2026-11-10 — Shared friendly error pages (P2, complete locally)
 
 - **Request / evidence:** The 500 page emphasized a very large status number and generic failure text, other errors used separate minimal layouts, 402 displayed 403, and 413 had no custom view. All browser errors now use `resources/views/errors/page.blade.php`, with status-specific recovery copy, a shared decorative cat illustration, small status labels and standard primary/secondary buttons. The November 10 humor request explicitly overrides the otherwise literal-copy rule for these full-page errors only. Existing admin/public SVG logos are reused through the branding component, selected by the exact configured admin hostname; `my.*` browser 404s now render the same page instead of silently redirecting.
