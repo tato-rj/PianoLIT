@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-11 — Sync Google Analytics blog views daily (P3, complete locally)
+
+- **Request / implementation:** Arthur requested a daily backend refresh and view counts in the admin directory, public article headers and blog cards. `analytics:sync-blog-views` fetches GA4 Views in batches for current published paths on `blog.pianolit.com` through yesterday. It saves the totals in `blog_post_view_counts` at 17:00 America/New_York. Page requests share one SQL read per post group. Failed requests preserve previous totals, and newly changed slugs need a matching GA report. Public labels are omitted until a count is available. Historical `posts.views`, public tracking, embedded articles and shared Post JSON are unchanged.
+- **Verification / delivery:** 58 focused isolated tests pass (784 assertions), covering read-only OAuth, date and path scope, public/admin rendering, daily replacement, a late batch failure, a concurrent rename and no request-time Google calls. Schedule inspection confirms 17:00 New York time. The new migration is installed on the verified local MySQL database. The already installed Google auth package is declared directly and no assets changed. Production Data API access, migration, scheduling and comparison with live GA counts remain pending. See `docs/GOOGLE_ANALYTICS.md`.
+
 ### 2026-11-10 — Deselect email-builder blocks (P3, complete locally)
 
 - **Request / fix:** Clicking outside a selected block previously left its outline and inspector active. The shared builder now clears selection on email-background and surrounding-canvas clicks; Escape clears it from the canvas and standard builder controls. Selection changes flush pending writing before hiding the inspector. Palette, editing and preview-size controls retain selection, and active drags/Preview retain their existing behavior. Updated the source script, exact public copy and manifest hash.

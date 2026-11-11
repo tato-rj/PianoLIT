@@ -46,6 +46,7 @@
                     <span class="fw-semibold text-dark">PianoLIT Team</span>
                     <time datetime="{{ $post->created_at->toDateString() }}">{{ $post->created_at->format('M j, Y') }}</time>
                     <span class="d-inline-flex align-items-center">@icon('clock', ['mr' => 1]){{ $post->reading_time }} min read</span>
+                    @include('blog.components.view-count', ['count' => $postViews[$post->id] ?? null])
                 </div>
             </header>
 

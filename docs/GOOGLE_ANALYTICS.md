@@ -31,6 +31,59 @@ Definitions follow Google's [engagement guidance](https://support.google.com/ana
 [traffic-source scopes](https://support.google.com/analytics/answer/11080067).
 The conversion descriptions follow PianoLIT's verified server events described below.
 
+## Views in Admin → Blog → Posts
+
+The **Views** column, public article headers and blog story cards read the same
+saved totals from `blog_post_view_counts`. The command
+`php artisan analytics:sync-blog-views` fetches the
+[Google Analytics Data API](https://developers.google.com/analytics/devguides/reporting/data/v1)
+for property `399721623`. The Laravel schedule runs daily at 5 p.m. New York
+time, after Google typically makes [the prior day's report available](https://support.google.com/analytics/answer/11198161).
+The command uses GA's Views metric (`screenPageViews`) for each published post's
+current path on `blog.pianolit.com`, from the October 21, 2026 subdomain move
+through yesterday. Repeat views and query-string variants count toward the
+same path. Former hosts, old slugs, the iOS embed and historical `posts.views`
+are outside this report.
+
+The command batches paths, authenticates once and replaces totals so late
+events or corrections are included on later runs. A failed request leaves all
+saved counts in place. A complete report with no row for a path stores 0.
+Omitted paths in a limited report keep their prior totals, and sampled or
+truncated batches are skipped. A post that changes slug shows counts for the
+new path after the next successful sync. Until a count is available, the
+public label is hidden and the admin shows **Unavailable**. Drafts show a dash.
+Page requests read SQL and never call Google.
+
+Production setup (separate from Measurement Protocol and Sign in with Google):
+
+1. [Enable the Google Analytics Data API](https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart)
+   in the appropriate Google Cloud project. Use a dedicated service account and
+   grant it **Viewer** on the PianoLIT GA4 property only.
+2. Install its service account JSON in a private path outside the web root and
+   Git. Grant read access only to the account running the scheduled command.
+   Configure the absolute path as
+   `GOOGLE_ANALYTICS_REPORT_CREDENTIALS`. The default
+   `GOOGLE_ANALYTICS_REPORT_PROPERTY_ID` already targets PianoLIT.
+3. Install `2026_11_11_120000_create_blog_post_view_counts.php` before serving the
+   matching code. Refresh Laravel's configuration and view caches. Run
+   `php artisan analytics:sync-blog-views` once as the scheduled job owner to
+   populate the counts. Compare a known post in **Blog → Posts** and on the
+   public blog with **Pages and screens**, using the same host, path and dates.
+4. Use the registered schedule if Laravel's scheduler is already running.
+   Otherwise add a cron for just this command. The existing production setup
+   uses scoped owner crons. This example checks New York time so it also works
+   when the cron daemon uses UTC.
+
+   ```cron
+   0 * * * * cd /var/www/html && test "$(TZ=America/New_York date +\%H)" = 17 && umask 077 && /usr/bin/php artisan analytics:sync-blog-views >> storage/app/private/blog-views-sync.log 2>&1
+   ```
+
+   Install one schedule only. The command has its own overlap lock for
+   scheduled and manual runs. The reporting identity uses `analytics.readonly`.
+   If the first sync fails, check API enablement, the property Viewer role and
+   file access. Production credentials, migration, scheduling and verification
+   are pending.
+
 ## Changes saved in Google
 
 - Account `137232556`, property `399721623`: **PianoLIT · Website & hubs**

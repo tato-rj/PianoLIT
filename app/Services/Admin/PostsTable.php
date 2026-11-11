@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Blog\{Post, Topic};
+use App\Services\Blog\PostViewCounts;
 use App\Support\AdminTableFilters;
 use Illuminate\Http\Request;
 
@@ -62,7 +63,8 @@ class PostsTable
         $posts = $this->query($filters)->paginate($filters['per_page'])->appends(array_diff_key($returnFilters, ['page' => true]));
         $topics = Topic::orderBy('name')->orderBy('id')->get();
         $audio = app(BlogAudio::class)->all();
-        return compact('filters', 'returnFilters', 'posts', 'topics', 'audio');
+        $postViews = app(PostViewCounts::class)->forPosts($posts);
+        return compact('filters', 'returnFilters', 'posts', 'topics', 'audio', 'postViews');
     }
 
     public function redirect(array $filters)

@@ -495,6 +495,11 @@ Rows retain public previews, editor links, explicit desired publication state
 and confirmed deletion. Row actions and editor return links retain directory
 filters; status/deletion returns clamp the page when results disappear.
 
+Views shows the saved Google Analytics count for each published post's current
+public URL. The daily command updates counts independently of page requests.
+The table reads counts for the visible rows without changing filters, sorting
+or pagination. See [Google Analytics setup](GOOGLE_ANALYTICS.md#views-in-admin--blog--posts).
+
 Create post, Manage audio and manager-only Manage topics share the page-header
 action row. The two compact Bootstrap modals use native CSRF forms and existing
 fields/actions. `manage=audio|topics` reopens the appropriate modal after a write

@@ -4,7 +4,7 @@
 @php($filtered = $filters['search'] !== '' || !empty($filters['status']) || !empty($filters['topic']))
 <div class="content-wrapper"><div class="container-fluid">
     @component('admin.components.page.title', [
-        'title' => 'Posts', 'subtitle' => 'Manage blog posts, audio and topics.',
+        'title' => 'Posts', 'subtitle' => 'View counts from Google Analytics update daily.',
     ])
         <a href="{{ route('admin.posts.create', $returnFilters) }}" class="btn btn-sm btn-dark">@icon('plus')Create post</a>
         <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#blog-audio-modal">@icon('music')Manage audio</button>
@@ -25,6 +25,7 @@
         'columns' => [
             ['label' => 'Date', 'sort' => ['asc' => 'date_asc', 'desc' => 'date_desc']],
             ['label' => 'Post', 'sort' => ['asc' => 'title_asc', 'desc' => 'title_desc']],
+            ['label' => 'Views', 'class' => 'text-end'],
             ['label' => 'Reading time', 'sort' => ['asc' => 'reading_asc', 'desc' => 'reading_desc']],
             ['label' => 'Publication', 'sort' => ['asc' => 'published_asc', 'desc' => 'published_desc']],
             ['label' => 'Actions', 'hidden' => true],

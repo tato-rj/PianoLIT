@@ -12,6 +12,15 @@
             @if($post->topics->isNotEmpty())<small>{{ $post->topics->pluck('name')->join(', ') }}</small>@endif
         </div>
     </td>
+    <td class="text-end text-nowrap">
+        @if(isset($postViews[$post->id]))
+            {{ number_format($postViews[$post->id]) }}
+        @elseif($post->published_at)
+            <span class="text-muted">Unavailable</span>
+        @else
+            <span class="text-muted"><span aria-hidden="true">—</span><span class="visually-hidden">Draft</span></span>
+        @endif
+    </td>
     <td class="text-nowrap">{{ $post->reading_time }} min</td>
     <td class="text-nowrap">
         <form method="POST" action="{{ route('admin.posts.update-status', $parameters + ['return_to' => 'directory']) }}" class="m-0">

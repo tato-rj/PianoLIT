@@ -4,7 +4,10 @@
             <img src="{{ $post->cover_path ? $post->cover_image() : mix('images/home/projects/blog.svg') }}" alt="" width="800" height="500" loading="lazy" decoding="async">
         </div>
         <div class="blog-story__body">
-            <p class="blog-story__meta text-muted mb-2">@icon('clock', ['mr' => 1]){{ $post->reading_time }} min read</p>
+            <p class="blog-story__meta d-flex flex-wrap align-items-center gap-2 text-muted mb-2">
+                <span class="d-inline-flex align-items-center">@icon('clock', ['mr' => 1]){{ $post->reading_time }} min read</span>
+                @include('blog.components.view-count', ['count' => $postViews[$post->id] ?? null])
+            </p>
             <h3 class="blog-story__title">{{ $post->title }}</h3>
             <p class="blog-story__description text-muted">{{ $post->description }}</p>
             <div class="blog-story__details w-100 pt-3">

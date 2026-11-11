@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Blog\{Post, Topic};
 use App\Http\Requests\PostForm;
+use App\Services\Blog\PostViewCounts;
 use Illuminate\Http\Request;
 use App\Filters\BlogFilters;
 
@@ -18,8 +19,9 @@ class PostsController extends Controller
     {
         $posts = Post::published()->latest()->orderByDesc('id')->filter($filters)->paginate(12)->withQueryString();
         $topics = Topic::orderBy('name')->get();
+        $postViews = app(PostViewCounts::class)->forPosts($posts);
 
-        return view('blog.index', compact(['posts', 'topics']));
+        return view('blog.index', compact('posts', 'topics', 'postViews'));
     }
 
     /**
@@ -41,7 +43,8 @@ class PostsController extends Controller
             abort(404);
         }
 
-        return view('blog.show', compact('post', 'suggestions', 'promotionCards'));
+        $postViews = app(PostViewCounts::class)->forPosts($suggestions->concat([$post]));
+        return view('blog.show', compact('post', 'suggestions', 'promotionCards', 'postViews'));
     }
 
     public function gift(Post $post)

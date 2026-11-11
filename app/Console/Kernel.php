@@ -35,6 +35,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('shop:sync-shipments')->everyFifteenMinutes()->withoutOverlapping(10)->runInBackground();
         $schedule->command('attribution:prune')->daily();
         $schedule->command('analytics:send-conversions')->everyMinute()->withoutOverlapping();
+        $schedule->command('analytics:sync-blog-views')->dailyAt('17:00')
+            ->timezone(\App\Console\Commands\SyncBlogPostViews::TIMEZONE)->withoutOverlapping(30);
         $schedule->command('freepicks:sync-history')->everyMinute()->withoutOverlapping();
         $schedule->command('memberships:sync-apple')->hourly()->withoutOverlapping(120);
         $schedule->command('stripe:reconcile')->hourly()->withoutOverlapping(120);
