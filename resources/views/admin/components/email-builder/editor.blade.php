@@ -23,7 +23,7 @@
             <h3>Components</h3>
             <div class="email-builder__components">
                 @foreach(\App\Services\CrashCourses\EmailDesign::TYPES as $type => $label)
-                <button type="button" class="btn btn-secondary email-builder__component" draggable="true" data-add-block="{{ $type }}">@icon($icons[$type], ['mr' => 0])<span>{{ $label }}</span></button>
+                <button type="button" class="btn btn-secondary btn-sm email-builder__component" draggable="true" data-add-block="{{ $type }}">@icon($icons[$type], ['mr' => 0])<span>{{ $label }}</span></button>
                 @endforeach
             </div>
             <button type="button" class="btn btn-sm btn-secondary w-100 mt-3" data-builder-action="starter">@icon('layout-template')Add lesson layout</button>
@@ -61,9 +61,10 @@
             <div data-block-inspector hidden>
                 <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="mb-0" data-selected-title>Text</h3><span class="small text-muted" data-block-position></span></div>
                 <div class="email-builder__block-actions" role="group" aria-label="Block actions">
-                    @foreach(['up' => ['arrow-up', 'Move up'], 'down' => ['arrow-down', 'Move down'], 'duplicate' => ['copy', 'Duplicate block'], 'remove' => ['trash-2', 'Remove block']] as $action => $meta)
+                    @foreach(['up' => ['arrow-up', 'Move up'], 'down' => ['arrow-down', 'Move down'], 'duplicate' => ['copy', 'Duplicate block']] as $action => $meta)
                     <button type="button" class="btn btn-sm btn-secondary" data-builder-action="{{ $action }}" title="{{ $meta[1] }}" aria-label="{{ $meta[1] }}">@icon($meta[0], ['mr' => 0])</button>
                     @endforeach
+                    <button type="button" class="btn btn-sm btn-danger" data-builder-action="remove">@icon('trash-2')Delete block</button>
                 </div>
                 <div data-for-types="hero panel">@input(['bag' => 'default', 'id' => 'block-title', 'name' => 'block_title', 'label' => 'Heading', 'required' => false, 'limit' => 300])</div>
                 <div data-for-types="text hero panel columns">

@@ -35,7 +35,7 @@
     var selected = null, state, history = [], future = [], lastEdit = '', lastEditTime = 0;
     var device = 'desktop';
     var dirty = false, submitting = false, loadingEditors = false, previewMode = false, previewTimer, previewRequest, previewVersion = 0;
-    var library = [], uploadTarget = null, uploading = false, uploadVersion = 0, editorReady = {}, activeDrag = null;
+    var library = [], uploadTarget = null, uploading = false, uploadVersion = 0, editorReady = {}, editorValues = {}, activeDrag = null;
     var csrf = form.querySelector('[name="_token"]').value;
     var numeric = ['padding', 'gap', 'radius', 'height', 'image_width'];
     var props = ['title', 'content', 'content_right', 'image', 'alt', 'url', 'label', 'background_image', 'background', 'color', 'button_color', 'padding', 'gap', 'radius', 'height', 'image_width', 'align'];
@@ -72,7 +72,9 @@
     }
     function editorContent(prop) {
         var editor = global.tinymce && global.tinymce.get(element(prop).id);
-        return editor && editorReady[prop] ? editor.getContent() : element(prop).value;
+        var value = editor && editorReady[prop] ? editor.getContent() : element(prop).value;
+        // Loading TinyMCE can normalize HTML without a user edit. Keep that out of Undo history.
+        return value === editorValues[prop] && current() ? current()[prop] : value;
     }
     function flush() {
         if (!current()) return;
@@ -83,6 +85,7 @@
         element(prop).value = value;
         var editor = global.tinymce && global.tinymce.get(element(prop).id);
         if (editor && editorReady[prop]) editor.setContent(value);
+        editorValues[prop] = editor && editorReady[prop] ? editor.getContent() : value;
     }
     function inspector() {
         var item = current();
@@ -118,6 +121,15 @@
         flush(); item = copy(item); item.id = id();
         if (at === undefined) at = current() ? state.blocks.indexOf(current()) + 1 : state.blocks.length;
         change(function () { state.blocks.splice(at, 0, item); }); selected = item.id; inspector();
+    }
+    function removeBlock(blockId) {
+        flush();
+        var index = state.blocks.findIndex(function (item) { return item.id === blockId; });
+        if (index < 0) return;
+        change(function () { state.blocks.splice(index, 1); });
+        if (selected === blockId || !current()) selected = (state.blocks[Math.min(index, state.blocks.length - 1)] || {}).id || null;
+        inspector();
+        say('Block deleted. Use Undo to restore it.');
     }
     async function request(url, options) {
         var response = await fetch(url, Object.assign({credentials: 'same-origin', headers: {'X-CSRF-TOKEN': csrf, 'Accept': 'application/json', 'Content-Type': 'application/json'}}, options || {}));
@@ -186,7 +198,7 @@
         var doc = frame.contentDocument;
         if (!doc || !doc.body) return;
         var css = doc.createElement('style');
-        css.textContent = '[data-email-block]{position:relative;cursor:pointer;transition:outline-color .1s}[data-email-block]:hover{outline:1px dashed #9ab8ff;outline-offset:-1px}.builder-selected{outline:2px solid #0055fe!important;outline-offset:-2px}.builder-drag{position:absolute;left:0;top:0;border:0;border-radius:0 0 5px 0;padding:5px 9px;background:#0055fe;color:#fff;cursor:grab;font:12px Arial;z-index:2;opacity:0}[data-email-block]:hover .builder-drag,.builder-selected .builder-drag,.builder-drag:focus{opacity:1}.builder-preview [data-email-block]{cursor:default;outline:none!important}.builder-preview .builder-drag{display:none}.builder-drop{outline:3px dashed #0055fe!important;outline-offset:-3px}';
+        css.textContent = '[data-email-block]{position:relative;cursor:pointer;transition:outline-color .1s}[data-email-block]:hover{outline:1px dashed #9ab8ff;outline-offset:-1px}.builder-selected{outline:2px solid #0055fe!important;outline-offset:-2px}.builder-control{position:absolute;top:0;border:0;padding:5px 9px;color:#fff;font:12px/14px Arial;z-index:2;opacity:0;cursor:pointer}.builder-drag{left:0;border-radius:0 0 5px 0;background:#0055fe;cursor:grab}.builder-delete{right:0;border-radius:0 0 0 5px;background:#b42318}[data-email-block]:hover .builder-control,.builder-selected .builder-control,.builder-control:focus{opacity:1}.builder-control:focus-visible{outline:2px solid #242933;outline-offset:2px}.builder-preview [data-email-block]{cursor:default;outline:none!important}.builder-preview .builder-control{display:none}.builder-drop{outline:3px dashed #0055fe!important;outline-offset:-3px}@media(hover:none){.builder-control{opacity:1}}';
         doc.head.appendChild(css);
         doc.addEventListener('click', function (event) {
             event.preventDefault();
@@ -194,11 +206,18 @@
             if (target && !previewMode) select(target.dataset.emailBlock);
         });
         doc.querySelectorAll('[data-email-block]').forEach(function (node) {
-            var handle = doc.createElement('button'); handle.type = 'button'; handle.className = 'builder-drag'; handle.textContent = '⠿ Move'; handle.draggable = true;
+            var handle = doc.createElement('button'); handle.type = 'button'; handle.className = 'builder-control builder-drag'; handle.textContent = '⠿ Move'; handle.draggable = true;
             handle.setAttribute('aria-label', 'Select and drag ' + (labels[(state.blocks.find(function (b) { return b.id === node.dataset.emailBlock; }) || {}).type] || 'block'));
             handle.addEventListener('dragstart', function (event) { select(node.dataset.emailBlock); transfer(event, {id: node.dataset.emailBlock}); });
             handle.addEventListener('keydown', function (event) { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(node.dataset.emailBlock); } });
-            node.appendChild(handle);
+            var remove = doc.createElement('button'); remove.type = 'button'; remove.className = 'builder-control builder-delete'; remove.textContent = 'Delete';
+            var item = state.blocks.find(function (block) { return block.id === node.dataset.emailBlock; });
+            remove.setAttribute('aria-label', 'Delete ' + (item && (item.title || labels[item.type]) || 'block'));
+            remove.addEventListener('click', function (event) {
+                event.preventDefault(); event.stopPropagation();
+                if (!previewMode) removeBlock(node.dataset.emailBlock);
+            });
+            node.append(handle, remove);
             node.addEventListener('dragover', function (event) { if (!previewMode && activeDrag) { event.preventDefault(); node.classList.add('builder-drop'); } });
             node.addEventListener('dragleave', function () { node.classList.remove('builder-drop'); });
             node.addEventListener('drop', function (event) {
@@ -294,7 +313,7 @@
         if (action === 'up' && index > 0) { change(function () { state.blocks = move(state.blocks, selected, index - 1); }); inspector(); }
         if (action === 'down' && index < state.blocks.length - 1 && index >= 0) { change(function () { state.blocks = move(state.blocks, selected, index + 2); }); inspector(); }
         if (action === 'duplicate' && item) insert(item);
-        if (action === 'remove' && item) { change(function () { state.blocks.splice(index, 1); }); selected = (state.blocks[Math.min(index, state.blocks.length - 1)] || {}).id || null; inspector(); }
+        if (action === 'remove' && item) removeBlock(item.id);
         if (action === 'undo' || action === 'redo') {
             var source = action === 'undo' ? history : future, target = action === 'undo' ? future : history;
             if (source.length) { target.push(JSON.stringify(state)); state = JSON.parse(source.pop()); lastEdit = ''; if (!current()) selected = null; sync(); settings(); inspector(); schedulePreview(); say(dirty ? 'Unsaved changes' : 'No unsaved changes'); }
@@ -341,7 +360,7 @@
                 plugins: 'lists link', toolbar: 'undo redo | formatselect | bold italic | link | bullist numlist | alignleft aligncenter alignright | forecolor',
                 content_style: 'body{font:16px/1.65 Arial,sans-serif;padding:8px;color:#242933}img{max-width:100%;height:auto}',
                 setup: function (editor) {
-                    editor.on('init', function () { editorReady[prop] = true; loadingEditors = true; editor.setContent(current() ? current()[prop] : ''); loadingEditors = false; });
+                    editor.on('init', function () { editorReady[prop] = true; loadingEditors = true; setEditor(prop, current() ? current()[prop] : ''); loadingEditors = false; });
                     editor.on('input change undo redo', function () { if (!loadingEditors && editorReady[prop] && current()) { var value = editor.getContent(); change(function () { current()[prop] = value; }, selected + prop); } });
                 }
             });

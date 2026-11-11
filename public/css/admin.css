@@ -25515,6 +25515,7 @@ body.admin-dashboard-page .admin-main {
   padding: 20px 16px;
   min-width: 0;
   max-height: 920px;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 .email-builder__palette {
@@ -25525,15 +25526,18 @@ body.admin-dashboard-page .admin-main {
 }
 .email-builder__components {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
-.email-builder__component.btn {
+.email-builder .email-builder__components > .email-builder__component.btn {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 9px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   min-height: 76px;
   font-size: 12px;
   padding: 10px 4px;
@@ -25542,11 +25546,11 @@ body.admin-dashboard-page .admin-main {
   border: 1px solid var(--builder-line);
   border-radius: 8px;
 }
-.email-builder__component.btn .icon {
+.email-builder .email-builder__components > .email-builder__component.btn .icon {
   width: 21px;
   height: 21px;
 }
-.email-builder__component.btn:hover {
+.email-builder .email-builder__components > .email-builder__component.btn:hover {
   background: #f0f4ff;
   border-color: #a8c2ff;
 }
@@ -25648,6 +25652,7 @@ body.admin-dashboard-page .admin-main {
 }
 .email-builder__block-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 20px;
 }
@@ -25735,9 +25740,9 @@ body.admin-dashboard-page .admin-main {
     border-right: 0;
   }
   .email-builder__components {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .email-builder__component.btn {
+  .email-builder .email-builder__components > .email-builder__component.btn {
     min-height: 64px;
     font-size: 11px;
   }
