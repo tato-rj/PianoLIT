@@ -3,76 +3,43 @@
 namespace App\Services\WebApp;
 
 use App\Playlist;
-use Illuminate\Support\Facades\Cache;
+use App\Services\Collections\Catalog;
 use Illuminate\Support\Str;
 
 class Collections
 {
+    public function __construct(private Catalog $catalog)
+    {
+    }
+
     public function data()
     {
-        // Keep mobile eligibility/count semantics, without invoking the API's
-        // shared ordering cache, which can write playlist order on a page visit.
-        $playlists = Playlist::whereNull('group')->published()->has('pieces', '>', 5)
-            ->select('playlists.*')
-            ->withCount(['pieces' => function ($query) { $query->has('tutorials'); }])
-            ->inRandomOrder()
-            ->sorted()->orderBy('id')->get()
-            ->filter(function ($playlist) { return $playlist->pieces_count >= 5; })
-            ->map(function ($playlist) {
+        $entries = $this->catalog->entries();
+        [$featuredId, $inspirationIds] = $this->catalog->weeklySelection($entries);
+        $playlists = $entries->shuffle()
+            ->map(function (Playlist $playlist) {
                 $key = Str::slug(str_replace(["'", '’'], '', $playlist->name));
-                $featuredTag = trim((string) $playlist->featured);
+                $featuredTag = $this->catalog->badge($playlist);
 
                 return [
                     'playlist' => $playlist,
                     'key' => $key,
-                    'image' => $playlist->cover_path ? $playlist->cover_image : asset('images/webapp/collections/featured.webp'),
+                    'image' => $this->catalog->artwork($playlist),
                     'illustrated' => ! $playlist->cover_path,
                     // Keep labels editable in admin and matching exact, including
                     // distinct tags that would otherwise share a slug or "all".
-                    'category' => $featuredTag === '' ? null : 'featured-'.hash('sha256', $featuredTag),
-                    'category_label' => $featuredTag,
+                    'category' => $featuredTag === null ? null : 'featured-'.hash('sha256', $featuredTag),
+                    'category_label' => $featuredTag ?? '',
                 ];
             })->values();
 
-        [$featured, $inspiration] = $this->weeklySelection($playlists);
+        $cards = $playlists->keyBy('playlist.id');
+        $featured = $cards->get($featuredId);
+        $inspiration = collect($inspirationIds)->map(function ($id) use ($cards) { return $cards->get($id); });
 
         $categories = $playlists->filter(function ($card) { return $card['category_label'] !== ''; })
             ->pluck('category_label', 'category')->sort(SORT_NATURAL | SORT_FLAG_CASE);
 
         return compact('playlists', 'featured', 'inspiration', 'categories') + ['books' => config('collections.books', [])];
-    }
-
-    private function weeklySelection($playlists)
-    {
-        if ($playlists->isEmpty()) {
-            return [null, collect()];
-        }
-
-        $cards = $playlists->keyBy(function ($card) { return $card['playlist']->id; });
-        $ids = $cards->keys()->all();
-        $count = min(3, count($ids));
-        $key = 'webapp.collections.weekly-selection';
-        $selection = Cache::get($key);
-
-        // Cache only IDs so admin edits and publication eligibility stay current.
-        // Replace withdrawn selections, or fill slots when a small catalog grows.
-        if (! $selection || ! in_array($selection['featured'], $ids, true)
-            || count($selection['inspiration']) !== $count
-            || array_diff($selection['inspiration'], $ids)) {
-            $selection = [
-                'featured' => $playlists->random()['playlist']->id,
-                'inspiration' => $playlists->random($count)->map(function ($card) {
-                    return $card['playlist']->id;
-                })->all(),
-            ];
-            Cache::put($key, $selection, now()->addWeek());
-        }
-
-        return [
-            $cards->get($selection['featured']),
-            collect($selection['inspiration'])->map(function ($id) use ($cards) {
-                return $cards->get($id);
-            }),
-        ];
     }
 }

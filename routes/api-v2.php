@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\V2\{AuthController, DiscoverController, FavoriteFoldersController, MatchTourController, PiecesController};
+use App\Http\Controllers\Api\V2\{AuthController, CollectionsController, DiscoverController, FavoriteFoldersController, MatchTourController, PiecesController};
 use App\Http\Middleware\Api\V2\Authenticate;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +11,8 @@ Route::get('match-tour-media/{asset}/{kind}', [MatchTourController::class, 'medi
 Route::middleware(Authenticate::class)->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::get('discover', [DiscoverController::class, 'show'])->name('discover');
+    Route::get('collections', [CollectionsController::class, 'index'])->name('collections.index');
+    Route::get('collections/{collection}', [CollectionsController::class, 'show'])->where('collection', '[1-9][0-9]*')->name('collections.show');
     Route::get('pieces/{piece}', [PiecesController::class, 'show'])->where('piece', '[1-9][0-9]*')->name('pieces.show');
     Route::post('pieces/{piece}/view', [DiscoverController::class, 'view'])->where('piece', '[1-9][0-9]*')->name('pieces.view');
     Route::get('favorite-folders', [FavoriteFoldersController::class, 'index'])->name('favorite-folders.index');

@@ -28,6 +28,11 @@ class Playlist extends PianoLit
     	return $this->belongsToMany(Piece::class)->with(['composer', 'tags'])->orderBy('order');
     }
 
+    public function playablePieces()
+    {
+        return $this->pieces()->has('tutorials')->orderByPivot('id');
+    }
+
     public function creator()
     {
         return $this->belongsTo(Admin::class);

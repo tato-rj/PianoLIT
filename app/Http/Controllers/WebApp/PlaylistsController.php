@@ -18,7 +18,7 @@ class PlaylistsController extends Controller
             return redirect()->route('webapp.playlists')->with('collection_access_prompt', $policy->promptTarget(auth('web')->user(), 'collections'));
         }
 
-        $query = $playlist->pieces()->has('tutorials')->with(['tutorials' => function ($query) {
+        $query = $playlist->playablePieces()->with(['tutorials' => function ($query) {
             $query->where('type', 'Performance')->orderBy('id')->with('moments');
         }]);
 
@@ -43,7 +43,7 @@ class PlaylistsController extends Controller
 
         $collectionCap = app(\App\Services\WebApp\AccessPolicy::class)->cap('collections', $user);
         abort_if($collectionCap === 0, 403, 'Collections are currently locked.');
-        $query = $playlist->pieces()->has('tutorials');
+        $query = $playlist->playablePieces();
         if ($collectionCap !== null) $query->limit($collectionCap);
         $pieces = $query->get()->filter(function ($piece) {
             return $piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user(), 'exports');
