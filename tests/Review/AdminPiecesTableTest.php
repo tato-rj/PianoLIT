@@ -226,6 +226,22 @@ class AdminPiecesTableTest extends ReviewTestCase
         $this->assertStringContainsString('without_synthesia=1', $response->viewData('pieces')->url(3));
         $this->assertSame(12, $this->directory()->viewData('pieces')->perPage());
         foreach ([24, 48, 96] as $size) $this->assertSame($size, $this->directory(['per_page' => $size])->viewData('pieces')->perPage());
+
+        $ids = DB::table('pieces')->where('name', 'like', 'Directory %')->orderBy('id')->pluck('id');
+        $views = [$ids[0] => 0, $ids[1] => 2, $ids[23] => 15, $ids[24] => 15];
+        foreach ($views as $id => $count) {
+            DB::table('piece_web_view_counts')->insert(['piece_id' => $id, 'views' => $count, 'reported_through' => '2026-11-10']);
+        }
+        $unavailable = $ids->diff(array_keys($views))->reverse()->values()->all();
+        foreach ([
+            'views_asc' => [$ids[0], $ids[1], $ids[24], $ids[23]],
+            'views_desc' => [$ids[24], $ids[23], $ids[1], $ids[0]],
+        ] as $sort => $ranked) {
+            foreach (array_chunk(array_merge($ranked, $unavailable), 12) as $index => $expected) {
+                $response = $this->directory(['search' => 'Directory', 'sort' => $sort, 'page' => $index + 1])->assertOk();
+                $this->assertSame($expected, $response->viewData('pieces')->pluck('id')->all());
+            }
+        }
     }
 
     public function test_directory_links_empty_states_and_validation()

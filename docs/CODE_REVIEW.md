@@ -1,5 +1,9 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-11 — Sort admin Pieces by web views (P3, complete locally)
+
+- The Web views header and sort menu order the filtered catalogue by saved GA counts before pagination. Both directions put unavailable counts last and break ties by descending piece ID. All 12 focused tests pass (428 assertions), including both directions across pages, and both sorts were verified on local MySQL. Production deployment is pending.
+
 ### 2026-11-11 — Artwork and smooth transitions for blog promotions (P3, complete locally)
 
 - **Request / implementation:** Article promotion cards reuse the versioned home artwork for Shop, Games, Learn, Web app and Metronome. The shared card renders one decorative image, which becomes a thumbnail beside the action in the compact desktop sidebar and phone bar. The existing 24px desktop sticky trigger now eases the card spacing, image and details in both directions. Reduced motion skips the transition, and a focused title stays available. The Design System keeps the shared card. Saved selections, native links and mobile embeds are unchanged.

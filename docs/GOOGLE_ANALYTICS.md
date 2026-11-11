@@ -120,8 +120,12 @@ scoped owner crontab, use this entry:
 5 * * * * cd /var/www/html && test "$(TZ=America/New_York /usr/bin/date +\%H)" = 17 && umask 077 && /usr/bin/php artisan analytics:sync-piece-web-views >> storage/app/private/piece-web-views-sync.log 2>&1
 ```
 
-Use one schedule for the command. The migration and first GA sync are
-verified locally. Production migration, deployment and scheduling are pending.
+Use one schedule for the command. On November 11, 2026, production revision
+`1c9c10a4` had the migration installed and the existing credential ready.
+The initial sync saved counts for all 1,021 pieces through November 10. The
+admin index lookup returned counts for all 12 rows on its first page. The
+scoped 5:05 p.m. New York cron is installed. Its first unattended run is
+pending. A backup of the previous crontab is in `storage/app/private`.
 
 ## Changes saved in Google
 

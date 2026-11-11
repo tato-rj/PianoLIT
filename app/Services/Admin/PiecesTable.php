@@ -20,6 +20,7 @@ class PiecesTable
         'level_asc' => 'Level · easiest', 'level_desc' => 'Level · hardest',
         'highlight_desc' => 'Highlighted · newest', 'highlight_asc' => 'Highlighted · oldest',
         'favorites_desc' => 'Favorited · most', 'favorites_asc' => 'Favorited · fewest',
+        'views_desc' => 'Web views · most', 'views_asc' => 'Web views · fewest',
     ];
 
     public function filters(Request $request)
@@ -65,8 +66,15 @@ class PiecesTable
         if (isset($filters['is_free'])) $query->free(filter_var($filters['is_free'], FILTER_VALIDATE_BOOLEAN));
         [$sort, $direction] = explode('_', $filters['sort']);
         $columns = ['id' => 0, 'name' => 1, 'composer' => 2, 'tags' => 3, 'level' => 4, 'highlight' => 5, 'favorites' => 6];
-        if ($sort === 'updated') $query->orderBy('pieces.updated_at', $direction);
-        else $this->orderColumn($query, $columns[$sort], $direction);
+        if ($sort === 'updated') {
+            $query->orderBy('pieces.updated_at', $direction);
+        } elseif ($sort === 'views') {
+            $query->leftJoin('piece_web_view_counts', 'piece_web_view_counts.piece_id', '=', 'pieces.id')
+                ->orderByRaw('CASE WHEN piece_web_view_counts.views IS NULL THEN 1 ELSE 0 END')
+                ->orderBy('piece_web_view_counts.views', $direction);
+        } else {
+            $this->orderColumn($query, $columns[$sort], $direction);
+        }
 
         return $query->orderByDesc('pieces.id');
     }

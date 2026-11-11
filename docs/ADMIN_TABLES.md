@@ -321,6 +321,8 @@ They remain visible and use the same Apply filters action and query names. Exist
 creator/media URL filters remain supported and survive form submissions. Literal
 LIKE wildcards are escaped. The former Rankings column displays highlight dates
 and is now labeled Highlighted. Favorite counts retain analytics exclusions.
+Web views sorts the full filtered list before pagination. Pieces with no saved
+count appear after pieces with a count in both directions.
 Piece titles open the web app in a new tab, while Edit keeps the admin editor.
 Composer cells use `components.music.composer-label` for a 28px round portrait and name,
 with a neutral fallback for missing images. The directory loads `cover_path` in
