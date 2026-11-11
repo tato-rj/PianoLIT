@@ -33,8 +33,8 @@ The conversion descriptions follow PianoLIT's verified server events described b
 
 ## Views in Admin → Blog → Posts
 
-The **Views** column, public article headers and blog story cards read the same
-saved totals from `blog_post_view_counts`. The command
+The admin **Views** column reads Google Analytics totals from
+`blog_post_view_counts`. The command
 `php artisan analytics:sync-blog-views` fetches the
 [Google Analytics Data API](https://developers.google.com/analytics/devguides/reporting/data/v1)
 for property `399721623`. The Laravel schedule runs daily at 5 p.m. New York
@@ -49,10 +49,17 @@ The command batches paths, authenticates once and replaces totals so late
 events or corrections are included on later runs. A failed request leaves all
 saved counts in place. A complete report with no row for a path stores 0.
 Omitted paths in a limited report keep their prior totals, and sampled or
-truncated batches are skipped. A post that changes slug shows counts for the
-new path after the next successful sync. Until a count is available, the
-public label is hidden and the admin shows **Unavailable**. Drafts show a dash.
-Page requests read SQL and never call Google.
+truncated batches are skipped. The admin shows **Unavailable** until a matching
+GA count is available. Drafts show a dash.
+
+Public article headers and story cards show the recorded lifetime total. They
+add the frozen `posts.views` count to the saved GA count for the current path.
+The old counter was retired before the blog moved. Its totals include embedded
+article reads recorded at the time. A post with only an old count shows that
+count until a matching GA report arrives. Posts with neither source omit the
+label. Both sources stay separate in storage, so each daily sync can replace
+the GA count without adding it twice. Page requests read SQL without recording
+views or calling Google.
 
 Production setup (separate from Measurement Protocol and Sign in with Google):
 
@@ -67,8 +74,9 @@ Production setup (separate from Measurement Protocol and Sign in with Google):
 3. Install `2026_11_11_120000_create_blog_post_view_counts.php` before serving the
    matching code. Refresh Laravel's configuration and view caches. Run
    `php artisan analytics:sync-blog-views` once as the scheduled job owner to
-   populate the counts. Compare a known post in **Blog → Posts** and on the
-   public blog with **Pages and screens**, using the same host, path and dates.
+   populate the counts. Compare a known post in **Blog → Posts** with **Pages
+   and screens**, using the same host, path and dates. The public label should
+   match that GA count plus the post's saved historical count.
 4. Use the registered schedule if Laravel's scheduler is already running.
    Otherwise add a cron for just this command. The existing production setup
    uses scoped owner crons. This example checks New York time so it also works
@@ -81,8 +89,15 @@ Production setup (separate from Measurement Protocol and Sign in with Google):
    Install one schedule only. The command has its own overlap lock for
    scheduled and manual runs. The reporting identity uses `analytics.readonly`.
    If the first sync fails, check API enablement, the property Viewer role and
-   file access. Production credentials, migration, scheduling and verification
-   are pending.
+   file access.
+
+On November 11, 2026, production revision `fd55c4f4c` already had the migration
+installed. The reporting key was installed with mode 0600 for the job owner,
+and the server's `.env` points to it. The manual command saved views for all
+36 published posts through November 10. The live article and blog cards show
+the saved totals. The scoped 5 p.m. New York cron is installed in the owner's
+crontab. The first unattended run is pending. Private backups of the previous
+environment and crontab are in `storage/app/private`.
 
 ## Changes saved in Google
 

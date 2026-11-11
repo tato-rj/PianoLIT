@@ -26,7 +26,7 @@ class BlogAnalyticsRetirementTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('//ul[@id="blog"]//a[@href="'.route('admin.posts.index').'"]')->length);
     }
 
-    public function test_public_blog_reads_stop_incrementing_views_and_omit_counter_badges()
+    public function test_public_blog_reads_show_the_frozen_count_without_incrementing_it()
     {
         $post = Model::withoutEvents(function () {
             return create(Post::class, ['title' => 'Published blog article', 'content' => '<p>Article content remains available.</p>', 'views' => 987654321, 'published_at' => now(), 'gift_path' => null]);
@@ -36,12 +36,14 @@ class BlogAnalyticsRetirementTest extends ReviewTestCase
         $this->get(route('webapp.blog.show', $post->slug))->assertStatus(301)->assertRedirect(route('posts.show', $post->slug));
         foreach (['posts.show', 'posts.app'] as $route) {
             for ($visit = 0; $visit < 2; $visit++) {
-                $this->get(route($route, $post->slug))->assertOk()->assertSee('Published blog article')
-                    ->assertSee('Article content remains available.')->assertDontSee('987654321');
+                $response = $this->get(route($route, $post->slug))->assertOk()->assertSee('Published blog article')
+                    ->assertSee('Article content remains available.');
+                if ($route === 'posts.show') $response->assertSeeText('987,654,321 views');
+                else $response->assertDontSeeText('987,654,321 views');
                 $this->assertSame(987654321, (int) DB::table('posts')->where('id', $post->id)->value('views'));
             }
         }
-        $this->get(route('posts.index'))->assertOk()->assertSee('Published blog article')->assertDontSee(shortNumber(987654321));
+        $this->get(route('posts.index'))->assertOk()->assertSee('Published blog article')->assertSeeText('987,654,321 views');
         $this->assertSame(987654321, (int) DB::table('posts')->where('id', $post->id)->value('views'));
     }
 
@@ -51,7 +53,7 @@ class BlogAnalyticsRetirementTest extends ReviewTestCase
         $this->withExceptionHandling()->get(route('posts.show', $post->slug))->assertNotFound();
         $this->actingAs(create(Admin::class), 'admin');
         auth()->shouldUse('web'); // Public requests keep the web guard as their default.
-        $this->get(route('posts.show', $post->slug))->assertOk()->assertSee('Draft article')->assertSee('not published');
+        $this->get(route('posts.show', $post->slug))->assertOk()->assertSee('Draft article')->assertSee('not published')->assertDontSeeText('27 views');
         $this->assertSame(27, (int) DB::table('posts')->where('id', $post->id)->value('views'));
     }
 }

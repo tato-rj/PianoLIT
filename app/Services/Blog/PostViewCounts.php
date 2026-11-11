@@ -3,12 +3,13 @@
 namespace App\Services\Blog;
 
 use App\Blog\Post;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /** Keeps public and admin view totals separate from shared Post attributes. */
 class PostViewCounts
 {
-    /** @return array<int, int> Saved views keyed by published post ID. */
+    /** @return array<int, int> Saved Google Analytics views keyed by published post ID. */
     public function forPosts(iterable $posts): array
     {
         $slugs = [];
@@ -20,6 +21,20 @@ class PostViewCounts
         $counts = [];
         foreach (DB::table('blog_post_view_counts')->whereIn('post_id', array_keys($slugs))->get(['post_id', 'slug', 'views']) as $row) {
             if ($slugs[$row->post_id] === $row->slug) $counts[$row->post_id] = (int) $row->views;
+        }
+        return $counts;
+    }
+
+    /** @return array<int, int> Public totals keyed by published post ID. */
+    public function publicTotals(Collection $posts): array
+    {
+        $counts = $this->forPosts($posts);
+        foreach ($posts as $post) {
+            // The old counter was retired before the GA reporting window began.
+            $historical = (int) $post->views;
+            if ($post->isPublished() && $historical > 0) {
+                $counts[$post->id] = $historical + ($counts[$post->id] ?? 0);
+            }
         }
         return $counts;
     }

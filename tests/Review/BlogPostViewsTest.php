@@ -39,16 +39,17 @@ class BlogPostViewsTest extends ReviewTestCase
 
     public function test_daily_sync_supplies_the_admin_and_public_blog_without_request_time_google_calls()
     {
-        $draft = $this->postRecord('draft', false);
+        $draft = $this->postRecord('draft', false, 54321);
         $unseen = $this->postRecord('unseen');
-        $viewed = $this->postRecord('viewed');
+        $viewed = $this->postRecord('viewed', true, 98765);
         Http::fake([
             self::REPORT_URL => Http::sequence()->push($this->reportBody(['/viewed' => '12345']))
                 ->push($this->reportBody(['/viewed' => '12344', '/unseen' => '1'])),
             '*' => Http::response([], 500),
         ]);
 
-        $this->get(route('posts.show', $viewed))->assertOk()->assertDontSeeText('98,765 views');
+        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('98,765 views');
+        $this->get(route('posts.show', $unseen))->assertOk()->assertDontSeeText('0 views');
         Http::assertNothingSent();
         $this->artisan('analytics:sync-blog-views')
             ->expectsOutput('Updated 2 of 2 published posts through 2026-11-10.')->assertExitCode(0);
@@ -75,9 +76,9 @@ class BlogPostViewsTest extends ReviewTestCase
                 && $filters[1]['filter']['inListFilter']['values'] === ['/unseen', '/viewed'];
         });
 
-        $this->get(route('posts.index'))->assertOk()->assertSeeText('12,345 views')->assertSeeText('0 views');
-        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('12,345 views');
-        $this->get(route('posts.app', $viewed))->assertOk()->assertDontSeeText('12,345 views');
+        $this->get(route('posts.index'))->assertOk()->assertSeeText('111,110 views')->assertSeeText('0 views')->assertDontSeeText('54,321 views');
+        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('111,110 views');
+        $this->get(route('posts.app', $viewed))->assertOk()->assertDontSeeText('111,110 views')->assertDontSeeText('98,765 views');
         $this->actingAs(create(Admin::class), 'admin');
         $page = $this->get(route('admin.posts.index'))->assertOk()->assertSeeText('Views');
         $this->assertEquals([$viewed->id => 12345, $unseen->id => 0], $page->viewData('postViews'));
@@ -95,8 +96,9 @@ class BlogPostViewsTest extends ReviewTestCase
         ]);
         auth()->shouldUse('web');
         $this->get(route('posts.show', $unseen))->assertOk()->assertSeeText('1 view');
+        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('111,109 views');
         $this->assertSame(98765, (int) $viewed->fresh()->views);
-        $this->assertSame(98765, (int) $draft->fresh()->views);
+        $this->assertSame(54321, (int) $draft->fresh()->views);
         $this->assertArrayNotHasKey('reported_through', $viewed->fresh()->toArray());
     }
 
@@ -122,7 +124,7 @@ class BlogPostViewsTest extends ReviewTestCase
     {
         $viewed = $this->postRecord('viewed');
         $omitted = $this->postRecord('omitted');
-        $renamed = $this->postRecord('renamed');
+        $renamed = $this->postRecord('renamed', true, 120);
         $this->savedCount($omitted, 89);
         $this->savedCount($renamed, 90);
         Http::fake([
@@ -135,6 +137,7 @@ class BlogPostViewsTest extends ReviewTestCase
 
         $this->artisan('analytics:sync-blog-views')
             ->expectsOutput('Updated 1 of 3 published posts through 2026-11-10.')->assertExitCode(0);
+        $this->get(route('posts.show', $renamed->fresh()))->assertOk()->assertSeeText('120 views')->assertDontSeeText('210 views');
         $this->actingAs(create(Admin::class), 'admin');
         $page = $this->get(route('admin.posts.index'))->assertOk();
         $this->assertEquals([$viewed->id => 23, $omitted->id => 89], $page->viewData('postViews'));
@@ -163,11 +166,11 @@ class BlogPostViewsTest extends ReviewTestCase
         ]);
     }
 
-    private function postRecord(string $slug, bool $published = true)
+    private function postRecord(string $slug, bool $published = true, int $historical = 0)
     {
         return Model::withoutEvents(fn () => create(Post::class, [
             'title' => $slug, 'slug' => $slug, 'content' => '<p>Article content.</p>',
-            'published_at' => $published ? now() : null, 'views' => 98765,
+            'published_at' => $published ? now() : null, 'views' => $historical,
         ]));
     }
 

@@ -1,9 +1,14 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-11 — Restore recorded lifetime views on public blog pages (P3, complete locally)
+
+- **Request / implementation:** Public article headers and story cards now add the frozen historical counter to the saved GA views for the current path. Git history confirms the old counter was retired before the GA reporting window. The admin continues to show the GA count. The two values stay separate in storage, and public totals can use the historical count while a GA count is unavailable. The mobile embed, public tracking and daily sync retain their current behavior.
+- **Verification / delivery:** 17 focused tests pass (275 assertions), covering public totals before and after sync, repeat syncs, renamed posts, drafts and the GA-only admin column. No migration, backfill or asset build is needed. Production deployment is pending. See `docs/GOOGLE_ANALYTICS.md`.
+
 ### 2026-11-11 — Sync Google Analytics blog views daily (P3, complete locally)
 
 - **Request / implementation:** Arthur requested a daily backend refresh and view counts in the admin directory, public article headers and blog cards. `analytics:sync-blog-views` fetches GA4 Views in batches for current published paths on `blog.pianolit.com` through yesterday. It saves the totals in `blog_post_view_counts` at 17:00 America/New_York. Page requests share one SQL read per post group. Failed requests preserve previous totals, and newly changed slugs need a matching GA report. Public labels are omitted until a count is available. Historical `posts.views`, public tracking, embedded articles and shared Post JSON are unchanged.
-- **Verification / delivery:** 58 focused isolated tests pass (784 assertions), covering read-only OAuth, date and path scope, public/admin rendering, daily replacement, a late batch failure, a concurrent rename and no request-time Google calls. Schedule inspection confirms 17:00 New York time. The new migration is installed on the verified local MySQL database. The already installed Google auth package is declared directly and no assets changed. Production Data API access, migration, scheduling and comparison with live GA counts remain pending. See `docs/GOOGLE_ANALYTICS.md`.
+- **Verification / delivery:** 58 focused isolated tests pass (784 assertions), covering read-only OAuth, date and path scope, public/admin rendering, daily replacement, a late batch failure, a concurrent rename and no request-time Google calls. Schedule inspection confirms 17:00 New York time. The migration is installed locally and in production. The already installed Google auth package is declared directly and no assets changed. Production GA access and manual sync are verified for all 36 published posts. A live article shows 49 views, matching its saved count, and the blog cards show counts. The scoped cron is installed and its first unattended run is pending. See `docs/GOOGLE_ANALYTICS.md`.
 
 ### 2026-11-10 — Deselect email-builder blocks (P3, complete locally)
 

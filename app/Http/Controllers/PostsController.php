@@ -19,7 +19,7 @@ class PostsController extends Controller
     {
         $posts = Post::published()->latest()->orderByDesc('id')->filter($filters)->paginate(12)->withQueryString();
         $topics = Topic::orderBy('name')->get();
-        $postViews = app(PostViewCounts::class)->forPosts($posts);
+        $postViews = app(PostViewCounts::class)->publicTotals($posts->getCollection());
 
         return view('blog.index', compact('posts', 'topics', 'postViews'));
     }
@@ -43,7 +43,7 @@ class PostsController extends Controller
             abort(404);
         }
 
-        $postViews = app(PostViewCounts::class)->forPosts($suggestions->concat([$post]));
+        $postViews = app(PostViewCounts::class)->publicTotals($suggestions->concat([$post]));
         return view('blog.show', compact('post', 'suggestions', 'promotionCards', 'postViews'));
     }
 
