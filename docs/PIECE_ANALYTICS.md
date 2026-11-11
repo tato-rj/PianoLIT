@@ -40,10 +40,18 @@ and country charts also expose full data tables.
   Composer shares use the full catalogue denominator; missing gender remains a
   category. Composer rankings are compact top-eight lists, not paginated tables.
 - **Engagement rankings:** top eight pieces by saved Google Analytics web views
-  on `my.pianolit.com` since July 26, 2023, with separate rankings for legacy iOS
-  `piece_views` and current `favorites`. Ties use piece ID. The iOS and favorites
-  rankings use the shared `ExcludedAccounts::owned` policy. Views include
-  repeat opens, and favorites count currently saved records.
+  on `my.pianolit.com` since July 26, 2023, iOS piece views, and current favorites.
+  Ties use piece ID. The iOS and favorites rankings use the shared account exclusions.
+- **iOS views:** the chart uses the original `piece_views` records through
+  the last recorded view on June 7, 2023 at 14:55:25 New York time. After that
+  it reads retained app requests to
+  `/api/pieces/find`, including the imported Redis requests. Each eligible
+  request for a current piece counts once. Requests were logged before the
+  response, so they can include retries and cannot establish that the screen
+  rendered. Authenticated v2 confirmed-open requests contribute separate
+  `piece_opened` events starting with deployment. This uses the existing
+  activity table and takes effect on deployment without an import, migration
+  or scheduled job.
 - **Classification review:** missing/conflicting main levels and periods, plus
   missing composer records. These issue counts can overlap.
 

@@ -88,7 +88,7 @@
         </div>
         <div class="pa-grid">
 
-@include('admin.pages.analytics.pieces.ranking', ['title' => 'Most viewed in the iOS app', 'subtitle' => 'Legacy app views.', 'rows' => $report['views'], 'unit' => 'views', 'color' => '#efb07c'])
+@include('admin.pages.analytics.pieces.ranking', ['title' => 'Most viewed in the iOS app', 'subtitle' => 'Historical views, legacy app piece requests, and confirmed opens.', 'rows' => $report['views'], 'unit' => 'views', 'color' => '#efb07c'])
 
 @include('admin.pages.analytics.pieces.ranking', ['title' => 'Most favorited pieces', 'subtitle' => 'Current saved favorites.', 'rows' => $report['favorites'], 'unit' => 'favorites', 'color' => '#94c6b0'])
         </div>

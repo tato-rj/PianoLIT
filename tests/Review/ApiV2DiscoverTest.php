@@ -133,10 +133,17 @@ class ApiV2DiscoverTest extends ReviewTestCase
         $this->postJson('/api/v2/pieces/'.$this->piece->id.'/view', [], ['Authorization' => 'Bearer '.$this->token])->assertNoContent();
         $this->assertDatabaseCount('recently_viewed_pieces', 1);
         $this->assertDatabaseHas('recently_viewed_pieces', ['user_id' => $this->user->id]);
+        $opens = DB::table('activity_events')->where('platform', 'app')->where('type', 'piece_opened')->get();
+        $this->assertCount(2, $opens);
+        $this->assertEquals([$this->user->id], $opens->pluck('user_id')->unique()->all());
+        $this->assertEquals([(string) $this->piece->id], $opens->pluck('resource_id')->unique()->all());
+        $this->assertSame([], $this->user->log('app'));
         $otherToken = app(Tokens::class)->issue($this->other)['access_token'];
         $otherSections = $this->feed(['user_id' => $this->user->id], $otherToken)->assertOk()->json('data.sections');
         $this->assertNotContains('recently_viewed', array_column($otherSections, 'id'));
         $this->postJson('/api/v2/pieces/99999/view', [], ['Authorization' => 'Bearer '.$this->token])->assertNotFound()->assertJsonPath('error.code', 'not_found');
+        $counts = app(\App\Analytics\IosPieceViews::class)->counts()->pluck('total', 'piece_id');
+        $this->assertEquals([$this->piece->id => 2], $counts->all());
     }
 
     public function test_scheduled_free_pick_rotates_for_both_clients_without_a_worker_or_changing_legacy_cache()

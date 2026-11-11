@@ -67,7 +67,7 @@ class PieceReport
 
         return compact('summary', 'months', 'growth', 'levels', 'periods', 'lengths', 'genders', 'composers', 'media', 'issues') + [
             'countries' => $this->countries($total), 'matrix' => $this->matrix($levels, $periods),
-            'favorites' => $this->ranking('favorites'), 'views' => $this->ranking('piece_views'),
+            'favorites' => $this->ranking('favorites'), 'views' => $this->rankPieces((new IosPieceViews)->counts()),
             'webViews' => $this->rankPieces(DB::table('piece_web_view_counts')->where('views', '>', 0)->select('piece_id', 'views as total')),
             'webViewsFrom' => Carbon::parse(PieceWebViewCounts::START_DATE)->format('M j, Y'),
         ];

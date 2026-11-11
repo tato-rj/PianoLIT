@@ -7,6 +7,7 @@ use App\Analytics\PieceReport;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PieceAnalyticsTest extends ReviewTestCase
 {
@@ -178,5 +179,46 @@ class PieceAnalyticsTest extends ReviewTestCase
         foreach ([[12], 0, 13, 100000, 'invalid'] as $value) $this->getJson(route('admin.analytics.pieces', ['months' => $value]))->assertStatus(422);
         auth('admin')->logout();
         $this->get(route('admin.analytics.pieces'))->assertRedirect(route('admin.login.show'));
+    }
+
+    public function test_ios_ranking_combines_saved_views_and_piece_requests_without_overlap()
+    {
+        $user = Model::withoutEvents(fn () => create(User::class));
+        $excluded = Model::withoutEvents(fn () => create(User::class, ['email' => 'elena.dare@gmail.com']));
+        $piece = $this->piece();
+        $this->tag($piece, 'level', 'beginner');
+        $this->tag($piece, 'period', 'romantic');
+        $this->tag($piece, 'length', 'short');
+        foreach (['2023-06-07 14:55:25', '2023-06-07 14:55:26'] as $date) {
+            DB::table('piece_views')->insert(['piece_id' => $piece->id, 'user_id' => $user->id, 'created_at' => $date]);
+        }
+
+        $log = function (array $overrides = []) use ($user, $piece) {
+            DB::table('activity_events')->insert($overrides + [
+                'event_id' => (string) Str::uuid(), 'user_id' => $user->id,
+                'platform' => 'app', 'type' => 'legacy_request', 'source' => 'redis',
+                'occurred_at' => '2023-06-07 14:55:26', 'received_at' => now(),
+                'url' => '/api/pieces/find', 'metadata' => json_encode(['data' => ['search' => (string) $piece->id]]),
+            ]);
+        };
+        $log();
+        $log(['occurred_at' => '2023-06-07 14:55:25']);
+        $log(['occurred_at' => null]);
+        $log(['user_id' => $excluded->id]);
+        $log(['platform' => 'webapp']);
+        $log(['method' => 'HEAD']);
+        $log(['url' => '/api/discover?redirect=/api/pieces/find']);
+        foreach ([$piece->id.'x', $piece->id.' ', true, 999999] as $invalid) {
+            $log(['metadata' => json_encode(['data' => ['search' => $invalid]])]);
+        }
+        $this->assertSame([2], array_column($this->report()['views'], 'total'));
+
+        $this->postJson(route('api.pieces.find'), ['search' => $piece->id, 'user_id' => $user->id])
+            ->assertOk()->assertJsonPath('0.views_count', 2);
+        $this->getJson(route('api.pieces.find', ['search' => $piece->id, 'user_id' => $user->id]))->assertOk();
+        $log(['type' => 'piece_opened', 'source' => 'server', 'resource_type' => 'piece', 'resource_id' => (string) $piece->id, 'occurred_at' => now()]);
+        $this->assertSame([5], array_column($this->report()['views'], 'total'));
+        $this->assertSame([5], array_column($this->report()['views'], 'total'));
+        $this->assertDatabaseCount('piece_views', 2);
     }
 }

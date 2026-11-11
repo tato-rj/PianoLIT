@@ -2,8 +2,10 @@
 
 namespace App\Activity;
 
+use App\{Piece, User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Actions
 {
@@ -18,6 +20,27 @@ class Actions
             // Auth listeners use the verified guard event, never submitted input.
             if ($actor !== null) $event['user_id'] = $actor;
             $recorder->insert($request, $page, $event);
+        } catch (\Throwable $exception) { report($exception); }
+    }
+
+    public static function iosPieceOpened(User $user, Piece $piece): void
+    {
+        if (!config('activity.enabled') || ExcludedAccounts::user($user)) return;
+
+        try {
+            $at = now();
+            $local = $at->format('Y-m-d H:i:s.v');
+            $utc = $at->copy()->utc()->format('Y-m-d H:i:s.v');
+            DB::transaction(function () use ($user, $piece, $local, $utc) {
+                if (!PurgedUsers::lock($user->id)) return;
+                DB::table('activity_events')->insert([
+                    'event_id' => (string) Str::uuid(), 'user_id' => $user->id,
+                    'platform' => 'app', 'type' => 'piece_opened', 'source' => 'server',
+                    'resource_type' => 'piece', 'resource_id' => (string) $piece->id,
+                    'occurred_at' => $local, 'received_at' => $local,
+                    'occurred_at_utc' => $utc, 'received_at_utc' => $utc,
+                ]);
+            }, 3);
         } catch (\Throwable $exception) { report($exception); }
     }
 

@@ -71,16 +71,22 @@ class LogFactory
 
     public function total($type = 'user')
     {
-        $query = \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->whereNotNull('user_id');
+        $query = $this->logs()->whereNotNull('user_id');
         if ($type !== 'user') $query->where('platform', $this->platform($type));
         return $query->count();
     }
 
     private function query($userId, $type)
     {
-        $query = \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->where('user_id', $userId);
+        $query = $this->logs()->where('user_id', $userId);
         if ($type) $query->where('platform', $this->platform($type));
         return $query;
+    }
+
+    private function logs()
+    {
+        // Confirmed v2 opens feed the piece chart independently of the legacy log fields.
+        return \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->where('type', '<>', 'piece_opened');
     }
 
     private function platform($type)

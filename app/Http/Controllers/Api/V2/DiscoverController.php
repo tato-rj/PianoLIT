@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V2;
 
+use App\Activity\Actions;
 use App\Http\Controllers\Controller;
 use App\Piece;
 use App\Services\Api\V2\{DiscoverResponse, Response};
@@ -20,7 +21,9 @@ class DiscoverController extends Controller
     public function view(Request $request, $piece, RecentlyViewedPieces $history)
     {
         $piece = Piece::findOrFail($piece);
-        $history->record($request->user(), $piece);
+        $user = $request->user();
+        $history->record($user, $piece);
+        Actions::iosPieceOpened($user, $piece);
         return response()->noContent();
     }
 }
