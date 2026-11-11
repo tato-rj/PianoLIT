@@ -7,10 +7,8 @@ use Illuminate\Support\Facades\Http;
 use Psr\Http\Message\RequestInterface;
 use UnexpectedValueException;
 
-class BlogPostViews
+class GoogleAnalyticsPageViews
 {
-    private const HOST = 'blog.pianolit.com';
-    private const START_DATE = '2026-10-21'; // The blog moved to this hostname.
     private const SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
 
     public function configured(): bool
@@ -20,10 +18,10 @@ class BlogPostViews
         return ctype_digit($property) && is_string($credentials) && is_file($credentials) && is_readable($credentials);
     }
 
-    /** @return array<string, int> GA counts keyed by current public path. */
-    public function fetch(array $paths, string $through): array
+    /** @return array<string, int> GA counts keyed by the requested page path. */
+    public function fetch(string $host, array $paths, string $from, string $through): array
     {
-        if (!$paths || $through < self::START_DATE) return [];
+        if (!$paths || $through < $from) return [];
         if (!$this->configured()) throw new UnexpectedValueException('Google Analytics reporting is not configured.');
 
         $property = (string) config('google-analytics.property_id');
@@ -38,21 +36,21 @@ class BlogPostViews
 
         $counts = [];
         foreach (array_chunk(array_unique($paths), 100) as $batch) {
-            $counts += $this->report($property, $token['access_token'], $batch, $through);
+            $counts += $this->report($property, $token['access_token'], $host, $batch, $from, $through);
         }
         return $counts;
     }
 
-    private function report(string $property, string $token, array $paths, string $through): array
+    private function report(string $property, string $token, string $host, array $paths, string $from, string $through): array
     {
         $report = $this->http()->withToken($token)
             ->post('https://analyticsdata.googleapis.com/v1beta/properties/'.$property.':runReport', [
-                'dateRanges' => [['startDate' => self::START_DATE, 'endDate' => $through]],
+                'dateRanges' => [['startDate' => $from, 'endDate' => $through]],
                 'dimensions' => [['name' => 'pagePath']],
                 'metrics' => [['name' => 'screenPageViews']],
                 'dimensionFilter' => ['andGroup' => ['expressions' => [
                     ['filter' => ['fieldName' => 'hostName', 'stringFilter' => [
-                        'matchType' => 'EXACT', 'value' => self::HOST,
+                        'matchType' => 'EXACT', 'value' => $host,
                     ]]],
                     ['filter' => ['fieldName' => 'pagePath', 'inListFilter' => [
                         'values' => $paths, 'caseSensitive' => true,
@@ -65,7 +63,7 @@ class BlogPostViews
         if (($report['dimensionHeaders'][0]['name'] ?? null) !== 'pagePath'
             || ($report['metricHeaders'][0]['name'] ?? null) !== 'screenPageViews'
             || !is_array($rows) || ($report['rowCount'] ?? 0) !== count($rows)) {
-            throw new UnexpectedValueException('Invalid Google Analytics blog views report.');
+            throw new UnexpectedValueException('Invalid Google Analytics page views report.');
         }
 
         $metadata = $report['metadata'] ?? [];
@@ -78,7 +76,7 @@ class BlogPostViews
             $value = $row['metricValues'][0]['value'] ?? null;
             $count = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
             if (!is_string($path) || !isset($expected[$path]) || isset($counts[$path]) || $count === false) {
-                throw new UnexpectedValueException('Invalid Google Analytics blog views row.');
+                throw new UnexpectedValueException('Invalid Google Analytics page views row.');
             }
             $counts[$path] = $count;
         }

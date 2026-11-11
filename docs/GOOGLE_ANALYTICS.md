@@ -99,6 +99,30 @@ the saved totals. The scoped 5 p.m. New York cron is installed in the owner's
 crontab. The first unattended run is pending. Private backups of the previous
 environment and crontab are in `storage/app/private`.
 
+## Web views in Admin → Pieces
+
+The **Web views** column shows saved GA4 Views for the exact piece page on
+`my.pianolit.com`. The reporting period starts July 26, 2023, the earliest
+piece-page activity found in this property, and runs through yesterday in New
+York. The old `piece_views` counter comes from the mobile API and is separate
+from the web count. The admin table reads the saved counts in one query and
+shows **Unavailable** before a report is saved. A complete report can record
+zero views. The feature has no web app or mobile display.
+
+The sync reuses the existing reporting credential. It replaces saved totals
+daily and keeps them when GA requests fail. Install
+`2026_11_11_130000_create_piece_web_view_counts.php` before deploying the
+matching code, then run `php artisan analytics:sync-piece-web-views` to seed
+the table. The Laravel schedule is 5:05 p.m. New York time. For production's
+scoped owner crontab, use this entry:
+
+```cron
+5 * * * * cd /var/www/html && test "$(TZ=America/New_York /usr/bin/date +\%H)" = 17 && umask 077 && /usr/bin/php artisan analytics:sync-piece-web-views >> storage/app/private/piece-web-views-sync.log 2>&1
+```
+
+Use one schedule for the command. The migration and first GA sync are
+verified locally. Production migration, deployment and scheduling are pending.
+
 ## Changes saved in Google
 
 - Account `137232556`, property `399721623`: **PianoLIT · Website & hubs**

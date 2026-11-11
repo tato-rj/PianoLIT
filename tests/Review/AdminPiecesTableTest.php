@@ -4,7 +4,8 @@ namespace Tests\Review;
 
 use App\{Admin, Composer, Favorite, Piece, Tag, Tutorial, User};
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Client\Factory;
+use Illuminate\Support\Facades\{DB, Http};
 
 class AdminPiecesTableTest extends ReviewTestCase
 {
@@ -64,7 +65,7 @@ class AdminPiecesTableTest extends ReviewTestCase
         $html = $this->get(route('admin.pieces.index'))->assertOk()->getContent();
         preg_match('/<table[^>]*id="pieces-table".*?<\/table>/s', $html, $table);
         preg_match_all('/<th\b[^>]*>(.*?)<\/th>/s', $table[0], $headers);
-        foreach (['ID', 'Piece', 'Composer', 'Level', 'Highlighted', 'Favorited', 'Actions'] as $i => $label) {
+        foreach (['ID', 'Piece', 'Composer', 'Level', 'Highlighted', 'Favorited', 'Web views', 'Actions'] as $i => $label) {
             $this->assertStringContainsString($label, strip_tags($headers[1][$i]));
         }
         $this->assertStringNotContainsString('cdn.datatables.net', $html);
@@ -270,7 +271,66 @@ class AdminPiecesTableTest extends ReviewTestCase
             $this->assertStringNotContainsString('activity_events', implode(' ', array_column($queries, 'query')));
             $this->assertStringNotContainsString('from "tutorials"', implode(' ', array_column($queries, 'query')));
         }
-        $this->assertSame([6, 6], $counts);
+        $this->assertSame([7, 7], $counts);
+    }
+
+    public function test_piece_web_views_sync_replaces_totals_used_only_in_the_admin_directory()
+    {
+        $this->travelTo(now('America/New_York')->setDate(2026, 11, 11)->setTime(17, 5));
+        $piece = $this->pieces->first();
+        $piece->views()->create(['user_id' => create(User::class)->id]);
+        $path = route('webapp.pieces.show', $piece, false);
+        $directory = $this->directory()->assertOk()->assertSeeText('Web views')->assertSeeText('Unavailable');
+        $this->assertSame([], $directory->viewData('pieceWebViews'));
+
+        $credentials = tempnam(sys_get_temp_dir(), 'piece-web-views-');
+        try {
+            $key = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA]);
+            openssl_pkey_export($key, $privateKey);
+            file_put_contents($credentials, json_encode([
+                'type' => 'service_account', 'client_email' => 'report@example.test', 'private_key' => $privateKey,
+            ]));
+            config(['google-analytics.report_credentials' => $credentials]);
+            Http::swap(new Factory);
+            $report = fn ($count) => [
+                'dimensionHeaders' => [['name' => 'pagePath']],
+                'metricHeaders' => [['name' => 'screenPageViews']],
+                'rows' => [['dimensionValues' => [['value' => $path]], 'metricValues' => [['value' => (string) $count]]]],
+                'rowCount' => 1,
+            ];
+            $reportUrl = 'https://analyticsdata.googleapis.com/v1beta/properties/399721623:runReport';
+            Http::fake([
+                'https://oauth2.googleapis.com/token' => Http::response(['access_token' => 'fake-token', 'expires_in' => 3600]),
+                $reportUrl => Http::sequence()->push($report(1234))->push(['error' => 'Unavailable'], 503)->push($report(1300)),
+                '*' => Http::response([], 500),
+            ]);
+
+            $this->artisan('analytics:sync-piece-web-views')
+                ->expectsOutput('Updated web views for 4 of 4 pieces through 2026-11-10.')->assertExitCode(0);
+            Http::assertSent(function ($request) use ($reportUrl, $path) {
+                if ($request->url() !== $reportUrl) return false;
+
+                $filters = $request['dimensionFilter']['andGroup']['expressions'];
+                return $request['dateRanges'] === [['startDate' => '2023-07-26', 'endDate' => '2026-11-10']]
+                    && $filters[0]['filter']['stringFilter']['value'] === 'my.pianolit.com'
+                    && $filters[1]['filter']['inListFilter']['values'][0] === $path;
+            });
+
+            $page = $this->directory()->assertOk()->assertSeeText('1,234')->assertDontSeeText('Unavailable');
+            $this->assertSame(1234, $page->viewData('pieceWebViews')[$piece->id]);
+            $this->assertSame(0, $page->viewData('pieceWebViews')[$this->pieces[1]->id]);
+            $this->assertArrayNotHasKey('web_views', $this->table()->assertOk()->json('data.0'));
+            Http::assertSentCount(2);
+
+            $this->travel(1)->days();
+            $this->artisan('analytics:sync-piece-web-views')->assertExitCode(1);
+            $this->assertDatabaseHas('piece_web_view_counts', ['piece_id' => $piece->id, 'views' => 1234, 'reported_through' => '2026-11-10']);
+            $this->artisan('analytics:sync-piece-web-views')->assertExitCode(0);
+            $this->assertDatabaseHas('piece_web_view_counts', ['piece_id' => $piece->id, 'views' => 1300, 'reported_through' => '2026-11-11']);
+            $this->assertSame(1, $piece->views()->count());
+        } finally {
+            unlink($credentials);
+        }
     }
 
     public function test_quick_edits_validate_types_preserve_other_tags_and_roll_back_level_failures()

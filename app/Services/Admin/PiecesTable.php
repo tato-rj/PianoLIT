@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\{Composer, Piece};
+use App\Analytics\PieceWebViewCounts;
 use App\Support\AdminTableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,8 +43,9 @@ class PiecesTable
         $pieces = $this->query($filters)->paginate($filters['per_page'], ['*'], 'page', $filters['page'] ?? 1)
             ->appends(AdminTableFilters::query(array_diff_key($filters, ['page' => true]), 'updated_desc'));
         $returnFilters = AdminTableFilters::query($filters, 'updated_desc');
+        $pieceWebViews = app(PieceWebViewCounts::class)->forPieces($pieces->getCollection()->modelKeys());
 
-        return compact('pieces', 'filters', 'returnFilters');
+        return compact('pieces', 'filters', 'returnFilters', 'pieceWebViews');
     }
 
     public function query(array $filters)

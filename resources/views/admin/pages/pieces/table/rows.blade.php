@@ -25,6 +25,13 @@
         @include('admin.pages.pieces.table.scheduled-date')
     </td>
     <td>{{ number_format($item->favorites_count) }}</td>
+    <td class="text-end text-nowrap">
+        @if(isset($pieceWebViews[$item->id]))
+            {{ number_format($pieceWebViews[$item->id]) }}
+        @else
+            <span class="text-muted">Unavailable</span>
+        @endif
+    </td>
     <td>
         <div class="d-flex flex-nowrap justify-content-end align-items-center gap-2">
             @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.pieces.edit', $item), 'attributes' => ['aria-label' => 'Edit '.$item->long_name]]])

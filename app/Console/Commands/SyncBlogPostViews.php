@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Analytics\BlogPostViews;
+use App\Analytics\GoogleAnalyticsPageViews;
 use App\Blog\Post;
 use App\Services\Blog\PostViewCounts;
 use Illuminate\Console\Command;
@@ -16,7 +16,7 @@ class SyncBlogPostViews extends Command
     protected $signature = 'analytics:sync-blog-views';
     protected $description = 'Refresh saved blog post view counts from Google Analytics';
 
-    public function handle(BlogPostViews $google, PostViewCounts $saved)
+    public function handle(GoogleAnalyticsPageViews $google, PostViewCounts $saved)
     {
         if (!$google->configured()) {
             $this->error('Google Analytics reporting is not configured.');
@@ -29,7 +29,7 @@ class SyncBlogPostViews extends Command
                 $posts = Post::published()->without('topics')->orderBy('id')->get(['id', 'slug']);
                 $paths = $posts->mapWithKeys(fn ($post) => [$post->id => route('posts.show', $post, false)])->all();
 
-                $counts = $google->fetch(array_values($paths), $through);
+                $counts = $google->fetch('blog.pianolit.com', array_values($paths), '2026-10-21', $through);
                 $updated = $saved->save($posts->pluck('slug', 'id')->all(), $paths, $counts, $through);
                 $this->info("Updated {$updated} of {$posts->count()} published posts through {$through}.");
                 if ($updated < $posts->count()) $this->warn('Posts without a current report kept their previous counts.');

@@ -980,12 +980,17 @@ the public article; mobile embeds retain their existing typography and media.
 Stored article HTML, cover credits and references are preserved.
 
 Article hub promotions opt into `components.promotions.hubs` with `persistent: true`.
+Each hub reuses its versioned home editorial image. The same decorative image
+appears as a banner in the full card and as a thumbnail in each compact layout.
 At 992px and wider the existing cards stick 24px from the viewport top within the
 editorial sidebar, returning to their normal position on upward scrolling. There
 is no promotion count cap. For more than two cards, the normal-flow sentinel in
 `components/hub-promotions.js` detects the 24px sticky threshold with
 IntersectionObserver and adds `is-stuck`. Only then do the cards become compact
-action rows; scrolling back above the threshold restores the full cards.
+action rows. The card details fold away as the banner shrinks and the action
+moves beside it. Scrolling back above the threshold reverses the transition.
+Reduced motion skips the animation. A focused card title stays available until
+focus moves away from the details.
 Bounded native scrolling remains available for unusually large groups.
 Below 992px the same cards form a full-width bottom bar with only its top corners
 rounded, 44px actions and safe-area padding. Single promotions show their title and

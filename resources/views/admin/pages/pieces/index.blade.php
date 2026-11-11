@@ -21,6 +21,7 @@
             ['label' => 'Level', 'sort' => ['asc' => 'level_asc', 'desc' => 'level_desc']],
             ['label' => 'Highlighted', 'sort' => ['asc' => 'highlight_asc', 'desc' => 'highlight_desc']],
             ['label' => 'Favorited', 'sort' => ['asc' => 'favorites_asc', 'desc' => 'favorites_desc']],
+            ['label' => 'Web views', 'class' => 'text-end'],
             ['label' => 'Actions', 'hidden' => true],
         ],
         'tableClass' => 'admin-pieces-table',

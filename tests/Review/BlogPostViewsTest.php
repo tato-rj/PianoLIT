@@ -41,14 +41,14 @@ class BlogPostViewsTest extends ReviewTestCase
     {
         $draft = $this->postRecord('draft', false, 54321);
         $unseen = $this->postRecord('unseen');
-        $viewed = $this->postRecord('viewed', true, 98765);
+        $viewed = $this->postRecord('viewed', true, 1100);
         Http::fake([
             self::REPORT_URL => Http::sequence()->push($this->reportBody(['/viewed' => '12345']))
-                ->push($this->reportBody(['/viewed' => '12344', '/unseen' => '1'])),
+                ->push($this->reportBody(['/viewed' => '12400', '/unseen' => '1'])),
             '*' => Http::response([], 500),
         ]);
 
-        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('98,765 views');
+        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('1.1k views');
         $this->get(route('posts.show', $unseen))->assertOk()->assertDontSeeText('0 views');
         Http::assertNothingSent();
         $this->artisan('analytics:sync-blog-views')
@@ -76,9 +76,9 @@ class BlogPostViewsTest extends ReviewTestCase
                 && $filters[1]['filter']['inListFilter']['values'] === ['/unseen', '/viewed'];
         });
 
-        $this->get(route('posts.index'))->assertOk()->assertSeeText('111,110 views')->assertSeeText('0 views')->assertDontSeeText('54,321 views');
-        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('111,110 views');
-        $this->get(route('posts.app', $viewed))->assertOk()->assertDontSeeText('111,110 views')->assertDontSeeText('98,765 views');
+        $this->get(route('posts.index'))->assertOk()->assertSeeText('13.4k views')->assertSeeText('0 views')->assertDontSeeText('54.3k views');
+        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('13.4k views');
+        $this->get(route('posts.app', $viewed))->assertOk()->assertDontSeeText('13.4k views')->assertDontSeeText('1.1k views');
         $this->actingAs(create(Admin::class), 'admin');
         $page = $this->get(route('admin.posts.index'))->assertOk()->assertSeeText('Views');
         $this->assertEquals([$viewed->id => 12345, $unseen->id => 0], $page->viewData('postViews'));
@@ -92,12 +92,12 @@ class BlogPostViewsTest extends ReviewTestCase
         $this->artisan('analytics:sync-blog-views')->assertExitCode(0);
         $this->assertDatabaseCount('blog_post_view_counts', 2);
         $this->assertDatabaseHas('blog_post_view_counts', [
-            'post_id' => $viewed->id, 'views' => 12344, 'reported_through' => '2026-11-11',
+            'post_id' => $viewed->id, 'views' => 12400, 'reported_through' => '2026-11-11',
         ]);
         auth()->shouldUse('web');
         $this->get(route('posts.show', $unseen))->assertOk()->assertSeeText('1 view');
-        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('111,109 views');
-        $this->assertSame(98765, (int) $viewed->fresh()->views);
+        $this->get(route('posts.show', $viewed))->assertOk()->assertSeeText('13.5k views');
+        $this->assertSame(1100, (int) $viewed->fresh()->views);
         $this->assertSame(54321, (int) $draft->fresh()->views);
         $this->assertArrayNotHasKey('reported_through', $viewed->fresh()->toArray());
     }

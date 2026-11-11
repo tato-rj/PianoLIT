@@ -73,7 +73,10 @@ class PostPromotions
         $keys = $this->selection($choices);
         return array_map(function ($key) {
             $hub = self::HUBS[$key];
-            return $hub + ['url' => route($hub['route'])];
+            return $hub + [
+                'url' => route($hub['route']),
+                'image' => mix('images/home/editorial/'.$key.'.webp'),
+            ];
         }, $keys);
     }
 

@@ -7,7 +7,7 @@
     @endif
     <div class="hub-promotions {{ ($persistent ?? false) ? 'hub-promotions--persistent' : '' }} {{ count($promotionHubs) > 1 ? 'hub-promotions--multiple' : '' }} {{ count($promotionHubs) > 2 ? 'hub-promotions--many' : '' }}" @if($preview ?? false) data-ds-preview @elseif($persistent ?? false) data-hub-promotions @endif>
         @foreach($promotionHubs as $hub)
-            @include('components.cards.promotion', array_merge($hub, ['preview' => false]))
+            @include('components.cards.promotion', array_merge($hub, ['hubCard' => true, 'preview' => false]))
         @endforeach
     </div>
     @if(($persistent ?? false) && !($preview ?? false))

@@ -29,7 +29,7 @@ class BlogAnalyticsRetirementTest extends ReviewTestCase
     public function test_public_blog_reads_show_the_frozen_count_without_incrementing_it()
     {
         $post = Model::withoutEvents(function () {
-            return create(Post::class, ['title' => 'Published blog article', 'content' => '<p>Article content remains available.</p>', 'views' => 987654321, 'published_at' => now(), 'gift_path' => null]);
+            return create(Post::class, ['title' => 'Published blog article', 'content' => '<p>Article content remains available.</p>', 'views' => 1000, 'published_at' => now(), 'gift_path' => null]);
         });
         $this->assertTrue(traffic()->isRealVisitor());
         $this->assertGuest('web'); $this->assertGuest('admin');
@@ -38,13 +38,13 @@ class BlogAnalyticsRetirementTest extends ReviewTestCase
             for ($visit = 0; $visit < 2; $visit++) {
                 $response = $this->get(route($route, $post->slug))->assertOk()->assertSee('Published blog article')
                     ->assertSee('Article content remains available.');
-                if ($route === 'posts.show') $response->assertSeeText('987,654,321 views');
-                else $response->assertDontSeeText('987,654,321 views');
-                $this->assertSame(987654321, (int) DB::table('posts')->where('id', $post->id)->value('views'));
+                if ($route === 'posts.show') $response->assertSeeText('1k views');
+                else $response->assertDontSeeText('1k views');
+                $this->assertSame(1000, (int) DB::table('posts')->where('id', $post->id)->value('views'));
             }
         }
-        $this->get(route('posts.index'))->assertOk()->assertSee('Published blog article')->assertSeeText('987,654,321 views');
-        $this->assertSame(987654321, (int) DB::table('posts')->where('id', $post->id)->value('views'));
+        $this->get(route('posts.index'))->assertOk()->assertSee('Published blog article')->assertSeeText('1k views');
+        $this->assertSame(1000, (int) DB::table('posts')->where('id', $post->id)->value('views'));
     }
 
     public function test_unpublished_post_preview_still_requires_admin_and_never_counts_a_view()

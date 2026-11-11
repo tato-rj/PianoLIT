@@ -1,5 +1,15 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-11 — Artwork and smooth transitions for blog promotions (P3, complete locally)
+
+- **Request / implementation:** Article promotion cards reuse the versioned home artwork for Shop, Games, Learn, Web app and Metronome. The shared card renders one decorative image, which becomes a thumbnail beside the action in the compact desktop sidebar and phone bar. The existing 24px desktop sticky trigger now eases the card spacing, image and details in both directions. Reduced motion skips the transition, and a focused title stays available. The Design System keeps the shared card. Saved selections, native links and mobile embeds are unchanged.
+- **Verification / delivery:** 25 focused promotion and blog admin tests pass (377 assertions). Browser checks on a local article covered both transition directions, keyboard focus, reduced motion, all three phone actions at 390px, and native scroll to the final action at 320px. Production CSS and asset checks pass. The broader suite still reports unrelated blog directory copy and campaign attribution expectations, and the general JS runner stops in its existing admin-subdomain mock. No migration is needed. Production deployment and physical phone verification are pending.
+
+### 2026-11-11 — Show GA4 web views in the admin Pieces directory (P3, complete locally)
+
+- **Request / implementation:** The admin Pieces table now shows GA4 counts for exact `my.pianolit.com/pieces/{id}` paths. Production GA data includes piece views from July 26, 2023. The legacy counter came through the mobile API, so it is kept separate. The new command shares the blog's GA reader and credentials, saves totals in `piece_web_view_counts`, and is scheduled for 17:05 New York time. The native admin table reads the saved values once for the current page. The legacy table response, piece pages and shared model data retain their existing behavior.
+- **Verification / delivery:** 16 focused tests pass (476 assertions), including scope, replacement, failure recovery, zero versus unavailable, query count and legacy response coverage. The migration and real GA sync ran on the verified local MySQL database for all 13 local pieces. The schedule is confirmed in Laravel. Production deployment, migration and the scoped cron are pending. See `docs/GOOGLE_ANALYTICS.md`.
+
 ### 2026-11-11 — Restore recorded lifetime views on public blog pages (P3, complete locally)
 
 - **Request / implementation:** Public article headers and story cards now add the frozen historical counter to the saved GA views for the current path. Git history confirms the old counter was retired before the GA reporting window. The admin continues to show the GA count. The two values stay separate in storage, and public totals can use the historical count while a GA count is unavailable. The mobile embed, public tracking and daily sync retain their current behavior.

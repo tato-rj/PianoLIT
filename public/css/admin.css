@@ -27401,6 +27401,31 @@ body.admin-dashboard-page .admin-main {
   font-size: var(--font-size-sm);
   line-height: var(--line-height-body);
 }
+.promo-card--hub {
+  --promo-padding: 1.5rem;
+  --promo-art-height: 7rem;
+  --promo-art-width: calc(100% - 2 * var(--promo-padding));
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding: calc(var(--promo-padding) + var(--promo-art-height) + 0.75rem) var(--promo-padding) var(--promo-padding);
+  border-radius: var(--radius);
+}
+.promo-card--hub .pastel-card__action {
+  min-width: 0;
+  min-height: 44px;
+}
+.promo-card__artwork {
+  position: absolute;
+  top: var(--promo-padding);
+  inset-inline-start: var(--promo-padding);
+  width: var(--promo-art-width);
+  height: var(--promo-art-height);
+  border-radius: var(--radius-sm);
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center 64%;
+     object-position: center 64%;
+}
 
 .hub-promotions__sentinel {
   display: block;
@@ -27418,7 +27443,7 @@ body.admin-dashboard-page .admin-main {
   overscroll-behavior: contain;
 }
 .hub-promotions--persistent > .promo-card:last-child {
-  margin-bottom: 0 !important;
+  margin-bottom: 0;
 }
 .hub-promotions--persistent[data-ds-preview] {
   position: relative;
@@ -27427,21 +27452,65 @@ body.admin-dashboard-page .admin-main {
 }
 
 @media (min-width: 992px) {
-  .hub-promotions--persistent.hub-promotions--many.is-stuck > .promo-card {
-    padding: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
-    border-radius: var(--radius-sm) !important;
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) {
+    scrollbar-gutter: stable;
   }
-  .hub-promotions--persistent.hub-promotions--many.is-stuck > .promo-card > p, .hub-promotions--persistent.hub-promotions--many.is-stuck > .promo-card > h3, .hub-promotions--persistent.hub-promotions--many.is-stuck > .promo-card > .h3, .hub-promotions--persistent.hub-promotions--many.is-stuck > .promo-card > .promo-card__image-link {
-    display: none;
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) .promo-card__details {
+    display: grid;
+    grid-template-rows: 1fr;
   }
-  .hub-promotions--persistent.hub-promotions--many.is-stuck > .promo-card .pastel-card__action {
-    display: flex;
-    min-height: 44px;
-    padding: 0.5rem;
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) .promo-card__copy {
+    min-height: 0;
+    overflow: clip;
   }
-  .hub-promotions--persistent.hub-promotions--many.is-stuck > .promo-card:last-child {
-    margin-bottom: 0 !important;
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) .promo-card__actions {
+    margin-inline-start: 0;
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]).is-stuck:not(:has(.promo-card__details:focus-within)) {
+    --promo-art-delay: 0ms;
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]).is-stuck:not(:has(.promo-card__details:focus-within)) > .promo-card {
+    --promo-padding: .5rem;
+    --promo-art-height: 44px;
+    --promo-art-width: 44px;
+    padding: var(--promo-padding);
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius-sm);
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]).is-stuck:not(:has(.promo-card__details:focus-within)) > .promo-card:last-child {
+    margin-bottom: 0;
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]).is-stuck:not(:has(.promo-card__details:focus-within)) .promo-card__details {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]).is-stuck:not(:has(.promo-card__details:focus-within)) .promo-card__actions {
+    margin-inline-start: calc(var(--promo-art-width) + 0.75rem);
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]).is-stuck:not(:has(.promo-card__details:focus-within)) .pastel-card__action {
+    min-width: 100%;
+    padding-inline: 0.5rem;
+  }
+}
+@media (min-width: 992px) and (prefers-reduced-motion: no-preference) {
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) {
+    --promo-motion: 300ms ease-in-out;
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) > .promo-card {
+    transition: padding var(--promo-motion), margin-bottom var(--promo-motion), border-radius var(--promo-motion);
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) .promo-card__artwork {
+    transition: top var(--promo-motion), inset-inline-start var(--promo-motion), height var(--promo-motion), width 200ms ease-in-out var(--promo-art-delay, 100ms);
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) .promo-card__details {
+    transition: grid-template-rows var(--promo-motion), opacity var(--promo-motion), visibility var(--promo-motion);
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) .promo-card__actions {
+    transition: margin-inline-start var(--promo-motion);
+  }
+  .hub-promotions--persistent.hub-promotions--many:not([data-ds-preview]) .pastel-card__action {
+    transition: min-width var(--promo-motion), padding var(--promo-motion), background-color 0.18s ease, color 0.18s ease;
   }
 }
 @media (max-width: 991.98px) {
@@ -27459,14 +27528,14 @@ body.admin-dashboard-page .admin-main {
     inset: auto 0 0;
     z-index: 1020;
     display: flex;
-    gap: 0.5rem;
+    gap: 0.375rem;
     overflow-x: auto;
     overflow-y: hidden;
     overscroll-behavior-x: contain;
     overscroll-behavior-y: auto;
     max-height: calc(100vh - 4rem);
     max-height: calc(100dvh - 4rem);
-    padding: 0.5rem max(0.75rem, env(safe-area-inset-right, 0px)) calc(0.5rem + env(safe-area-inset-bottom, 0px)) max(0.75rem, env(safe-area-inset-left, 0px));
+    padding: 0.5rem max(0.625rem, env(safe-area-inset-right, 0px)) calc(0.5rem + env(safe-area-inset-bottom, 0px)) max(0.625rem, env(safe-area-inset-left, 0px));
     border: 1px solid var(--color-border);
     border-bottom: 0;
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
@@ -27474,40 +27543,49 @@ body.admin-dashboard-page .admin-main {
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
   }
   .hub-promotions--persistent > .promo-card {
+    --promo-art-width: 32px;
+    --promo-art-height: 32px;
     display: flex;
     flex: 1;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.5rem;
     min-width: 0;
-    margin: 0 !important;
-    padding: 0 !important;
+    margin: 0;
+    padding: 0;
+    padding-inline-start: calc(var(--promo-art-width) + 0.375rem);
     border: 0;
-    border-radius: 0 !important;
+    border-radius: 0;
     background: transparent;
   }
-  .hub-promotions--persistent > .promo-card > p, .hub-promotions--persistent > .promo-card > .promo-card__image-link {
+  .hub-promotions--persistent > .promo-card .promo-card__artwork {
+    top: 50%;
+    inset-inline-start: 0;
+    transform: translateY(-50%);
+  }
+  .hub-promotions--persistent > .promo-card .promo-card__copy > p {
     display: none;
   }
-  .hub-promotions--persistent > .promo-card > h3, .hub-promotions--persistent > .promo-card > .h3 {
+  .hub-promotions--persistent > .promo-card h3, .hub-promotions--persistent > .promo-card .h3 {
     margin: 0 !important;
     font-size: var(--font-size-sm);
   }
   .hub-promotions--persistent > .promo-card .pastel-card__action {
-    flex-shrink: 0;
-    min-height: 44px;
     padding: 0.5rem 0.75rem;
     gap: 0.5rem;
+    white-space: nowrap;
   }
   .hub-promotions--persistent.hub-promotions--multiple > .promo-card {
     flex: 1 0 auto;
   }
-  .hub-promotions--persistent.hub-promotions--multiple > .promo-card > h3, .hub-promotions--persistent.hub-promotions--multiple > .promo-card > .h3 {
+  .hub-promotions--persistent.hub-promotions--multiple > .promo-card .promo-card__details {
     display: none;
   }
-  .hub-promotions--persistent.hub-promotions--multiple > .promo-card .pastel-card__action {
+  .hub-promotions--persistent.hub-promotions--multiple > .promo-card .promo-card__actions {
     flex: 1;
-    flex-shrink: 1;
+  }
+  .hub-promotions--persistent.hub-promotions--multiple > .promo-card .pastel-card__action {
+    min-width: 100%;
     padding-inline: 0.5rem;
     font-size: var(--font-size-sm);
   }
