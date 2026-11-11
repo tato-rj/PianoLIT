@@ -1,5 +1,11 @@
 # PianoLIT iOS v2 connection
 
+Revision **2026-11-11.1** adds the bearer-authenticated Collections catalog and
+detail endpoints, production verified on November 11. Use `collections()` and
+`collection(id:)` in the Swift example.
+See [Collections integration](examples/collections.md) for ordering, featured
+access, membership locks and the four synthetic JSON responses.
+
 Revision **2026-11-09.1** adds favorite-folder list/save/remove/create operations
 and enables the piece-detail favorite-write flag. These changes are implemented
 and verified locally, including disposable MySQL concurrency checks. Their
@@ -163,7 +169,7 @@ The Swift developer can fetch hash-verified files with:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-11-04.1 --output /path/to/ios-repository/BackendHandoff
+  --revision 2026-11-11.1 --output /path/to/ios-repository/BackendHandoff
 ```
 
 This fetch copies documentation/examples, not an installed network connection.

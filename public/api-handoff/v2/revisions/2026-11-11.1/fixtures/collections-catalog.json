@@ -1,0 +1,28 @@
+{
+  "data": {
+    "featured_collection_id": "81",
+    "collections": [
+      {
+        "id": "92",
+        "title": "Piano studies",
+        "subtitle": null,
+        "artwork_url": "https://example.test/images/webapp/collections/featured.webp",
+        "piece_count": 6,
+        "featured_badge": null,
+        "access": "membership_required"
+      },
+      {
+        "id": "81",
+        "title": "Short piano pieces",
+        "subtitle": "Five works for intermediate pianists",
+        "artwork_url": "https://example.test/storage/collections/short-pieces.jpg",
+        "piece_count": 5,
+        "featured_badge": "Level",
+        "access": "available"
+      }
+    ]
+  },
+  "meta": {
+    "request_id": "00000000-0000-4000-8000-000000003001"
+  }
+}

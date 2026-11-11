@@ -1,6 +1,6 @@
 schema_version: 1
-revision: 2026-11-09.1
-updated_on: '2026-11-09'
+revision: 2026-11-11.1
+updated_on: '2026-11-11'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -21,7 +21,11 @@ runtime:
     locally on 2026-11-09, including concurrent writes on a disposable MySQL 8.4.2
     instance. Their production receipt migration/deployment and native acceptance
     remain pending. The earlier piece-detail production verification does not cover
-    its new favorite_writes_supported flag.'
+    its new favorite_writes_supported flag. Collections was production verified on
+    2026-11-11: HTTPS bearer boundary, shared catalog and featured identity, ordered
+    featured detail, regular membership locks, native piece navigation, and no history
+    or analytics writes. Synthetic account and token rows were rolled back. Native
+    acceptance remains pending.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -36,10 +40,12 @@ entrypoints:
   piece_examples: examples/piece.md
   favorite_folders: screens/favorite-folders.yaml
   favorite_examples: examples/favorite-folders.md
+  collections: screens/collections.yaml
+  collections_examples: examples/collections.md
 files:
 - path: README.md
-  bytes: 10505
-  sha256: cf8149a663f4d981d6e59b06faf2b40f2378e90c0b908d7e8ff602dcd1d9a124
+  bytes: 10846
+  sha256: 9acb040230392c1480b1c308f732ac4570e497dbc52dedd08ae6328676fe73dd
 - path: foundations.yaml
   bytes: 5830
   sha256: f5dd95d5709a522f35a7e44959ca7917c6510590e7a35438744b1625bea3bd2e
@@ -47,8 +53,8 @@ files:
   bytes: 10384
   sha256: 3a26ddf1df6e7fdc7e992d2d629b57cd6ae7a16cd75763c7f20291165a28ebe0
 - path: openapi.yaml
-  bytes: 76258
-  sha256: cbe5d15dd206c3983a73f0dd5f749b787ea30fefd213ef8c6da57d06f914db06
+  bytes: 82112
+  sha256: fedf8b2039f2d5f9335b333d6afecd9012b7b09eb0806170590345c39d326d59
 - path: design.yaml
   bytes: 2740
   sha256: 094fef76502c95677b0f36acb9045d3930633257ee93192184b02ce896dbe330
@@ -65,8 +71,8 @@ files:
   bytes: 183
   sha256: 28b67a3a1694e2f2e92c75066870b0d385e149b2fad0e335545de84f038510e6
 - path: examples/PianoLITV2Client.swift
-  bytes: 18822
-  sha256: 1b2f06cf8080efddca62a6a971aeef7a546bc69929ef557489fb54b19930db7e
+  bytes: 19887
+  sha256: 1a58075dfc0641fcf4a5c599917eab9e8e712e25f6ae417647667e9d0aaed7f1
 - path: screens/find-my-match.yaml
   bytes: 4284
   sha256: f673b463d8b521c1a5e225c5904fa9b914444b1753c82de8d2bcd802e90a11c2
@@ -103,6 +109,24 @@ files:
 - path: fixtures/favorite-folders-errors.json
   bytes: 3064
   sha256: cef027c84c232abefb06952601bd8e8ae15bda8ed9cdeb027647f6c2d7e61ee5
+- path: screens/collections.yaml
+  bytes: 1694
+  sha256: cf4bd83a47cb9fa3a5f09a38e5526f549281c33d4931887e54c3c28471e1e251
+- path: examples/collections.md
+  bytes: 6778
+  sha256: 9942fd7ef4554e3fb29ec016b78f275e2861e3e73f8fe7f87f627c8591eeb020
+- path: fixtures/collections-catalog.json
+  bytes: 749
+  sha256: 757a333ae084d52248e1217a8dc248f110bb4a9bfca165281ab9c478fa090785
+- path: fixtures/collections-detail.json
+  bytes: 6695
+  sha256: 8319bfd1e492b32baf6bd02ea6c00732f10305c73ab118da3eefb23c54806faa
+- path: fixtures/collections-empty.json
+  bytes: 152
+  sha256: 91b824421e1a307e84a4db6e919d00ebdef5036e09a3f8162c376a2a150cb481
+- path: fixtures/collections-locked.json
+  bytes: 451
+  sha256: 16a763fff2b84f18f2f1996205ced830ab02cba61bf081d3d024845e5c37f91f
 features:
 - id: foundations
   document: foundations.yaml
@@ -139,6 +163,14 @@ features:
   depends_on:
   - foundations
   - piece
+- id: collections
+  document: screens/collections.yaml
+  status: draft
+  backend_status: production_verified
+  ios_status: pending_integration
+  depends_on:
+  - foundations
+  - piece
 consumer_rules:
 - Read README.md, the concrete OpenAPI operations and examples/PianoLITV2Client.swift
   for the connection procedure.
@@ -165,7 +197,19 @@ consumer_rules:
 - Favorite-folder operations and the enabled piece-detail favorite-write flag are
   implemented locally in this revision. Deploy the receipt migration/code and verify
   HTTPS before native integration against production; see examples/favorite-folders.md.
+- For the Collections tab use the dedicated catalog and detail endpoints with the
+  same v2 bearer. See examples/collections.md for the membership lock, piece navigation
+  and removed Follow a path flow.
 changelog:
+- revision: 2026-11-11.1
+  changes:
+  - Added authenticated GET /collections and GET /collections/{collection}, sharing
+    the web app's curated repertoire catalog and weekly featured identity.
+  - Documented catalog ordering, native membership access, Discover piece rows, empty/locked
+    states and the existing v2 error envelope. Added typed Swift methods and synthetic
+    JSON examples.
+  - The new app omits the legacy Journey flow and duplicate analytics request.
+  - Production verified on 2026-11-11. No migration is required.
 - revision: 2026-11-09.1
   changes:
   - Added bearer-authenticated list, idempotent folder-piece PUT/DELETE and atomic
@@ -242,4 +286,4 @@ changelog:
   - Established the handoff format, shared API proposals and compatibility boundaries.
   - Inventoried Discover against the current web implementation.
   - No runtime endpoints, migrations, Swift changes or deployment in this revision.
-base_path: revisions/2026-11-09.1/
+base_path: revisions/2026-11-11.1/

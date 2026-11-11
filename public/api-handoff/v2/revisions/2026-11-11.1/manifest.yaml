@@ -1,0 +1,289 @@
+schema_version: 1
+revision: 2026-11-11.1
+updated_on: '2026-11-11'
+title: PianoLIT iOS v2 handoff
+status: draft
+purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
+api_major_version: 2
+runtime:
+  implemented: true
+  staging_base_url: null
+  production_base_url: https://pianolit.com/api/v2
+  existing_api: unchanged
+  deployment_target: https://pianolit.com/api/v2
+  verification: 'Login, Discover and confirmed-open history were production verified
+    on 2026-10-28. Piece detail was production verified on 2026-11-04: bearer identity,
+    shared metadata, full/blocked native media, owned favorite state, safe missing-piece
+    errors and side-effect-free reads. Synthetic account/token SQL writes were rolled
+    back. Find my match remains disabled and unverified pending its separate deployment/media
+    activation; expanded composer-pool acceptance is unchanged. No staging URL or
+    native-device acceptance is verified. Favorite folders were implemented and verified
+    locally on 2026-11-09, including concurrent writes on a disposable MySQL 8.4.2
+    instance. Their production receipt migration/deployment and native acceptance
+    remain pending. The earlier piece-detail production verification does not cover
+    its new favorite_writes_supported flag. Collections was production verified on
+    2026-11-11: HTTPS bearer boundary, shared catalog and featured identity, ordered
+    featured detail, regular membership locks, native piece navigation, and no history
+    or analytics writes. Synthetic account and token rows were rolled back. Native
+    acceptance remains pending.'
+entrypoints:
+  instructions: README.md
+  foundations: foundations.yaml
+  native_baseline: ios-baseline.yaml
+  contract: openapi.yaml
+  design: design.yaml
+  references: references.yaml
+  swift_example: examples/PianoLITV2Client.swift
+  match_tour: screens/find-my-match.yaml
+  match_examples: examples/find-my-match.md
+  piece: screens/piece.yaml
+  piece_examples: examples/piece.md
+  favorite_folders: screens/favorite-folders.yaml
+  favorite_examples: examples/favorite-folders.md
+  collections: screens/collections.yaml
+  collections_examples: examples/collections.md
+files:
+- path: README.md
+  bytes: 10846
+  sha256: 9acb040230392c1480b1c308f732ac4570e497dbc52dedd08ae6328676fe73dd
+- path: foundations.yaml
+  bytes: 5830
+  sha256: f5dd95d5709a522f35a7e44959ca7917c6510590e7a35438744b1625bea3bd2e
+- path: ios-baseline.yaml
+  bytes: 10384
+  sha256: 3a26ddf1df6e7fdc7e992d2d629b57cd6ae7a16cd75763c7f20291165a28ebe0
+- path: openapi.yaml
+  bytes: 82112
+  sha256: fedf8b2039f2d5f9335b333d6afecd9012b7b09eb0806170590345c39d326d59
+- path: design.yaml
+  bytes: 2740
+  sha256: 094fef76502c95677b0f36acb9045d3930633257ee93192184b02ce896dbe330
+- path: references.yaml
+  bytes: 1824
+  sha256: 27b5d92f4dbfee4a11a92f654b0bcea574595a81c0b7f37cb90f3365cfdc4729
+- path: screens/discover.yaml
+  bytes: 6616
+  sha256: 72924ff1e3aa7f8264cad2276138232b2ea545b029423fd8aa9fb389c2bc0aa3
+- path: fixtures/discover.json
+  bytes: 21715
+  sha256: cfbcb41783fedd20027a8746c8ebdd277edee2d25f127a16df14afc4804a6609
+- path: fixtures/unauthenticated.json
+  bytes: 183
+  sha256: 28b67a3a1694e2f2e92c75066870b0d385e149b2fad0e335545de84f038510e6
+- path: examples/PianoLITV2Client.swift
+  bytes: 19887
+  sha256: 1a58075dfc0641fcf4a5c599917eab9e8e712e25f6ae417647667e9d0aaed7f1
+- path: screens/find-my-match.yaml
+  bytes: 4284
+  sha256: f673b463d8b521c1a5e225c5904fa9b914444b1753c82de8d2bcd802e90a11c2
+- path: examples/find-my-match.md
+  bytes: 15011
+  sha256: 5396ab797b061d42eb829ca4a5ef6cc9d6d7303a22a4b50f00208f1fe1d57ddd
+- path: fixtures/find-my-match-flow.json
+  bytes: 139912
+  sha256: b23b7fa9e05c5915f4b87c5118cbc2db732c4d90db29656d5f7cf14a5d499df2
+- path: fixtures/find-my-match-errors.json
+  bytes: 5928
+  sha256: 58cbef35113e5af7ed0022aec1e5fdf1f34211feea84d9f9c841138da1a0eb14
+- path: screens/piece.yaml
+  bytes: 5085
+  sha256: 89c720a7fc510166e6329777d8de5b073119ed9e021338cc5052882564546426
+- path: examples/piece.md
+  bytes: 6844
+  sha256: f1cca0499fc32ce290bd118b5fe4d530bac8f99dedd4808cc3684ecaec2b9d89
+- path: fixtures/piece-full.json
+  bytes: 12972
+  sha256: f6f6067b6c88b85402929fde47f286f9f826d9ec11e593b441a4f10162d933f2
+- path: fixtures/piece-blocked.json
+  bytes: 12694
+  sha256: 9ad9cbcb464ca96b86eceae21944ddc7554748fc35c98be01d9d118dc3c8ff30
+- path: screens/favorite-folders.yaml
+  bytes: 3238
+  sha256: bfd38805ee3a4e4d9943d04cc27b76d9b23735cfecb274307223de9fe9cf499d
+- path: examples/favorite-folders.md
+  bytes: 10543
+  sha256: ad5b9995d98499fe0611514b6f44d3a277e60ad636bfba41484f0974b3a8cf67
+- path: fixtures/favorite-folders-flow.json
+  bytes: 7708
+  sha256: 77ce0d8924c5dc4e6da7303ebc4f82de0ca6789377ab56d4bc74230fc3860e86
+- path: fixtures/favorite-folders-errors.json
+  bytes: 3064
+  sha256: cef027c84c232abefb06952601bd8e8ae15bda8ed9cdeb027647f6c2d7e61ee5
+- path: screens/collections.yaml
+  bytes: 1694
+  sha256: cf4bd83a47cb9fa3a5f09a38e5526f549281c33d4931887e54c3c28471e1e251
+- path: examples/collections.md
+  bytes: 6778
+  sha256: 9942fd7ef4554e3fb29ec016b78f275e2861e3e73f8fe7f87f627c8591eeb020
+- path: fixtures/collections-catalog.json
+  bytes: 749
+  sha256: 757a333ae084d52248e1217a8dc248f110bb4a9bfca165281ab9c478fa090785
+- path: fixtures/collections-detail.json
+  bytes: 6695
+  sha256: 8319bfd1e492b32baf6bd02ea6c00732f10305c73ab118da3eefb23c54806faa
+- path: fixtures/collections-empty.json
+  bytes: 152
+  sha256: 91b824421e1a307e84a4db6e919d00ebdef5036e09a3f8162c376a2a150cb481
+- path: fixtures/collections-locked.json
+  bytes: 451
+  sha256: 16a763fff2b84f18f2f1996205ced830ab02cba61bf081d3d024845e5c37f91f
+features:
+- id: foundations
+  document: foundations.yaml
+  status: draft
+  backend_status: production_verified
+  ios_status: pending_integration
+  depends_on: []
+- id: discover
+  document: screens/discover.yaml
+  status: draft
+  backend_status: implemented_locally
+  ios_status: pending_integration
+  depends_on:
+  - foundations
+- id: find_my_match
+  document: screens/find-my-match.yaml
+  status: draft
+  backend_status: implemented_locally
+  ios_status: pending_data_integration_existing_steps_1_to_4_design_unchanged
+  depends_on:
+  - foundations
+- id: piece
+  document: screens/piece.yaml
+  status: draft
+  backend_status: production_verified
+  ios_status: pending_integration
+  depends_on:
+  - foundations
+- id: favorite_folders
+  document: screens/favorite-folders.yaml
+  status: draft
+  backend_status: implemented_locally
+  ios_status: pending_integration
+  depends_on:
+  - foundations
+  - piece
+- id: collections
+  document: screens/collections.yaml
+  status: draft
+  backend_status: production_verified
+  ios_status: pending_integration
+  depends_on:
+  - foundations
+  - piece
+consumer_rules:
+- Read README.md, the concrete OpenAPI operations and examples/PianoLITV2Client.swift
+  for the connection procedure.
+- Pin one revision per integration task; published revisions remain immutable.
+- Draft describes pending native/staging acceptance. An implemented, production_verified
+  backend with a populated production_base_url may be used to integrate these documented
+  operations; draft alone is not evidence of a live service.
+- Use only the runtime base URL marked verified; deployment_target alone is not verification.
+- Keep the current email/password screen and accounts. Point its request to v2 login,
+  save the returned credential in Keychain, then request v2 Discover with Authorization
+  bearer.
+- Legacy users lacking a v2 credential sign in once after upgrade; never silently
+  exchange stored user_id for access.
+- Preserve installed legacy clients and their endpoints indefinitely. This work does
+  not require updating the old app.
+- Discover cards remain summaries. Load GET /pieces/{id} for the new piece page; use
+  its explicit native media modes. Existing legacy PieceVC raw-array parsers require
+  an explicit adapter.
+- Record consumed revision, native commit/build, device checks and unresolved destinations
+  in the iOS repository.
+- Find my match endpoints in this revision are implemented locally, not production
+  verified. Preserve the completed native steps 1–4 and replace their data/calculations
+  only; connect mood and the native piece target after deployment verification.
+- Favorite-folder operations and the enabled piece-detail favorite-write flag are
+  implemented locally in this revision. Deploy the receipt migration/code and verify
+  HTTPS before native integration against production; see examples/favorite-folders.md.
+- For the Collections tab use the dedicated catalog and detail endpoints with the
+  same v2 bearer. See examples/collections.md for the membership lock, piece navigation
+  and removed Follow a path flow.
+changelog:
+- revision: 2026-11-11.1
+  changes:
+  - Added authenticated GET /collections and GET /collections/{collection}, sharing
+    the web app's curated repertoire catalog and weekly featured identity.
+  - Documented catalog ordering, native membership access, Discover piece rows, empty/locked
+    states and the existing v2 error envelope. Added typed Swift methods and synthetic
+    JSON examples.
+  - The new app omits the legacy Journey flow and duplicate analytics request.
+  - Production verified on 2026-11-11. No migration is required.
+- revision: 2026-11-09.1
+  changes:
+  - Added bearer-authenticated list, idempotent folder-piece PUT/DELETE and atomic
+    folder creation using shared website folders, saved-piece records and server account
+    limits.
+  - Added account-scoped 24-hour UUID retry receipts, current-state responses, ownership
+    checks, stable quota/conflict errors and write throttling.
+  - Enabled piece-detail favorite_writes_supported and aligned is_favorited with owned-folder
+    membership; added OpenAPI schemas, typed Swift methods and synthetic flow/error
+    fixtures.
+  - Implemented and verified locally, including MySQL concurrency; production migration/deployment
+    and native acceptance remain pending. All previous published revisions and legacy
+    contracts are preserved.
+- revision: 2026-11-04.1
+  changes:
+  - Added authenticated GET /pieces/{piece} for complete read-only piece-page metadata,
+    account favorite state, media/moments, score information, timeline and related
+    content.
+  - Web and native reuse Pieces\PageContent, WebTimeline, PieceRecommendations and
+    existing media/name/description getters; no shared model serialization changes.
+  - Added explicit native full/blocked/unavailable media modes, a Swift piece decoder/client
+    method, integration instructions and synthetic full/blocked fixtures.
+  - Legacy contracts, current login, confirmed-open history and all previous published
+    revisions remain intact. Match-tour activation and native acceptance are separate.
+- revision: 2026-11-03.1
+  changes:
+  - Added bearer-authenticated account-owned Find my match tours with shared web draws,
+    adaptive reading, mood and MatchQuiz result selection.
+  - Added revisions, dependent-answer invalidation, retry receipts, exact/estimated
+    progress, bounded signed preview media, error contracts and synthetic complete-flow
+    fixtures.
+  - Added migration and offline sample preparation/cleanup deployment steps. Implemented
+    locally only; new routes disabled until deployment/media verification. Native
+    design for steps 1–4 remains unchanged; prior published revisions remain immutable.
+- revision: 2026-10-29.2
+  changes:
+  - Expanded the shared composer-feature pool to seven groups with American, Italian,
+    Russian and Ukrainian composers, using the composer's saved country flag code.
+  - Added american_composers, italian_composers, russian_composers and ukrainian_composers
+    under the existing composer_feature kind. Only nonempty groups participate equally.
+  - Shared group metadata supplies web dispatch, accessible labels and v2 IDs. Legacy
+    mobile rows/cache, refresh timing and original group selection rules remain unchanged.
+  - Implemented locally only; production deployment and staging/native acceptance
+    remain pending. Preserved prior immutable revisions.
+- revision: 2026-10-29.1
+  changes:
+  - Added Latin American composers as a third equally eligible nonempty composer-feature
+    pool in the shared web/v2 cache, retaining one stable selection per cache refresh.
+  - Added latin_american_composers with the existing composer_feature kind; legacy
+    mobile rows and cache remain unchanged.
+  - Implemented locally only; production deployment and staging/native acceptance
+    remain pending. Preserved prior immutable revisions.
+- revision: 2026-10-28.1
+  changes:
+  - Implemented independent v2 email/password credential issuance, bearer authentication,
+    revocation and account-owned history.
+  - Moved web Discover content selection and level grouping into shared services consumed
+    by web and v2; legacy feed stays unchanged.
+  - Added concrete OpenAPI operations, synthetic fixtures and a Swift URLSession/Keychain
+    connection example.
+  - Production deployment and native verification are recorded separately; previous
+    published revisions remain immutable.
+- revision: 2026-10-22.2
+  changes:
+  - Recorded the developer's static UIKit/iOS 17.6/email-password baseline with its
+    verification limits.
+  - Arthur confirmed sign-in remains required for the initial native v2 release.
+  - Identified positional Free Pick handling and legacy detail/search dependencies
+    in Discover.
+  - No runtime implementation or deployment; retained the previous immutable handoff
+    revision.
+- revision: 2026-10-22.1
+  changes:
+  - Established the handoff format, shared API proposals and compatibility boundaries.
+  - Inventoried Discover against the current web implementation.
+  - No runtime endpoints, migrations, Swift changes or deployment in this revision.
+base_path: revisions/2026-11-11.1/

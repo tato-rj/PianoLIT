@@ -1,0 +1,219 @@
+{
+  "data": {
+    "collection": {
+      "id": "81",
+      "title": "Short piano pieces",
+      "subtitle": "Five works for intermediate pianists",
+      "artwork_url": "https://example.test/storage/collections/short-pieces.jpg",
+      "piece_count": 5,
+      "featured_badge": "Level",
+      "access": "available",
+      "description": "Five short works for an intermediate recital."
+    },
+    "pieces": [
+      {
+        "kind": "piece",
+        "id": "105",
+        "title": "Study No. 1",
+        "featured_title": "Study No. 1",
+        "subtitle": "Composer",
+        "catalogue": "",
+        "composer": {
+          "kind": "composer",
+          "id": "77",
+          "name": "Example Composer",
+          "short_name": "Composer",
+          "portrait_url": "https://example.test/storage/composers/77.jpg",
+          "biography": "A sample composer for the Collections integration fixture.",
+          "piece_count": 5,
+          "target": {
+            "kind": "composer_pieces",
+            "id": "77",
+            "query": null,
+            "web_url": "https://my.example.test/search?search=Example%20Composer"
+          }
+        },
+        "artwork_url": "https://example.test/storage/pieces/105.jpg",
+        "difficulty": "intermediate",
+        "is_new": false,
+        "is_free_pick": false,
+        "media": {
+          "performance": true,
+          "synthesia": false,
+          "tutorial": true,
+          "audio": true,
+          "score": true
+        },
+        "target": {
+          "kind": "piece",
+          "id": "105",
+          "query": null,
+          "web_url": "https://my.example.test/pieces/105"
+        }
+      },
+      {
+        "kind": "piece",
+        "id": "101",
+        "title": "Study No. 2",
+        "featured_title": "Study No. 2",
+        "subtitle": "Composer",
+        "catalogue": "",
+        "composer": {
+          "kind": "composer",
+          "id": "77",
+          "name": "Example Composer",
+          "short_name": "Composer",
+          "portrait_url": "https://example.test/storage/composers/77.jpg",
+          "biography": "A sample composer for the Collections integration fixture.",
+          "piece_count": 5,
+          "target": {
+            "kind": "composer_pieces",
+            "id": "77",
+            "query": null,
+            "web_url": "https://my.example.test/search?search=Example%20Composer"
+          }
+        },
+        "artwork_url": "https://example.test/storage/pieces/101.jpg",
+        "difficulty": "intermediate",
+        "is_new": false,
+        "is_free_pick": false,
+        "media": {
+          "performance": false,
+          "synthesia": true,
+          "tutorial": false,
+          "audio": true,
+          "score": true
+        },
+        "target": {
+          "kind": "piece",
+          "id": "101",
+          "query": null,
+          "web_url": "https://my.example.test/pieces/101"
+        }
+      },
+      {
+        "kind": "piece",
+        "id": "103",
+        "title": "Study No. 3",
+        "featured_title": "Study No. 3",
+        "subtitle": "Composer",
+        "catalogue": "",
+        "composer": {
+          "kind": "composer",
+          "id": "77",
+          "name": "Example Composer",
+          "short_name": "Composer",
+          "portrait_url": "https://example.test/storage/composers/77.jpg",
+          "biography": "A sample composer for the Collections integration fixture.",
+          "piece_count": 5,
+          "target": {
+            "kind": "composer_pieces",
+            "id": "77",
+            "query": null,
+            "web_url": "https://my.example.test/search?search=Example%20Composer"
+          }
+        },
+        "artwork_url": "https://example.test/storage/pieces/103.jpg",
+        "difficulty": null,
+        "is_new": false,
+        "is_free_pick": false,
+        "media": {
+          "performance": false,
+          "synthesia": true,
+          "tutorial": false,
+          "audio": false,
+          "score": false
+        },
+        "target": {
+          "kind": "piece",
+          "id": "103",
+          "query": null,
+          "web_url": "https://my.example.test/pieces/103"
+        }
+      },
+      {
+        "kind": "piece",
+        "id": "104",
+        "title": "Study No. 4",
+        "featured_title": "Study No. 4",
+        "subtitle": "Composer",
+        "catalogue": "",
+        "composer": {
+          "kind": "composer",
+          "id": "77",
+          "name": "Example Composer",
+          "short_name": "Composer",
+          "portrait_url": "https://example.test/storage/composers/77.jpg",
+          "biography": "A sample composer for the Collections integration fixture.",
+          "piece_count": 5,
+          "target": {
+            "kind": "composer_pieces",
+            "id": "77",
+            "query": null,
+            "web_url": "https://my.example.test/search?search=Example%20Composer"
+          }
+        },
+        "artwork_url": "https://example.test/storage/pieces/104.jpg",
+        "difficulty": "intermediate",
+        "is_new": false,
+        "is_free_pick": false,
+        "media": {
+          "performance": false,
+          "synthesia": true,
+          "tutorial": false,
+          "audio": false,
+          "score": true
+        },
+        "target": {
+          "kind": "piece",
+          "id": "104",
+          "query": null,
+          "web_url": "https://my.example.test/pieces/104"
+        }
+      },
+      {
+        "kind": "piece",
+        "id": "102",
+        "title": "Study No. 5",
+        "featured_title": "Study No. 5",
+        "subtitle": "Composer",
+        "catalogue": "",
+        "composer": {
+          "kind": "composer",
+          "id": "77",
+          "name": "Example Composer",
+          "short_name": "Composer",
+          "portrait_url": "https://example.test/storage/composers/77.jpg",
+          "biography": "A sample composer for the Collections integration fixture.",
+          "piece_count": 5,
+          "target": {
+            "kind": "composer_pieces",
+            "id": "77",
+            "query": null,
+            "web_url": "https://my.example.test/search?search=Example%20Composer"
+          }
+        },
+        "artwork_url": "https://example.test/storage/pieces/102.jpg",
+        "difficulty": "intermediate",
+        "is_new": false,
+        "is_free_pick": false,
+        "media": {
+          "performance": false,
+          "synthesia": true,
+          "tutorial": false,
+          "audio": false,
+          "score": true
+        },
+        "target": {
+          "kind": "piece",
+          "id": "102",
+          "query": null,
+          "web_url": "https://my.example.test/pieces/102"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "request_id": "00000000-0000-4000-8000-000000003002"
+  }
+}

@@ -109,6 +109,27 @@ struct V2Piece: Decodable, Sendable {
     // Availability and is_free_pick are display metadata, not playback grants.
 }
 
+struct V2Collection: Decodable, Sendable {
+    let id: String
+    let title: String
+    let subtitle: String?
+    let artwork_url: URL
+    let piece_count: Int
+    let featured_badge: String?
+    let access: String
+    let description: String? // Included only on detail; may be null.
+}
+
+struct V2CollectionCatalog: Decodable, Sendable {
+    let featured_collection_id: String?
+    let collections: [V2Collection]
+}
+
+struct V2CollectionDetail: Decodable, Sendable {
+    let collection: V2Collection
+    let pieces: [V2Piece]
+}
+
 struct V2Level: Decodable, Sendable {
     let id: String
     let title: String
@@ -252,18 +273,29 @@ actor PianoLITV2Client {
     }
 
     func piece(id: String) async throws -> V2PieceDetail {
-        try validatePieceID(id)
+        try validateDecimalID(id)
         let bytes = try await authenticated("pieces/\(id)", method: "GET")
         return try JSONDecoder().decode(V2Envelope<V2PieceDetail>.self, from: bytes).data
     }
 
+    func collections() async throws -> V2CollectionCatalog {
+        let bytes = try await authenticated("collections", method: "GET")
+        return try JSONDecoder().decode(V2Envelope<V2CollectionCatalog>.self, from: bytes).data
+    }
+
+    func collection(id: String) async throws -> V2CollectionDetail {
+        try validateDecimalID(id)
+        let bytes = try await authenticated("collections/\(id)", method: "GET")
+        return try JSONDecoder().decode(V2Envelope<V2CollectionDetail>.self, from: bytes).data
+    }
+
     func recordConfirmedOpen(pieceID: String) async throws {
-        try validatePieceID(pieceID)
+        try validateDecimalID(pieceID)
         _ = try await authenticated("pieces/\(pieceID)/view", method: "POST")
     }
 
     func favoriteFolders(pieceID: String) async throws -> V2FavoriteFolderList {
-        try validatePieceID(pieceID)
+        try validateDecimalID(pieceID)
         let bytes = try await authenticated("favorite-folders", method: "GET",
             query: [URLQueryItem(name: "piece_id", value: pieceID)])
         return try JSONDecoder().decode(V2Envelope<V2FavoriteFolderList>.self, from: bytes).data
@@ -278,8 +310,8 @@ actor PianoLITV2Client {
     }
 
     private func changeFavorite(folderID: String, pieceID: String, method: String) async throws -> V2FavoriteFolderChange {
-        try validatePieceID(folderID)
-        try validatePieceID(pieceID)
+        try validateDecimalID(folderID)
+        try validateDecimalID(pieceID)
         let bytes = try await authenticated("favorite-folders/\(folderID)/pieces/\(pieceID)", method: method)
         return try JSONDecoder().decode(V2Envelope<V2FavoriteFolderChange>.self, from: bytes).data
     }
@@ -287,14 +319,14 @@ actor PianoLITV2Client {
     // Keep the same UUID and payload for all retries of one submission.
     func createFavoriteFolder(name: String, pieceID: String?, idempotencyKey: UUID) async throws -> V2FavoriteFolderChange {
         struct Payload: Encodable { let name: String; let piece_id: String? }
-        if let pieceID { try validatePieceID(pieceID) }
+        if let pieceID { try validateDecimalID(pieceID) }
         let body = try JSONEncoder().encode(Payload(name: name, piece_id: pieceID))
         let bytes = try await authenticated("favorite-folders", method: "POST", body: body,
             idempotencyKey: idempotencyKey)
         return try JSONDecoder().decode(V2Envelope<V2FavoriteFolderChange>.self, from: bytes).data
     }
 
-    private func validatePieceID(_ id: String) throws {
+    private func validateDecimalID(_ id: String) throws {
         guard !id.isEmpty, id.utf8.allSatisfy({ $0 >= 48 && $0 <= 57 }), id.first != "0" else {
             throw V2ClientError.invalidResponse
         }

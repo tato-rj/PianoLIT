@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: PianoLIT mobile API v2 — Discover, piece detail, favorite folders and Find my match
-  version: 1.3.0
+  title: PianoLIT mobile API v2 — Discover, Collections, piece detail, favorite folders and Find my match
+  version: 1.4.0
   description: Independent v2 login and Discover. Web and v2 share App\Services\Discover\Feed.
     Legacy /api routes remain supported indefinitely. Deployment/native verification
     is recorded in the manifest; downloading this specification does not authenticate
@@ -11,19 +11,80 @@ info:
     and deployment verification. Piece detail uses the shared Pieces\PageContent,
     WebTimeline, PieceRecommendations and native bearer identity. Favorite-folder writes
     reuse website records and limits; they are implemented locally with deployment pending.
+    Collections uses the shared web catalog and weekly feature with native bearer access.
 servers:
 - url: https://pianolit.com/api/v2
-  description: Login/Discover/history and piece detail are live; piece detail verified
-    2026-11-04. Match-tour activation, expanded composer-pool acceptance and native/staging
-    verification remain separate.
+  description: Login, Discover, confirmed piece-open history, piece detail and Collections
+    are live. Collections was verified on 2026-11-11. Match-tour activation, expanded
+    composer-pool acceptance and native/staging verification remain separate.
 security:
 - MobileBearer: []
 x-handoff:
-  revision: 2026-11-09.1
+  revision: 2026-11-11.1
   status: draft
   implemented: true
   native_integration: pending
 paths:
+  /collections:
+    get:
+      operationId: listCollectionsV2
+      summary: List published curated repertoire collections
+      description: >-
+        Includes the featured card once in collections. Use featured_collection_id
+        to select it. Returns all eligible cards ordered by saved collection order
+        then numeric ID, without pagination. All signed-in accounts see all cards.
+        Only the current featured collection can be opened without a membership.
+      responses:
+        '200':
+          description: Complete catalog, including an explicit null featured ID and empty array when empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionCatalogResponse'
+        '401':
+          $ref: '#/components/responses/CollectionUnauthenticated'
+        '429':
+          $ref: '#/components/responses/CollectionRateLimited'
+        '500':
+          $ref: '#/components/responses/CollectionServerError'
+  /collections/{collection}:
+    get:
+      operationId: getCollectionV2
+      summary: Read a curated collection and its ordered pieces
+      description: >-
+        Returns all visible piece rows in saved collection-piece order, with pivot
+        row ID breaking ties, without pagination. The current featured collection
+        is available to every signed-in account. A signed-in nonmember requesting a
+        regular collection gets its metadata and full count with access
+        membership_required and pieces []. Each row is a Discover PieceSummary.
+        In Collections, media.performance describes a saved PianoLIT performance video
+        with a nonempty URL. Fetch /pieces/{piece} for actual media authorization.
+        No analytics or history event is written.
+      parameters:
+      - name: collection
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Identifier'
+      responses:
+        '200':
+          description: Available detail with pieces, or locked detail with metadata and an empty pieces array.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDetailResponse'
+        '401':
+          $ref: '#/components/responses/CollectionUnauthenticated'
+        '404':
+          description: Unknown or ineligible collection (not_found) or malformed path ID (request_failed).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          $ref: '#/components/responses/CollectionRateLimited'
+        '500':
+          $ref: '#/components/responses/CollectionServerError'
   /favorite-folders:
     get:
       operationId: listFavoriteFoldersV2
@@ -1050,6 +1111,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 components:
+  responses:
+    CollectionUnauthenticated:
+      description: Missing, expired, revoked or invalid v2 bearer (unauthenticated).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    CollectionRateLimited:
+      description: Rate limited (rate_limited). Follow Retry-After.
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    CollectionServerError:
+      description: Unexpected server error (server_error).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
   securitySchemes:
     MobileBearer:
       type: http
@@ -1181,6 +1266,83 @@ components:
               $ref: '#/components/schemas/UtcInstant'
             user:
               $ref: '#/components/schemas/UserSummary'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    CollectionCard:
+      type: object
+      required:
+      - id
+      - title
+      - subtitle
+      - artwork_url
+      - piece_count
+      - featured_badge
+      - access
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        subtitle:
+          type: string
+          nullable: true
+        artwork_url:
+          type: string
+          format: uri
+          description: Saved cover or shared fallback artwork.
+        piece_count:
+          type: integer
+          minimum: 5
+          description: Full count of pieces with tutorials, including when locked.
+        featured_badge:
+          type: string
+          nullable: true
+          description: Saved editorial tag on the current featured card, null when absent or on a regular card.
+        access:
+          type: string
+          enum: [available, membership_required]
+    CollectionDetailCard:
+      allOf:
+      - $ref: '#/components/schemas/CollectionCard'
+      - type: object
+        required: [description]
+        properties:
+          description:
+            type: string
+            nullable: true
+    CollectionCatalogResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [featured_collection_id, collections]
+          properties:
+            featured_collection_id:
+              type: string
+              pattern: ^[1-9][0-9]*$
+              nullable: true
+              description: ID of the current featured card in collections, or null if none.
+            collections:
+              type: array
+              items:
+                $ref: '#/components/schemas/CollectionCard'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    CollectionDetailResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [collection, pieces]
+          properties:
+            collection:
+              $ref: '#/components/schemas/CollectionDetailCard'
+            pieces:
+              type: array
+              items:
+                $ref: '#/components/schemas/PieceSummary'
         meta:
           $ref: '#/components/schemas/ResponseMeta'
     ComposerSummary:
