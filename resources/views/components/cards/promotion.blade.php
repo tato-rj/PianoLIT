@@ -8,9 +8,8 @@
     <h3 class="h6 mb-2"><a href="{{ $url }}" class="promo-card__title">{{ $title }}</a></h3>
     <p class="promo-card__description mb-3">{{ $description }}</p>
     <a href="{{ $url }}" class="btn pastel-card__action">
-        @if(!empty($hubIcon))<span class="promo-card__hub-icon">@icon($hubIcon, ['mr' => 0])</span>@endif
         <span class="promo-card__action-label">{{ $action }}</span>
-        @if(!empty($hubIcon))<span class="promo-card__compact-label">{{ $category }}</span>@endif
+        <span class="promo-card__compact-label">{{ $category }}</span>
         <span class="promo-card__arrow">@icon('arrow-right', ['mr' => 0])</span><span class="visually-hidden">: {{ $title }}</span>
     </a>
 </article>

@@ -32,7 +32,7 @@ class PostsController extends Controller
     {
         $suggestions = $post->suggestions(8)->get();
         $promotions = app(\App\Services\Blog\PostPromotions::class);
-        $promotionCards = $promotions->cards($promotions->choiceFor($post));
+        $promotionCards = $promotions->cards($promotions->selectedFor($post));
 
         if (! $post->published_at) {
             if (auth()->guard('admin')->check())

@@ -12,6 +12,12 @@
     $hasOldInput = session()->hasOldInput();
     $selectedTopics = old('topics', $hasOldInput || !$editing ? [] : $post->topics->pluck('id')->all());
     $selectedTopics = is_array($selectedTopics) ? $selectedTopics : [];
+    $selectedPromotions = old('promotions', old('promotions_present') ? [] : $promotionSelection);
+    if (!session()->hasOldInput('promotions') && !session()->hasOldInput('promotions_present') && session()->hasOldInput('promotion')) {
+        $legacyChoice = old('promotion');
+        $selectedPromotions = is_string($legacyChoice) && isset(\App\Services\Blog\PostPromotions::CHOICES[$legacyChoice]) ? app(\App\Services\Blog\PostPromotions::class)->selection($legacyChoice) : [];
+    }
+    $selectedPromotions = is_array($selectedPromotions) ? $selectedPromotions : [];
     $references = old('references', $hasOldInput || !$editing ? [] : $post->referencesArray);
     $references = is_array($references) ? $references : [];
     if (!$references) $references = [''];
@@ -59,8 +65,17 @@
                     @input(['bag' => 'default', 'id' => 'post-cover-credits', 'name' => 'cover_credits', 'label' => 'Image credits (optional)', 'placeholder' => 'Photographer or image source', 'value' => $hasOldInput ? '' : optional($post)->cover_credits, 'limit' => 120, 'required' => false])
                 @endcomponent
                 @component('admin.components.editor.section', ['id' => 'post-promotion', 'title' => 'Promotion', 'description' => 'Choose where this post directs readers.'])
-                    @select(['bag' => 'default', 'id' => 'post-promotion-destination', 'name' => 'promotion', 'label' => 'Destination', 'choices' => \App\Services\Blog\PostPromotions::CHOICES, 'value' => $promotionChoice])
-                    <p class="small text-muted mb-0">Shown on the article page. Changes take effect when you save.</p>
+                    <input type="hidden" name="promotions_present" value="1">
+                    <fieldset aria-labelledby="post-promotion-title" aria-describedby="post-promotion-help">
+                        <div class="d-flex flex-wrap gap-3 mb-3">
+                            @foreach(\App\Services\Blog\PostPromotions::HUB_CHOICES as $hub => $label)
+                                @include('components.forms.checkbox', ['id' => 'post-promotion-'.$hub, 'name' => 'promotions[]', 'value' => $hub, 'label' => $label, 'checked' => in_array($hub, $selectedPromotions, true), 'classes' => 'mb-0'])
+                            @endforeach
+                        </div>
+                        @include('components.forms.error', ['field' => 'promotions', 'errorClasses' => 'd-block'])
+                        @include('components.forms.error', ['field' => 'promotions.*', 'errorClasses' => 'd-block'])
+                        <p id="post-promotion-help" class="small text-muted mb-0">Select any hubs to show on the article page. Leave all unchecked for no promotion. Changes take effect when you save.</p>
+                    </fieldset>
                 @endcomponent
             </div>
         </div>

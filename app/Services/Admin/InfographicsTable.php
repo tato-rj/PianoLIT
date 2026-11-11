@@ -20,8 +20,7 @@ class InfographicsTable
         return AdminTableFilters::fromRequest($request, self::SORTS, 'date_desc', [
             'status' => 'nullable|string|in:published,draft',
             'topic_id' => 'nullable|integer|min:1|exists:infograph_topics,id',
-            'gift' => 'nullable|string|in:yes,no',
-        ]) + ['status' => '', 'topic_id' => '', 'gift' => ''];
+        ]) + ['status' => '', 'topic_id' => ''];
     }
 
     public function query(array $filters)
@@ -29,8 +28,6 @@ class InfographicsTable
         $query = Infograph::query();
         if ($filters['status'] === 'published') $query->whereNotNull('published_at');
         if ($filters['status'] === 'draft') $query->whereNull('published_at');
-        if ($filters['gift'] === 'yes') $query->whereNotNull('giftable_at');
-        if ($filters['gift'] === 'no') $query->whereNull('giftable_at');
         if ($filters['topic_id']) $query->whereHas('topics', fn ($query) => $query->where('infograph_topics.id', $filters['topic_id']));
         foreach (preg_split('/\s+/u', $filters['search']) as $term) {
             if ($term === '') continue;

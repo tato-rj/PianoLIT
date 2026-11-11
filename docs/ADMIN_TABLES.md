@@ -454,12 +454,14 @@ Edit links retain the admin editor. Public/mobile models and payloads are unchan
 ## Infographics directory and topics
 
 Infographics uses `Services/Admin/InfographicsTable` and the shared table for SQL
-search by name, description, topic or ID; publication, topic and gift filters;
+search by name, description, topic or ID; publication and topic filters;
 fixed sorts; and 12-result pagination. `topic_id` is the directory filter, leaving
 `topic` available for the existing topic route binding. Row actions retain the
 current filters, and status/deletion returns clamp to the remaining page count.
-Native publication/gift forms submit an explicit desired state; old Ajax status
-requests and the datatable response remain available.
+Native publication forms submit an explicit desired state; old Ajax status
+requests and the datatable response remain available. Gift has no column, switch
+or filter in this directory. Old `gift` query parameters do not narrow results.
+Saved gift flags and the old gift endpoints/Ajax payload remain unchanged.
 
 Manage topics sits beside Create infographic. `InfographicTopics` handles compact
 native create, rename and confirmed delete forms, with scoped error bags and old
@@ -524,18 +526,22 @@ owns pending-crop submission, cancellation, references and save status. This
 follow-up includes its built script plus the shared TinyMCE submit/leave repair;
 it needs no migration and remains local pending deployment.
 
-The post editor's Promotion section selects one hub (Shop, Games, Learn, Web app
-or Metronome), the existing Shop/Games/Learn group, or No promotion. The shared
-select restores old input on validation. `Services/Blog/PostPromotions` owns the
-fixed choices and named routes; `blog_post_promotions` stores one web-only choice
-per post with a cascading owner foreign key. Saves share the post's details/topics
-transaction and lock; older forms omitting the field preserve the saved setting.
-Public articles reuse promotion cards, with an optional sidebar in the shared
-editorial layout. No promotion uses the full content width. Missing settings
-retain the previous three cards, and GETs never create rows. Model JSON and
-embedded/mobile articles remain independent. Install
-`2026_11_10_010000_create_blog_post_promotions.php` before deploying matching code
-(installed locally; production pending). No asset build is needed.
+The post editor's Promotion section uses the shared checkbox component for Shop,
+Games, Learn, Web app and Metronome. Select any combination; leaving every box
+unchecked means no promotion. Validation retains the submitted selection, including
+an explicitly cleared group. A hidden presence marker distinguishes clearing from
+already-open forms that omit the field. `Services/Blog/PostPromotions` owns fixed
+choices, named routes and stable hub order. Nullable `blog_post_promotions.hubs`
+JSON stores the selection outside shared Post attributes/relationships; null falls
+back to the existing `hub` choice, and missing settings retain Shop/Games/Learn.
+GETs do not create settings. Saves share the owning post's details/topics transaction
+and lock; old forms without promotion fields preserve the selection, while explicit
+legacy choices remain supported. No selection omits the sidebar through the shared
+editorial layout. Model JSON and embedded/mobile articles remain independent.
+Install both `2026_11_10_010000_create_blog_post_promotions.php` and
+`2026_11_10_020000_add_hubs_to_blog_post_promotions.php` before matching code
+(both installed locally; production pending). Promotion buttons use trailing arrows
+in their normal, compact sticky and horizontally scrolling mobile layouts.
 
 Draft blog posts render their title as plain text and Preview as a native
 disabled button without a public URL, including the editor header and retained

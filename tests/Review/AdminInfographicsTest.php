@@ -50,6 +50,12 @@ class AdminInfographicsTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//*[@id="infographic-topic-'.$topic->id.'"]'));
         $this->assertCount(1, $xpath->query('//a[@href="'.route('admin.infographs.create').'" and contains(.,"Create infographic")]'));
         $this->assertCount(0, $xpath->query('//*[@id="infographic-create-modal"]'));
+        $this->assertSame(['Date', 'Infographic', 'Downloads', 'Score', 'Published', 'Actions'], array_map(fn ($heading) => trim($heading->textContent), iterator_to_array($xpath->query('//table[@id="infographs-table"]/thead/tr/th/span | //table[@id="infographs-table"]/thead/tr/th/a/text()[1]'))));
+        $this->assertCount(0, $xpath->query('//*[@name="gift"] | //input[@name="attribute" and @value="giftable_at"]'));
+        $gift = Infograph::firstOrFail(); $gift->update(['giftable_at' => now()]);
+        $oldFilter = $this->get(route('admin.infographs.index', ['gift' => 'yes']))->assertOk();
+        $this->assertCount(12, $this->xpath($oldFilter)->query('//table[@id="infographs-table"]/tbody/tr'));
+        $this->assertNotNull($gift->fresh()->giftable_at);
         $this->assertCount(0, $xpath->query('//a[@href="'.route('admin.infographs.topics.index').'"]'));
         $this->assertCount(1, $this->xpath($this->get(route('admin.infographs.index', ['page' => 2])))->query('//table[@id="infographs-table"]/tbody/tr'));
         Http::assertNothingSent();
@@ -75,14 +81,14 @@ class AdminInfographicsTest extends ReviewTestCase
             $this->infographic('Guide '.$i, ['downloads' => $i, 'published_at' => now(), 'giftable_at' => now()])->topics()->attach($topic);
         }
         $this->infographic('Draft guide');
-        $filters = ['search' => 'theory', 'status' => 'published', 'topic_id' => $topic->id, 'gift' => 'yes', 'sort' => 'downloads_desc'];
+        $filters = ['search' => 'theory', 'status' => 'published', 'topic_id' => $topic->id, 'sort' => 'downloads_desc'];
         $response = $this->get(route('admin.infographs.index', $filters))->assertOk()->assertDontSee('Draft guide');
         $this->assertSame('Guide 14', trim($this->xpath($response)->query('//table/tbody/tr[1]//a[contains(@class,"admin-table__primary")]')->item(0)->textContent));
         $this->get(route('admin.infographs.index', $filters + ['page' => 2]))->assertOk()->assertSee('Guide 1')->assertDontSee('Guide 14');
         $this->infographic('100% guide');
         $this->get(route('admin.infographs.index', ['search' => '%']))->assertOk()->assertSee('100% guide')->assertDontSee('Draft guide');
         $this->withExceptionHandling();
-        foreach (['sort' => 'name;drop', 'per_page' => 1000, 'search' => ['bad'], 'topics' => ['1'], 'topic_id' => 9999, 'gift' => 'invalid'] as $key => $value) {
+        foreach (['sort' => 'name;drop', 'per_page' => 1000, 'search' => ['bad'], 'topics' => ['1'], 'topic_id' => 9999] as $key => $value) {
             $this->getJson(route('admin.infographs.index', [$key => $value]))->assertUnprocessable();
         }
     }

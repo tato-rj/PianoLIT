@@ -13,17 +13,15 @@
     </td>
     <td>{{ number_format($infograph->downloads) }}</td>
     <td>{{ number_format($infograph->score) }}</td>
-    @foreach(['published_at' => 'Published', 'giftable_at' => 'Gift'] as $attribute => $statusLabel)
     <td>
         <form method="POST" action="{{ route('admin.infographs.update-status', $routeParameters + ['return_to' => 'directory']) }}" class="m-0">
             @csrf @method('PATCH')
-            <input type="hidden" name="attribute" value="{{ $attribute }}">
+            <input type="hidden" name="attribute" value="published_at">
             <input type="hidden" name="enabled" value="0">
-            @toggle(['toggle' => $infograph->$attribute, 'name' => 'enabled', 'inputValue' => '1', 'ariaLabel' => $statusLabel.': '.$infograph->name, 'submitOnChange' => true])
+            @toggle(['toggle' => $infograph->published_at, 'name' => 'enabled', 'inputValue' => '1', 'ariaLabel' => 'Published: '.$infograph->name, 'submitOnChange' => true])
             <noscript><button type="submit" class="btn btn-dark btn-sm">Save</button></noscript>
         </form>
     </td>
-    @endforeach
     <td>
         <div class="d-flex flex-nowrap align-items-center justify-content-end gap-2">
             @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.infographs.edit', $routeParameters), 'attributes' => ['aria-label' => 'Edit '.$infograph->name]]])

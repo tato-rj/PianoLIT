@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('content')
-@php($filtered = $filters['search'] !== '' || $filters['status'] || $filters['topic_id'] || $filters['gift'])
+@php($filtered = $filters['search'] !== '' || $filters['status'] || $filters['topic_id'])
 <div class="content-wrapper"><div class="container-fluid">
     @component('admin.components.page.title', [
         'title' => 'Infographics', 'subtitle' => 'Manage infographics, topics and publication.',
@@ -16,7 +16,6 @@
         'filters' => [
             ['name' => 'status', 'label' => 'Publication', 'options' => ['' => 'All statuses', 'published' => 'Published', 'draft' => 'Draft']],
             ['name' => 'topic_id', 'label' => 'Topic', 'options' => ['' => 'All topics'] + $topics->pluck('name', 'id')->all()],
-            ['name' => 'gift', 'label' => 'Gift', 'options' => ['' => 'Any status', 'yes' => 'Gift', 'no' => 'Not a gift']],
         ],
         'sorts' => \App\Services\Admin\InfographicsTable::SORTS,
         'showReset' => $filtered || $filters['sort'] !== 'date_desc' || $filters['per_page'] !== \App\Support\AdminPagination::PER_PAGE,
@@ -25,7 +24,7 @@
             ['label' => 'Infographic', 'sort' => ['asc' => 'name_asc', 'desc' => 'name_desc']],
             ['label' => 'Downloads', 'sort' => ['asc' => 'downloads_asc', 'desc' => 'downloads_desc']],
             ['label' => 'Score', 'sort' => ['asc' => 'score_asc', 'desc' => 'score_desc']],
-            'Published', 'Gift', ['label' => 'Actions', 'hidden' => true],
+            'Published', ['label' => 'Actions', 'hidden' => true],
         ],
         'emptyTitle' => $infographs->total() ? 'No infographics on this page' : ($filtered ? 'No matching infographics' : 'No infographics yet'),
         'emptyDescription' => $filtered ? 'Try another search or clear the filters.' : 'Create an infographic to add it to the website.',

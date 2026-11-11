@@ -717,7 +717,7 @@ Book previews use `shop.components.preview.magazine` with the existing Turn.js l
 
 Use `components.dialogs.modal` for ordinary dialogs and confirmations. Its `header`, `body` and `footer` slots retain shared typography, button classes and `--radius-modal`. Pass `centered: true` for a centered confirmation and `descriptionId` for the ID of its explanatory text. Ordinary dialogs, including Chord Finder results and the Design System sample, use the default body padding and scroll as one surface, including the header and footer. Keep `scrollable: true` for an explicitly requested fixed-header/footer dialog only. The component supplies a focusable dialog root, a title association when a header is present, and an accessible Close button. Bootstrap handles the backdrop, Escape and focus trap; programmatic openers restore focus on dismissal. Keep destructive actions behind an explicit submit button, with a separate dismiss button. Web app views can push markup into `page-modals` to render it at body level, outside tab panes and other stacking containers. Settings → Design System’s interactive modal uses this same component.
 
-`components.promotions.download-offer` supplies the free-poster popup and article-specific blog gift dialog. It composes the shared modal, `@input` and primary button, with a cream poster preview, explicit email-delivery copy and a Maybe later dismissal. Desktop uses two Bootstrap columns; phone previews are capped at 150px. Pass a unique `id`, image/alt text, heading, description, `giftUrl` and `actionLabel`; the automatic poster keeps its existing cookie and timing. Its Design System specimen renders the same component with `preview: true`, replacing the form with a non-submitting container. Only preview layout lives in `components/_download-offer.scss`; input and button finishes stay shared.
+`components.promotions.download-offer` is retained by the unlinked legacy free-poster popup and its inert Design System preview. Current newsletter/account signup pages do not open infographic gifts, and blog gift requests are retired. It composes the shared modal, `@input` and primary button, with a cream poster preview, explicit email-delivery copy and a Maybe later dismissal. Desktop uses two Bootstrap columns; phone previews are capped at 150px. Pass a unique `id`, image/alt text, heading, description, `giftUrl` and `actionLabel`; the retained legacy poster view keeps its existing cookie identifier. Its Design System specimen renders the same component with `preview: true`, replacing the form with a non-submitting container. Only preview layout lives in `components/_download-offer.scss`; input and button finishes stay shared.
 
 Signup and Premium invitations use `components.account.access-modal`, with `kind`, `id`, `title`, `description` and a string array of up to six `benefits`. It composes the shared modal, `access-prompt-icon`, `access-prompt-body` and green-check `access-benefits` list. Signup uses a user icon, emphasizes **free** in the description and **Sign up free** action, and includes a login link. Premium uses a crown and **Go Premium**. Titles belong in the body; the modal's optional `titleId` points its accessible label there. Default body spacing is `px-4 pb-4 pt-0`; an explicit numeric `options.body.padding` still produces `p-N`.
 
@@ -985,14 +985,16 @@ editorial sidebar, returning to their normal position on upward scrolling. There
 is no promotion count cap. For more than two cards, the normal-flow sentinel in
 `components/hub-promotions.js` detects the 24px sticky threshold with
 IntersectionObserver and adds `is-stuck`. Only then do the cards become compact
-icon/action rows; scrolling back above the threshold restores the full cards.
+action rows; scrolling back above the threshold restores the full cards.
 Bounded native scrolling remains available for unusually large groups.
 Below 992px the same cards form a full-width bottom bar with only its top corners
 rounded, 44px actions and safe-area padding. Single promotions show their title and
 action. All promotions remain in one native horizontally scrolling row with no
-wrapping. Each mobile action includes its matching hub icon; groups over two show
+wrapping. Each action retains its trailing arrow, including the compact desktop and mobile
+layouts; groups over two show
 short hub labels and retain the full accessible destination title. Keep the default
-Shop/Games/Learn group and saved individual choices unchanged. The versioned
+Shop/Games/Learn fallback. The post editor uses shared hub checkboxes to save any
+combination; an empty selection omits the sidebar. The versioned
 `components/hub-promotions.js` measures the bar on size/font changes and restoration
 to reserve its exact height after the footer. No promotion reserves no space.
 Other editorial sidebars and embedded articles retain their existing behavior.

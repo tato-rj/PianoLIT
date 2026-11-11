@@ -32,6 +32,9 @@ class PostForm extends FormRequest
             'cover_image' => 'required|sometimes|mimes:jpeg,jpg',
             'cover_credits' => 'nullable|string|max:120',
             'promotion' => ['sometimes', 'required', 'string', Rule::in(array_keys(PostPromotions::CHOICES))],
+            'promotions_present' => 'sometimes|required|in:1',
+            'promotions' => ['sometimes', 'array', 'max:'.count(PostPromotions::HUB_CHOICES)],
+            'promotions.*' => ['required', 'string', 'distinct', Rule::in(array_keys(PostPromotions::HUB_CHOICES))],
             'topics' => 'nullable|array',
             'topics.*' => 'integer|distinct|exists:topics,id',
             'references' => 'nullable|array|max:50',
@@ -41,6 +44,9 @@ class PostForm extends FormRequest
 
     protected function prepareForValidation()
     {
+        if ($this->has('promotions_present') && !$this->has('promotions')) {
+            $this->merge(['promotions' => []]);
+        }
         if (is_array($this->input('references'))) {
             $references = array_map(fn ($reference) => is_string($reference) ? trim($reference) : $reference, $this->input('references'));
             $this->merge(['references' => array_filter($references, fn ($reference) => $reference !== '' && $reference !== null)]);
