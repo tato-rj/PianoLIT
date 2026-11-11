@@ -79,20 +79,12 @@
 
     <section class="pa-section" aria-labelledby="pa-engagement-title">
         <div class="pa-section-heading"><h2 id="pa-engagement-title">Piece views & favorites</h2><p>Top eight pieces in each ranking.</p></div>
-        <div class="mb-3">
-            @include('admin.pages.analytics.pieces.ranking', [
-                'title' => 'Most viewed on the web',
-                'subtitle' => 'Google Analytics views on my.pianolit.com since '.$report['webViewsFrom'].'.',
-                'rows' => $report['webViews'], 'unit' => 'web views', 'color' => '#83c9df',
-            ])
-        </div>
         <div class="pa-grid">
-
-@include('admin.pages.analytics.pieces.ranking', ['title' => 'Most viewed in the iOS app', 'subtitle' => 'Historical views, legacy app piece requests, and confirmed opens.', 'rows' => $report['views'], 'unit' => 'views', 'color' => '#efb07c'])
+            @include('admin.pages.analytics.pieces.views', ['platform' => $report['viewPlatform']])
 
 @include('admin.pages.analytics.pieces.ranking', ['title' => 'Most favorited pieces', 'subtitle' => 'Current saved favorites.', 'rows' => $report['favorites'], 'unit' => 'favorites', 'color' => '#94c6b0'])
         </div>
-        <p class="pa-note">Views include repeat opens. The legacy app views and favorites rankings omit excluded accounts.</p>
+        <p class="pa-note">Views include repeat opens. iOS views and favorites omit excluded accounts.</p>
     </section>
 
     <section class="pa-section pa-review" aria-labelledby="pa-review-title">

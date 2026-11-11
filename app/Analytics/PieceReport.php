@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 
 class PieceReport
 {
+    public const VIEW_PLATFORMS = ['all' => 'All views', 'web' => 'Web', 'ios' => 'iOS'];
     private const COLORS = ['#a692ce', '#94c6b0', '#efb07c', '#83c9df', '#e8a6c0', '#e8ce87', '#bfd6bb'];
 
     // Presence in the catalogue is not a check of storage or remote URL health.
@@ -21,8 +22,12 @@ class PieceReport
 
     public function get(Request $request): array
     {
-        $input = $request->validate(['months' => ['sometimes', 'integer', Rule::in([12, 24, 36])]]);
+        $input = $request->validate([
+            'months' => ['sometimes', 'integer', Rule::in([12, 24, 36])],
+            'view_platform' => ['sometimes', 'string', Rule::in(array_keys(self::VIEW_PLATFORMS))],
+        ]);
         $months = (int) ($input['months'] ?? 12);
+        $viewPlatform = $input['view_platform'] ?? 'all';
         $now = now();
         $summary = (array) DB::table('pieces as p')->leftJoin('composers as c', 'c.id', '=', 'p.composer_id')
             ->selectRaw('COUNT(*) as total, COUNT(DISTINCT c.id) as composers,
@@ -67,8 +72,9 @@ class PieceReport
 
         return compact('summary', 'months', 'growth', 'levels', 'periods', 'lengths', 'genders', 'composers', 'media', 'issues') + [
             'countries' => $this->countries($total), 'matrix' => $this->matrix($levels, $periods),
-            'favorites' => $this->ranking('favorites'), 'views' => $this->rankPieces((new IosPieceViews)->counts()),
-            'webViews' => $this->rankPieces(DB::table('piece_web_view_counts')->where('views', '>', 0)->select('piece_id', 'views as total')),
+            'favorites' => $this->ranking('favorites'),
+            'views' => $this->rankPieces($this->viewCounts($viewPlatform)),
+            'viewPlatform' => $viewPlatform,
             'webViewsFrom' => Carbon::parse(PieceWebViewCounts::START_DATE)->format('M j, Y'),
         ];
     }
@@ -172,6 +178,17 @@ class PieceReport
         $counts = ExcludedAccounts::owned(DB::table($table), $table.'.user_id')
             ->select('piece_id')->selectRaw('COUNT(*) as total')->groupBy('piece_id');
         return $this->rankPieces($counts);
+    }
+
+    private function viewCounts(string $platform): Builder
+    {
+        if ($platform === 'ios') return (new IosPieceViews)->counts();
+
+        $web = DB::table('piece_web_view_counts')->where('views', '>', 0)->select('piece_id', 'views as total');
+        if ($platform === 'web') return $web;
+
+        return DB::query()->fromSub($web->unionAll((new IosPieceViews)->counts()), 'platform_views')
+            ->select('piece_id')->selectRaw('SUM(total) as total')->groupBy('piece_id');
     }
 
     private function rankPieces(Builder $counts): array

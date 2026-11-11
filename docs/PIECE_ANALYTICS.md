@@ -39,9 +39,12 @@ and country charts also expose full data tables.
 - **Composer ranking / gender:** weighted by each composer's piece count.
   Composer shares use the full catalogue denominator; missing gender remains a
   category. Composer rankings are compact top-eight lists, not paginated tables.
-- **Engagement rankings:** top eight pieces by saved Google Analytics web views
-  on `my.pianolit.com` since July 26, 2023, iOS piece views, and current favorites.
-  Ties use piece ID. The iOS and favorites rankings use the shared account exclusions.
+- **Engagement rankings:** Most viewed pieces defaults to All views, which sums
+  web and iOS views per piece before selecting the top eight. Use Platform to
+  see only Web or iOS. Web views come from saved Google Analytics counts on
+  `my.pianolit.com` since July 26, 2023. Most favorited pieces ranks current
+  favorites. Ties use piece ID. iOS views and favorites use the shared account
+  exclusions.
 - **iOS views:** the chart uses the original `piece_views` records through
   the last recorded view on June 7, 2023 at 14:55:25 New York time. After that
   it reads retained app requests to
@@ -62,7 +65,7 @@ views/favorites rankings remain, with explicit denominators and missing metadata
 
 ## Implementation and verification
 
-`App\Analytics\PieceReport` uses 13 bounded database queries regardless of the number
+`App\Analytics\PieceReport` uses 12 bounded database queries regardless of the number
 of pieces. It aggregates classifications and media with SQL rather than hydrating
 the Piece model and its appended attributes. No shared response cache is added.
 The prior admin AJAX chart payloads remain available through the existing factory;

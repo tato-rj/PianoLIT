@@ -39,7 +39,7 @@ class PieceAnalyticsTest extends ReviewTestCase
         $response = $this->get(route('admin.analytics.pieces'))->assertOk()
             ->assertSee('Catalogue growth')->assertSee('Media coverage')->assertSee('Levels across periods')
             ->assertSee('Pieces by composer country')->assertSee('Most represented composers')
-            ->assertSee('Most viewed on the web')->assertSee('No web views have been recorded')
+            ->assertSee('Most viewed pieces')->assertSee('All views')
             ->assertSee('No views have been recorded')->assertSee('No favorites have been recorded')
             ->assertDontSee('quickchart.setup')->assertDontSee('www.gstatic.com');
         $report = $response->viewData('report');
@@ -144,14 +144,15 @@ class PieceAnalyticsTest extends ReviewTestCase
             }
         }
         foreach (['favorites', 'piece_views'] as $table) DB::table($table)->insert(['piece_id' => 999999, 'user_id' => $users[0]->id]);
-        $report = $this->report();
+        $report = $this->report(['view_platform' => 'ios']);
         foreach (['favorites', 'views'] as $key) {
             $this->assertCount(8, $report[$key]);
             $this->assertSame(array_fill(0, 8, 1), array_column($report[$key], 'total'));
             $this->assertEquals(array_slice(array_column($pieces, 'id'), 0, 8), array_column($report[$key], 'id'));
         }
-        $this->assertSame([900, 900, 800, 700, 600, 500, 400, 300], array_column($report['webViews'], 'total'));
-        $this->assertEquals(array_map(fn ($index) => $pieces[$index]->id, [8, 9, 7, 6, 5, 4, 3, 2]), array_column($report['webViews'], 'id'));
+        $web = $this->report(['view_platform' => 'web'])['views'];
+        $this->assertSame([900, 900, 800, 700, 600, 500, 400, 300], array_column($web, 'total'));
+        $this->assertEquals(array_map(fn ($index) => $pieces[$index]->id, [8, 9, 7, 6, 5, 4, 3, 2]), array_column($web, 'id'));
     }
 
     public function test_report_queries_are_bounded_and_render_escaped_names_with_the_existing_admin_route()
@@ -166,19 +167,56 @@ class PieceAnalyticsTest extends ReviewTestCase
         for ($index = 0; $index < 15; $index++) $this->piece();
         DB::enableQueryLog(); DB::flushQueryLog();
         $this->report(); $large = DB::getQueryLog(); DB::disableQueryLog();
-        $this->assertCount(13, $small);
+        $this->assertCount(12, $small);
         $this->assertCount(count($small), $large);
         $this->assertStringNotContainsString('pieces.*', implode(' ', array_column($large, 'query')));
         $this->get(route('admin.analytics.pieces'))->assertOk()
-            ->assertSee('Google Analytics views on my.pianolit.com since Jul 26, 2023.')
-            ->assertSee('Most viewed in the iOS app')->assertSee('1,234')
+            ->assertSee('Most viewed pieces')->assertSee('1,235')
+            ->assertSee('Web views since Jul 26, 2023 plus recorded iOS views.')
+            ->assertSee('<option value="all"  selected >All views</option>', false)
             ->assertSee('&lt;script&gt;unsafe piece&lt;/script&gt;', false)->assertDontSee('<script>unsafe', false);
+        $this->get(route('admin.analytics.pieces', ['view_platform' => 'web', 'months' => 24]))->assertOk()
+            ->assertSee('Google Analytics views on my.pianolit.com since Jul 26, 2023.')
+            ->assertSee('<strong>1,234<span>web views</span></strong>', false)
+            ->assertSee('<option value="web"  selected >Web</option>', false)
+            ->assertSee('name="months" value="24"', false)
+            ->assertSee('name="view_platform" value="web"', false)
+            ->assertSee(route('admin.analytics.pieces').'#piece-views', false);
+        $this->get(route('admin.analytics.pieces', ['view_platform' => 'ios']))->assertOk()
+            ->assertSee('Historical views, legacy app piece requests, and confirmed opens.')
+            ->assertSee('<option value="ios"  selected >iOS</option>', false)
+            ->assertSee('<strong>1<span>views</span></strong>', false);
         $this->get(route('admin.analytics.pieces', ['type' => 'level']), ['X-Requested-With' => 'XMLHttpRequest'])
             ->assertOk()->assertJsonStructure(['labels', 'datasets' => [['title', 'records', 'colors']]]);
         $this->withExceptionHandling();
         foreach ([[12], 0, 13, 100000, 'invalid'] as $value) $this->getJson(route('admin.analytics.pieces', ['months' => $value]))->assertStatus(422);
+        foreach ([['all'], 'invalid'] as $value) $this->getJson(route('admin.analytics.pieces', ['view_platform' => $value]))->assertStatus(422);
         auth('admin')->logout();
         $this->get(route('admin.analytics.pieces'))->assertRedirect(route('admin.login.show'));
+    }
+
+    public function test_combined_ranking_sums_views_before_limiting_either_platform()
+    {
+        $shared = $this->piece();
+        DB::table('piece_web_view_counts')->insert(['piece_id' => $shared->id, 'views' => 2, 'reported_through' => '2026-10-12']);
+        DB::table('piece_views')->insert(['piece_id' => $shared->id, 'user_id' => 987654]);
+
+        for ($index = 0; $index < 8; $index++) {
+            $webOnly = $this->piece();
+            $iosOnly = $this->piece();
+            DB::table('piece_web_view_counts')->insert(['piece_id' => $webOnly->id, 'views' => 3, 'reported_through' => '2026-10-12']);
+            DB::table('piece_views')->insert([
+                ['piece_id' => $iosOnly->id, 'user_id' => 987654],
+                ['piece_id' => $iosOnly->id, 'user_id' => 987654],
+            ]);
+        }
+        foreach (['web', 'ios'] as $platform) {
+            $this->assertNotContains($shared->id, array_column($this->report(['view_platform' => $platform])['views'], 'id'));
+        }
+        $views = $this->report()['views'];
+        $this->assertCount(8, $views);
+        $this->assertEquals($shared->id, $views[0]['id']);
+        $this->assertSame(array_fill(0, 8, 3), array_column($views, 'total'));
     }
 
     public function test_ios_ranking_combines_saved_views_and_piece_requests_without_overlap()
