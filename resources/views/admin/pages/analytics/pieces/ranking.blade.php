@@ -1,4 +1,4 @@
-<article class="pa-card"><div class="pa-card-heading"><div><h3>{{ $title }}</h3><p>{{ ucfirst($unit) }} · all time</p></div></div>
+<article class="pa-card"><div class="pa-card-heading"><div><h3>{{ $title }}</h3><p>{{ $subtitle ?? ucfirst($unit).' · all time' }}</p></div></div>
 
 @php($peak = max(1, count($rows) ? max(array_column($rows, 'total')) : 1))
     <ol class="pa-ranking" style="--pa-color:{{ $color }}">

@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-11 — Add web views to Repertoire analytics (P3, complete locally)
+
+- The Pieces analytics page ranks the top eight pieces by their saved Google Analytics web views. It reuses the horizontal ranking chart and labels legacy iOS views separately. The report adds one bounded SQL query and makes no Google request.
+- Seven focused tests pass (111 assertions). The four failures in the broader header and country suites reproduce on the unchanged revision. Rendered chart checks pass at desktop width and at a 390px mobile viewport. No migration or asset build is needed. Production deployment is pending.
+
 ### 2026-11-11 — Sort admin Pieces by web views (P3, complete locally)
 
 - The Web views header and sort menu order the filtered catalogue by saved GA counts before pagination. Both directions put unavailable counts last and break ties by descending piece ID. All 12 focused tests pass (428 assertions), including both directions across pages, and both sorts were verified on local MySQL. Production deployment is pending.

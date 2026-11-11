@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\DB;
 
 class PieceWebViewCounts
 {
+    // Earliest piece-page view found in the PianoLIT GA4 property.
+    public const START_DATE = '2023-07-26';
+
     /** @return array<int, int> GA totals keyed by piece ID. Missing totals remain absent. */
     public function forPieces(array $ids): array
     {

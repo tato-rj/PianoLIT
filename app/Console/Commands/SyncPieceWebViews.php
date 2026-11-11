@@ -27,8 +27,7 @@ class SyncPieceWebViews extends Command
                 $paths = DB::table('pieces')->orderBy('id')->pluck('id')
                     ->mapWithKeys(fn ($id) => [route('webapp.pieces.show', $id, false) => $id])->all();
 
-                // July 26, 2023 is the earliest piece-page view in this GA property.
-                $report = $google->fetch('my.pianolit.com', array_keys($paths), '2023-07-26', $through);
+                $report = $google->fetch('my.pianolit.com', array_keys($paths), PieceWebViewCounts::START_DATE, $through);
                 $counts = [];
                 foreach ($report as $path => $views) {
                     $counts[$paths[$path]] = $views;

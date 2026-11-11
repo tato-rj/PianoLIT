@@ -38,6 +38,7 @@ class PieceAnalyticsTest extends ReviewTestCase
         $response = $this->get(route('admin.analytics.pieces'))->assertOk()
             ->assertSee('Catalogue growth')->assertSee('Media coverage')->assertSee('Levels across periods')
             ->assertSee('Pieces by composer country')->assertSee('Most represented composers')
+            ->assertSee('Most viewed on the web')->assertSee('No web views have been recorded')
             ->assertSee('No views have been recorded')->assertSee('No favorites have been recorded')
             ->assertDontSee('quickchart.setup')->assertDontSee('www.gstatic.com');
         $report = $response->viewData('report');
@@ -134,6 +135,9 @@ class PieceAnalyticsTest extends ReviewTestCase
         $pieces = [];
         for ($index = 0; $index < 10; $index++) {
             $pieces[] = $piece = $this->piece();
+            DB::table('piece_web_view_counts')->insert([
+                'piece_id' => $piece->id, 'views' => min($index + 1, 9) * 100, 'reported_through' => '2026-10-12',
+            ]);
             foreach ($users as $user) {
                 foreach (['favorites', 'piece_views'] as $table) DB::table($table)->insert(['piece_id' => $piece->id, 'user_id' => $user->id]);
             }
@@ -145,6 +149,8 @@ class PieceAnalyticsTest extends ReviewTestCase
             $this->assertSame(array_fill(0, 8, 1), array_column($report[$key], 'total'));
             $this->assertEquals(array_slice(array_column($pieces, 'id'), 0, 8), array_column($report[$key], 'id'));
         }
+        $this->assertSame([900, 900, 800, 700, 600, 500, 400, 300], array_column($report['webViews'], 'total'));
+        $this->assertEquals(array_map(fn ($index) => $pieces[$index]->id, [8, 9, 7, 6, 5, 4, 3, 2]), array_column($report['webViews'], 'id'));
     }
 
     public function test_report_queries_are_bounded_and_render_escaped_names_with_the_existing_admin_route()
@@ -153,15 +159,19 @@ class PieceAnalyticsTest extends ReviewTestCase
         $piece = $this->piece(['name' => '<script>unsafe piece</script>']);
         $this->tag($piece, 'period', '<script>unsafe period</script>');
         DB::table('piece_views')->insert(['piece_id' => $piece->id, 'user_id' => 987654]);
+        DB::table('piece_web_view_counts')->insert(['piece_id' => $piece->id, 'views' => 1234, 'reported_through' => '2026-10-12']);
         DB::enableQueryLog(); DB::flushQueryLog();
         $this->report(); $small = DB::getQueryLog(); DB::disableQueryLog();
         for ($index = 0; $index < 15; $index++) $this->piece();
         DB::enableQueryLog(); DB::flushQueryLog();
         $this->report(); $large = DB::getQueryLog(); DB::disableQueryLog();
-        $this->assertCount(12, $small);
+        $this->assertCount(13, $small);
         $this->assertCount(count($small), $large);
         $this->assertStringNotContainsString('pieces.*', implode(' ', array_column($large, 'query')));
-        $this->get(route('admin.analytics.pieces'))->assertOk()->assertSee('&lt;script&gt;unsafe piece&lt;/script&gt;', false)->assertDontSee('<script>unsafe', false);
+        $this->get(route('admin.analytics.pieces'))->assertOk()
+            ->assertSee('Google Analytics views on my.pianolit.com since Jul 26, 2023.')
+            ->assertSee('Most viewed in the iOS app')->assertSee('1,234')
+            ->assertSee('&lt;script&gt;unsafe piece&lt;/script&gt;', false)->assertDontSee('<script>unsafe', false);
         $this->get(route('admin.analytics.pieces', ['type' => 'level']), ['X-Requested-With' => 'XMLHttpRequest'])
             ->assertOk()->assertJsonStructure(['labels', 'datasets' => [['title', 'records', 'colors']]]);
         $this->withExceptionHandling();

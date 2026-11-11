@@ -3,7 +3,9 @@
 namespace App\Analytics;
 
 use App\Activity\ExcludedAccounts;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -66,6 +68,8 @@ class PieceReport
         return compact('summary', 'months', 'growth', 'levels', 'periods', 'lengths', 'genders', 'composers', 'media', 'issues') + [
             'countries' => $this->countries($total), 'matrix' => $this->matrix($levels, $periods),
             'favorites' => $this->ranking('favorites'), 'views' => $this->ranking('piece_views'),
+            'webViews' => $this->rankPieces(DB::table('piece_web_view_counts')->where('views', '>', 0)->select('piece_id', 'views as total')),
+            'webViewsFrom' => Carbon::parse(PieceWebViewCounts::START_DATE)->format('M j, Y'),
         ];
     }
 
@@ -167,6 +171,11 @@ class PieceReport
         // Only internal callers choose these tables; no submitted model/column names.
         $counts = ExcludedAccounts::owned(DB::table($table), $table.'.user_id')
             ->select('piece_id')->selectRaw('COUNT(*) as total')->groupBy('piece_id');
+        return $this->rankPieces($counts);
+    }
+
+    private function rankPieces(Builder $counts): array
+    {
         return DB::table('pieces as p')->joinSub($counts, 'counts', 'counts.piece_id', '=', 'p.id')
             ->leftJoin('composers as c', 'c.id', '=', 'p.composer_id')->select('p.id', 'p.name', 'p.nickname', 'c.name as composer', 'counts.total')
             ->orderByDesc('counts.total')->orderBy('p.id')->limit(8)->get()->map(function ($row) {
