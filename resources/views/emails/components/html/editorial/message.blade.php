@@ -23,10 +23,11 @@
     .freepick-cover { height: 170px !important; }
     .freepick-cover-space, .freepick-cover-link { height: 146px !important; }
     .freepick-cover-link { line-height: 146px !important; }
-    .freepick-hub-content { padding: 16px !important; }
-    .freepick-hub-art { width: 56px !important; }
-    .freepick-hub-art img { width: 56px !important; height: 56px !important; }
+    .freepick-hub-content { padding: 20px !important; }
+    .freepick-hub-art { width: 80px !important; }
+    .freepick-hub-art img { width: 80px !important; height: 80px !important; }
     .freepick-hub-copy { padding-left: 16px !important; }
+    .freepick-hub-copy h2 { font-size: 20px !important; }
     .freepick-latest .welcome-piece { display: block !important; width: 100% !important; padding: 0 0 18px !important; overflow: hidden; }
     .freepick-latest .welcome-piece img { float: left !important; width: 88px !important; margin: 0 14px 0 0 !important; }
     .snapshot-header h1 { font-size: 27px !important; }

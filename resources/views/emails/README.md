@@ -320,9 +320,11 @@ when queued and across HTML/plain-text rendering. Edit its short descriptions,
 actions and existing hub artwork in `lists/freepick-hub.blade.php`. Lead with
 something distinctive to discover: Note Match listening to a real piano,
 PianoLIT T-shirts/stickers, or personal counting voices and voice effects.
-Keep the invitation short and welcoming; do not tell readers to go practice.
-The table
-layout and plain-text counterpart are `components/{html,text}/freepick/hub.blade.php`.
+Keep the invitation short, direct and fluent, without slogans or poetic phrasing;
+do not tell readers to go practice. The card uses a stronger blue tint, 28px
+internal padding and 104px artwork (20px padding and 80px artwork on phones),
+within the unchanged shared email frame. The table layout and plain-text
+counterpart are `components/{html,text}/freepick/hub.blade.php`.
 Hub links use their public named routes without campaign tags. Workers still
 running the old mail class fall back to Games in both formats until restarted;
 older serialized mail loaded by the new class gets a random choice at build time.

@@ -107,6 +107,11 @@
         highlight();
     }
     function select(blockId) { if (selected === blockId) return; flush(); selected = blockId; inspector(); }
+    function escapeSelection(event) {
+        if (event.key !== 'Escape' || event.defaultPrevented || previewMode || activeDrag || !selected) return;
+        event.preventDefault();
+        select(null);
+    }
     function settings() {
         ['background', 'color', 'font', 'background_image'].forEach(function (key) { document.getElementById('builder-' + key.replace(/_/g, '-')).value = state.settings[key]; });
         document.getElementById('lesson-preheader').value = state.settings.preheader;
@@ -203,8 +208,9 @@
         doc.addEventListener('click', function (event) {
             event.preventDefault();
             var target = event.target.closest('[data-email-block]');
-            if (target && !previewMode) select(target.dataset.emailBlock);
+            if (!previewMode && !activeDrag) select(target ? target.dataset.emailBlock : null);
         });
+        doc.addEventListener('keydown', escapeSelection);
         doc.querySelectorAll('[data-email-block]').forEach(function (node) {
             var handle = doc.createElement('button'); handle.type = 'button'; handle.className = 'builder-control builder-drag'; handle.textContent = '⠿ Move'; handle.draggable = true;
             handle.setAttribute('aria-label', 'Select and drag ' + (labels[(state.blocks.find(function (b) { return b.id === node.dataset.emailBlock; }) || {}).type] || 'block'));
@@ -238,6 +244,11 @@
         button.addEventListener('dragstart', function (event) { transfer(event, {type: button.dataset.addBlock}); });
     });
     root.addEventListener('dragend', function () { activeDrag = null; });
+    root.addEventListener('keydown', escapeSelection);
+    root.querySelector('.email-builder__stage').addEventListener('click', function (event) {
+        if (previewMode || activeDrag || event.target.closest('button, a, input, select, textarea, label, [role="group"]')) return;
+        select(null);
+    });
     var empty = root.querySelector('[data-empty-canvas]');
     empty.addEventListener('dragover', function (event) { if (activeDrag) event.preventDefault(); });
     empty.addEventListener('drop', function (event) { drop(event, state.blocks.length); });

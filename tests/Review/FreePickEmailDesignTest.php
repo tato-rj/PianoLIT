@@ -51,9 +51,9 @@ class FreePickEmailDesignTest extends ReviewTestCase
     public function hubVariants(): array
     {
         return [
-            ['games', 'Your piano is the controller', 'Explore the games', 'games.home'],
-            ['shop', 'Wear a little PianoLIT', 'See the collection', 'shop.home'],
-            ['metronome', 'A metronome with your voice', 'Try it out', 'metronome.home'],
+            ['games', 'Play games with your piano', 'Explore the games', 'games.home'],
+            ['shop', 'Explore PianoLIT Shop', 'Browse the shop', 'shop.home'],
+            ['metronome', 'A metronome with your voice', 'Try the metronome', 'metronome.home'],
         ];
     }
 
