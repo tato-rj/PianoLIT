@@ -20,11 +20,11 @@ class PostPromotions
     ];
 
     private const HUBS = [
-        'shop' => ['category' => 'Shop', 'title' => 'PianoLIT Shop', 'description' => 'Browse merchandise, eBooks and digital sheet music.', 'action' => 'Visit Shop', 'route' => 'shop.home', 'color' => 'cream'],
-        'games' => ['category' => 'Games', 'title' => 'PianoLIT Games', 'description' => 'Play music games and test your knowledge.', 'action' => 'Visit Games', 'route' => 'games.home', 'color' => 'lavender'],
-        'learn' => ['category' => 'Learn', 'title' => 'PianoLIT Learn', 'description' => 'Find music tools, courses, infographics and quizzes.', 'action' => 'Visit Learn', 'route' => 'learn.home', 'color' => 'mint'],
-        'webapp' => ['category' => 'Web app', 'title' => 'PianoLIT Web app', 'description' => 'Browse piano pieces, recordings, videos and scores.', 'action' => 'Visit Web app', 'route' => 'webapp.discover', 'color' => 'sky'],
-        'metronome' => ['category' => 'Metronome', 'title' => 'PianoLIT Metronome', 'description' => 'Set a tempo, choose a sound and follow the beat.', 'action' => 'Open Metronome', 'route' => 'metronome.home', 'color' => 'mint'],
+        'shop' => ['category' => 'Shop', 'title' => 'PianoLIT Shop', 'description' => 'Browse merchandise, eBooks and digital sheet music.', 'action' => 'Visit Shop', 'hubIcon' => 'shopping-basket', 'route' => 'shop.home', 'color' => 'cream'],
+        'games' => ['category' => 'Games', 'title' => 'PianoLIT Games', 'description' => 'Play music games and test your knowledge.', 'action' => 'Visit Games', 'hubIcon' => 'trophy', 'route' => 'games.home', 'color' => 'lavender'],
+        'learn' => ['category' => 'Learn', 'title' => 'PianoLIT Learn', 'description' => 'Find music tools, courses, infographics and quizzes.', 'action' => 'Visit Learn', 'hubIcon' => 'graduation-cap', 'route' => 'learn.home', 'color' => 'mint'],
+        'webapp' => ['category' => 'Web app', 'title' => 'PianoLIT Web app', 'description' => 'Browse piano pieces, recordings, videos and scores.', 'action' => 'Visit Web app', 'hubIcon' => 'pianolit', 'route' => 'webapp.discover', 'color' => 'sky'],
+        'metronome' => ['category' => 'Metronome', 'title' => 'PianoLIT Metronome', 'description' => 'Set a tempo, choose a sound and follow the beat.', 'action' => 'Open Metronome', 'hubIcon' => 'metronome', 'route' => 'metronome.home', 'color' => 'mint'],
     ];
 
     public function choiceFor(Post $post): string

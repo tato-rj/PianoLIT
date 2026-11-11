@@ -981,11 +981,18 @@ Stored article HTML, cover credits and references are preserved.
 
 Article hub promotions opt into `components.promotions.hubs` with `persistent: true`.
 At 992px and wider the existing cards stick 24px from the viewport top within the
-editorial sidebar, returning to their normal position on upward scrolling. A tall
-group scrolls within the available viewport so every destination remains reachable.
+editorial sidebar, returning to their normal position on upward scrolling. There
+is no promotion count cap. For more than two cards, the normal-flow sentinel in
+`components/hub-promotions.js` detects the 24px sticky threshold with
+IntersectionObserver and adds `is-stuck`. Only then do the cards become compact
+icon/action rows; scrolling back above the threshold restores the full cards.
+Bounded native scrolling remains available for unusually large groups.
 Below 992px the same cards form a full-width bottom bar with only its top corners
 rounded, 44px actions and safe-area padding. Single promotions show their title and
-action; the previous three-hub group shows three compact actions. The versioned
+action. All promotions remain in one native horizontally scrolling row with no
+wrapping. Each mobile action includes its matching hub icon; groups over two show
+short hub labels and retain the full accessible destination title. Keep the default
+Shop/Games/Learn group and saved individual choices unchanged. The versioned
 `components/hub-promotions.js` measures the bar on size/font changes and restoration
 to reserve its exact height after the footer. No promotion reserves no space.
 Other editorial sidebars and embedded articles retain their existing behavior.

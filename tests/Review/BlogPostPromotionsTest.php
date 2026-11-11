@@ -55,12 +55,12 @@ class BlogPostPromotionsTest extends ReviewTestCase
 
     public static function destinations(): array
     {
-        return [['shop', 'shop.home'], ['games', 'games.home'], ['learn', 'learn.home'],
-            ['webapp', 'webapp.discover'], ['metronome', 'metronome.home']];
+        return [['shop', 'shop.home', 'shopping-basket'], ['games', 'games.home', 'trophy'], ['learn', 'learn.home', 'graduation-cap'],
+            ['webapp', 'webapp.discover', 'pianolit'], ['metronome', 'metronome.home', 'metronome']];
     }
 
     /** @dataProvider destinations */
-    public function test_selected_hub_is_the_only_article_promotion_and_mobile_output_stays_unchanged($choice, $route)
+    public function test_selected_hub_is_the_only_article_promotion_and_mobile_output_stays_unchanged($choice, $route, $icon)
     {
         $post = $this->article();
         $before = $post->fresh()->toArray();
@@ -73,6 +73,7 @@ class BlogPostPromotionsTest extends ReviewTestCase
         $xpath = $this->xpath($page);
         $this->assertCount(1, $xpath->query('//aside//article[contains(@class,"promo-card")]'));
         $this->assertCount(2, $xpath->query('//aside//article[contains(@class,"promo-card")]//a[@href="'.route($route).'"]'));
+        $this->assertCount(1, $xpath->query('//aside//a[contains(@class,"pastel-card__action")]//span[contains(@class,"promo-card__hub-icon")]//i[contains(@class,"icon-'.$icon.'")]'));
         $embedded = $this->get(route('posts.app', $post))->assertOk()->assertSee('Article content stays unchanged.');
         $this->assertCount(0, $this->xpath($embedded)->query('//article[contains(@class,"promo-card")]'));
         Http::assertNothingSent();
