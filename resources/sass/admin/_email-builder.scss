@@ -1,0 +1,58 @@
+.email-builder {
+    --builder-line: #e5e7eb;
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--builder-line);
+    border-radius: 12px;
+    overflow: hidden;
+    h2 { font-size: 19px; margin: 0 0 4px; }
+    h3 { font-size: 14px; font-weight: 600; margin: 0 0 16px; }
+    &__header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border-bottom: 1px solid var(--builder-line); p { font-size: 13px; color: #6c757d; margin: 0; } }
+    &__workspace { display: grid; grid-template-columns: 200px minmax(0, 1fr) 320px; align-items: start; }
+    &__palette, &__inspector { padding: 20px 16px; min-width: 0; max-height: 920px; overflow-y: auto; }
+    &__palette { border-right: 1px solid var(--builder-line); }
+    &__inspector { border-left: 1px solid var(--builder-line); }
+    &__components { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    &__component.btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; min-height: 76px; font-size: 12px; padding: 10px 4px; cursor: grab; background: #fff; border: 1px solid var(--builder-line); border-radius: 8px; .icon { width: 21px; height: 21px; } &:hover { background: #f0f4ff; border-color: #a8c2ff; } }
+    details { border-top: 1px solid var(--builder-line); margin-top: 20px; padding-top: 16px; }
+    summary { font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 16px; }
+    &__colors { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; label { display: block; font-size: 12px; margin-bottom: 6px; } }
+    &__stage { min-width: 0; background: #eef0f3; padding: 16px 0; }
+    &__viewport-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; padding: 0 12px 16px; [aria-pressed='true'] { background: #fff; box-shadow: 0 1px 4px #00000012; } [data-preview-status] { width: 100%; text-align: center; font-size: 11px; } }
+    &__canvas-scroll { overflow: auto; max-height: 800px; padding: 0 16px 16px; scrollbar-gutter: stable; }
+    &__canvas-frame { position: relative; margin: 0 auto; }
+    &__canvas { position: absolute; top: 0; left: 0; transform-origin: top left; display: block; width: 680px; max-width: none; min-height: 500px; border: 0; background: #f8f9fa; margin: 0 auto; box-shadow: 0 4px 24px #1d243112; }
+    &__canvas-note { padding: 12px 16px 0; text-align: center; margin: 0; font-size: 12px; }
+    &__empty { min-height: 520px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; max-width: 600px; margin: 0 auto; padding: 32px; border: 2px dashed #cbd1da; border-radius: 8px; h3 { margin: 20px 0 8px; font-size: 20px; } p { max-width: 270px; font-size: 14px; color: #6c757d; } }
+    &__block-actions { display: flex; gap: 6px; margin-bottom: 20px; }
+    &__saved-block { display: flex; gap: 4px; margin: 8px 0; > :first-child { flex: 1; text-align: left; white-space: normal; overflow-wrap: anywhere; } }
+    &__status { padding: 12px 24px; border-top: 1px solid var(--builder-line); color: #6c757d; }
+    &__upload { padding: 24px; border-top: 1px solid var(--builder-line); }
+    .form-group { margin-bottom: 14px; }
+    label { font-size: 12px; }
+    .form-control { font-size: 13px; }
+    .tox-tinymce { max-width: 100%; border-radius: 6px; }
+    .tox .tox-toolbar__group { padding: 0 4px; }
+    [hidden] { display: none !important; }
+    &--preview { .email-builder__palette, .email-builder__inspector { display: none; } .email-builder__workspace { grid-template-columns: 1fr; } }
+    @media (max-width: 1399px) {
+        &__workspace { grid-template-columns: 176px minmax(0, 1fr) 290px; }
+        &__palette, &__inspector { padding: 16px 12px; }
+    }
+    @media (max-width: 1100px) {
+        &__workspace { grid-template-columns: 156px minmax(0, 1fr); }
+        &__inspector { grid-column: 1 / -1; max-height: none; border-top: 1px solid var(--builder-line); border-left: 0; }
+        &__inspector > div { max-width: 640px; margin: 0 auto; }
+        &--preview .email-builder__workspace { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+        &__workspace { display: flex; flex-direction: column; }
+        &__palette, &__stage, &__inspector { width: 100%; }
+        &__palette { max-height: none; border-right: 0; }
+        &__components { grid-template-columns: repeat(4, 1fr); }
+        &__component.btn { min-height: 64px; font-size: 11px; }
+        &__library, &__settings { margin-top: 14px; }
+        &__header { align-items: flex-start; flex-direction: column; padding: 16px; }
+        &__canvas-scroll { padding-left: 4px; padding-right: 4px; }
+    }
+}

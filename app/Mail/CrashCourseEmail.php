@@ -10,7 +10,11 @@ use App\CrashCourse\{CrashCourseSubscription, CrashCourseLesson};
 
 class CrashCourseEmail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, \App\Mail\Traits\EditorialLayout;
+
+    public $emailDesign;
+    public $builderPreview = false;
+    public $theme = 'default';
 
     public $subscription, $lesson;
 
@@ -31,6 +35,14 @@ class CrashCourseEmail extends Mailable
      */
     public function build()
     {
+        $designs = app(\App\Services\CrashCourses\EmailDesign::class);
+        $saved = $this->emailDesign === null ? $designs->saved($this->lesson) : null;
+        $design = $this->emailDesign ?? ($saved ? json_decode($saved->design, true) : null);
+        if ($design) {
+            $this->theme = 'welcome';
+            return $this->subject($this->lesson->dynamic('subject', $this->subscription))
+                ->markdown('emails.courses.lesson', ['design' => $designs->personalize($design, $this->subscription)]);
+        }
         return $this->subject($this->lesson->dynamic('subject', $this->subscription))
                     ->markdown('emails.crashcourse');
     }

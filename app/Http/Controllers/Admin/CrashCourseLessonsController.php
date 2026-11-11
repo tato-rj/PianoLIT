@@ -3,144 +3,131 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
 use App\CrashCourse\{CrashCourse, CrashCourseLesson};
 use App\Mail\CrashCourseEmail;
+use App\Services\CrashCourses\EmailDesign;
 
 class CrashCourseLessonsController extends Controller
 {
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(CrashCourse $crashcourse)
+    private function owns(CrashCourse $course, CrashCourseLesson $lesson): void
     {
-        return view('admin.pages.crashcourses.lessons.create', compact('crashcourse'));
+        abort_unless((int) $lesson->crash_course_id === (int) $course->id, 404);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    private function editor(CrashCourse $crashcourse, ?CrashCourseLesson $lesson = null)
+    {
+        $designs = app(EmailDesign::class);
+        $saved = $lesson ? $designs->saved($lesson) : null;
+        $emailDesign = $saved ? json_decode($saved->design, true) : $designs->initial($lesson);
+        $emailRevision = $saved->revision ?? 0;
+        return view('admin.pages.crashcourses.lessons.editor', compact('crashcourse', 'lesson', 'emailDesign', 'emailRevision'));
+    }
+
+    public function create(CrashCourse $crashcourse) { return $this->editor($crashcourse); }
+
+    public function edit(CrashCourse $crashcourse, CrashCourseLesson $lesson)
+    {
+        $this->owns($crashcourse, $lesson);
+        return $this->editor($crashcourse, $lesson);
+    }
+
+    private function input(Request $request): array
+    {
+        $request->validate(['subject' => 'required|string|max:120']);
+        if ($request->has('email_design')) {
+            $request->validate(['email_revision' => 'required|integer|min:0']);
+            $design = app(EmailDesign::class)->decode($request->input('email_design'));
+            return ['design' => $design, 'body' => app(EmailDesign::class)->html($design)];
+        }
+        $request->validate(['body' => 'required|string|max:60000']);
+        return ['design' => null, 'body' => $request->input('body')];
+    }
+
+    private function saveDesign(CrashCourseLesson $lesson, array $design, int $revision): void
+    {
+        $values = ['design' => json_encode($design), 'revision' => $revision, 'updated_at' => now()];
+        if ($revision === 1) {
+            DB::table('crash_course_email_designs')->insert($values + ['lesson_id' => $lesson->id, 'created_at' => now()]);
+        } else {
+            DB::table('crash_course_email_designs')->where('lesson_id', $lesson->id)->update($values);
+        }
+    }
+
     public function store(Request $request, CrashCourse $crashcourse)
     {
-        $request->validate([
-            'subject' => 'required|max:120',
-            'body' => 'required'
-        ]);
-
-        $crashcourse->lessons()->create([
-            'subject' => $request->subject,
-            'body' => $request->body,
-            'reading_time' => calculateReadingTime($request->body),
-            'order' => $crashcourse->lessons_count
-        ]);
-
-        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', "The lesson has been successfully created!");
+        $input = $this->input($request);
+        DB::transaction(function () use ($request, $crashcourse, $input) {
+            CrashCourse::whereKey($crashcourse->id)->lockForUpdate()->firstOrFail();
+            $lesson = $crashcourse->lessons()->create([
+                'subject' => $request->subject, 'body' => $input['body'], 'reading_time' => calculateReadingTime($input['body']),
+                'order' => $crashcourse->lessons()->count(),
+            ]);
+            if ($input['design']) $this->saveDesign($lesson, $input['design'], 1);
+        });
+        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', 'Lesson created.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    public function update(Request $request, CrashCourse $crashcourse, CrashCourseLesson $lesson)
+    {
+        $this->owns($crashcourse, $lesson);
+        $input = $this->input($request);
+        DB::transaction(function () use ($request, $lesson, $input) {
+            $locked = CrashCourseLesson::whereKey($lesson->id)->lockForUpdate()->firstOrFail();
+            $saved = app(EmailDesign::class)->saved($locked);
+            if (($input['design'] && (int) $request->email_revision !== (int) ($saved->revision ?? 0)) || (!$input['design'] && $saved)) {
+                throw ValidationException::withMessages(['email_design' => 'This lesson changed in another editor. Keep a copy of your changes, then reload the lesson before saving.']);
+            }
+            $locked->update(['subject' => $request->subject, 'body' => $input['body'], 'reading_time' => calculateReadingTime($input['body'])]);
+            if ($input['design']) $this->saveDesign($locked, $input['design'], ($saved->revision ?? 0) + 1);
+        });
+        return back()->with('status', 'Lesson saved.');
+    }
+
     public function duplicate(Request $request, CrashCourse $crashcourse, CrashCourseLesson $lesson)
     {
-        $crashcourse->lessons()->create([
-            'subject' => $lesson->subject . ' - copy',
-            'body' => $lesson->body,
-            'reading_time' => $lesson->reading_time,
-            'order' => $crashcourse->lessons_count
-        ]);
-
-        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', "The lesson has been successfully duplicated!");
+        $this->owns($crashcourse, $lesson);
+        DB::transaction(function () use ($crashcourse, $lesson) {
+            CrashCourse::whereKey($crashcourse->id)->lockForUpdate()->firstOrFail();
+            $source = CrashCourseLesson::whereKey($lesson->id)->lockForUpdate()->firstOrFail();
+            $copy = $crashcourse->lessons()->create([
+                'subject' => mb_substr($source->subject, 0, 113).' - copy', 'body' => $source->body,
+                'reading_time' => $source->reading_time, 'order' => $crashcourse->lessons()->count(),
+            ]);
+            if ($saved = app(EmailDesign::class)->saved($source)) $this->saveDesign($copy, json_decode($saved->design, true), 1);
+        });
+        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', 'Lesson duplicated.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\CrashCourse\CrashCourseLesson  $lesson
-     * @return \Illuminate\Http\Response
-     */
     public function preview(CrashCourse $crashcourse, CrashCourseLesson $lesson)
     {
+        $this->owns($crashcourse, $lesson);
         return new CrashCourseEmail($lesson);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\CrashCourse\CrashCourseLesson  $lesson
-     * @return \Illuminate\Http\Response
-     */
     public function sendTo(Request $request, CrashCourse $crashcourse, CrashCourseLesson $lesson)
     {
-        \Mail::to($request->email)->send(new CrashCourseEmail($lesson, $request->email));
-
-        return back()->with('status', 'A preview was sent to ' . $request->email);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\CrashCourse\CrashCourseLesson  $lesson
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(CrashCourse $crashcourse, CrashCourseLesson $lesson)
-    {
-        return view('admin.pages.crashcourses.lessons.edit', compact(['crashcourse', 'lesson']));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\CrashCourse\CrashCourseLesson  $lesson
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, CrashCourse $crashcourse,  CrashCourseLesson $lesson)
-    {
-        $request->validate([
-            'subject' => 'required|max:120',
-            'body' => 'required'
-        ]);
-
-        $lesson->update([
-            'subject' => $request->subject,
-            'body' => $request->body,
-            'reading_time' => calculateReadingTime($request->body)
-        ]);
-
-        return redirect()->back()->with('status', "The lesson has been successfully updated!");
+        $this->owns($crashcourse, $lesson);
+        $request->validate(['email' => 'required|email|max:254']);
+        \Mail::to($request->email)->send(new CrashCourseEmail($lesson));
+        return back()->with('status', 'A preview was sent to '.e($request->email));
     }
 
     public function reorder(Request $request, CrashCourse $crashcourse)
     {
-        foreach ($request->ids as $order => $id) {
-            $crashcourse->lessons()->find($id)->update(['order' => $order]);
-        }
-
+        foreach ($request->ids as $order => $id) $crashcourse->lessons()->findOrFail($id)->update(['order' => $order]);
         return response(200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\CrashCourse\CrashCourseLesson  $lesson
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(CrashCourse $crashcourse, CrashCourseLesson $lesson)
     {
-        $lesson->delete();
-
-        $crashcourse->lessons->each(function($lesson, $index) {
-            $lesson->update(['order' => $index]);
+        $this->owns($crashcourse, $lesson);
+        DB::transaction(function () use ($crashcourse, $lesson) {
+            $lesson->delete();
+            $crashcourse->lessons()->get()->each(function ($lesson, $index) { $lesson->update(['order' => $index]); });
         });
-
-        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', "The lesson has been successfully deleted!");
+        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', 'Lesson deleted.');
     }
 }

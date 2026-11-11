@@ -22,12 +22,16 @@ const requiredAssets = new Set(entryPoints);
 for (const file of filesIn(path.join(root, 'resources/views'))) {
     if (!file.endsWith('.blade.php')) continue;
     const source = fs.readFileSync(file, 'utf8');
-    for (const match of source.matchAll(/\bmix\(\s*['"]([^'"]+)['"]/g)) requiredAssets.add(match[1]);
+    for (const match of source.matchAll(/\bmix\(\s*['"]([^'"]+)['"]\s*\)/g)) requiredAssets.add(match[1]);
 }
 for (const file of requiredAssets) {
     assert(manifest['/' + file], 'Missing Laravel asset: ' + file);
     assert.strictEqual(manifest['/' + file].split('?')[0], '/' + file, 'Changed asset path: ' + file);
     assert(fs.statSync(path.join(publicRoot, file)).size > 0, 'Empty Laravel asset: ' + file);
+}
+
+for (const file of require('../../scripts/email-builder-assets')) {
+    assert(fs.readFileSync(path.join(root, 'node_modules/tinymce', file)).equals(fs.readFileSync(path.join(publicRoot, 'js/vendor/tinymce', file))), 'Changed TinyMCE copy: ' + file);
 }
 
 let versioned = 0;

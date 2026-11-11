@@ -59,6 +59,7 @@
         "masonry-layout": "^4.2.2",
         "moment": "^2.22.2",
         "swiper": "^4.5.0",
+        "tinymce": "5.10.9",
         "tone": "^13.4.9",
         "trix": "^0.11.2",
         "typed.js": "3.0.0",

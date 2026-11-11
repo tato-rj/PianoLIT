@@ -51,9 +51,9 @@ class FreePickEmailDesignTest extends ReviewTestCase
     public function hubVariants(): array
     {
         return [
-            ['games', 'Games', 'Play games', 'games.home'],
-            ['shop', 'Shop', 'Browse the shop', 'shop.home'],
-            ['metronome', 'Metronome', 'Open metronome', 'metronome.home'],
+            ['games', 'Your piano is the controller', 'Explore the games', 'games.home'],
+            ['shop', 'Wear a little PianoLIT', 'See the collection', 'shop.home'],
+            ['metronome', 'A metronome with your voice', 'Try it out', 'metronome.home'],
         ];
     }
 
@@ -79,8 +79,8 @@ class FreePickEmailDesignTest extends ReviewTestCase
     {
         [$html, $text, $xpath] = $this->render($this->piece(), null, 'preview', true);
         $this->assertCount(1, $xpath->query('//table[@class="freepick-hub-card"]'));
-        $this->assertStringContainsString('Play games', $html);
-        $this->assertStringContainsString('Play games: '.route('games.home'), $text);
+        $this->assertStringContainsString('Explore the games', $html);
+        $this->assertStringContainsString('Explore the games: '.route('games.home'), $text);
         $this->assertStringNotContainsString('More music to discover', $html);
     }
 

@@ -317,7 +317,11 @@ One compact highlighted hub card appears between the resource panel and **More
 music to discover**, even when there are no latest pieces. `FreePickEmail`
 randomly chooses Games, Shop or Metronome once per message, retaining that choice
 when queued and across HTML/plain-text rendering. Edit its short descriptions,
-actions and existing hub artwork in `lists/freepick-hub.blade.php`; the table
+actions and existing hub artwork in `lists/freepick-hub.blade.php`. Lead with
+something distinctive to discover: Note Match listening to a real piano,
+PianoLIT T-shirts/stickers, or personal counting voices and voice effects.
+Keep the invitation short and welcoming; do not tell readers to go practice.
+The table
 layout and plain-text counterpart are `components/{html,text}/freepick/hub.blade.php`.
 Hub links use their public named routes without campaign tags. Workers still
 running the old mail class fall back to Games in both formats until restarted;
@@ -491,3 +495,16 @@ Local merchandise email previews for actual test-order data are available in Adm
 Edit `synthesia-requests/new.blade.php` for receipt and `synthesia-requests/published.blade.php` for readiness. Their mailables live in `App\Mail\SynthesiaRequests`; the admin switches/previews are `synthesia-request` and `synthesia-published`. The table-rename migration preserves saved switches. The old `App\Mail\Tutorials` classes remain only for queued messages serialized before this rename and inherit the same delivery switches. See `docs/SYNTHESIA_REQUESTS.md` for the coordinated schema/worker rollout and permanent legacy API boundary.
 
 The merchandise confirmation in `shop/orders/confirmed.blade.php` shows any first-order welcome discount separately from products, delivery and tax. Its item snapshots and promotion amounts come from the verified saved checkout; rendering never contacts payment or fulfillment providers.
+
+
+## Crash-course lesson designs
+
+Create/Edit lesson now use the drag-and-drop email builder with rich-text blocks,
+images, heroes, buttons, panels, two columns and a shared reusable-block library.
+Structured lessons render through `courses/lesson.blade.php`,
+`courses/content.blade.php`, `courses/block.blade.php` and paired
+`components/{html,text}/courses/lesson.blade.php`. Unconverted lessons retain
+`crashcourse.blade.php`; course feedback is unchanged. Both paths retain the
+shared customer logo/footer and contact-based cancellation. See
+[`docs/CRASH_COURSE_EMAILS.md`](../../../docs/CRASH_COURSE_EMAILS.md) for editing,
+local assets, validation, the required migration and verification limits.

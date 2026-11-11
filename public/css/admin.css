@@ -25476,6 +25476,285 @@ body.admin-dashboard-page .admin-main {
   max-width: 900px;
 }
 
+.email-builder {
+  --builder-line: #e5e7eb;
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--builder-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.email-builder h2, .email-builder .h2 {
+  font-size: 19px;
+  margin: 0 0 4px;
+}
+.email-builder h3, .email-builder .h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+.email-builder__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--builder-line);
+}
+.email-builder__header p {
+  font-size: 13px;
+  color: #6c757d;
+  margin: 0;
+}
+.email-builder__workspace {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr) 320px;
+  align-items: start;
+}
+.email-builder__palette, .email-builder__inspector {
+  padding: 20px 16px;
+  min-width: 0;
+  max-height: 920px;
+  overflow-y: auto;
+}
+.email-builder__palette {
+  border-right: 1px solid var(--builder-line);
+}
+.email-builder__inspector {
+  border-left: 1px solid var(--builder-line);
+}
+.email-builder__components {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.email-builder__component.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 76px;
+  font-size: 12px;
+  padding: 10px 4px;
+  cursor: grab;
+  background: #fff;
+  border: 1px solid var(--builder-line);
+  border-radius: 8px;
+}
+.email-builder__component.btn .icon {
+  width: 21px;
+  height: 21px;
+}
+.email-builder__component.btn:hover {
+  background: #f0f4ff;
+  border-color: #a8c2ff;
+}
+.email-builder details {
+  border-top: 1px solid var(--builder-line);
+  margin-top: 20px;
+  padding-top: 16px;
+}
+.email-builder summary {
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+.email-builder__colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.email-builder__colors label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.email-builder__stage {
+  min-width: 0;
+  background: #eef0f3;
+  padding: 16px 0;
+}
+.email-builder__viewport-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px 16px;
+}
+.email-builder__viewport-controls [aria-pressed=true] {
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.0705882353);
+}
+.email-builder__viewport-controls [data-preview-status] {
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+}
+.email-builder__canvas-scroll {
+  overflow: auto;
+  max-height: 800px;
+  padding: 0 16px 16px;
+  scrollbar-gutter: stable;
+}
+.email-builder__canvas-frame {
+  position: relative;
+  margin: 0 auto;
+}
+.email-builder__canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  display: block;
+  width: 680px;
+  max-width: none;
+  min-height: 500px;
+  border: 0;
+  background: #f8f9fa;
+  margin: 0 auto;
+  box-shadow: 0 4px 24px rgba(29, 36, 49, 0.0705882353);
+}
+.email-builder__canvas-note {
+  padding: 12px 16px 0;
+  text-align: center;
+  margin: 0;
+  font-size: 12px;
+}
+.email-builder__empty {
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 32px;
+  border: 2px dashed #cbd1da;
+  border-radius: 8px;
+}
+.email-builder__empty h3, .email-builder__empty .h3 {
+  margin: 20px 0 8px;
+  font-size: 20px;
+}
+.email-builder__empty p {
+  max-width: 270px;
+  font-size: 14px;
+  color: #6c757d;
+}
+.email-builder__block-actions {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.email-builder__saved-block {
+  display: flex;
+  gap: 4px;
+  margin: 8px 0;
+}
+.email-builder__saved-block > :first-child {
+  flex: 1;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.email-builder__status {
+  padding: 12px 24px;
+  border-top: 1px solid var(--builder-line);
+  color: #6c757d;
+}
+.email-builder__upload {
+  padding: 24px;
+  border-top: 1px solid var(--builder-line);
+}
+.email-builder .form-group {
+  margin-bottom: 14px;
+}
+.email-builder label {
+  font-size: 12px;
+}
+.email-builder .form-control {
+  font-size: 13px;
+}
+.email-builder .tox-tinymce {
+  max-width: 100%;
+  border-radius: 6px;
+}
+.email-builder .tox .tox-toolbar__group {
+  padding: 0 4px;
+}
+.email-builder [hidden] {
+  display: none !important;
+}
+.email-builder--preview .email-builder__palette, .email-builder--preview .email-builder__inspector {
+  display: none;
+}
+.email-builder--preview .email-builder__workspace {
+  grid-template-columns: 1fr;
+}
+@media (max-width: 1399px) {
+  .email-builder__workspace {
+    grid-template-columns: 176px minmax(0, 1fr) 290px;
+  }
+  .email-builder__palette, .email-builder__inspector {
+    padding: 16px 12px;
+  }
+}
+@media (max-width: 1100px) {
+  .email-builder__workspace {
+    grid-template-columns: 156px minmax(0, 1fr);
+  }
+  .email-builder__inspector {
+    grid-column: 1/-1;
+    max-height: none;
+    border-top: 1px solid var(--builder-line);
+    border-left: 0;
+  }
+  .email-builder__inspector > div {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .email-builder--preview .email-builder__workspace {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .email-builder__workspace {
+    display: flex;
+    flex-direction: column;
+  }
+  .email-builder__palette, .email-builder__stage, .email-builder__inspector {
+    width: 100%;
+  }
+  .email-builder__palette {
+    max-height: none;
+    border-right: 0;
+  }
+  .email-builder__components {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .email-builder__component.btn {
+    min-height: 64px;
+    font-size: 11px;
+  }
+  .email-builder__library, .email-builder__settings {
+    margin-top: 14px;
+  }
+  .email-builder__header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 16px;
+  }
+  .email-builder__canvas-scroll {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
+
 .admin-access-limits__matrix {
   min-width: 800px;
   table-layout: fixed;
@@ -27099,6 +27378,13 @@ body.admin-dashboard-page .admin-main {
   -o-object-fit: contain;
      object-fit: contain;
 }
+.promo-card__compact-label {
+  display: none;
+}
+.promo-card__arrow {
+  display: inline-flex;
+  align-items: center;
+}
 .promo-card__title {
   color: inherit;
   overflow-wrap: anywhere;
@@ -27109,13 +27395,6 @@ body.admin-dashboard-page .admin-main {
 .promo-card__description {
   font-size: var(--font-size-sm);
   line-height: var(--line-height-body);
-}
-.promo-card__compact-label {
-  display: none;
-}
-.promo-card__arrow {
-  display: inline-flex;
-  align-items: center;
 }
 
 .hub-promotions__sentinel {
@@ -27237,7 +27516,6 @@ body.admin-dashboard-page .admin-main {
     inset: auto;
   }
 }
-
 .resource-card {
   color: var(--color-text);
   text-decoration: none;
@@ -27913,7 +28191,6 @@ small .tiny {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 
@@ -29417,7 +29694,8 @@ button.bg-primary:focus {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   border-radius: inherit;
 }
 .account-circle.btn-raw .account-circle__image[hidden] {
@@ -29502,6 +29780,7 @@ button.bg-primary:focus {
   height: 22.4px;
 }
 .account-circle--navigation.btn-raw .account-circle__label {
+  width: -moz-max-content;
   width: max-content;
   max-width: min(96px, 20vw - 12px);
   overflow: hidden;
@@ -29562,18 +29841,16 @@ button.bg-primary:focus {
   box-shadow: var(--shadow-dropdown);
   transition: transform 220ms ease;
 }
-@supports (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px)) {
+@supports (backdrop-filter: blur(1px)) {
   .webapp-navigation {
     background: rgba(255, 255, 255, 0.82);
     background: color-mix(in srgb, var(--color-surface) 82%, transparent);
-    -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
   }
 }
 @media (prefers-reduced-transparency: reduce) {
   .webapp-navigation {
     background: var(--color-surface);
-    -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 }
@@ -29720,7 +29997,8 @@ button.bg-primary:focus {
 .brand-icon--transparent {
   aspect-ratio: 1;
   background: currentColor;
-  mask: var(--brand-icon-mask) center/contain no-repeat;
+  -webkit-mask: var(--brand-icon-mask) center/contain no-repeat;
+          mask: var(--brand-icon-mask) center/contain no-repeat;
 }
 
 .metronome-sound__options {
@@ -29891,6 +30169,10 @@ button.bg-primary:focus {
   box-shadow: none;
   transition: border-color 0.18s ease;
 }
+.form-control::-moz-placeholder, .form-select::-moz-placeholder, .pianolit-input::-moz-placeholder, .custom-file-label::-moz-placeholder, .input-group-text::-moz-placeholder, .admin-text-improve-options select::-moz-placeholder {
+  color: var(--field-muted);
+  opacity: 1;
+}
 .form-control::placeholder,
 .form-select::placeholder,
 .pianolit-input::placeholder,
@@ -30001,7 +30283,9 @@ select.form-control,
 select.form-select,
 .form-control-select-trigger,
 .admin-text-improve-options select {
-  appearance: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   padding-right: 40px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23697386' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8' d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -30276,7 +30560,8 @@ input[type=range] {
   width: 120px;
   max-width: 100%;
   height: 120px;
-  object-fit: contain;
+  -o-object-fit: contain;
+     object-fit: contain;
   border-radius: var(--radius-input);
 }
 .file-dropzone__preview:only-child {
@@ -30285,7 +30570,8 @@ input[type=range] {
 }
 .file-dropzone__current {
   flex-shrink: 0;
-  object-fit: contain;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 .file-dropzone--compact {
   min-height: 80px;

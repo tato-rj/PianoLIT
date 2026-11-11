@@ -8,6 +8,10 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 	Route::get('create', 'Admin\CrashCoursesController@create')->name('create');
 
+	Route::get('email-blocks', 'Admin\CrashCourseEmailBuilderController@blocks')->name('email-blocks.index');
+	Route::post('email-blocks', 'Admin\CrashCourseEmailBuilderController@storeBlock')->name('email-blocks.store');
+	Route::delete('email-blocks/{block}', 'Admin\CrashCourseEmailBuilderController@destroyBlock')->name('email-blocks.destroy');
+
 	Route::prefix('topics')->name('topics.')->group(function() {
 
 		Route::get('', 'Admin\CrashCourseTopicsController@index')->name('index');
@@ -37,6 +41,9 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 		Route::patch('reorder', 'Admin\CrashCourseLessonsController@reorder')->name('reorder');
 		
+		Route::post('preview-design', 'Admin\CrashCourseEmailBuilderController@preview')->name('preview-design');
+		Route::post('images', 'Admin\CrashCourseEmailBuilderController@upload')->name('images');
+
 		Route::get('{lesson}', 'Admin\CrashCourseLessonsController@edit')->name('edit');
 
 		Route::get('{lesson}/preview', 'Admin\CrashCourseLessonsController@preview')->name('preview');
