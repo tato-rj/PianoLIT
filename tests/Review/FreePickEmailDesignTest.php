@@ -32,19 +32,56 @@ class FreePickEmailDesignTest extends ReviewTestCase
         });
     }
 
-    private function render($piece, $subscriber = null, $campaign = 'preview', $legacyData = false)
+    private function render($piece, $subscriber = null, $campaign = 'preview', $legacyData = false, $hub = null)
     {
         EmailList::firstOrCreate(['name' => EmailList::FREE_PICK], ['description' => 'Free weekly picks']);
         $mail = new FreePickEmail($campaign, $subscriber, $piece);
+        if ($hub !== null) $mail->featuredHub = $hub;
         $mail->build();
         $renderer = clone app(Markdown::class);
         $renderer->theme($mail->theme);
         $data = $mail->buildViewData();
-        if ($legacyData) unset($data['campaignLinks']);
+        if ($legacyData) unset($data['campaignLinks'], $data['featuredHub']);
         $html = (string) $renderer->render($mail->markdown, $data);
         $text = (string) $renderer->renderText($mail->markdown, $data);
         $dom = new \DOMDocument; @$dom->loadHTML($html);
         return [$html, $text, new \DOMXPath($dom), $dom];
+    }
+
+    public function hubVariants(): array
+    {
+        return [
+            ['games', 'Games', 'Play games', 'games.home'],
+            ['shop', 'Shop', 'Browse the shop', 'shop.home'],
+            ['metronome', 'Metronome', 'Open metronome', 'metronome.home'],
+        ];
+    }
+
+    /** @dataProvider hubVariants */
+    public function test_one_hub_precedes_latest_music_with_matching_html_and_text_links($hub, $title, $action, $route)
+    {
+        $piece = $this->piece();
+        $this->piece(['name' => 'Another discovery']);
+        [$html, $text, $xpath] = $this->render($piece, null, 'preview', false, $hub);
+        $this->assertCount(1, $xpath->query('//table[@class="freepick-hub-card"]'));
+        $this->assertSame($title, $xpath->query('//td[@class="freepick-hub-copy"]/h2')->item(0)->textContent);
+        $this->assertCount(1, $xpath->query('//td[contains(@class,"freepick-hub ")]/parent::tr/following-sibling::tr[1]/td[contains(@class,"freepick-latest")]'));
+        $this->assertSame(route($route), $xpath->query('//a[@class="freepick-hub-action"]')->item(0)->getAttribute('href'));
+        $this->assertStringContainsString($action.': '.route($route), $text);
+        $this->assertLessThan(strpos($text, 'More music to discover'), strpos($text, '## '.$title));
+        foreach (array_diff(FreePickEmail::FEATURED_HUBS, [$hub]) as $other) {
+            $this->assertStringNotContainsString('hub-'.$other.'.jpg', $html);
+            $this->assertStringNotContainsString(route($other.'.home'), $text);
+        }
+    }
+
+    public function test_hub_survives_empty_latest_music_and_old_worker_view_data()
+    {
+        [$html, $text, $xpath] = $this->render($this->piece(), null, 'preview', true);
+        $this->assertCount(1, $xpath->query('//table[@class="freepick-hub-card"]'));
+        $this->assertStringContainsString('Play games', $html);
+        $this->assertStringContainsString('Play games: '.route('games.home'), $text);
+        $this->assertStringNotContainsString('More music to discover', $html);
     }
 
     public function test_piece_identity_and_available_resources_are_present_with_safe_piece_links()
@@ -53,7 +90,7 @@ class FreePickEmailDesignTest extends ReviewTestCase
         [$html, $text, $xpath] = $this->render($piece);
         $this->assertCount(1, $xpath->query('//td[contains(@class,"freepick-header")]//img[contains(@class,"editorial-logo-plain")]'));
         $this->assertCount(1, $xpath->query('//td[contains(@class,"freepick-header")]//h1[@class="freepick-heading"]'));
-        $this->assertCount(1, $xpath->query('//td[@class="freepick-header"]/parent::tr/following-sibling::tr[1]/td[@class="freepick-cover"]'));
+        $this->assertCount(1, $xpath->query('//td[contains(@class,"freepick-header")]/parent::tr/following-sibling::tr[1]/td[@class="freepick-cover"]'));
         $this->assertCount(4, $xpath->query('//td[@class="editorial-feature-icon"]'));
         $this->assertCount(1, $xpath->query('//span[contains(@class,"freepick-level-advanced")]'));
         foreach (['Free pick of the week', 'Available resources', $piece->medium_name, 'Cécile Chaminade', 'annotations',
@@ -258,12 +295,18 @@ class FreePickEmailDesignTest extends ReviewTestCase
         $this->piece(['name' => 'Another discovery']);
         EmailList::create(['name' => EmailList::FREE_PICK, 'description' => 'Free weekly picks']);
         $subscriber = Subscription::create(['email' => 'reader@example.test']);
-        $job = unserialize(serialize(new SendQueuedMailable(new FreePickEmail('free-pick.123', $subscriber, $piece))));
+        $mail = new FreePickEmail('free-pick.123', $subscriber, $piece);
+        $hub = $mail->featuredHub;
+        $this->assertContains($hub, FreePickEmail::FEATURED_HUBS);
+        $job = unserialize(serialize(new SendQueuedMailable($mail)));
+        $this->assertSame($hub, $job->mailable->featuredHub);
         $transport = new ArrayTransport;
         $mailer = new Mailer('campaign-test', $this->app['view'], new \Swift_Mailer($transport), $this->app['events']);
         $mailer->alwaysFrom('sender@example.test', 'PianoLIT');
         $job->mailable->to($subscriber->email)->send($mailer);
         $message = $transport->messages()->sole();
+        $this->assertSame($hub, $job->mailable->featuredHub);
+        $this->assertStringContainsString('hub-'.$hub.'.jpg', $message->getBody());
         $this->assertSame(3, substr_count($message->getBody(), 'utm_campaign=freepick'));
         $this->assertSame(\App\Services\MailgunEvents::campaignTag('free-pick.123'), $message->getHeaders()->get('X-Mailgun-Tag')->getFieldBody());
         $this->assertDatabaseHas('email_logs', ['list_id' => 'free-pick.123', 'recipient' => $subscriber->email]);

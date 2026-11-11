@@ -106,6 +106,15 @@ h1, h2 { font-family: 'Poppins', $font-family-sans-serif; color: $text-color; fo
 .freepick-features .editorial-feature-icon img { width: 24px; height: 24px; }
 .freepick-features .editorial-feature-copy h3 { font-size: 16px; line-height: 1.4; margin-bottom: 4px; }
 .freepick-features .editorial-feature-copy p { font-size: 16px; line-height: 1.6; }
+.freepick-hub { padding-top: 32px; padding-bottom: 4px; }
+.freepick-hub-card { width: 100%; background: #edf3ff; border: 1px solid map-get($pastel-palette, 'sky'); border-radius: 12px; border-collapse: separate; border-spacing: 0; }
+.freepick-hub-content { padding: 20px; }
+.freepick-hub-art { width: 72px; }
+.freepick-hub-art img { display: block; width: 72px; height: 72px; border-radius: 8px; }
+.freepick-hub-copy { padding-left: 20px; text-align: left; }
+.freepick-hub-copy h2 { margin: 0 0 4px; font-size: 20px; line-height: 1.3; text-align: left; }
+.freepick-hub-copy p { color: #6c757d; font-size: 16px; line-height: 1.5; }
+.freepick-hub-action { display: inline-block; padding-top: 8px; font-size: 16px; line-height: 1.5; text-decoration: underline; }
 .freepick-latest { padding-top: 36px; }
 .freepick-latest h2 { font-size: 21px; margin-top: 0; }
 .freepick-latest .welcome-description p { font-size: 16px; line-height: 1.6; }

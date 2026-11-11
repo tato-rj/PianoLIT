@@ -13,11 +13,15 @@ class FreePickEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels, Trackable, EditorialLayout;
 
+    const FEATURED_HUBS = ['games', 'shop', 'metronome'];
+
     public $theme = 'welcome';
 
     public $piece, $subscription, $list, $list_id, $tutorials;
 
     public $latestPieces, $videoCommentsAvailable;
+
+    public $featuredHub;
 
     public function __construct($list_id, $subscription = null, ?Piece $piece = null)
     {
@@ -27,6 +31,7 @@ class FreePickEmail extends Mailable implements ShouldQueue
         $this->subscription = $subscription;
         $this->list = EmailList::freepick();
         $this->list_id = $list_id;
+        $this->featuredHub = self::FEATURED_HUBS[array_rand(self::FEATURED_HUBS)];
     }
 
     /**
@@ -38,6 +43,9 @@ class FreePickEmail extends Mailable implements ShouldQueue
     {
         $this->track($this->list, $this->list_id, $this->subscription);
 
+        // Older queued mail and preview fixtures may not have a selection yet.
+        // Choose once so HTML, plain text and subsequent renders stay together.
+        $this->featuredHub = $this->featuredHub ?? self::FEATURED_HUBS[array_rand(self::FEATURED_HUBS)];
         $website = $this->websiteUrl();
         if ($this->latestPieces === null) {
             $this->latestPieces = app(\App\Services\FreePickEmailPieces::class)->latest($website, (int) $this->piece->id);

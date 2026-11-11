@@ -313,6 +313,16 @@ compact image/text rows, keeping captions readable. `FreePickEmailPieces`
 selects these by creation date and ID, requiring tutorials, art and a composer.
 Edit its heading, description and Explore action in `lists/freepick.blade.php`.
 
+One compact highlighted hub card appears between the resource panel and **More
+music to discover**, even when there are no latest pieces. `FreePickEmail`
+randomly chooses Games, Shop or Metronome once per message, retaining that choice
+when queued and across HTML/plain-text rendering. Edit its short descriptions,
+actions and existing hub artwork in `lists/freepick-hub.blade.php`; the table
+layout and plain-text counterpart are `components/{html,text}/freepick/hub.blade.php`.
+Hub links use their public named routes without campaign tags. Workers still
+running the old mail class fall back to Games in both formats until restarted;
+older serialized mail loaded by the new class gets a random choice at build time.
+
 Subscriber messages retain their actual Free Pick list unsubscribe URL, labeled
 **Unsubscribe** in the shared footer. Previews use the ordinary email-preferences
 destination, without a real subscriber's opt-out link. Campaign tracking, pinned
@@ -340,7 +350,8 @@ php -d error_reporting=8191 scripts/preview-freepick-email.php /tmp/pianolit-ema
 
 This extends the isolated welcome exporter with an unsaved Chaminade sample,
 four sample resources, video-commentary availability, three fixed latest-piece
-cards and `freepick.html`/`freepick.txt`. Optional local public
+cards and `freepick.html`/`freepick.txt`, plus fixed `freepick-games`,
+`freepick-shop` and `freepick-metronome` HTML/plain-text previews. Optional local public
 piece/portrait artwork is copied when present; a fresh checkout falls back to
 existing period artwork. No account/repertoire query, real send or provider call
 is performed.

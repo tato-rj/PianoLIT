@@ -37,9 +37,6 @@ $mail->build();
 $mail->with('pieceUrl', '#email-preview');
 $renderer = clone app(Illuminate\Mail\Markdown::class);
 $renderer->theme($mail->theme);
-$data = $mail->buildViewData();
-$html = (string) $renderer->render($mail->markdown, $data);
-$text = (string) $renderer->renderText($mail->markdown, $data);
 $images = [
     'freepick-cover.jpg' => storage_path('app/public/piece/cover_image/pianolit-arabesque-no1-op61-0619.jpg'),
     'freepick-composer.jpg' => storage_path('app/public/composer/cover_image/pianolit-cecile-chaminade-8811.jpg'),
@@ -49,9 +46,17 @@ foreach ($images as $name => $source) {
     if (!is_file($source)) $source = resource_path('images/backgrounds/periods/romantic/01.jpg');
     copy($source, $output.'/assets/'.$name);
 }
-$html = preg_replace('#https://pianolit\\.com/images/emails/welcome/([^"?]+)\\?id=[a-f0-9]+#', 'assets/$1', $html);
-$html = str_replace('https://pianolit.com/images/emails/youtube.png', 'assets/youtube.png', $html);
-$html = str_replace('https://pianolit.com/storage/preview/', 'assets/', $html);
-file_put_contents($output.'/freepick.html', $html);
-file_put_contents($output.'/freepick.txt', $text);
-echo $output.'/freepick.html'.PHP_EOL;
+$variants = ['freepick' => $mail->featuredHub];
+foreach (App\Mail\FreePickEmail::FEATURED_HUBS as $hub) $variants['freepick-'.$hub] = $hub;
+foreach ($variants as $filename => $hub) {
+    $mail->featuredHub = $hub;
+    $data = $mail->buildViewData();
+    $html = (string) $renderer->render($mail->markdown, $data);
+    $text = (string) $renderer->renderText($mail->markdown, $data);
+    $html = preg_replace('#https://pianolit\\.com/images/emails/welcome/([^"?]+)\\?id=[a-f0-9]+#', 'assets/$1', $html);
+    $html = str_replace('https://pianolit.com/images/emails/youtube.png', 'assets/youtube.png', $html);
+    $html = str_replace('https://pianolit.com/storage/preview/', 'assets/', $html);
+    file_put_contents($output.'/'.$filename.'.html', $html);
+    file_put_contents($output.'/'.$filename.'.txt', $text);
+    echo $output.'/'.$filename.'.html'.PHP_EOL;
+}

@@ -58,6 +58,8 @@ Get to know the piece with the full recording.
 
 @endcomponent
 
+@include('emails.lists.freepick-hub')
+
 @if(count($latestPieces))
 @component('mail::welcome.pieces', ['title' => 'More music to discover', 'pieces' => $latestPieces, 'url' => $campaignLinks->url($libraryUrl, 'browse_library'), 'button' => 'Browse the PianoLIT library', 'variant' => 'freepick-latest'])
 Some of our latest additions. Explore the full library with Premium.
