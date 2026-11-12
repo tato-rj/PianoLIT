@@ -16,7 +16,9 @@
 
     <title>{{local() ? '(local)' : null}} {{$title ?? seo()->about('title')}}</title>
 
-    @isset($shareable)
+    @hasSection('page-metadata')
+        @yield('page-metadata')
+    @elseif(isset($shareable))
         @include('layouts.html.shareable')
     @else
         <meta name="keywords" content="{{seo()->keywords()}}">
@@ -36,7 +38,7 @@
         <meta itemprop="author" content="PianoLIT"/>
 
         <link rel="canonical" href="{{url()->current()}}" />
-    @endisset
+    @endif
 
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
 

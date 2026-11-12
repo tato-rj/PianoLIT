@@ -66,7 +66,6 @@ class BlogController extends Controller
         DB::transaction(function () use ($request, $post, $form) {
             $post = Post::whereKey($post->id)->lockForUpdate()->firstOrFail();
             $post->update([
-                'slug' => str_slug($form->title),
                 'title' => $form->title,
                 'description' => $form->description,
                 'content' => $form->content,

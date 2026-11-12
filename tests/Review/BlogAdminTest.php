@@ -219,7 +219,7 @@ class BlogAdminTest extends ReviewTestCase
         $post = $this->postRecord(['gift_path' => 'gifts/historical.jpg']);
         $fields = ['title' => 'Updated article', 'description' => 'Article description.', 'content' => '<p>Updated content.</p>', 'topics' => [$topic->id], 'gift_path' => 'gifts/new.jpg'];
         $this->patch(route('admin.posts.update', ['post' => $post, 'search' => 'piano']), $fields)
-            ->assertRedirect(route('admin.posts.edit', ['post' => 'updated-article', 'search' => 'piano']));
+            ->assertRedirect(route('admin.posts.edit', ['post' => $post, 'search' => 'piano']));
         $this->assertSame('gifts/historical.jpg', $post->fresh()->gift_path);
         $this->assertSame([$topic->id], $post->topics()->pluck('topics.id')->all());
         $fields['title'] = 'New article';

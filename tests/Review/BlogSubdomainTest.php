@@ -89,6 +89,62 @@ class BlogSubdomainTest extends ReviewTestCase
         });
     }
 
+    public function test_sitemap_lists_only_the_blog_home_and_published_article_urls()
+    {
+        $this->useDomain('https://pianolit.com');
+        $post = $this->article(['slug' => 'public-story']);
+        $this->article(['title' => 'Draft', 'published_at' => null]);
+
+        $response = $this->get(route('posts.sitemap'))->assertOk()->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+        $xml = simplexml_load_string($response->getContent());
+        $this->assertSame(['https://blog.pianolit.com', route('posts.show', $post)], array_map('strval', $xml->xpath('//*[local-name()="loc"]')));
+        $this->call('HEAD', route('posts.sitemap'))->assertOk()->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+    }
+
+    public function test_article_search_metadata_matches_the_canonical_page_and_embed_is_not_indexable()
+    {
+        $post = $this->article([
+            'title' => 'A question about Bach & Handel',
+            'description' => 'A description with literal markup: </script>',
+            'created_at' => '2020-01-01 12:00:00',
+            'published_at' => '2020-02-03 12:00:00',
+            'cover_path' => 'blog/article.jpg',
+        ]);
+        $url = route('posts.show', $post);
+        $response = $this->get($url.'?utm_source=email')->assertOk()->assertHeaderMissing('X-Robots-Tag');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $html = new \DOMXPath($dom);
+        $this->assertSame([$url], array_map(fn ($node) => $node->value, iterator_to_array($html->query('//link[@rel="canonical"]/@href'))));
+        $this->assertSame('2020-02-03', $html->evaluate('string(//article/header//time/@datetime)'));
+        $schema = json_decode($html->evaluate('string(//script[@type="application/ld+json"])'), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertSame('BlogPosting', $schema['@type']);
+        $this->assertSame($post->title, $schema['headline']);
+        $this->assertSame($post->description, $schema['description']);
+        $this->assertSame('2020-02-03', substr($schema['datePublished'], 0, 10));
+        $this->assertSame($url, $schema['mainEntityOfPage']);
+        $this->assertSame('http://blog.localhost/storage/blog/article.jpg', $schema['image']);
+        $this->assertArrayNotHasKey('dateModified', $schema);
+        $this->get(route('posts.app', $post))->assertOk()->assertHeader('X-Robots-Tag', 'noindex')->assertSee('Existing article content.');
+    }
+
+    public function test_article_links_prioritize_published_stories_with_shared_topics()
+    {
+        $topic = Model::withoutEvents(fn () => create(Topic::class, ['name' => 'History', 'slug' => 'history']));
+        $article = $this->article(['title' => 'Main story']);
+        $older = $this->article(['title' => 'Related story', 'published_at' => now()->subYear()]);
+        $other = $this->article(['title' => 'Unrelated newer story']);
+        $draft = $this->article(['title' => 'Draft related story', 'published_at' => null]);
+        foreach ([$article, $older, $draft] as $post) $post->topics()->attach($topic);
+
+        $response = $this->get(route('posts.show', $article))->assertOk();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $html = new \DOMXPath($dom);
+        $links = $html->query('//section[@aria-labelledby="article-more-title"]//article/a/@href');
+        $this->assertSame([route('posts.show', $older), route('posts.show', $other)], array_map(fn ($node) => $node->value, iterator_to_array($links)));
+    }
+
     public function test_blog_pages_keep_navigation_ajax_embedded_output_and_canonical_urls_without_gifts()
     {
         $post = $this->article();
@@ -176,7 +232,16 @@ class BlogSubdomainTest extends ReviewTestCase
         $draft = $this->article(['title' => 'Unpublished technique', 'published_at' => null]);
         $draft->topics()->attach($topic);
 
-        $response = $this->get(route('posts.index', ['topics' => 'technique']))->assertOk()
+        $this->get(route('posts.index', ['page' => 1, 'utm_source' => 'email']))->assertOk()
+            ->assertSee('name="description" content="Articles about piano music, practice, and music history."', false)
+            ->assertSee('rel="canonical" href="'.route('posts.index').'"', false)
+            ->assertDontSee('utm_source', false);
+        $this->get(route('posts.index', ['page' => 2, 'utm_source' => 'email']))->assertOk()->assertHeaderMissing('X-Robots-Tag')
+            ->assertSee('rel="canonical" href="'.route('posts.index', ['page' => 2]).'"', false);
+        $this->get(route('posts.index', ['page' => 99]))->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
+
+        $response = $this->get(route('posts.index', ['topics' => 'technique']))->assertOk()->assertHeader('X-Robots-Tag', 'noindex')
+            ->assertDontSee('rel="canonical"', false)
             ->assertSee('Showing 1–12 of 13 stories')->assertDontSee('Different topic')->assertDontSee($draft->title)
             ->assertSee('topics=technique&amp;page=2', false);
         $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
@@ -222,7 +287,8 @@ class BlogSubdomainTest extends ReviewTestCase
         $this->get(route('posts.index'))->assertOk()->assertDontSee($post->title);
         $this->actingAs(create(Admin::class), 'admin');
         auth()->shouldUse('web');
-        $this->get(route('posts.show', $post))->assertOk()->assertSee($post->title)->assertSee('not published');
+        $this->get(route('posts.show', $post))->assertOk()->assertHeader('X-Robots-Tag', 'noindex')->assertSee($post->title)->assertSee('not published')
+            ->assertDontSee('application/ld+json', false);
         $this->assertSame('http://admin.localhost/blog/'.$post->id, route('admin.posts.edit', $post->id));
     }
 

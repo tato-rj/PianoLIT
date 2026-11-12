@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Blog\{Post, Topic};
-use App\Http\Requests\PostForm;
 use App\Services\Blog\PostViewCounts;
 use Illuminate\Http\Request;
 use App\Filters\BlogFilters;
@@ -15,13 +14,26 @@ class PostsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(BlogFilters $filters)
+    public function index(Request $request, BlogFilters $filters)
     {
-        $posts = Post::published()->latest()->orderByDesc('id')->filter($filters)->paginate(12)->withQueryString();
+        $posts = Post::published()->latest()->orderByDesc('id')->filter($filters)->paginate(12)
+            ->appends($request->only('topics'));
         $topics = Topic::orderBy('name')->get();
         $postViews = app(PostViewCounts::class)->publicTotals($posts->getCollection());
+        $page = $posts->currentPage();
+        $indexable = ! $request->query->has('topics') && $page <= $posts->lastPage();
+        $canonical = $indexable ? route('posts.index', $page > 1 ? ['page' => $page] : []) : null;
+        $response = response()->view('blog.index', compact('posts', 'topics', 'postViews', 'canonical'));
 
-        return view('blog.index', compact('posts', 'topics', 'postViews'));
+        return $indexable ? $response : $response->header('X-Robots-Tag', 'noindex');
+    }
+
+    public function sitemap()
+    {
+        $urls = Post::published()->without('topics')->orderBy('id')->pluck('slug')
+            ->map(fn ($slug) => route('posts.show', $slug))->prepend(route('posts.index'));
+
+        return response()->view('blog.sitemap', compact('urls'), 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
     }
 
     /**
@@ -32,19 +44,29 @@ class PostsController extends Controller
      */
     public function show(Post $post)
     {
-        $suggestions = $post->suggestions(8)->get();
+        $preview = ! $post->published_at;
+        abort_if($preview && ! auth()->guard('admin')->check(), 404);
+
+        $suggestions = $this->related($post);
         $promotions = app(\App\Services\Blog\PostPromotions::class);
         $promotionCards = $promotions->cards($promotions->selectedFor($post));
 
-        if (! $post->published_at) {
-            if (auth()->guard('admin')->check())
-                return view('blog.show', compact('post', 'suggestions', 'promotionCards'))->with('preview', true);
+        $postViews = $preview ? [] : app(PostViewCounts::class)->publicTotals($suggestions->concat([$post]));
+        $response = response()->view('blog.show', compact('post', 'suggestions', 'promotionCards', 'postViews', 'preview'));
 
-            abort(404);
+        return $preview ? $response->header('X-Robots-Tag', 'noindex') : $response;
+    }
+
+    private function related(Post $post)
+    {
+        $related = Post::published()->whereKeyNot($post->getKey());
+        $topicIds = $post->topics->modelKeys();
+        if ($topicIds) {
+            $related->withCount(['topics as shared_topics_count' => fn ($query) => $query->whereIn('topics.id', $topicIds)])
+                ->orderByDesc('shared_topics_count');
         }
 
-        $postViews = app(PostViewCounts::class)->publicTotals($suggestions->concat([$post]));
-        return view('blog.show', compact('post', 'suggestions', 'promotionCards', 'postViews'));
+        return $related->orderByDesc('published_at')->orderByDesc('id')->limit(8)->get();
     }
 
     public function gift(Post $post)
@@ -60,6 +82,6 @@ class PostsController extends Controller
      */
     public function app(Post $post)
     {
-        return view('blog.app', compact('post'));
+        return response()->view('blog.app', compact('post'))->header('X-Robots-Tag', 'noindex');
     }
 }

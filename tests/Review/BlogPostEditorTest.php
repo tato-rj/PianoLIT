@@ -17,9 +17,9 @@ class BlogPostEditorTest extends ReviewTestCase
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
     }
 
-    private function article()
+    private function article(array $attributes = [])
     {
-        return Model::withoutEvents(fn () => create(Post::class, [
+        return Model::withoutEvents(fn () => create(Post::class, $attributes + [
             'title' => 'Reading a piano score', 'description' => 'Notes on reading piano music.',
             'content' => '<h2>Read the score</h2><p>Saved article content.</p>',
             'references' => serialize(['First saved source', 'Second saved source']),
@@ -119,6 +119,22 @@ class BlogPostEditorTest extends ReviewTestCase
         foreach (['bad', [['nested']], [str_repeat('x', 2001)]] as $references) {
             $this->patchJson(route('admin.posts.update', $post->fresh()), $data + compact('references'))->assertUnprocessable();
         }
+    }
+
+    public function test_renaming_an_article_keeps_the_existing_public_and_embedded_urls()
+    {
+        $post = $this->article(['published_at' => now()]);
+        $url = route('posts.show', $post);
+        $embedUrl = $post->app_url;
+
+        $this->patch(route('admin.posts.update', $post), [
+            'title' => 'A clearer article title', 'description' => $post->description, 'content' => $post->content,
+        ])->assertSessionHas('status', 'Post saved.');
+
+        $this->assertSame($post->slug, $post->fresh()->slug);
+        auth()->shouldUse('web');
+        $this->get($url)->assertOk()->assertSee('A clearer article title');
+        $this->get($embedUrl)->assertOk()->assertSee('A clearer article title');
     }
 
     public function test_cropped_cover_upload_still_saves_original_and_thumbnail()

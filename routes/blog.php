@@ -3,6 +3,8 @@
 Route::name('posts.')->group(function () {
     Route::get('/', 'PostsController@index')->name('index');
 
+    Route::get('sitemap.xml', 'PostsController@sitemap')->name('sitemap');
+
     Route::post('subscribe', 'NewsletterSubscriptionsController@store')->middleware('throttle:2,1')->name('subscribe');
 
     Route::get('{post}', 'PostsController@show')->name('show');

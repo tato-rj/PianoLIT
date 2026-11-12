@@ -1,3 +1,6 @@
+@php
+    $articleDate = $post->published_at ?? $post->created_at;
+@endphp
 <article class="blog-story card card-lift rounded border-0 shadow-light h-100">
     <a href="{{ route('posts.show', $post->slug) }}" class="blog-story__link h-100">
         <div class="blog-story__image">
@@ -18,7 +21,7 @@
                         @endforeach
                     </ul>
                 @endif
-                <time class="d-block text-muted" datetime="{{ $post->created_at->toDateString() }}">{{ $post->created_at->format('M j, Y') }}</time>
+                <time class="d-block text-muted" datetime="{{ $articleDate->toDateString() }}">{{ $articleDate->format('M j, Y') }}</time>
             </div>
         </div>
     </a>

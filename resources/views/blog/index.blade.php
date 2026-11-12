@@ -1,4 +1,15 @@
-@extends('layouts.app', ['title' => 'PianoLIT Blog', 'bodyClass' => 'blog-home'])
+@php
+    $archiveTitle = 'PianoLIT Blog'.($posts->currentPage() > 1 ? ' | Page '.$posts->currentPage() : '');
+@endphp
+@extends('layouts.app', ['title' => $archiveTitle, 'bodyClass' => 'blog-home'])
+
+@section('page-metadata')
+    @include('blog.components.search-head', [
+        'searchTitle' => $archiveTitle,
+        'searchDescription' => 'Articles about piano music, practice, and music history.',
+        'canonical' => $canonical,
+    ])
+@endsection
 
 @section('content')
 @php

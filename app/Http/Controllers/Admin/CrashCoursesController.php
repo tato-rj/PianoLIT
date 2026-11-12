@@ -25,7 +25,7 @@ class CrashCoursesController extends Controller
         $topics = CrashCourseTopic::all();
         $returnFilters = $table->state($request);
 
-        return view('admin.pages.crashcourses.create', compact('topics', 'returnFilters'));
+        return view('admin.pages.crashcourses.editor', compact('topics', 'returnFilters'));
     }
 
     public function store(Request $request)
@@ -75,7 +75,7 @@ class CrashCoursesController extends Controller
         $crashcourse->load(['creator', 'topics', 'lessons']);
         $activeSubscribers = $crashcourse->subscriptions()->whereNull('completed_at')->whereNull('cancelled_at')->count();
 
-        return view('admin.pages.crashcourses.edit.index', compact('crashcourse', 'topics', 'returnFilters', 'activeSubscribers'));
+        return view('admin.pages.crashcourses.editor', compact('crashcourse', 'topics', 'returnFilters', 'activeSubscribers'));
     }
 
     public function update(Request $request, CrashCourse $crashcourse)

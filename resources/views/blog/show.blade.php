@@ -1,13 +1,14 @@
 @extends('layouts.app', ['title' => $post->title . ' | PianoLIT Blog',
-	'bodyClass' => 'blog-article'.(count($promotionCards) ? ' blog-article--promoted' : ''),
-	'shareable' => [
-		'keywords' => '',
-		'title' => $post->title,
-		'description' => $post->description,
-		'thumbnail' => $post->thumbnail_image(),
-		'created_at' => $post->created_at->format(DateTime::ISO8601),
-		'updated_at' => $post->updated_at->format(DateTime::ISO8601)
-	]])
+    'bodyClass' => 'blog-article'.(count($promotionCards) ? ' blog-article--promoted' : '')])
+
+@section('page-metadata')
+    @include('blog.components.search-head', [
+        'searchTitle' => $post->title,
+        'searchDescription' => $post->description,
+        'canonical' => $preview ? null : route('posts.show', $post),
+        'article' => $preview ? null : $post,
+    ])
+@endsection
 
 @push('header')
 <script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
@@ -16,6 +17,10 @@
 @section('content')
 
 @progressbar
+
+@php
+    $articleDate = $post->published_at ?? $post->created_at;
+@endphp
 
 <div id="blog-post" class="container py-4 pb-5">
     @include('components.navigation.breadcrumb', ['items' => [
@@ -44,7 +49,7 @@
                 <p class="blog-article__description text-muted mb-4">{{ $post->description }}</p>
                 <div class="blog-article__meta d-flex flex-wrap align-items-center gap-3 text-muted">
                     <span class="fw-semibold text-dark">PianoLIT Team</span>
-                    <time datetime="{{ $post->created_at->toDateString() }}">{{ $post->created_at->format('M j, Y') }}</time>
+                    <time datetime="{{ $articleDate->toDateString() }}">{{ $articleDate->format('M j, Y') }}</time>
                     <span class="d-inline-flex align-items-center">@icon('clock', ['mr' => 1]){{ $post->reading_time }} min read</span>
                     @include('blog.components.view-count', ['count' => $postViews[$post->id] ?? null])
                 </div>

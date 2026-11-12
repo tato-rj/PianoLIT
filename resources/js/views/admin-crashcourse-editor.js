@@ -73,8 +73,9 @@
     });
 
     const body = doc.querySelector('#course-lessons tbody');
+    if (!reorderUrl || !body || !win.jQuery?.fn.sortable) return;
     const rows = function () { return Array.from(body.querySelectorAll('[data-lesson-id]')); };
-    if (rows().length < 2 || !win.jQuery?.fn.sortable) return;
+    if (rows().length < 2) return;
 
     function showOrderAlert(result) {
         doc.querySelectorAll('.alert-container.alert-top').forEach(function (alert) { alert.remove(); });

@@ -8,6 +8,7 @@ use App\Mail\CrashCourseFeedbackEmail;
 use App\Services\Admin\{CrashCoursesTable, CrashCourseTopics};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\{DB, Http, Mail, Storage};
 
 class AdminCrashCoursesTest extends ReviewTestCase
@@ -215,6 +216,33 @@ class AdminCrashCoursesTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//input[@id="course-title" and @value=""]'));
         $this->assertSame('Updated description', $xpath->query('//textarea[@id="course-description"]')->item(0)->textContent);
         $this->assertSame([$topic->id], $course->fresh()->topics->modelKeys());
+    }
+
+    public function test_create_course_retains_submitted_details_and_saves_topics_and_cover()
+    {
+        $topic = $this->topic();
+        $filters = ['search' => 'rhythm', 'sort' => 'title_asc'];
+        $createUrl = route('admin.crashcourses.create', $filters);
+        $storeUrl = route('admin.crashcourses.store', $filters);
+        $details = ['description' => 'Practice reading rhythms.', 'topics' => [$topic->id]];
+
+        $this->withExceptionHandling()->from($createUrl)->post($storeUrl, $details + ['title' => ''])
+            ->assertRedirect($createUrl)->assertSessionHasErrors('title');
+
+        $xpath = $this->xpath($this->get($createUrl)->assertOk());
+        $this->assertCount(1, $xpath->query('//form[@id="course-editor" and @action="'.$storeUrl.'"]//input[@name="topics[]" and @checked]'));
+        $this->assertCount(0, $xpath->query('//form[@id="course-editor"]//input[@name="_method"]'));
+        $this->assertSame($details['description'], $xpath->query('//textarea[@id="course-description"]')->item(0)->textContent);
+
+        $response = $this->post($storeUrl, $details + [
+            'title' => 'Reading rhythms',
+            'cover_image' => UploadedFile::fake()->image('cover.jpg', 640, 360),
+            'cropped_width' => 320, 'cropped_height' => 180, 'cropped_x' => 0, 'cropped_y' => 0,
+        ]);
+        $course = CrashCourse::where('slug', 'reading-rhythms')->firstOrFail();
+        $response->assertRedirect(route('admin.crashcourses.edit', ['crashcourse' => $course] + $filters));
+        $this->assertSame([$topic->id], $course->topics->modelKeys());
+        Storage::disk('public')->assertExists([$course->cover_path, $course->thumbnail_path]);
     }
 
     public function test_lesson_reorder_requires_the_complete_course_list_before_saving()
