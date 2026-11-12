@@ -4,6 +4,7 @@ namespace Tests\Review;
 
 use App\Admin;
 use App\CrashCourse\{CrashCourse, CrashCourseTopic};
+use App\Mail\CrashCourseFeedbackEmail;
 use App\Services\Admin\{CrashCoursesTable, CrashCourseTopics};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -190,5 +191,63 @@ class AdminCrashCoursesTest extends ReviewTestCase
         auth('admin')->logout();
         $this->withExceptionHandling()->get(route('admin.crashcourses.index'))->assertRedirect(route('admin.login.show'));
         $this->post(route('admin.crashcourses.topics.store'), ['name' => 'Blocked'])->assertRedirect(route('admin.login.show'));
+    }
+
+    public function test_course_editor_separates_course_details_from_lesson_actions_and_retains_cleared_topics()
+    {
+        $course = $this->course();
+        $topic = $this->topic();
+        $course->topics()->attach($topic);
+        $lesson = $course->lessons()->create(['subject' => 'Lesson subject', 'body' => 'Lesson text', 'reading_time' => 3, 'order' => 0]);
+        $url = route('admin.crashcourses.edit', $course);
+        $response = $this->get($url)->assertOk()->assertSee('Course details')->assertSee('0 active subscribers')
+            ->assertSee('New lesson')->assertSee('Feedback email');
+        $xpath = $this->xpath($response);
+        $this->assertCount(0, $xpath->query('//form//form'));
+        $this->assertCount(1, $xpath->query('//form[@id="course-editor"]//input[@name="topics[]" and @checked]'));
+        $this->assertCount(1, $xpath->query('//table[@id="course-lessons"]/tbody/tr[@data-lesson-id="'.$lesson->id.'"]'));
+        $this->assertCount(1, $xpath->query('//*[@id="lesson-'.$lesson->id.'-preview-modal"]//a[@target="_blank" and @href="'.route('admin.crashcourses.lessons.preview', [$course, $lesson]).'"]'));
+
+        $this->withExceptionHandling()->from($url)->patch(route('admin.crashcourses.update', $course), ['title' => '', 'description' => 'Updated description'])
+            ->assertRedirect($url)->assertSessionHasErrors('title');
+        $xpath = $this->xpath($this->get($url)->assertOk());
+        $this->assertCount(0, $xpath->query('//form[@id="course-editor"]//input[@name="topics[]" and @checked]'));
+        $this->assertCount(1, $xpath->query('//input[@id="course-title" and @value=""]'));
+        $this->assertSame('Updated description', $xpath->query('//textarea[@id="course-description"]')->item(0)->textContent);
+        $this->assertSame([$topic->id], $course->fresh()->topics->modelKeys());
+    }
+
+    public function test_lesson_reorder_requires_the_complete_course_list_before_saving()
+    {
+        $course = $this->course();
+        $other = $this->course('Another course');
+        $attributes = ['subject' => 'Lesson subject', 'body' => 'Lesson text', 'reading_time' => 1];
+        $first = $course->lessons()->create($attributes + ['order' => 0]);
+        $second = $course->lessons()->create($attributes + ['order' => 1]);
+        $foreign = $other->lessons()->create($attributes + ['order' => 0]);
+        $url = route('admin.crashcourses.lessons.reorder', $course);
+
+        $this->patchJson($url, ['ids' => [$second->id, $first->id]])->assertOk();
+        $this->assertSame([$second->id, $first->id], $course->lessons()->pluck('id')->all());
+        $this->withExceptionHandling();
+        foreach ([[$first->id, $foreign->id], [$first->id, $first->id], [$first->id], 'invalid'] as $ids) {
+            $this->patchJson($url, compact('ids'))->assertUnprocessable();
+            $this->assertSame([$second->id, $first->id], $course->lessons()->pluck('id')->all());
+        }
+        $this->assertEquals(0, $foreign->fresh()->order);
+    }
+
+    public function test_feedback_preview_validates_the_recipient_and_sends_a_sample_email()
+    {
+        $course = $this->course();
+        $this->withExceptionHandling()->getJson(route('admin.crashcourses.feedback.send-to', ['crashcourse' => $course, 'email' => 'invalid']))
+            ->assertUnprocessable();
+        Mail::assertNothingSent();
+
+        $editor = route('admin.crashcourses.edit', $course);
+        $this->from($editor)->get(route('admin.crashcourses.feedback.send-to', ['crashcourse' => $course, 'email' => 'preview@example.test']))
+            ->assertRedirect($editor);
+        Mail::assertSent(CrashCourseFeedbackEmail::class, fn ($message) => $message->hasTo('preview@example.test')
+            && $message->crashcourse->is($course) && $message->subscription === null);
     }
 }

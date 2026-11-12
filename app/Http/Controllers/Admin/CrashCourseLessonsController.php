@@ -117,7 +117,21 @@ class CrashCourseLessonsController extends Controller
 
     public function reorder(Request $request, CrashCourse $crashcourse)
     {
-        foreach ($request->ids as $order => $id) $crashcourse->lessons()->findOrFail($id)->update(['order' => $order]);
+        $data = $request->validate(['ids' => 'required|array', 'ids.*' => 'required|integer|distinct|min:1']);
+        $ids = array_values(array_map('intval', $data['ids']));
+
+        DB::transaction(function () use ($crashcourse, $ids) {
+            CrashCourse::whereKey($crashcourse->id)->lockForUpdate()->firstOrFail();
+            $lessons = $crashcourse->lessons()->get()->keyBy('id');
+            if (count($ids) !== $lessons->count() || array_diff($ids, $lessons->keys()->all())) {
+                throw ValidationException::withMessages(['ids' => 'The lesson list changed. Reload the page and try again.']);
+            }
+
+            foreach ($ids as $position => $id) {
+                $lessons[$id]->update(['order' => $position]);
+            }
+        });
+
         return response(200);
     }
 
@@ -125,6 +139,7 @@ class CrashCourseLessonsController extends Controller
     {
         $this->owns($crashcourse, $lesson);
         DB::transaction(function () use ($crashcourse, $lesson) {
+            CrashCourse::whereKey($crashcourse->id)->lockForUpdate()->firstOrFail();
             $lesson->delete();
             $crashcourse->lessons()->get()->each(function ($lesson, $index) { $lesson->update(['order' => $index]); });
         });

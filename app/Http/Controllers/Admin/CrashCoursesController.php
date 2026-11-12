@@ -62,17 +62,20 @@ class CrashCoursesController extends Controller
 
     public function feedbackSendTo(Request $request, CrashCourse $crashcourse)
     {
-        \Mail::to($request->email)->send(new CrashCourseFeedbackEmail($crashcourse, auth()->user()->first_name));
+        $data = $request->validate(['email' => 'required|email|max:254']);
+        \Mail::to($data['email'])->send(new CrashCourseFeedbackEmail($crashcourse));
 
-        return back()->with('status', 'A preview was sent to ' . $request->email);
+        return back()->with('status', 'A preview was sent to '.e($data['email']));
     }
 
     public function edit(Request $request, CrashCourse $crashcourse, CrashCoursesTable $table)
     {
         $topics = CrashCourseTopic::all();
         $returnFilters = $table->state($request);
+        $crashcourse->load(['creator', 'topics', 'lessons']);
+        $activeSubscribers = $crashcourse->subscriptions()->whereNull('completed_at')->whereNull('cancelled_at')->count();
 
-        return view('admin.pages.crashcourses.edit.index', compact('crashcourse', 'topics', 'returnFilters'));
+        return view('admin.pages.crashcourses.edit.index', compact('crashcourse', 'topics', 'returnFilters', 'activeSubscribers'));
     }
 
     public function update(Request $request, CrashCourse $crashcourse)

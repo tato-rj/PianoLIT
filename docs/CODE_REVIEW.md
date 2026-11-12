@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-11 — Redesign the crash course editor (P3, complete locally)
+
+- The Edit course page uses the shared page header, editor grid, form fields, cover cropper and save footer. The active subscriber count sits under Course details. Course edits preserve directory filters and submitted fields, including cleared topics, after validation. The compact Lessons table keeps creation, drag order, preview, edit, duplicate and delete actions. Lesson and feedback previews use the shared modal. The feedback send action validates the recipient and uses the same sample email as the browser preview.
+- Lesson reorder validates the complete course list before saving in one transaction under the course lock. The table saves one move at a time and restores the previous rows if saving fails. It uses the shared page alert for feedback. The versioned course editor script is built through Mix.
+- Focused course admin, email builder and breadcrumb tests pass. Browser checks on a disposable course cover desktop and 390px layouts, preview dialogs, saved drag order after refresh, and cover confirmation and cancellation. The asset checks pass. Proof is at `/Users/arthur/.codex/visualizations/2026/11/11/01a1c8be-4e5a-7b10-9c1e-f48f86372970/crash-course-editor.jpg`. Production deployment is pending.
+
 ### 2026-11-11 — Add web views to Repertoire analytics (P3, complete locally)
 
 - The Pieces analytics page ranks the top eight pieces by their saved Google Analytics web views. It reuses the horizontal ranking chart and labels legacy iOS views separately. The report adds one bounded SQL query and makes no Google request.
