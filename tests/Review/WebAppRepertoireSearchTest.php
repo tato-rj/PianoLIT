@@ -98,6 +98,22 @@ class WebAppRepertoireSearchTest extends ReviewTestCase
         $this->assertSame(route('webapp.discover'), $this->xpath($welcome)->evaluate('string(//link[@rel="canonical"]/@href)'));
     }
 
+    public function test_piece_details_omit_redundant_resources_and_metadata_does_not_promote_lessons()
+    {
+        $piece = $this->piece(['score_path' => 'score.pdf', 'audio_path' => 'recording.mp3']);
+        $performance = Model::withoutEvents(fn () => create(Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance']));
+        Model::withoutEvents(fn () => create(Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Tutorial']));
+        $performance->moments()->create(['title' => 'Theme', 'start_time' => 1, 'end_time' => 8, 'sort_order' => 0, 'comment' => 'Listen for the inner voice.']);
+        $metadata = app(\App\Services\WebApp\PublicRepertoire::class)->pieceMetadata($piece->fresh());
+        $this->assertSame(['sheet music', 'audio recording', 'performance video', 'timed video commentary'], $metadata['resources']);
+        $response = $this->get(route('webapp.pieces.show', $piece))->assertOk()->assertSeeText('Piece details')
+            ->assertDontSeeText('Available resources')->assertDontSeeText('video lessons');
+        $this->assertCount(0, $this->xpath($response)->query('//dt[text()="Resources"]'));
+        $performance->moments()->update(['comment' => '   ']);
+        $metadata = app(\App\Services\WebApp\PublicRepertoire::class)->pieceMetadata($piece->fresh());
+        $this->assertNotContains('timed video commentary', $metadata['resources']);
+    }
+
     public function test_only_the_clean_search_landing_is_indexable()
     {
         $landing = $this->get(route('webapp.search.results', ['utm_source' => 'audit']))->assertOk()->assertHeaderMissing('X-Robots-Tag');

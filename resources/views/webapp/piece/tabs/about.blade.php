@@ -48,7 +48,7 @@
 			@endif
 		</div>
 	</div>
-    @if($facts || $resources)
+    @if($facts)
         <section class="mb-4" aria-labelledby="piece-details-heading">
             <h2 id="piece-details-heading" class="h5 mb-3">Piece details</h2>
             <dl class="row mb-0">
@@ -56,10 +56,6 @@
                     <dt class="col-sm-3">{{ $label }}</dt>
                     <dd class="col-sm-9">{{ ucfirst($value) }}</dd>
                 @endforeach
-                @if($resources)
-                    <dt class="col-sm-3">Resources</dt>
-                    <dd class="col-sm-9">{{ ucfirst(implode(', ', $resources)) }}</dd>
-                @endif
             </dl>
         </section>
     @endif
@@ -90,7 +86,7 @@
 			@if($label)
 			<div class="d-flex align-items-center mb-2">
 				<img class="me-2" style="width: 40px" src="{{asset('images/webapp/icons/'.$ranking.'.png')}}">
-				<div class="text-nowrap">{{$label}}</div>
+				<div>{{$label}}</div>
 			</div>
 			@endif
 			@endforeach

@@ -46,15 +46,7 @@ class PublicRepertoire
             'First published' => $piece->published_in,
             'Techniques' => $piece->tags->where('type', 'technique')->pluck('name')->implode(', '),
         ]);
-        $media = $piece->media;
-        $resources = array_filter([
-            $media['performance'] ? 'performance video' : null,
-            $media['synthesia'] ? 'Synthesia tutorial' : null,
-            $media['lessons'] ? 'video lessons' : null,
-            $piece->hasAudio() ? 'audio recording' : null,
-            $piece->score_path && $piece->is_public_domain ? 'sheet music' : null,
-            $piece->score_url ? 'sheet music link' : null,
-        ]);
+        $resources = $this->availableResources($piece);
         $overview = $searchTitle.'.';
         if ($level) $overview .= ' Rated '.$level.' on PianoLIT.';
         $editorial = $piece->hasDescription()
@@ -77,5 +69,24 @@ class PublicRepertoire
         ];
 
         return compact('searchTitle', 'searchDescription', 'searchEntity', 'canonical', 'facts', 'resources');
+    }
+
+    private function availableResources(Piece $piece): array
+    {
+        $resources = [];
+        $media = $piece->media;
+        if ($piece->is_public_domain && trim((string) $piece->score_path) !== '') $resources[] = 'sheet music';
+        if (!$piece->is_public_domain && trim((string) $piece->score_url) !== '') $resources[] = 'sheet music purchase link';
+        if (trim((string) $piece->audio_path) !== '') $resources[] = 'audio recording';
+        $hasComments = false;
+        foreach (['performance' => 'performance video', 'synthesia' => 'Synthesia'] as $kind => $label) {
+            $video = $media[$kind];
+            if (!$video || trim((string) $video->video_url) === '') continue;
+            $resources[] = $label;
+            $hasComments = $hasComments || $video->moments->contains(fn ($moment) => trim((string) $moment->comment) !== '');
+        }
+        if ($hasComments) $resources[] = 'timed video commentary';
+
+        return $resources;
     }
 }

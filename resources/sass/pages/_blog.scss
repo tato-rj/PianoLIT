@@ -58,6 +58,22 @@
 }
 
 .blog-article {
+    #page-progress {
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 100000;
+        height: .14rem;
+        background-color: transparent;
+        pointer-events: none;
+
+        @include media-breakpoint-down(lg) {
+            top: auto;
+            bottom: max(env(safe-area-inset-bottom, 0px), var(--hub-promotions-height, 0px));
+            z-index: 1020;
+            border-radius: 0;
+        }
+    }
+
     &__title { overflow-wrap: anywhere; }
     &__description {
         font-size: var(--font-size-blog);

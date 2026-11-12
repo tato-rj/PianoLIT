@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-12 — Keep piece details factual and concise (P3, complete locally)
+
+- Restored the original Piece details list with key/mode, period, collection, dates and techniques when present. Removed the Resources row and the duplicate resource cards, following Arthur's final preference; existing tabs and players identify the available media. Long level-guide labels can wrap on narrow phones.
+- Search-description fallbacks use only current, populated score/audio/performance/Synthesia resources. Retired lesson records are excluded; commentary requires actual nonempty comments on an available video. Copyrighted scores are described as purchase links. The existing canonical and composition markup, media permissions and mobile models are preserved.
+- Verified the facts-only section in the browser and all six focused repertoire regressions. Removed the unused card styles, script and icons; this final change needs no asset build or migration. Production deployment remains pending.
+
 ### 2026-11-12 — Shop search discovery and product metadata (P2, sitemap processed)
 
 - **Crawl audit.** The Shop home, five category URLs and 12 listed products returned 200. Stickers and the general Merchandise category were empty. The Shop had no sitemap or product structured data. Home, category and T-shirt pages inherited the repertoire browser's description; the product name was not the primary heading. Search and topic filters had no indexing directive, paginated catalogues shared the base canonical, and sampled legacy topic URLs returned server errors. Google URL Inspection showed the eBook category and Halloween score indexed, the Wavy Piano T-shirt unknown to Google, and the unpublished Piano Solos preview already indexed. The Domain property's Performance report was still processing.
