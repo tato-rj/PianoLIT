@@ -1,5 +1,12 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-12 — Unbox infographic directory cards (P3, complete locally)
+
+- Arthur's reference showed full posters confined inside gray, bordered cards. `components.cards.resource` now supports an explicit `poster` variant: full uncropped artwork directly on the page, a shared paper shadow, sentence-case format labels, two-line summaries and one native View & download action. Desktop retains two columns; phones place artwork beside the text. The shared card lift respects reduced motion and keyboard focus underlines the action.
+- `infographics.card`, directory/related grids, the shared resource-card Sass and the Design System specimen use the same presentation. Download destinations, authentication, purchase flow, saved descriptions, original files and mobile/API output are unchanged. No migration or new JavaScript is needed. Updated `docs/DESIGN_TOKENS.md` and rebuilt app/admin CSS and manifest entries; the build also includes existing source changes for blog reading progress and promotion-bar corners.
+- Verified the rendered gallery with the first twelve public posters in an isolated SQLite fixture, at 1440, 768, 390 and 320 pixels. Entire posters remain visible, there is no horizontal overflow, and native keyboard navigation reaches one link per guide. The local catalog itself is empty; preview fixtures did not modify it.
+- Production build, final CSS/build regressions and `git diff --check` pass. Of 53 existing infographic/Learn/course/pianist checks, 46 pass; seven failures for retired newsletter controls, campaign recording and old empty-state copy reproduce with the original shared templates. These are separate from the card change. Production deployment remains pending.
+
 ### 2026-11-12 — Keep piece details factual and concise (P3, complete locally)
 
 - Restored the original Piece details list with key/mode, period, collection, dates and techniques when present. Removed the Resources row and the duplicate resource cards, following Arthur's final preference; existing tabs and players identify the available media. Long level-guide labels can wrap on narrow phones.

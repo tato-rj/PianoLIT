@@ -81,4 +81,68 @@
     }
     &__description { font-size: var(--font-size-sm); line-height: 1.7; }
     &__action { color: var(--color-primary); }
+
+    // Posters sit directly on the page. Only the paper has a shadow.
+    &--poster {
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+
+        .resource-card__art--poster {
+            height: 22rem;
+            aspect-ratio: auto;
+            background: transparent;
+            border: 0;
+
+            img {
+                position: static;
+                width: auto;
+                height: auto;
+                max-width: 100%;
+                max-height: 100%;
+                box-shadow: var(--shadow);
+            }
+        }
+
+        .resource-card__body { padding-top: 1.5rem; }
+        .resource-card__format {
+            font-size: var(--font-size-small);
+            font-weight: 400;
+            letter-spacing: normal;
+            text-transform: none;
+        }
+        .resource-card__description {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+        .resource-card__action { min-height: 2rem; }
+
+        &:hover, &:focus-visible {
+            .resource-card__action {
+                text-decoration: underline;
+                text-underline-offset: .2em;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+            align-items: start;
+            gap: 1.25rem;
+
+            .resource-card__art--poster {
+                height: auto;
+                justify-content: flex-start;
+
+                img { max-height: 14rem; }
+            }
+            .resource-card__body { padding-top: 0; }
+        }
+    }
 }

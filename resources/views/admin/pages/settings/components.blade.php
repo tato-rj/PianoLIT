@@ -291,8 +291,8 @@
         @slot('artwork')@include('learn.components.artwork', ['kind' => 'circle'])@endslot
       @endcomponent
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Infographic resource card', 'usage' => 'components.cards.resource · resource-card__art--poster', 'properties' => 'padding,color,background-color,border,border-radius'])
-      @component('components.cards.resource', ['preview' => true, 'id' => 'ds-infographic-card', 'title' => 'Music at a glance', 'format' => 'Free visual guide', 'description' => 'A visual reference to download and keep.', 'action' => 'View & download', 'url' => route('resources.infographs.index'), 'artworkClass' => 'resource-card__art--poster'])
+    @component('admin.pages.settings.sample', ['label' => 'Infographic resource card', 'usage' => 'components.cards.resource · variant: poster', 'properties' => 'padding,color,box-shadow'])
+      @component('components.cards.resource', ['preview' => true, 'id' => 'ds-infographic-card', 'title' => 'Music notation guide', 'format' => 'Free visual guide', 'description' => 'A visual reference to download and keep.', 'action' => 'View & download', 'url' => route('resources.infographs.index'), 'variant' => 'poster', 'artworkClass' => 'resource-card__art--poster'])
         @slot('artwork')<img src="{{ asset('images/misc/thumbnails/infographs.jpg') }}" alt="" loading="lazy">@endslot
       @endcomponent
     @endcomponent

@@ -33,10 +33,10 @@
         @if($infographs->isNotEmpty())
             <section aria-labelledby="infographics-directory-title">
                 <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-4">
-                    <h2 id="infographics-directory-title" class="h5 mb-0">Visual guides</h2>
+                    {{-- <h2 id="infographics-directory-title" class="h5 mb-0">Visual guides</h2> --}}
                     <p class="small text-muted mb-0">Showing {{ $infographs->firstItem() }}–{{ $infographs->lastItem() }} of {{ $infographs->total() }} {{ Str::plural('infographic', $infographs->total()) }}</p>
                 </div>
-                <div class="row g-4">
+                <div class="row gx-4 gy-5">
                     @foreach($infographs as $item)
                         <div class="col-md-6">@include('infographics.card')</div>
                     @endforeach

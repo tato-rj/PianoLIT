@@ -91,7 +91,7 @@
         @if($related->isNotEmpty())
             <section class="border-top pt-4" aria-labelledby="related-infographics-title">
                 <h2 id="related-infographics-title" class="h4 mb-4">Related infographics</h2>
-                <div class="row g-4">
+                <div class="row gx-4 gy-5">
                     @foreach($related as $item)
                         <div class="col-md-6">@include('infographics.card')</div>
                     @endforeach

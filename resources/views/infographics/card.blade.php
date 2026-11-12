@@ -5,6 +5,7 @@
     'description' => \App\Services\Learn\InfographicGuide::description($item),
     'format' => 'Free visual guide',
     'action' => 'View & download',
+    'variant' => 'poster',
     'artworkClass' => 'resource-card__art--poster',
 ])
     @slot('artwork')

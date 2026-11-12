@@ -1145,10 +1145,16 @@ and active state. Its items accept `label`, `url`, `active` and an optional
 Bootstrap button `variant`. Both shared components have Design System specimens.
 There is no bottom newsletter invitation.
 
-`infographics.card` reuses `components.cards.resource`; its optional `artworkClass`
-adds `resource-card__art--poster`. That variant fits the entire poster inside a
-neutral 4:3 preview area, with a one-rem inset. Default SVG resource cards keep
-their existing 2:1 artwork area. The directory uses a responsive Bootstrap grid,
+`infographics.card` reuses `components.cards.resource` with `variant => poster`
+and `artworkClass => resource-card__art--poster`. Posters sit directly on the
+page without a card border, gray background or image inset. The entire image
+fits a 22rem-high desktop gallery area, with the shared shadow on the paper
+itself. Below 768px, the poster sits beside the text in a one-third/two-thirds
+layout. Format labels use sentence case, summaries show two lines, and the
+single native link retains its full title/description for assistive technology.
+Hover and keyboard focus underline the action; shared card-lift movement respects
+reduced motion. The Design System uses this same variant. Default SVG resource
+cards keep their existing 2:1 artwork area. The directory uses a responsive Bootstrap grid,
 12-item native pagination with preserved filters, and an explicit empty state.
 
 The detail page retains its preview and download information, with shared buttons,
