@@ -15924,6 +15924,7 @@ input:checked + .slider:before {
 }
 .tab-navigation--segmented-bar .nav-link, .tab-navigation--segmented-bar .nav-link.active {
   box-shadow: none;
+  font-weight: bold;
 }
 .tab-navigation--segmented-bar .tab-navigation__selection {
   position: absolute;

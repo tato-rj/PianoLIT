@@ -103,7 +103,7 @@
         font-weight: 400;
 
         &,
-        &.active { box-shadow: none; }
+        &.active { box-shadow: none; font-weight: bold }
     }
 
     .tab-navigation__selection {

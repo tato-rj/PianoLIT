@@ -5,10 +5,16 @@ namespace App\Http\Controllers;
 use App\Infograph\Infograph;
 use App\Pianist;
 use App\Services\Collections\Catalog;
+use App\Services\Shop\Storefront;
 use App\Services\WebApp\{AccessPolicy, PublicRepertoire};
 
 class PublicSitemapsController extends Controller
 {
+    public function shop(Storefront $storefront)
+    {
+        return response()->view('components.seo.sitemap', ['urls' => $storefront->sitemapUrls()], 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
+    }
+
     public function repertoire(PublicRepertoire $repertoire, AccessPolicy $policy, Catalog $collections)
     {
         $urls = collect([

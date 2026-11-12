@@ -29,7 +29,7 @@ class MerchandiseGallery
         }, array_values($keys));
     }
 
-    public function present(MerchandiseProduct $product, array $variants, $images): array
+    public function present(MerchandiseProduct $product, array $variants, $images, ?int $variantId = null): array
     {
         $main = $images->first();
         $selected = collect($variants)->first(fn ($variant) => $main && $variant['color'] === $main->gallery_color) ?? ($variants[0] ?? null);
@@ -44,6 +44,8 @@ class MerchandiseGallery
                 return ['url' => $image->url, 'alt' => $this->description($product, $image->gallery_color, $views[$key]), 'color' => $image->gallery_color ?? $color];
             });
         $galleryColors = $gallery->pluck('color')->intersect(array_column($variants, 'color'))->unique()->values()->all();
+        $requested = collect($variants)->first(fn ($variant) => $variant['id'] === $variantId && in_array($variant['color'], $galleryColors, true));
+        if ($requested) $selected = $requested;
         if (!$selected || !in_array($selected['color'], $galleryColors, true)) {
             $selected = collect($variants)->first(fn ($variant) => in_array($variant['color'], $galleryColors, true));
         }

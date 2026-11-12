@@ -37,6 +37,18 @@ class Storefront
         );
     }
 
+    public function sitemapUrls(): Collection
+    {
+        $products = $this->matches('', null);
+        $categoryUrls = $products->map(fn ($product) => $product instanceof MerchandiseProduct
+            ? $this->category($product) : ($product instanceof eBook ? 'ebooks' : 'escores'))
+            ->unique()->map(fn ($category) => $this->categoryUrl($category));
+
+        return collect([route('shop.home')])->concat($categoryUrls)
+            ->concat($products->map(fn ($product) => $product instanceof MerchandiseProduct
+                ? $this->productUrl($product) : $product->showRoute()))->unique()->values();
+    }
+
     private function matches(string $search, ?string $category, array $topics = []): Collection
     {
         // Keep model types distinct: numeric IDs can overlap between all three tables.
