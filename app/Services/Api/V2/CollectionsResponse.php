@@ -16,7 +16,7 @@ class CollectionsResponse
     public function index(User $user): array
     {
         $entries = $this->catalog->entries();
-        [$featuredId] = $this->catalog->weeklySelection($entries);
+        [$featuredId, $suggestedIds] = $this->catalog->weeklySelection($entries);
         $member = $user->hasActiveSubscription();
 
         return [
@@ -24,6 +24,9 @@ class CollectionsResponse
             'collections' => $entries->map(function (Playlist $playlist) use ($featuredId, $member) {
                 return $this->card($playlist, $playlist->getKey() === $featuredId, $member);
             })->all(),
+            'book_series' => $this->catalog->bookSeries(),
+            'suggested_collection_ids' => array_map('strval', $suggestedIds),
+            'categories' => $this->catalog->categories($entries),
         ];
     }
 

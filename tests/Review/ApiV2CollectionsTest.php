@@ -5,6 +5,7 @@ namespace Tests\Review;
 use App\{Composer, Piece, Playlist, Tag, Tutorial, User};
 use App\Billing\Membership;
 use App\Billing\Sources\Stripe;
+use App\Services\Admin\PlaylistTags;
 use App\Services\Api\V2\Tokens;
 use App\Services\WebApp\Collections;
 use Illuminate\Database\Eloquent\Model;
@@ -83,6 +84,12 @@ class ApiV2CollectionsTest extends ReviewTestCase
         $this->getJson(self::PATH, $this->credential($user))->assertOk()
             ->assertJsonPath('data.featured_collection_id', null)
             ->assertJsonPath('data.collections', [])
+            ->assertJsonPath('data.suggested_collection_ids', [])
+            ->assertJsonPath('data.categories', [])
+            ->assertJsonPath('data.book_series.0.id', 'piano-solos')
+            ->assertJsonCount(8, 'data.book_series.0.books')
+            ->assertJsonPath('data.book_series.0.books.0.availability', 'coming_soon')
+            ->assertJsonPath('data.book_series.0.books.0.detail_url', null)
             ->assertJsonStructure(['meta' => ['request_id']])
             ->assertHeader('Cache-Control', 'no-store, private')
             ->assertHeaderMissing('Set-Cookie');
@@ -98,12 +105,14 @@ class ApiV2CollectionsTest extends ReviewTestCase
             return $playlist;
         });
         Cache::put(self::SELECTION, [
-            'featured' => $featured->id, 'inspiration' => [$regular->id, $featured->id, $tied->id],
+            'featured' => $featured->id, 'inspiration' => [$featured->id, $tied->id, $regular->id],
         ], now()->addWeek());
         $headers = $this->credential($this->user());
         $web = app(Collections::class)->data();
         $catalog = $this->getJson(self::PATH.'?page=2', $headers)->assertOk()
             ->assertJsonPath('data.featured_collection_id', (string) $web['featured']['playlist']->id)
+            ->assertJsonPath('data.suggested_collection_ids', [(string) $featured->id, (string) $tied->id, (string) $regular->id])
+            ->assertJsonPath('data.suggested_collection_ids', $web['inspiration']->pluck('playlist.id')->map(fn ($id) => (string) $id)->all())
             ->assertJsonPath('data.collections.0.access', 'membership_required')
             ->assertJsonPath('data.collections.0.subtitle', null)
             ->assertJsonPath('data.collections.0.featured_badge', null)
@@ -116,6 +125,50 @@ class ApiV2CollectionsTest extends ReviewTestCase
             collect($catalog)->pluck('id')->sort()->values()->all());
         $featured->updateQuietly(['featured' => null]);
         $this->getJson(self::PATH, $headers)->assertOk()->assertJsonPath('data.collections.2.featured_badge', null);
+    }
+
+    public function test_category_ids_survive_managed_tag_renames_and_legacy_labels_group_with_them()
+    {
+        [$featured, $regular] = $this->catalog();
+        $tags = app(PlaylistTags::class);
+        $theme = $tags->save('Theme');
+        $regular->updateQuietly(['featured_tag_id' => $theme->id, 'featured' => $theme->name]);
+        $id = 'tag-'.$theme->id;
+        $headers = $this->credential($this->user());
+        $this->getJson(self::PATH, $headers)->assertOk()
+            ->assertJsonPath('data.categories', [
+                ['id' => $id, 'label' => 'Theme', 'collection_ids' => [(string) $regular->id, (string) $featured->id]],
+            ]);
+        $this->assertSame([$id => 'Theme'], app(Collections::class)->data()['categories']->all());
+
+        $tags->save('Composer', $theme->id);
+        $this->getJson(self::PATH, $headers)->assertOk()
+            ->assertJsonPath('data.categories.0', ['id' => $id, 'label' => 'Composer', 'collection_ids' => [(string) $regular->id]])
+            ->assertJsonPath('data.categories.1.collection_ids', [(string) $featured->id]);
+    }
+
+    public function test_book_series_uses_shared_config_order_and_published_destinations()
+    {
+        config(['collections.book_series' => [
+            ['id' => 'studies', 'title' => 'Studies', 'books' => [
+                ['number' => 2, 'level' => 'Advanced', 'image' => 'book-8', 'detail_url' => 'https://example.test/books/studies-2'],
+                ['number' => 1, 'level' => 'Beginner', 'image' => 'book-1'],
+            ]],
+            ['id' => 'solos', 'title' => 'Solos', 'books' => [
+                ['number' => 1, 'level' => 'Intermediate', 'image' => 'book-5'],
+            ]],
+        ]]);
+
+        $response = $this->getJson(self::PATH, $this->credential($this->user()))->assertOk()
+            ->assertJsonPath('data.book_series.0.books.0', [
+                'id' => 'studies-book-2', 'number' => 2, 'title' => 'Studies · Book 2', 'level' => 'Advanced',
+                'cover_url' => asset('images/webapp/collections/book-8.webp'), 'availability' => 'available',
+                'detail_url' => 'https://example.test/books/studies-2',
+            ])
+            ->assertJsonPath('data.book_series.0.books.1.availability', 'coming_soon')
+            ->assertJsonPath('data.book_series.0.books.1.detail_url', null)
+            ->assertJsonPath('data.book_series.1.id', 'solos');
+        $this->assertSame(app(Collections::class)->data()['bookSeries'], $response->json('data.book_series'));
     }
 
     public function test_nonmember_gets_featured_rows_and_locked_regular_metadata_without_side_effects()
@@ -169,7 +222,11 @@ class ApiV2CollectionsTest extends ReviewTestCase
 
         $featured->updateQuietly(['published_at' => null]);
         $this->getJson(self::PATH.'/'.$regular->id, $headers)->assertOk()->assertJsonCount(6, 'data.pieces');
-        $this->getJson(self::PATH, $headers)->assertOk()->assertJsonPath('data.featured_collection_id', (string) $regular->id);
+        $this->getJson(self::PATH, $headers)->assertOk()
+            ->assertJsonPath('data.featured_collection_id', (string) $regular->id)
+            ->assertJsonPath('data.suggested_collection_ids', [(string) $regular->id])
+            ->assertJsonCount(1, 'data.categories')
+            ->assertJsonPath('data.categories.0.collection_ids', [(string) $regular->id]);
     }
 
     public function test_non_catalog_entries_are_unavailable_without_changing_legacy_endpoints()

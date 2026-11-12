@@ -5,11 +5,12 @@
 @endcomponent
 
 <div class="collections-page" id="collections-page" @if(session('collection_access_prompt')) data-access-prompt="{{ session('collection_access_prompt') }}" @endif>
-    @if(count($books))
+    @php($firstBook = collect($bookSeries)->pluck('books')->collapse()->first())
+    @if($firstBook)
     <a class="collections-intro pastel-card" data-pastel-color="sky" href="#pianolit-path">
         <span class="collections-intro__art" aria-hidden="true">
-            <img src="{{ asset('images/webapp/collections/book-1.webp') }}" alt="" width="130" height="130">
-            <span>1</span>
+            <img src="{{ $firstBook['cover_url'] }}" alt="" width="130" height="130">
+            <span>{{ $firstBook['number'] }}</span>
         </span>
         <span class="collections-intro__copy">
             <span class="collections-eyebrow pastel-card__tag mb-1">THE PIANOLIT PATH</span>
@@ -33,7 +34,7 @@
     </section>
     @endif
 
-    @if(count($books))
+    @if($firstBook)
     <section class="collections-section" id="pianolit-path" aria-labelledby="path-heading">
         <div class="collections-section__heading">
             <div>
@@ -45,20 +46,26 @@
                 <button type="button" data-book-next aria-label="Next books" aria-controls="piano-solos-books">@icon('arrow-right', ['mr' => 0])</button>
             </div>
         </div>
-        <div class="collections-books" id="piano-solos-books" tabindex="0" role="region" aria-label="Piano Solos books, scroll to explore all eight">
-            @foreach($books as $book)
+        <div class="collections-books" id="piano-solos-books" tabindex="0" role="region" aria-label="Book series">
+            @foreach($bookSeries as $series)
+            @foreach($series['books'] as $book)
             <article class="collections-book pastel-card" data-pastel-color="sky">
                 <div class="collections-book__art">
-                    <img src="{{ asset('images/webapp/collections/'.$book['image'].'.webp') }}" alt="" width="900" height="600" loading="lazy">
-                    <span class="collections-book__series">PIANO SOLOS</span>
+                    <img src="{{ $book['cover_url'] }}" alt="" width="900" height="600" loading="lazy">
+                    <span class="collections-book__series">{{ strtoupper($series['title']) }}</span>
                     <span class="collections-book__number" aria-hidden="true">{{ $book['number'] }}</span>
                 </div>
                 <div class="collections-book__copy">
-                    <h3>Piano Solos · Book {{ $book['number'] }}</h3>
+                    <h3>{{ $book['title'] }}</h3>
                     <p>{{ $book['level'] }}</p>
+                    @if($book['availability'] === 'available')
+                    <a class="pastel-card__action" href="{{ $book['detail_url'] }}">View book</a>
+                    @else
                     <span class="collections-coming-soon pastel-card__tag pastel-card__tag--quiet">Coming soon</span>
+                    @endif
                 </div>
             </article>
+            @endforeach
             @endforeach
         </div>
         <p class="collections-path-note">Selected repertoire, with guidance on what each piece develops.</p>
