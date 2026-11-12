@@ -1,1 +1,1 @@
-<p class="mb-0 fw-bold" style="line-height: 1.4">{{$piece->long_name}}</p>
+<p class="mb-1 fw-bold" style="line-height: 1.3">{{$piece->long_name}}</p>
