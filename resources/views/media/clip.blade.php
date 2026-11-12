@@ -6,39 +6,39 @@
 @push('header')
 <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 
-<style type="text/css">
-.plyr--video {height: 100%;}
+<style>
+.clip-page__player { background: #000; min-width: 0; }
+.clip-page__webapp { min-height: 44px; }
+
+@media (min-width: 768px) {
+  .clip-page {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 20rem;
+  }
+
+  .clip-page__player .plyr--video { height: 100%; }
+}
 </style>
 @endpush
 
 @section('content')
-<div class="h-100vh d-flex flex-column cc-video">
-  <div class="player" style="height: 84vh">
+<div class="clip-page">
+  <div class="clip-page__player">
     @video([
-      'classes' => 'w-100 h-100', 
+      'classes' => 'w-100 h-100',
       'id' => 'clip',
       'position' => $position,
       'url' => $url])
-{{--     <video id="clip" class="w-100 h-100" data-position="{{$position ?? null}}" style="background-color: black" controls>
-      <source src="{{$url}}" type="video/mp4">
-      Your browser does not support the video tag.
-    </video> --}}
   </div>
-  <div class="bg-white h-100 w-100">
-    <div class="d-flex flex-center flex-wrap credits" style="height: 100%">
-      <div>
-        <a target="_blank" href="{{route('home')}}"><img src="{{asset(mix('images/brand/app-icon.svg'))}}" style="border-radius: 20%; width: 50px"></a>
-      </div>
-      <div class="mx-4 text-center my-3">
-        <p class="m-0" style="font-size: 86%">CHECKOUT THE <strong>PIANOLIT</strong> APP ON THE APP STORE</p>
-      </div>
-      <div>
-        <a href="{{config('app.stores.ios')}}" target="_blank" class="btn btn-outline-dark rounded-0 m-0" style="padding: .425rem 1rem;">
-          Download PianoLIT app
-        </a>
-      </div>
-    </div>
-  </div>
+  <nav aria-label="PianoLIT apps" class="d-flex justify-content-center align-items-center flex-wrap gap-2 gap-sm-3 px-3 py-3 bg-white">
+    <a href="{{ route('webapp.discover') }}" target="_blank" rel="noopener" class="clip-page__webapp btn btn-outline-dark d-inline-flex align-items-center gap-2 px-3 py-2">
+      @icon('pianolit', ['mr' => 0])<span>Open the web app</span>
+    </a>
+    @cta(['type' => 'ios', 'width' => 150, 'linkClasses' => 'd-inline-flex'])
+  </nav>
 </div>
 @endsection
 
