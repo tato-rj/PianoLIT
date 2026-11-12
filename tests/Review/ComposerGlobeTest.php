@@ -70,7 +70,7 @@ class ComposerGlobeTest extends ReviewTestCase
             ->assertJsonPath('composers.0.name', 'Globe composer 0')->assertJsonPath('composers.0.pieces', 3)
             ->assertJsonPath('composers.1.name', 'Globe composer 1')->assertJsonPath('composers.1.pieces', 2)
             ->assertJsonPath('composers.0.image', storage('composers/globe-0.jpg'))->assertJsonPath('composers.1.image', null)
-            ->assertJsonPath('composers.0.url', route('webapp.search.results', ['search' => 'Globe composer 0']));
+            ->assertJsonPath('composers.0.url', route('webapp.search.results', ['for' => 'Globe composer 0']));
         $this->assertSame(['id', 'name', 'image', 'pieces', 'url'], array_keys($response->json('composers.0')));
         $this->assertCount(2, $queries, 'Country binding and a single portrait query; no per-composer queries or default eager loading.');
         $response->assertDontSee('biography')->assertDontSee('audio')->assertDontSee('cover_path')->assertDontSee('Globe composer 2');

@@ -44,7 +44,7 @@ class DiscoverLevelsTest extends ReviewTestCase
                 $this->assertStringContainsString($unit.' '.$number, $card->textContent);
                 $this->assertStringContainsString($number === 1 ? '1 piece' : ($number * 5).' pieces', $card->textContent);
                 $sourceName = ucfirst($key).' '.($key === 'suzuki' ? 'Book ' : '').$number;
-                $this->assertSame(route('webapp.search.results', ['search' => $sourceName]), $card->getAttribute('href'));
+                $this->assertSame(route('webapp.search.results', ['for' => $sourceName]), $card->getAttribute('href'));
             }
             $color = ['rcm' => 'sky', 'abrsm' => 'mint', 'suzuki' => 'butter'][$key];
             $this->assertStringContainsString('--level-tone: var(--pastel-'.$color.'-action)', $cards->item(0)->getAttribute('style'));

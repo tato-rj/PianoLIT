@@ -20,17 +20,13 @@ window.searchRequestId = 0;
 @endpush
 
 @section('content')
-@component('webapp.layouts.header', [
-    'title' => 'Search piano pieces',
-    'subtitle' => $searchLanding ? $searchDescription : null,
+@include('webapp.layouts.header', [
+    'title' => $searchLanding ? 'Search piano pieces' : null,
+    'subtitle' => $searchDescription,
     'pageHeading' => true,
 ])
-    @if($searchValue !== '')
-        <p class="mb-0">Results for “{{ $searchValue }}”</p>
-    @endif
-@endcomponent
 
-<section class="mb-2 mt-4">
+<section class="{{ $searchLanding ? 'mb-2 mt-4' : 'mb-2' }}">
 	@include('webapp.search.form', ['searchPlaceholder' => 'Title, composer, or catalogue number'])
 </section>
 
@@ -44,7 +40,7 @@ window.searchRequestId = 0;
 
 <p id="search-results-count" class="text-muted small text-center" role="status" style="display: none;"></p>
 
-<section id="pieces-list">
+<section id="pieces-list" aria-label="Search results">
 </section>
 
 @include('webapp.components.spinner')
@@ -77,7 +73,7 @@ function loadResults() {
     if (window.done || window.loading) return;
     window.loading = true;
     const requestId = ++window.searchRequestId;
-    const query = new URL(window.location.href).searchParams.get('search') || '';
+    const query = new URL(window.location.href).searchParams.get('for') || '';
 
     axios.get(makeUrl(), {params: {filters: window.filters}})
         .then(function(response) {

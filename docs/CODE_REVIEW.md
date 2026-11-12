@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-11 — Simplify web app search URLs and results (P3, complete locally)
+
+- Browser searches now use `/search?for=`. Old HTML links permanently redirect and keep their filters and campaign parameters. The browser URL drops the internal pagination flag. Existing fragment requests accept both query names and the mobile API keeps its existing contract.
+- Results start with the search field and result count. The public `/search` landing page retains its heading, canonical URL and sitemap entry. Search results and fragments still carry `noindex`.
+- Verified the old redirect, first and subsequent searches, whitespace trimming, and a filter change in the browser. JavaScript and asset checks passed. Of 157 related PHP checks, 155 passed and two failures also reproduced on untouched `HEAD`. Deployment is pending.
+
 ### 2026-11-11 — Search discovery for the PianoLIT web app (P2, complete locally)
 
 - **Crawl audit.** Discover, Collections, Search and 44 sampled public piece pages returned 200 without canonical URLs, search descriptions or structured data. All 44 sampled pieces already had editorial descriptions and links to related pieces. Discover and `/welcome` served the same feed. Search returned a JavaScript results shell for arbitrary query URLs, and the old main-site piece URLs returned 302. The web app had no sitemap. Guests could read collection cards, but direct collection URLs sent them back to the directory under the saved access policy. Google URL Inspection showed Discover, Collections and the first movement of Beethoven’s Piano Sonata Op. 27 No. 2 indexed. Search and Teresa Carreño’s Petite Berceuse were unknown to Google. The Domain property’s Performance report was processing.

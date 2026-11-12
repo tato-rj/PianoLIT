@@ -230,7 +230,7 @@ class ExploreCatalogue
 
     public static function url($params = [], $label = 'Explore repertoire')
     {
-        return route('webapp.search.results', array_merge(['catalogue' => 1, 'search' => $label], $params));
+        return route('webapp.search.results', array_merge(['catalogue' => 1, 'for' => $label], $params));
     }
 
     public function query(array $params)

@@ -35,9 +35,14 @@
                 </li>
                 @endforeach
             </ul>
-            @php($seeMoreUrl = $matchRow['key'] === 'same-composer'
-                ? route('webapp.search.results', ['search' => $piece->composer->name, 'model' => \App\Composer::class])
-                : $matchRow['url'])
+            @php
+                $seeMoreUrl = $matchRow['url'];
+                if ($matchRow['key'] === 'same-composer') {
+                    $seeMoreUrl = route('webapp.search.results', ['for' => $piece->composer->name, 'model' => \App\Composer::class]);
+                } elseif (!empty($matchRow['term'])) {
+                    $seeMoreUrl = route('webapp.search.results', ['for' => $matchRow['term'], 'model' => \App\Tag::class]);
+                }
+            @endphp
             <a class="link-primary d-inline-flex align-items-center gap-2" href="{{ $seeMoreUrl }}" aria-label="See more: {{ $matchRow['title'] }}">See more @icon('arrow-right', ['mr' => 0])</a>
             @else
             <p class="text-muted mb-0">No matching pieces found</p>

@@ -126,8 +126,9 @@
             var url = new win.URL(value, win.location.href);
             if (url.protocol !== 'http:' && url.protocol !== 'https:') return '';
             var query = new win.URLSearchParams();
+            var webSearch = url.origin === win.location.origin && url.pathname === '/search';
             url.searchParams.forEach(function (value, key) {
-                if (/^(search|catalogue|sort|level|mood|tag|period|technique|length|composers|country|video_only|score_only|audio_only|page)$/.test(key) || /^(filters|facets)\[/.test(key)) query.append(key, value.slice(0, 300));
+                if ((webSearch && key === 'for') || /^(search|catalogue|sort|level|mood|tag|period|technique|length|composers|country|video_only|score_only|audio_only|page)$/.test(key) || /^(filters|facets)\[/.test(key)) query.append(key, value.slice(0, 300));
             });
             var path = url.pathname.replace(/(\/password\/reset\/)[^/]+/i, '$1[redacted]').replace(/(\/email\/verify\/)[^/]+\/[^/]+/i, '$1[redacted]');
             return (url.origin + path + (query.toString() ? '?' + query : '')).slice(0, 2000);
@@ -211,7 +212,7 @@
             });
         }
         lastClick = null;
-        var search = form.querySelector('[name="search"]');
+        var search = form.querySelector('[name="search"]') || form.querySelector('[name="for"][data-search-term]');
         var tutorial = /^(synthesia|tutorial)-request-form$/.test(form.id || ''), attempt = tutorial ? uuid() : undefined;
         if (tutorial) {
             var input = form.querySelector('[name="_activity_attempt"]');

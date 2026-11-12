@@ -9,7 +9,7 @@ module.exports = function () {
     }
     const saved = {};
     const storage = {getItem: key => saved[key] || null, setItem: (key, value) => saved[key] = value, removeItem: key => delete saved[key]};
-    function fixture(href, isResults = true, sessionStorage = storage) {
+    function fixture(href, isResults = true, sessionStorage = storage, isLanding = false) {
         const groups = Object.entries({level: ['elementary', 'advanced'], period: ['baroque'], length: [], type: ['pedagogical'], ensemble: ['solo', '4 hands']}).map(([facet, values]) => {
             const group = node({'data-search-facet': facet});
             group.buttons = values.map(value => node({'data-search-value': value, 'aria-pressed': 'false'}));
@@ -25,7 +25,8 @@ module.exports = function () {
         const inputs = {'[data-length-min]': min, '[data-length-max]': max, '.search-length': range, '[data-length-summary]': summary, '[data-search-reset]': reset, '[data-search-apply]': apply};
         panel.querySelectorAll = () => groups;
         panel.querySelector = selector => inputs[selector];
-        search.action = 'https://my.example.test/search?lazy-load=';
+        search.action = 'https://my.example.test/search';
+        search.hasAttribute = name => name === 'data-search-landing' && isLanding;
         search.querySelector = selector => selector === '.search-controls-toggle' ? toggle : query;
         search.querySelectorAll = () => search.children.filter(child => !child.removed);
         let hidden = 0, refreshed = 0, clears = 0, filters;
@@ -44,7 +45,7 @@ module.exports = function () {
             counts: () => ({hidden, refreshed, clears, filters}), applyNow: () => apply.events.click(),
             requestUrl: () => new URL(root.searchControlsUrl(root.location.href)), submitQuery(value) { query.value = value; let prevented = false; search.events.submit({preventDefault() { prevented = true; }}); return prevented; }};
     }
-    const f = fixture('https://my.example.test/search?search=happy&page=2&sort=title_desc&facets[level][]=advanced');
+    const f = fixture('https://my.example.test/search?for=happy&page=2&sort=title_desc&facets[level][]=advanced');
     assert(f.sorts[2].checked);
     assert.strictEqual(f.groups[0].buttons[1].attrs['aria-pressed'], 'true');
     assert(f.toggle.classList['is-active']);
@@ -70,9 +71,10 @@ module.exports = function () {
     assert(f.video.checked);
     assert.strictEqual(f.summary.textContent, 'Short', 'Dismissed Reset preserves applied range');
     assert.strictEqual(Number(f.max.value), 0);
-    assert(f.submitQuery('Mozart & sonata'));
+    assert(f.submitQuery(' Mozart & sonata '));
     assert.strictEqual(f.counts().refreshed, 2);
-    assert.strictEqual(f.requestUrl().searchParams.get('search'), 'Mozart & sonata');
+    assert.strictEqual(f.requestUrl().searchParams.get('for'), 'Mozart & sonata');
+    assert.strictEqual(f.requestUrl().searchParams.get('search'), null);
     assert.deepStrictEqual(f.requestUrl().searchParams.getAll('facets[length][]'), ['short'], 'Further searches on this screen keep the range');
     assert.strictEqual(f.requestUrl().searchParams.get('video_only'), '1');
     const reload = fixture(f.root.location.href);
@@ -82,6 +84,10 @@ module.exports = function () {
     assert.strictEqual(f.summary.textContent, 'Any length');
     f.reset.events.click(); f.applyNow();
     assert.strictEqual(f.toggle.classList['is-active'], false);
+
+    const landing = fixture('https://my.example.test/search', true, storage, true);
+    assert.strictEqual(landing.submitQuery(' Mozart '), false, 'The first search navigates to a results page');
+    assert.strictEqual(landing.query.value, 'Mozart');
 
     const explore = fixture('https://my.example.test/explore', false);
     explore.click('ensemble', 'solo'); explore.video.checked = true; explore.applyNow();

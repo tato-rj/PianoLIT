@@ -119,8 +119,11 @@ class PieceRecommendationsTest extends ReviewTestCase
                 }
                 $more = $xpath->query('//div[@id="'.$id.'"]/a')->item(0);
                 $url = $row['key'] === 'same-composer'
-                    ? route('webapp.search.results', ['search' => $this->composer->name, 'model' => Composer::class])
+                    ? route('webapp.search.results', ['for' => $this->composer->name, 'model' => Composer::class])
                     : $row['url'];
+                if (isset($row['term'])) {
+                    $url = route('webapp.search.results', ['for' => $row['term'], 'model' => Tag::class]);
+                }
                 $this->assertSame($url, $more->getAttribute('href'));
                 $this->assertSame('See more', trim($more->textContent));
                 if ($row['key'] === 'best-matches') {
@@ -128,7 +131,7 @@ class PieceRecommendationsTest extends ReviewTestCase
                     continue;
                 }
                 $term = $row['term'] ?? $this->composer->name;
-                $this->get($url)->assertOk()->assertSee('name="search" value="'.$term.'"', false);
+                $this->get($url)->assertOk()->assertSee('name="for" value="'.$term.'"', false);
                 $results = $this->getJson($url)->assertOk();
                 $this->assertSame($signedIn ? 7 : 3, substr_count($results->getContent(), 'data-sort-name='));
             }

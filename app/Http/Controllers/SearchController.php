@@ -11,7 +11,7 @@ class SearchController extends Controller
     public function index(Api $api, Request $request)
     {
         if (auth()->check())
-            return redirect(route('webapp.search.results', ['lazy-load', 'search' => $request->search]));
+            return redirect(route('webapp.search.results', ['for' => $request->search]));
 
     	$results = $request->has('search') ? $api->search($request)->filtered()->get() : collect([]);
 

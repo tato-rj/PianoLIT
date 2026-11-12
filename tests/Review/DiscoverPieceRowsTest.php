@@ -37,14 +37,14 @@ class DiscoverPieceRowsTest extends ReviewTestCase
 
     public function test_latest_view_all_opens_regular_search_with_an_empty_input()
     {
-        $url = route('webapp.search.results', ['catalogue' => 1, 'search' => '']);
+        $url = route('webapp.search.results', ['catalogue' => 1]);
         $row = ['title' => 'Latest pieces', 'content' => []];
         $html = view('webapp.discover.rows.latest', compact('row'))->render();
         $this->assertStringContainsString('href="'.e($url).'"', $html);
         $response = $this->get($url)->assertOk()->assertViewIs('webapp.search.index');
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
-        $input = (new \DOMXPath($dom))->query('//form[@id="search-form"]//input[@name="search"]')->item(0);
+        $input = (new \DOMXPath($dom))->query('//form[@id="search-form"]//input[@name="for"]')->item(0);
         $this->assertSame('', $input->getAttribute('value'));
         $this->get(route('webapp.latest'))->assertStatus(301)->assertRedirect($url);
         $this->get(route('webapp.latest', ['page' => 2, 'user_id' => 999]))->assertStatus(301)->assertRedirect($url);

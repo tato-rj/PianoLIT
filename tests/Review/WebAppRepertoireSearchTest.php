@@ -102,13 +102,28 @@ class WebAppRepertoireSearchTest extends ReviewTestCase
     {
         $landing = $this->get(route('webapp.search.results', ['utm_source' => 'audit']))->assertOk()->assertHeaderMissing('X-Robots-Tag');
         $this->assertSame(route('webapp.search.results'), $this->xpath($landing)->evaluate('string(//link[@rel="canonical"]/@href)'));
+        $this->assertSame('Search piano pieces', $this->xpath($landing)->evaluate('string(//main//h1)'));
         $landing->assertSee('href="'.route('webapp.pieces.index').'"', false);
         $query = '<img src=x onerror=alert(1)>';
-        $this->get(route('webapp.search.results', ['search' => $query]))->assertOk()->assertHeader('X-Robots-Tag', 'noindex')
+        $results = $this->get(route('webapp.search.results', ['for' => $query]))->assertOk()->assertHeader('X-Robots-Tag', 'noindex')
             ->assertSee($query)->assertDontSee($query, false);
+        $this->assertCount(0, $this->xpath($results)->query('//main//h1 | //link[@rel="canonical"]'));
+        $this->assertSame($query, $this->xpath($results)->evaluate('string(//form[@id="search-form"]/div/input[@name="for"]/@value)'));
         $fragment = $this->getJson(route('webapp.search.results', ['catalogue' => 1, 'page' => 2]))
             ->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
         $this->assertSame('', $fragment->getContent());
+    }
+
+    public function test_saved_search_urls_redirect_with_the_term_and_existing_options()
+    {
+        $options = ['facets' => ['level' => ['advanced']], 'page' => 2, 'utm_source' => 'audit'];
+        $oldUrl = route('webapp.search.results', ['search' => '  Mozart & sonata ', 'lazy-load' => ''] + $options);
+        $newUrl = route('webapp.search.results', ['for' => 'Mozart & sonata'] + $options);
+        $this->get($oldUrl)->assertStatus(301)->assertRedirect($newUrl);
+        $this->get($newUrl)->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
+        $this->getJson($oldUrl)->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
+        $this->get(route('webapp.search.results', ['search' => 'old', 'for' => 'new']))
+            ->assertStatus(301)->assertRedirect(route('webapp.search.results', ['for' => 'new']));
     }
 
     public function test_collection_markup_and_sitemap_follow_guest_permissions()

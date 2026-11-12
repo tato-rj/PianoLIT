@@ -47,7 +47,7 @@
 let recent = app.user ? getRecent() : [];
 
 showRecent();
-$('input[name="search"]').keyup(function() {
+$('input[name="for"]').keyup(function() {
 	let length = $(this).val().length;
 
 	if (length > 3) {
@@ -63,7 +63,7 @@ $('[data-erase]').click(function() {
 });
 
 $('#search-form').on('submit', function() {
-	let query = $(this).find('input[name="search"]').val();
+	let query = $(this).find('input[name="for"]').val().trim();
 	saveRecent(query, recent);
 });
 
@@ -111,7 +111,7 @@ function saveRecent(query, recent) {
 
 function submitRecent(recent) {
 	let $form = $('#search-form');
-	$form.find('input[name="search"]').val(recent);
+	$form.find('input[name="for"]').val(recent);
 	$form.submit();
 }
 </script>

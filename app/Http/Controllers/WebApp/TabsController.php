@@ -70,7 +70,7 @@ class TabsController extends Controller
 
     public function latest()
     {
-        return redirect()->route('webapp.search.results', ['catalogue' => 1, 'search' => ''], 301);
+        return redirect()->route('webapp.search.results', ['catalogue' => 1], 301);
     }
 
     public function explore(Request $request, ExploreCatalogue $catalogue)

@@ -23,7 +23,7 @@ module.exports = async function () {
             length: 3,
         });
         const context = {
-            $, URL, window: {page: 1, loading: false, done: false, filters: [], searchRequestId: 0, location: {href: 'https://my.example.test/search?search=happy&page=99#old'}},
+            $, URL, window: {page: 1, loading: false, done: false, filters: [], searchRequestId: 0, location: {href: 'https://my.example.test/search?for=happy&page=99#old'}},
             axios: {get(url, options) { return new Promise((resolve, reject) => pending.push({url, options, resolve, reject})); }},
         };
         vm.runInNewContext(loadResults.replace(/\{\{.*?\}\}/g, String(guest)) + helpers, context);
@@ -96,7 +96,8 @@ module.exports = async function () {
         }
     }
     const countMarkup = template.indexOf('id="search-results-count"');
-    assert(countMarkup > template.indexOf("@include('webapp.search.form')") && countMarkup < template.indexOf('id="pieces-list"'));
+    const formMarkup = template.indexOf("@include('webapp.search.form',");
+    assert(formMarkup !== -1 && countMarkup > formMarkup && countMarkup < template.indexOf('id="pieces-list"'));
     assert(!template.includes('We found a total of'));
     console.log('Passed: webapp visitor search stop, duplicate requests, filter races, retry and empty results.');
 };

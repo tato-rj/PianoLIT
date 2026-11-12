@@ -1,6 +1,8 @@
 <?php
 
-Route::namespace('WebApp')->prefix('search')->middleware('search.driver')->name('search.')->group(function() {
+Route::namespace('WebApp')->prefix('search')
+    ->middleware([\App\Http\Middleware\Search\WebSearchQuery::class, 'search.driver'])
+    ->name('search.')->group(function() {
 	
 	Route::get('', 'SearchController@results')->name('results');
 

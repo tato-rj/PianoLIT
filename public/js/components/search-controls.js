@@ -7,6 +7,7 @@
     if (!panel) return;
     var form = doc.getElementById('search-controls-form');
     var search = doc.getElementById('search-form');
+    var term = search.querySelector('[name=for]');
     var toggle = search.querySelector('.search-controls-toggle');
     var groups = Array.from(panel.querySelectorAll('[data-search-facet]'));
     var lengths = ['short', 'medium', 'long'];
@@ -123,6 +124,7 @@
     function updateSearch() {
         Array.from(search.querySelectorAll('[data-search-committed]')).forEach(function (input) { input.remove(); });
         entries(committed).forEach(function (pair) {
+            if (pair[0] === 'sort' && pair[1] === 'relevance') return;
             var input = doc.createElement('input');
             input.type = 'hidden'; input.name = pair[0]; input.value = pair[1];
             input.setAttribute('data-search-committed', ''); search.appendChild(input);
@@ -165,10 +167,11 @@
         }
     });
     search.addEventListener('submit', function (event) {
-        if (!isResults) return;
+        term.value = term.value.trim();
+        if (!isResults || search.hasAttribute('data-search-landing')) return;
         event.preventDefault();
         var url = clearOptions(new URL(search.action, root.location.href));
-        url.searchParams.set('search', search.querySelector('[name=search]').value);
+        url.searchParams.set('for', term.value);
         root.history.replaceState(root.history.state, '', url.toString());
         root.reset();
         root.applyFilters([]);

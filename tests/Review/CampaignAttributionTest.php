@@ -370,7 +370,7 @@ class CampaignAttributionTest extends ReviewTestCase
     {
         foreach ([null, $this->user] as $user) {
             if ($user) $this->actingAs($user, 'web');
-            $this->get(route('webapp.search.results', ['search' => 'notturno']))->assertOk()
+            $this->get(route('webapp.search.results', ['for' => 'notturno']))->assertOk()
                 ->assertSee('id="pieces-list"', false)
                 ->assertDontSee('data-campaign-measurement', false)
                 ->assertDontSee('Campaign link measurement')
@@ -405,7 +405,7 @@ class CampaignAttributionTest extends ReviewTestCase
     public function test_tagged_search_counts_anonymous_arrival_without_visible_campaign_controls()
     {
         $page = $this->get(route('webapp.search.results', [
-            'search' => 'notturno', 'utm_source' => 'youtube.com',
+            'for' => 'notturno', 'utm_source' => 'youtube.com',
         ]))->assertOk()->assertDontSee('Campaign link measurement')->assertDontSee('Allow measurement');
         $token = $this->token($page);
         $this->assertNotEmpty($token);
@@ -426,7 +426,7 @@ class CampaignAttributionTest extends ReviewTestCase
         foreach (['granted', 'denied'] as $choice) {
             $this->withCookie(CampaignAttribution::CONSENT_COOKIE, 'v1:'.$choice);
             $page = $this->get(route('webapp.search.results', [
-                'search' => 'notturno', 'utm_source' => 'youtube.com',
+                'for' => 'notturno', 'utm_source' => 'youtube.com',
             ]))->assertOk()->assertDontSee('Campaign link measurement');
             if ($choice === 'granted') $page->assertSee('js/views/campaign-attribution.js');
             else $page->assertDontSee('js/views/campaign-attribution.js');

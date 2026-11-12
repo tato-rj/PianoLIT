@@ -66,7 +66,7 @@ class ComposerGlobe
                 'id' => (int) $composer->id, 'name' => $composer->name,
                 'image' => $composer->cover_path ? storage($composer->cover_path) : null,
                 'pieces' => (int) $composer->pieces_count,
-                'url' => route('webapp.search.results', ['search' => $composer->name]),
+                'url' => route('webapp.search.results', ['for' => $composer->name]),
             ];
         })->values()->all()];
     }

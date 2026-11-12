@@ -1,11 +1,12 @@
-<form method="GET" action="{{route('webapp.search.results', ['lazy-load'])}}" id="search-form">
+@php($queryField = !empty($directorySearch) ? 'search' : 'for')
+<form method="GET" action="{{ route('webapp.search.results') }}" id="search-form" @if(!empty($searchLanding)) data-search-landing @endif>
   <div class="input-icon">
     @icon('search', ['color' => 'grey', 'size' => 'lg'])
-    <input type="text" name="search" value="{{ $searchValue ?? request('search') }}" class="form-control search-input pianolit-input w-100" aria-label="{{ $searchLabel ?? 'Search repertoire' }}" placeholder="{{ $searchPlaceholder ?? 'Search here...' }}">
+    <input type="text" name="{{ $queryField }}" value="{{ $searchValue ?? request($queryField) }}" class="form-control search-input pianolit-input w-100" aria-label="{{ $searchLabel ?? 'Search repertoire' }}" placeholder="{{ $searchPlaceholder ?? 'Search here...' }}" data-search-term>
     @if(!empty($directorySearch) || !empty($accessibleSearch))
-    <button type="button" data-erase="search" class="btn-raw input-erase position-absolute p-1 px-2 text-dark" aria-label="{{ !empty($directorySearch) ? 'Clear composer search' : 'Clear search' }}" style="display: none;">&times;</button>
+    <button type="button" data-erase="{{ $queryField }}" class="btn-raw input-erase position-absolute p-1 px-2 text-dark" aria-label="{{ !empty($directorySearch) ? 'Clear composer search' : 'Clear search' }}" style="display: none;">&times;</button>
     @else
-    <div data-erase="search" class="input-erase position-absolute cursor-pointer p-1 px-2 text-dark" style="display: none;">&times;</div>
+    <div data-erase="{{ $queryField }}" class="input-erase position-absolute cursor-pointer p-1 px-2 text-dark" style="display: none;">&times;</div>
     @endif
 
     @if(empty($directorySearch) || !empty($composerControls))

@@ -40,7 +40,9 @@ class Metadata
         $path = preg_replace('#(/password/reset/)[^/]+#i', '$1[redacted]', $parts['path'] ?? '/');
         $path = preg_replace('#(/email/verify/)[^/]+/[^/]+#i', '$1[redacted]', $path);
         parse_str($parts['query'] ?? '', $query);
-        $query = http_build_query(self::select($query, self::QUERY_KEYS));
+        $webSearch = $path === '/search' && (!isset($parts['host']) || $parts['host'] === 'my.'.config('app.short_url'));
+        $keys = $webSearch ? array_merge(self::QUERY_KEYS, ['for']) : self::QUERY_KEYS;
+        $query = http_build_query(self::select($query, $keys));
         return mb_substr($base.$path.($query ? '?'.$query : ''), 0, 2000);
     }
 }

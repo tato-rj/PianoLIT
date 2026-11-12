@@ -31,7 +31,7 @@ class WebAppSearchControlsTest extends ReviewTestCase
 
     public function test_panel_replaces_search_buttons_and_reuses_bottom_sheet()
     {
-        $response = $this->get(route('webapp.search.results', ['search' => 'happy']))->assertOk()
+        $response = $this->get(route('webapp.search.results', ['for' => 'happy']))->assertOk()
             ->assertSee('id="search-controls"', false)->assertSee('data-bs-target="#search-controls"', false)
             ->assertSee('bottom-sheet-handle')->assertSee('>Solo</button>', false)
             ->assertSee('type="button" class="btn btn-primary" data-search-apply>Apply</button>', false)->assertDontSee('Show results')
@@ -42,7 +42,7 @@ class WebAppSearchControlsTest extends ReviewTestCase
 
     public function test_combined_filters_run_before_guest_limit_and_support_solo()
     {
-        $response = $this->getJson(route('webapp.search.results', ['search' => 'happy', 'include_total' => 1, 'video_only' => 1, 'score_only' => 1,
+        $response = $this->getJson(route('webapp.search.results', ['for' => 'happy', 'include_total' => 1, 'video_only' => 1, 'score_only' => 1,
             'facets' => ['level' => ['advanced'], 'length' => ['long'], 'ensemble' => ['solo']], 'sort' => 'title_desc']))->assertOk()->assertHeader('X-Search-Total', '4');
         $this->assertSame(3, substr_count($response->getContent(), 'data-sort-name='));
         foreach ([13, 12, 11] as $index) $response->assertSee($this->pieces[$index]->name);

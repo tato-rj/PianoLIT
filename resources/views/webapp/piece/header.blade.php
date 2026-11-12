@@ -1,6 +1,6 @@
 <section class="piece-heading mb-4 position-relative">
     <div class="piece-header">
-        <a class="piece-header-level" href="{{ route('webapp.search.results', ['search' => $piece->extended_level_name]) }}">
+        <a class="piece-header-level" href="{{ route('webapp.search.results', ['for' => $piece->extended_level_name]) }}">
             @include('webapp.components.piece.level')
         </a>
 

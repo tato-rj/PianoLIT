@@ -27,7 +27,7 @@
 						$levelColor = $levelPalette[$system['key']];
 						$levelNumber = preg_replace('/^' . $system['key'] . '\s*(?:book|level)?\s*/i', '', $card->name);
 					@endphp
-					<a class="discover-level-card discover-piece-link link-none" href="{{ route('webapp.search.results', ['search' => $card->name]) }}" aria-label="{{ $system['label'] }} {{ $system['unit'] }} {{ $levelNumber }}, {{ $card->pieces_count }} {{ str_plural('piece', $card->pieces_count) }}" style="--level-tone: var(--pastel-{{ $levelColor }}-action); --level-surface: var(--pastel-{{ $levelColor }}-accent);">
+					<a class="discover-level-card discover-piece-link link-none" href="{{ route('webapp.search.results', ['for' => $card->name]) }}" aria-label="{{ $system['label'] }} {{ $system['unit'] }} {{ $levelNumber }}, {{ $card->pieces_count }} {{ str_plural('piece', $card->pieces_count) }}" style="--level-tone: var(--pastel-{{ $levelColor }}-action); --level-surface: var(--pastel-{{ $levelColor }}-accent);">
 						<div class="discover-level-card__art" aria-hidden="true">
 							@include('webapp.discover.cards.level-shapes')
 						</div>
