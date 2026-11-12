@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
-use App\Services\Shop\{MerchandiseBag, ProductPage, Storefront};
+use App\Services\Shop\{MerchandiseBag, ProductPage, SearchMetadata, Storefront};
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -28,10 +28,16 @@ class MerchandiseController extends Controller
         $categoryUrls = array_map(fn ($key) => $catalog->categoryUrl($key), array_combine(array_keys($categories), array_keys($categories)));
         $breadcrumbs = [['label' => 'Home', 'url' => route('home')], ['label' => 'Shop', 'url' => $category ? route('shop.home') : null]];
         if ($category) $breadcrumbs[] = ['label' => $categories[$category]];
-        return view('shop.storefront.index', ['products' => $products, 'hasProducts' => $products->count() > 0,
+        $filtered = $request->query->has('q') || $request->query->has('topics');
+        $canonical = !$filtered && (!$category || $products->isNotEmpty())
+            ? $catalog->categoryUrl($category).($products->currentPage() > 1 ? '?page='.$products->currentPage() : '') : null;
+        $response = response()->view('shop.storefront.index', ['products' => $products, 'hasProducts' => $products->count() > 0,
             'search' => $search, 'category' => $category, 'topics' => $topics,
             'categories' => $categories, 'categoryUrls' => $categoryUrls, 'catalogUrl' => $catalog->categoryUrl($category),
-            'breadcrumbs' => $breadcrumbs, 'shoppingBag' => $bag->contents($request)]);
+            'breadcrumbs' => $breadcrumbs, 'shoppingBag' => $bag->contents($request)]
+            + app(SearchMetadata::class)->catalogue($category, $products, $canonical));
+
+        return $canonical ? $response : $response->header('X-Robots-Tag', 'noindex');
     }
 
     public function show(Request $request, string $category, string $slug, Storefront $catalog, ProductPage $page)

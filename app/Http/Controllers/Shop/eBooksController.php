@@ -17,7 +17,14 @@ class eBooksController extends Controller
 
     public function show(Request $request, eBook $ebook, ProductPage $page)
     {
-        return view('shop.storefront.show', $page->data($ebook, $request));
+        $response = response()->view('shop.storefront.show', $page->data($ebook, $request));
+
+        return $ebook->isPublished() ? $response : $response->header('X-Robots-Tag', 'noindex');
+    }
+
+    public function topic(Request $request, eBookTopic $topic)
+    {
+        return redirect()->route('ebooks.index', ['topics' => [$topic->slug]] + $request->except(['topics', 'page']), 301);
     }
 
     public function checkout(eBook $ebook, Request $request)

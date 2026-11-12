@@ -17,7 +17,14 @@ class eScoresController extends Controller
 
     public function show(Request $request, eScore $escore, ProductPage $page)
     {
-        return view('shop.storefront.show', $page->data($escore, $request));
+        $response = response()->view('shop.storefront.show', $page->data($escore, $request));
+
+        return $escore->isPublished() ? $response : $response->header('X-Robots-Tag', 'noindex');
+    }
+
+    public function topic(Request $request, eScoreTopic $topic)
+    {
+        return redirect()->route('escores.index', ['topics' => [$topic->slug]] + $request->except(['topics', 'page']), 301);
     }
 
     public function checkout(eScore $escore, Request $request)

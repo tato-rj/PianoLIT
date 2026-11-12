@@ -24,7 +24,14 @@ class ProductPage
         $product['hasPreview'] = count($previewPages) > 0;
         $product['originalPrice'] = null;
         $product['gallery'] = $digitalGallery;
-        if (!$digital) $product = array_replace($product, app(MerchandiseGallery::class)->present($item, $product['variants'], $product['images']));
+        if (!$digital) {
+            $variant = filter_var($request->query('variant'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            $product = array_replace($product, app(MerchandiseGallery::class)->present($item, $product['variants'], $product['images'], $variant ?: null));
+            if ($selected = $product['selectedVariant']) {
+                $product['price'] = $selected['price'];
+                $product['priceVaries'] = false;
+            }
+        }
         $multipleColors = !$digital && collect($product['variants'])->pluck('color')->unique()->count() > 1;
         $mainColor = $product['galleryColor'] ?? null;
         if (!$multipleColors || $product['gallery']->contains('color', $mainColor)) {
@@ -49,15 +56,14 @@ class ProductPage
             'averageRating' => $reviews->count() ? number_format($reviews->avg('rating'), 1) : 0,
             'ownedReview' => $user ? $user->reviewFor($item) : null, 'productKind' => $product['label'],
             'shoppingBag' => app(MerchandiseBag::class)->contents($request), 'relatedProducts' => $catalog->related($item)];
-        if (!$digital) return $data;
+        $metadata = app(SearchMetadata::class);
+        if (!$digital) return $data + $metadata->product($data, true, false);
 
         $eligible = $user && $user->isEligibleForFreeMonthlyProduct();
         if ($eligible || $item->isFree()) $data['product']['price'] = 'Free';
         if ($item->price > 0 && ($eligible || $item->hasDiscount())) $data['product']['originalPrice'] = $catalog->money((int) round($item->price * 100), 'USD');
         $data['digitalProduct'] = $item;
         $data['formats'] = implode(' + ', array_keys($item->links()));
-        $data['shareable'] = ['keywords' => $item->keywords(), 'title' => $item->title, 'description' => $item->subtitle,
-            'thumbnail' => $product['imageUrl'], 'created_at' => $item->created_at, 'updated_at' => $item->updated_at];
-        return $data;
+        return $data + $metadata->product($data, $item->isPublished(), $eligible && !$item->isFree());
     }
 }

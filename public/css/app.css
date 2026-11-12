@@ -21856,7 +21856,6 @@ input.input-center:-ms-input-placeholder {
 }
 .tab-navigation--segmented-bar .nav-link, .tab-navigation--segmented-bar .nav-link.active {
   box-shadow: none;
-  font-weight: bold;
 }
 .tab-navigation--segmented-bar .tab-navigation__selection {
   position: absolute;
@@ -21872,6 +21871,7 @@ input.input-center:-ms-input-placeholder {
 }
 .tab-navigation--segmented-bar[data-sliding-tabs-ready] .nav-link.active {
   background: transparent;
+  font-weight: bold;
 }
 .tab-navigation--segmented-bar[data-sliding-tabs-ready] .tab-navigation__selection {
   visibility: visible;

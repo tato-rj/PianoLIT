@@ -1,4 +1,8 @@
-@extends('shop.storefront.layout', ['shopTitle' => ($category ? $categories[$category].' | ' : '').'PianoLIT Shop'])
+@extends('shop.storefront.layout', ['shopTitle' => $searchTitle])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['siteName' => 'PianoLIT Shop'])
+@endsection
 
 @section('shop-content')
 @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
@@ -6,6 +10,7 @@
     <div class="row align-items-end justify-content-between g-4 mb-4">
         <div class="col-12 col-md-7">
             @component('components.layout.hub-header', ['heading' => $category ? $categories[$category] : 'PianoLIT Shop', 'spacing' => 'mb-0'])
+                @if(!$search && !$topics){{ $searchDescription }}@endif
             @endcomponent
         </div>
         <div class="col-12 col-md-5 col-lg-4">

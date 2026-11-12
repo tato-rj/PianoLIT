@@ -1,4 +1,8 @@
-@extends('shop.storefront.layout', ['shopTitle' => $product['name'].' | PianoLIT Shop'])
+@extends('shop.storefront.layout', ['shopTitle' => $searchTitle])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['siteName' => 'PianoLIT Shop', 'ogType' => 'product'])
+@endsection
 
 @section('shop-content')
 @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
@@ -9,7 +13,7 @@
         </div>
         <div class="col-12 col-md-6 col-lg-5">
             <button type="button" class="btn btn-raw mb-1" data-bs-toggle="modal" data-bs-target="#product-share-modal">@icon('share-2')Share</button>
-            <h3>{{ $product['name'] }}</h3>
+            <h1 class="h3">{{ $product['name'] }}</h1>
             @include('shop.components.reviews.summary', ['reviewUrl' => '#reviews', 'compact' => false])
             @if($digitalProduct)
                 @include('shop.storefront.components.product-price')
