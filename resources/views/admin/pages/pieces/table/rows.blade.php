@@ -26,8 +26,8 @@
     </td>
     <td>{{ number_format($item->favorites_count) }}</td>
     <td class="text-end text-nowrap">
-        @if(isset($pieceWebViews[$item->id]))
-            {{ number_format($pieceWebViews[$item->id]) }}
+        @if(isset($pieceViews[$item->id]))
+            {{ number_format($pieceViews[$item->id]) }}
         @else
             <span class="text-muted">Unavailable</span>
         @endif

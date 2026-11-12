@@ -11,7 +11,7 @@ class IosPieceViews
     // The legacy counter's last stored event was at 14:55:25 (app local time).
     private const LOGS_FROM = '2023-06-07 14:55:26';
 
-    public function counts(): Builder
+    public function counts(?array $pieceIds = null): Builder
     {
         $saved = ExcludedAccounts::owned(DB::table('piece_views'))
             ->where(fn ($query) => $query->where('created_at', '<', self::LOGS_FROM)->orWhereNull('created_at'))
@@ -22,13 +22,17 @@ class IosPieceViews
             ->where('resource_type', 'piece')->whereNotNull('user_id')->whereNotNull('resource_id')
             ->selectRaw('CAST(resource_id AS UNSIGNED) as piece_id, COUNT(*) as total')->groupBy('resource_id');
 
-        $sources = $saved->unionAll($this->legacyRequests())->unionAll($confirmed);
+        if ($pieceIds !== null) {
+            $saved->whereIntegerInRaw('piece_id', $pieceIds);
+            $confirmed->whereIn('resource_id', array_map('strval', $pieceIds));
+        }
+        $sources = $saved->unionAll($this->legacyRequests($pieceIds))->unionAll($confirmed);
 
         return DB::query()->fromSub($sources, 'ios_sources')
             ->select('piece_id')->selectRaw('SUM(total) as total')->groupBy('piece_id');
     }
 
-    private function legacyRequests(): Builder
+    private function legacyRequests(?array $pieceIds): Builder
     {
         $path = '/api/pieces/find';
         $host = config('app.short_url');
@@ -54,6 +58,7 @@ class IosPieceViews
                     ->whereRaw("CAST(p.id AS CHAR) = CAST($search AS CHAR)")
                     ->whereRaw("LENGTH(CAST(p.id AS CHAR)) = LENGTH(CAST($search AS CHAR))");
             })
+            ->when($pieceIds !== null, fn ($query) => $query->whereIntegerInRaw('p.id', $pieceIds))
             ->selectRaw('p.id as piece_id, COUNT(*) as total')->groupBy('p.id');
     }
 }

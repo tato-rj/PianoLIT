@@ -3,7 +3,7 @@
 namespace App\Services\Admin;
 
 use App\{Composer, Piece};
-use App\Analytics\PieceWebViewCounts;
+use App\Analytics\PieceViewCounts;
 use App\Support\AdminTableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +20,7 @@ class PiecesTable
         'level_asc' => 'Level · easiest', 'level_desc' => 'Level · hardest',
         'highlight_desc' => 'Highlighted · newest', 'highlight_asc' => 'Highlighted · oldest',
         'favorites_desc' => 'Favorited · most', 'favorites_asc' => 'Favorited · fewest',
-        'views_desc' => 'Web views · most', 'views_asc' => 'Web views · fewest',
+        'views_desc' => 'Views · most', 'views_asc' => 'Views · fewest',
     ];
 
     public function filters(Request $request)
@@ -44,9 +44,15 @@ class PiecesTable
         $pieces = $this->query($filters)->paginate($filters['per_page'], ['*'], 'page', $filters['page'] ?? 1)
             ->appends(AdminTableFilters::query(array_diff_key($filters, ['page' => true]), 'updated_desc'));
         $returnFilters = AdminTableFilters::query($filters, 'updated_desc');
-        $pieceWebViews = app(PieceWebViewCounts::class)->forPieces($pieces->getCollection()->modelKeys());
+        if (in_array($filters['sort'], ['views_desc', 'views_asc'], true)) {
+            // Display the same totals used for ordering, even if new views arrive.
+            $pieceViews = $pieces->getCollection()->pluck('combined_views', 'id')
+                ->filter(fn ($views) => $views !== null)->all();
+        } else {
+            $pieceViews = app(PieceViewCounts::class)->forPieces($pieces->getCollection()->modelKeys());
+        }
 
-        return compact('pieces', 'filters', 'returnFilters', 'pieceWebViews');
+        return compact('pieces', 'filters', 'returnFilters', 'pieceViews');
     }
 
     public function query(array $filters)
@@ -69,9 +75,10 @@ class PiecesTable
         if ($sort === 'updated') {
             $query->orderBy('pieces.updated_at', $direction);
         } elseif ($sort === 'views') {
-            $query->leftJoin('piece_web_view_counts', 'piece_web_view_counts.piece_id', '=', 'pieces.id')
-                ->orderByRaw('CASE WHEN piece_web_view_counts.views IS NULL THEN 1 ELSE 0 END')
-                ->orderBy('piece_web_view_counts.views', $direction);
+            $query->leftJoinSub(app(PieceViewCounts::class)->counts(), 'piece_view_totals', 'piece_view_totals.piece_id', '=', 'pieces.id')
+                ->addSelect('piece_view_totals.total as combined_views')->withCasts(['combined_views' => 'integer'])
+                ->orderByRaw('CASE WHEN piece_view_totals.total IS NULL THEN 1 ELSE 0 END')
+                ->orderBy('piece_view_totals.total', $direction);
         } else {
             $this->orderColumn($query, $columns[$sort], $direction);
         }

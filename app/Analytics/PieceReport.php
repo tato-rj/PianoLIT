@@ -73,7 +73,7 @@ class PieceReport
         return compact('summary', 'months', 'growth', 'levels', 'periods', 'lengths', 'genders', 'composers', 'media', 'issues') + [
             'countries' => $this->countries($total), 'matrix' => $this->matrix($levels, $periods),
             'favorites' => $this->ranking('favorites'),
-            'views' => $this->rankPieces($this->viewCounts($viewPlatform)),
+            'views' => $this->rankPieces((new PieceViewCounts)->counts($viewPlatform)),
             'viewPlatform' => $viewPlatform,
             'webViewsFrom' => Carbon::parse(PieceWebViewCounts::START_DATE)->format('M j, Y'),
         ];
@@ -180,21 +180,11 @@ class PieceReport
         return $this->rankPieces($counts);
     }
 
-    private function viewCounts(string $platform): Builder
-    {
-        if ($platform === 'ios') return (new IosPieceViews)->counts();
-
-        $web = DB::table('piece_web_view_counts')->where('views', '>', 0)->select('piece_id', 'views as total');
-        if ($platform === 'web') return $web;
-
-        return DB::query()->fromSub($web->unionAll((new IosPieceViews)->counts()), 'platform_views')
-            ->select('piece_id')->selectRaw('SUM(total) as total')->groupBy('piece_id');
-    }
-
     private function rankPieces(Builder $counts): array
     {
         return DB::table('pieces as p')->joinSub($counts, 'counts', 'counts.piece_id', '=', 'p.id')
             ->leftJoin('composers as c', 'c.id', '=', 'p.composer_id')->select('p.id', 'p.name', 'p.nickname', 'c.name as composer', 'counts.total')
+            ->where('counts.total', '>', 0)
             ->orderByDesc('counts.total')->orderBy('p.id')->limit(8)->get()->map(function ($row) {
                 return ['id' => $row->id, 'label' => $row->nickname ?: $row->name, 'composer' => $row->composer ?? 'Missing composer', 'total' => (int) $row->total];
             })->all();

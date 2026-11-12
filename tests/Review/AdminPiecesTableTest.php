@@ -6,6 +6,7 @@ use App\{Admin, Composer, Favorite, Piece, Tag, Tutorial, User};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\Factory;
 use Illuminate\Support\Facades\{DB, Http};
+use Illuminate\Support\Str;
 
 class AdminPiecesTableTest extends ReviewTestCase
 {
@@ -65,9 +66,10 @@ class AdminPiecesTableTest extends ReviewTestCase
         $html = $this->get(route('admin.pieces.index'))->assertOk()->getContent();
         preg_match('/<table[^>]*id="pieces-table".*?<\/table>/s', $html, $table);
         preg_match_all('/<th\b[^>]*>(.*?)<\/th>/s', $table[0], $headers);
-        foreach (['ID', 'Piece', 'Composer', 'Level', 'Highlighted', 'Favorited', 'Web views', 'Actions'] as $i => $label) {
+        foreach (['ID', 'Piece', 'Composer', 'Level', 'Highlighted', 'Favorited', 'Views', 'Actions'] as $i => $label) {
             $this->assertStringContainsString($label, strip_tags($headers[1][$i]));
         }
+        $this->assertStringNotContainsString('Web views', strip_tags($headers[1][6]));
         $this->assertStringNotContainsString('cdn.datatables.net', $html);
         $this->assertStringContainsString('class="admin-table__table admin-pieces-table"', $html);
         foreach (['without_videos', 'without_moments', 'without_synthesia'] as $filter) {
@@ -232,14 +234,32 @@ class AdminPiecesTableTest extends ReviewTestCase
         foreach ($views as $id => $count) {
             DB::table('piece_web_view_counts')->insert(['piece_id' => $id, 'views' => $count, 'reported_through' => '2026-11-10']);
         }
+        DB::table('piece_views')->insert(['piece_id' => $ids[23], 'user_id' => 987654, 'created_at' => '2023-06-07 12:00:00']);
+        DB::table('activity_events')->insert([
+            'event_id' => (string) Str::uuid(), 'user_id' => 987654, 'platform' => 'app',
+            'source' => 'redis', 'type' => 'legacy_request', 'url' => '/api/pieces/find',
+            'metadata' => json_encode(['data' => ['search' => (string) $ids[23]]]),
+            'occurred_at' => '2023-06-08 12:00:00', 'received_at' => now(),
+        ]);
+        DB::table('activity_events')->insert([
+            'event_id' => (string) Str::uuid(), 'user_id' => 987654, 'platform' => 'app',
+            'source' => 'server', 'type' => 'piece_opened', 'resource_type' => 'piece', 'resource_id' => (string) $ids[22],
+            'occurred_at' => now(), 'received_at' => now(),
+        ]);
+        $views[$ids[23]] = 17;
+        $views[$ids[22]] = 1;
+        $defaultSort = $this->directory(['search' => 'Directory', 'sort' => 'name_desc'])->assertOk()->viewData('pieceViews');
+        $this->assertSame(17, $defaultSort[$ids[23]]);
+        $this->assertSame(1, $defaultSort[$ids[22]]);
         $unavailable = $ids->diff(array_keys($views))->reverse()->values()->all();
         foreach ([
-            'views_asc' => [$ids[0], $ids[1], $ids[24], $ids[23]],
-            'views_desc' => [$ids[24], $ids[23], $ids[1], $ids[0]],
+            'views_asc' => [$ids[0], $ids[22], $ids[1], $ids[24], $ids[23]],
+            'views_desc' => [$ids[23], $ids[24], $ids[1], $ids[22], $ids[0]],
         ] as $sort => $ranked) {
             foreach (array_chunk(array_merge($ranked, $unavailable), 12) as $index => $expected) {
                 $response = $this->directory(['search' => 'Directory', 'sort' => $sort, 'page' => $index + 1])->assertOk();
                 $this->assertSame($expected, $response->viewData('pieces')->pluck('id')->all());
+                $this->assertEquals(array_intersect_key($views, array_flip($expected)), $response->viewData('pieceViews'));
             }
         }
     }
@@ -284,20 +304,20 @@ class AdminPiecesTableTest extends ReviewTestCase
             $queries = DB::getQueryLog(); DB::disableQueryLog();
             $counts[] = count($queries);
             $this->assertCount($size, $data['pieces']);
-            $this->assertStringNotContainsString('activity_events', implode(' ', array_column($queries, 'query')));
+            $this->assertCount(1, array_filter(array_column($queries, 'query'), fn ($sql) => strpos($sql, 'activity_events') !== false));
             $this->assertStringNotContainsString('from "tutorials"', implode(' ', array_column($queries, 'query')));
         }
         $this->assertSame([7, 7], $counts);
     }
 
-    public function test_piece_web_views_sync_replaces_totals_used_only_in_the_admin_directory()
+    public function test_piece_web_views_sync_replaces_the_web_share_of_directory_totals()
     {
         $this->travelTo(now('America/New_York')->setDate(2026, 11, 11)->setTime(17, 5));
         $piece = $this->pieces->first();
-        $piece->views()->create(['user_id' => create(User::class)->id]);
+        $piece->views()->create(['user_id' => create(User::class)->id, 'created_at' => '2023-06-07 12:00:00']);
         $path = route('webapp.pieces.show', $piece, false);
-        $directory = $this->directory()->assertOk()->assertSeeText('Web views')->assertSeeText('Unavailable');
-        $this->assertSame([], $directory->viewData('pieceWebViews'));
+        $directory = $this->directory()->assertOk()->assertSeeText('Views')->assertSeeText('Unavailable');
+        $this->assertSame([$piece->id => 1], $directory->viewData('pieceViews'));
 
         $credentials = tempnam(sys_get_temp_dir(), 'piece-web-views-');
         try {
@@ -332,9 +352,9 @@ class AdminPiecesTableTest extends ReviewTestCase
                     && $filters[1]['filter']['inListFilter']['values'][0] === $path;
             });
 
-            $page = $this->directory()->assertOk()->assertSeeText('1,234')->assertDontSeeText('Unavailable');
-            $this->assertSame(1234, $page->viewData('pieceWebViews')[$piece->id]);
-            $this->assertSame(0, $page->viewData('pieceWebViews')[$this->pieces[1]->id]);
+            $page = $this->directory()->assertOk()->assertSeeText('1,235')->assertDontSeeText('Unavailable');
+            $this->assertSame(1235, $page->viewData('pieceViews')[$piece->id]);
+            $this->assertSame(0, $page->viewData('pieceViews')[$this->pieces[1]->id]);
             $this->assertArrayNotHasKey('web_views', $this->table()->assertOk()->json('data.0'));
             Http::assertSentCount(2);
 
@@ -343,6 +363,7 @@ class AdminPiecesTableTest extends ReviewTestCase
             $this->assertDatabaseHas('piece_web_view_counts', ['piece_id' => $piece->id, 'views' => 1234, 'reported_through' => '2026-11-10']);
             $this->artisan('analytics:sync-piece-web-views')->assertExitCode(0);
             $this->assertDatabaseHas('piece_web_view_counts', ['piece_id' => $piece->id, 'views' => 1300, 'reported_through' => '2026-11-11']);
+            $this->assertSame(1301, $this->directory()->assertOk()->viewData('pieceViews')[$piece->id]);
             $this->assertSame(1, $piece->views()->count());
         } finally {
             unlink($credentials);
