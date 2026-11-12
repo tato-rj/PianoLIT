@@ -1,22 +1,23 @@
-@extends('layouts.app', [
-    'title' => 'Chord Finder | PianoLIT Learn',
-    'bodyClass' => 'learn-home chord-finder',
-    'shareable' => [
-        'keywords' => 'chords,chord finder,music theory,harmony',
-        'title' => 'Chord Finder',
-        'description' => 'Find possible chords from your notes, hear them on the piano, and understand the intervals behind each name.',
-        'thumbnail' => asset('images/misc/thumbnails/chords.jpg'),
-        'created_at' => carbon('10-08-2019'),
-        'updated_at' => carbon('20-08-2019')
-    ]])
+@php
+    $searchTitle = 'Piano Chord Finder';
+    $searchDescription = 'Identify a piano chord from its notes. Use the keyboard or enter note names to see possible chords, hear the voicing, and understand the intervals.';
+    $canonical = route('tools.chord-finder.index');
+    $breadcrumbs = [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Learn', 'url' => route('learn.home')],
+        ['label' => 'Chord Finder'],
+    ];
+    $searchEntity = ['@type' => 'WebApplication', 'name' => $searchTitle, 'url' => $canonical, 'description' => $searchDescription, 'isAccessibleForFree' => true];
+@endphp
+@extends('layouts.app', ['title' => $searchTitle.' | PianoLIT Learn', 'bodyClass' => 'learn-home chord-finder'])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['searchImage' => asset('images/misc/thumbnails/chords.jpg')])
+@endsection
 
 @section('content')
 <div class="container py-4 pb-5">
-    @include('components.navigation.breadcrumb', ['items' => [
-        ['label' => 'Home', 'url' => route('home')],
-        ['label' => 'Learn', 'url' => route('learn.home')],
-        ['label' => 'Chord finder'],
-    ]])
+    @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
     <header class="learn-home__intro mb-5">
         <h1 class="mb-3">Chord Finder</h1>
         <p class="text-muted mb-0">Select at least three notes to find a chord.</p>
@@ -26,6 +27,12 @@
         <div id="notes-container" data-url="{{ route('tools.chord-finder.analyse') }}">
             @include('tools.chord-finder.empty')
         </div>
+        <section class="border-top pt-4 mt-5" aria-labelledby="chord-guide-title">
+            <h2 class="h4 mb-3" id="chord-guide-title">How to find a piano chord from its notes</h2>
+            <p>Choose at least three different notes on the keyboard or enter their names. Select <strong>Find chords</strong> to see possible names. Choose a result to hear the chord and see the notes on the keyboard.</p>
+            <p>For example, C, E, and G form C major. When E is the lowest note, the chord is in first inversion and can be written C/E. When the notes fit more than one chord, you can specify a root or key signature to help narrow the results.</p>
+            <p class="mb-0">Use the <a href="{{ route('tools.circle-of-fifths') }}">interactive circle of fifths</a> to compare key signatures and see how chords relate to a key.</p>
+        </section>
         @slot('sidebar')
             @include('components.promotions.ads', ['ads' => ['crashcourse', 'ebook', 'escore'], 'variant' => 'cards'])
         @endslot

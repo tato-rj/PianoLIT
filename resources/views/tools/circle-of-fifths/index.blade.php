@@ -1,14 +1,19 @@
-@extends('layouts.app', [
-	'title' => 'Circle of Fifths | PianoLIT Learn',
-    'bodyClass' => 'learn-home circle-tool',
-	'shareable' => [
-		'keywords' => 'circle of fifths,music theory,circle,fifths,music theory,chords',
-		'title' => 'The Interactive Circle of Fifths',
-		'description' => 'An interactive Circle of Fifths that will help you understand what it is and how to use it.',
-		'thumbnail' => asset('images/misc/thumbnails/circle.jpg'),
-		'created_at' => carbon('20-06-2019'),
-		'updated_at' => carbon('20-06-2019')
-	]])
+@php
+    $searchTitle = 'Interactive Circle of Fifths';
+    $searchDescription = 'Explore major and minor keys, key signatures, and related chords on an interactive circle of fifths. Hear each scale on the piano.';
+    $canonical = route('tools.circle-of-fifths');
+    $breadcrumbs = [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Learn', 'url' => route('learn.home')],
+        ['label' => 'Circle of Fifths'],
+    ];
+    $searchEntity = ['@type' => 'WebApplication', 'name' => $searchTitle, 'url' => $canonical, 'description' => $searchDescription, 'isAccessibleForFree' => true];
+@endphp
+@extends('layouts.app', ['title' => $searchTitle.' | PianoLIT Learn', 'bodyClass' => 'learn-home circle-tool'])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['searchImage' => asset('images/misc/thumbnails/circle.jpg')])
+@endsection
 
 @push('header')
 <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:700&display=swap" rel="stylesheet">
@@ -17,11 +22,7 @@
 @section('content')
 
 <div class="container py-4 pb-5">
-    @include('components.navigation.breadcrumb', ['items' => [
-        ['label' => 'Home', 'url' => route('home')],
-        ['label' => 'Learn', 'url' => route('learn.home')],
-        ['label' => 'Circle of fifths'],
-    ]])
+    @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
 
     <header class="learn-home__intro mb-5">
         <h1 class="mb-3">Circle of Fifths</h1>
@@ -86,6 +87,13 @@
                 ],
             ])
             <p id="circle-audio-status" class="small text-muted mt-3 mb-0 d-none" role="status"></p>
+        </section>
+
+        <section class="border-top pt-4 mt-5" aria-labelledby="circle-guide-title">
+            <h2 class="h4 mb-3" id="circle-guide-title">How to read the circle of fifths</h2>
+            <p>The circle of fifths arranges keys by perfect fifths. Start at C major, which has no sharps or flats. The first step clockwise is G major, with one sharp. The first step counterclockwise is F major, with one flat.</p>
+            <p>Each major key shares its key signature with a relative minor. C major and A natural minor use the same seven notes and start on different notes. Choose C, switch to the Minor tab, and listen to the A minor scale to compare them.</p>
+            <p class="mb-0">The neighboring major keys also show the roots of the IV and V chords. In C major, those chords are F major and G major. Use the <a href="{{ route('tools.chord-finder.index') }}">Chord Finder</a> to see how their notes are put together.</p>
         </section>
 
         <div class="mt-5">

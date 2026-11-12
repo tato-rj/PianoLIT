@@ -96,7 +96,6 @@ class InfographicsController extends Controller
         $filters = app(InfographicsTable::class)->filters(Request::create('/', 'GET', $request->query()));
         [$width, $height] = $form->hasFile('cover_image') ? getimagesize($form->file('cover_image')->getRealPath()) : [$infograph->width, $infograph->height];
         $attributes = [
-            'slug' => str_slug($form->name),
             'name' => $form->name,
             'description' => $form->description,
             'cover_path' => (new ImageUpload($request))->take('cover_image')

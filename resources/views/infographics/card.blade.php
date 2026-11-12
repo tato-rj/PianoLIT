@@ -2,7 +2,7 @@
     'id' => 'infographic-'.$item->id,
     'url' => route('resources.infographs.show', $item),
     'title' => rtrim($item->name, '. '),
-    'description' => $item->description,
+    'description' => \App\Services\Learn\InfographicGuide::description($item),
     'format' => 'Free visual guide',
     'action' => 'View & download',
     'artworkClass' => 'resource-card__art--poster',

@@ -25,15 +25,24 @@ class PianistsController extends Controller
                     });
             });
         }
-        $pianists = $query->orderBy('name')->orderBy('id')->paginate(12)->withQueryString();
+        $pianists = $query->orderBy('name')->orderBy('id')->paginate(12)->appends($request->only('search', 'country'));
         $countries = Country::whereIn('id', Pianist::select('country_id'))->orderBy('name')->get();
+        $page = $pianists->currentPage();
+        $filtered = $request->query->has('search') || $request->query->has('country');
+        $indexable = ! $filtered && $pianists->isNotEmpty();
+        $canonical = $indexable ? route('resources.pianists.index', $page > 1 ? ['page' => $page] : []) : null;
+        $response = response()->view('pianists.index', compact('pianists', 'countries', 'filters', 'canonical'));
 
-        return view('pianists.index', compact('pianists', 'countries', 'filters'));
+        return $indexable ? $response : $response->header('X-Robots-Tag', 'noindex');
     }
 
     public function show(Pianist $pianist)
     {
-        $morePianists = Pianist::where('id', '<>', $pianist->id)->orderBy('name')->orderBy('id')->limit(3)->get();
+        $morePianists = Pianist::where('id', '<>', $pianist->id);
+        if ($pianist->country_id) {
+            $morePianists->orderByRaw('CASE WHEN country_id = ? THEN 0 ELSE 1 END', [$pianist->country_id]);
+        }
+        $morePianists = $morePianists->orderBy('name')->orderBy('id')->limit(3)->get();
 
         return view('pianists.show', compact('pianist', 'morePianists'));
     }

@@ -35,9 +35,9 @@ class ToolsController extends Controller
 		$json = $finder->take(request())->debug();
 
 		if (request()->has('dev'))
-			return $request;
+			return response()->json($request)->header('X-Robots-Tag', 'noindex');
 		
-		return view('tools.chord-finder.results.index', compact(['request', 'json']))->render();
+		return response()->view('tools.chord-finder.results.index', compact('request', 'json'))->header('X-Robots-Tag', 'noindex');
     }
 
     public function circleOfFifths()

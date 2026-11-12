@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'metronome.index')->name('metronome.home');
+Route::view('guide', 'metronome.guide')->name('metronome.guide');
+Route::get('sitemap.xml', 'PublicSitemapsController@metronome')->name('metronome.sitemap');
 
 Route::middleware('auth:web')->prefix('voice')->name('metronome.voice.')->group(function () {
     Route::get('record', 'MetronomeVoiceController@start')->name('start');

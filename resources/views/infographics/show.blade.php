@@ -1,28 +1,43 @@
-@extends('layouts.app', [
-    'title' => rtrim($infograph->name, '. ').' | PianoLIT Learn',
-    'bodyClass' => 'learn-home',
-    'shareable' => [
-        'keywords' => 'infographic,music theory,piano,visual guide',
-        'title' => rtrim($infograph->name, '. '),
-        'description' => $infograph->description,
-        'thumbnail' => storage($infograph->thumbnail_path),
-        'created_at' => $infograph->created_at,
-        'updated_at' => $infograph->updated_at,
-    ]])
-
-@section('content')
-<div class="container py-4 pb-5">
-    @include('components.navigation.breadcrumb', ['items' => [
+@php
+    $name = rtrim($infograph->name, '. ');
+    $description = \App\Services\Learn\InfographicGuide::description($infograph);
+    $guide = \App\Services\Learn\InfographicGuide::forArtwork($infograph);
+    $alt = $guide['alt'] ?? 'Preview of '.$name;
+    $image = $infograph->cover_path ? storage($infograph->thumbnail_path) : null;
+    $searchDescription = Str::limit($guide['text'] ?? $description, 157, '…');
+    $breadcrumbs = [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Infographics', 'url' => route('resources.infographs.index')],
-        ['label' => rtrim($infograph->name, '. ')],
-    ]])
+        ['label' => $name],
+    ];
+    if ($image) {
+        $searchEntity = [
+            '@type' => 'ImageObject',
+            'contentUrl' => $image,
+            'name' => $name,
+            'caption' => $alt,
+            'description' => $guide['text'] ?? $description,
+            'mainEntityOfPage' => $canonical,
+        ];
+    }
+@endphp
+@extends('layouts.app', ['title' => $name.' | PianoLIT Learn', 'bodyClass' => 'learn-home'])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['searchTitle' => $name, 'searchImage' => $image])
+@endsection
+
+@section('content')
+<div class="container py-4 pb-5">
+    @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
 
     @component('components.layout.editorial')
         <div class="row g-4 g-xl-5 align-items-start mb-5">
             <div class="col-md-5 order-2 order-md-1">
-                <img src="{{ storage($infograph->thumbnail_path) }}" alt="Preview of {{ rtrim($infograph->name, '. ') }}" class="d-block w-100 border rounded-sm bg-white" decoding="async">
+                @if($image)
+                    <img src="{{ $image }}" alt="{{ $alt }}" @if($guide) aria-describedby="infographic-summary" @endif class="d-block w-100 border rounded-sm bg-white" decoding="async">
+                @endif
             </div>
             <div class="col-md-7 order-1 order-md-2">
                 @if($infograph->topics->isNotEmpty())
@@ -33,8 +48,8 @@
                     </div>
                 @endif
                 <header class="mb-4">
-                    <h1 class="h3 mb-3">{{ rtrim($infograph->name, '. ') }}</h1>
-                    <p class="text-muted mb-0">{{ $infograph->description }}</p>
+                    <h1 class="h3 mb-3">{{ $name }}</h1>
+                    @if($description)<p class="text-muted mb-0">{{ $description }}</p>@endif
                 </header>
                 <div class="mb-4">@include('infographics.download')</div>
                 <dl class="small border-top pt-4 mb-4">
@@ -61,6 +76,18 @@
                 </div>
             </div>
         </div>
+        @if($guide)
+            <section class="border-top pt-4 mb-5" aria-labelledby="infographic-summary-title">
+                <h2 id="infographic-summary-title" class="h4 mb-3">Guide in text</h2>
+                <p id="infographic-summary">{{ $guide['text'] }}</p>
+                @isset($guide['correction'])
+                    <p>{{ $guide['correction'] }} <a href="{{ $guide['source'] }}">{{ $guide['source_label'] }}</a></p>
+                @endisset
+                @isset($guide['tool'])
+                    <p><a href="{{ route($guide['tool']['route']) }}">{{ $guide['tool']['label'] }}</a></p>
+                @endisset
+            </section>
+        @endif
         @if($related->isNotEmpty())
             <section class="border-top pt-4" aria-labelledby="related-infographics-title">
                 <h2 id="related-infographics-title" class="h4 mb-4">Related infographics</h2>

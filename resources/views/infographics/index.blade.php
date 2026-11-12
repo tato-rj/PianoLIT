@@ -1,14 +1,17 @@
-@extends('layouts.app', [
-    'title' => 'Infographics | PianoLIT Learn',
-    'bodyClass' => 'learn-home',
-    'shareable' => [
-        'keywords' => 'infographics,music theory,piano,visual guides',
-        'title' => 'Infographics | PianoLIT Learn',
-        'description' => 'Explore music theory through free visual guides to download and keep.',
-        'thumbnail' => asset('images/misc/thumbnails/infographs.jpg'),
-        'created_at' => carbon('28-08-2019'),
-        'updated_at' => carbon('28-08-2019'),
-    ]])
+@php
+    $searchTitle = 'Music Infographics'.($infographs->currentPage() > 1 ? ' | Page '.$infographs->currentPage() : '');
+    $searchDescription = 'Free visual guides to music theory, piano practice, and music history. Browse diagrams of chords, rhythm, key signatures, and more.';
+    $breadcrumbs = [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Learn', 'url' => route('learn.home')],
+        ['label' => 'Infographics'],
+    ];
+@endphp
+@extends('layouts.app', ['title' => $searchTitle.' | PianoLIT Learn', 'bodyClass' => 'learn-home'])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['searchImage' => asset('images/misc/thumbnails/infographs.jpg')])
+@endsection
 
 @section('content')
 @php
@@ -19,11 +22,7 @@
     }
 @endphp
 <div class="container py-4 pb-5">
-    @include('components.navigation.breadcrumb', ['items' => [
-        ['label' => 'Home', 'url' => route('home')],
-        ['label' => 'Learn', 'url' => route('learn.home')],
-        ['label' => 'Infographics'],
-    ]])
+    @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
     @component('components.layout.hub-header', ['heading' => 'Infographics', 'preview' => false])
         Free visual guides to music theory and piano practice.
     @endcomponent

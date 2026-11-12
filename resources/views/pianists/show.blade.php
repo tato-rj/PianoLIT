@@ -1,39 +1,45 @@
-@extends('layouts.app', [
-    'title' => rtrim($pianist->name, '. ').' | PianoLIT Learn', 'bodyClass' => 'learn-home pianist-page',
-    'shareable' => [
-        'keywords' => $pianist->name.',piano,classical music,piano recordings',
-        'title' => rtrim($pianist->name, '. ').' | Great Pianists',
-        'description' => Str::limit(trim(preg_replace('/\s+/u', ' ', strip_tags((string) $pianist->biography))), 160),
-        'thumbnail' => $pianist->cover_path ? storage($pianist->cover_path) : asset('images/misc/thumbnails/pianists.jpg'),
-        'created_at' => $pianist->created_at ? $pianist->created_at->format(DateTime::ISO8601) : '',
-        'updated_at' => $pianist->updated_at ? $pianist->updated_at->format(DateTime::ISO8601) : '',
-    ],
-])
-
-@section('content')
 @php
+    $name = rtrim($pianist->name, '. ');
     $nationality = optional($pianist->country)->nationality ?: optional($pianist->country)->name;
     $biography = trim((string) $pianist->biography);
-    $hasRecordings = preg_match('/\A[1-9]\d*\z/', trim((string) $pianist->itunes_id));
-@endphp
-<div class="container py-4 pb-5">
-    @include('components.navigation.breadcrumb', ['items' => [
+    $artistId = trim((string) $pianist->itunes_id);
+    $hasRecordings = preg_match('/\A[1-9]\d*\z/', $artistId);
+    $portrait = $pianist->cover_path ? storage($pianist->cover_path) : null;
+    $canonical = route('resources.pianists.show', $pianist);
+    $listening = config('pianist-listening.'.$pianist->slug);
+    $searchDescription = $listening['summary'] ?? (Str::limit(trim(preg_replace('/\s+/u', ' ', strip_tags($biography))), 160) ?: 'Pianist profile for '.$name.' on PianoLIT Learn.');
+    $breadcrumbs = [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Great Pianists', 'url' => route('resources.pianists.index')],
-        ['label' => rtrim($pianist->name, '. ')],
-    ]])
+        ['label' => $name],
+    ];
+    $person = ['@type' => 'Person', 'name' => $name, 'jobTitle' => 'Pianist', 'url' => $canonical];
+    if ($portrait) $person['image'] = $portrait;
+    if ($pianist->date_of_birth && !$pianist->unknownBirthday()) $person['birthDate'] = $pianist->date_of_birth->toDateString();
+    if ($pianist->date_of_death && !$pianist->unknownDeathday()) $person['deathDate'] = $pianist->date_of_death->toDateString();
+    $searchEntity = ['@type' => 'WebPage', 'url' => $canonical, 'name' => $name, 'description' => $searchDescription, 'mainEntity' => $person];
+@endphp
+@extends('layouts.app', ['title' => $name.' | Great Pianists | PianoLIT Learn', 'bodyClass' => 'learn-home pianist-page'])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['searchTitle' => $name.' | Great Pianists', 'searchImage' => $portrait ?? asset('images/misc/thumbnails/pianists.jpg')])
+@endsection
+
+@section('content')
+<div class="container py-4 pb-5">
+    @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
     @component('components.layout.editorial')
         <article>
             <header class="row g-4 align-items-center mb-5">
-                @if($pianist->cover_path)
+                @if($portrait)
                     <div class="col-4 col-md-3">
-                        <img src="{{ storage($pianist->cover_path) }}" class="pianist-portrait d-block" alt="Portrait of {{ rtrim($pianist->name, '. ') }}" decoding="async">
+                        <img src="{{ $portrait }}" class="pianist-portrait d-block" alt="Portrait of {{ $name }}" decoding="async">
                     </div>
                 @endif
                 <div class="{{ $pianist->cover_path ? 'col-8 col-md-9' : 'col-12' }}">
                     @if($nationality)<p class="small text-muted mb-2">{{ $nationality }}</p>@endif
-                    <h1 class="h2 mb-3">{{ rtrim($pianist->name, '. ') }}</h1>
+                    <h1 class="h2 mb-3">{{ $name }}</h1>
                     @if($pianist->born_at || $pianist->died_at)
                         <dl class="pianist-dates small text-muted mb-4">
                             @if($pianist->born_at)<div><dt>Born</dt><dd>{{ $pianist->born_at }}</dd></div>@endif
@@ -49,13 +55,22 @@
                     @foreach(preg_split('/\R\s*\R/', $biography) as $paragraph)<p>{{ $paragraph }}</p>@endforeach
                 </section>
             @endif
+            @if($listening)
+                <section class="border-top pt-4 mb-5" aria-labelledby="pianist-listening-title">
+                    <h2 class="h4 mb-3" id="pianist-listening-title">Where to start listening</h2>
+                    @foreach($listening['notes'] as $note)
+                        <p>{{ $note['text'] }} <a href="{{ $note['url'] }}">{{ $note['label'] }}</a></p>
+                    @endforeach
+                </section>
+            @endif
             <section id="recordings" class="border-top pt-4 mb-5" aria-labelledby="pianist-recordings-title">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
                     <h2 class="h4 mb-0" id="pianist-recordings-title">Recordings</h2>
                     <img src="{{ asset('images/icons/apple-music.svg') }}" alt="Apple Music" class="pianist-apple-music" width="88" loading="lazy">
                 </div>
                 @if($hasRecordings)
-                    <div id="api-results" data-pianist-recordings data-itunes="{{ trim($pianist->itunes_id) }}" aria-busy="true">
+                    <p class="small mb-3"><a href="https://music.apple.com/us/artist/{{ $artistId }}" aria-label="{{ $name }} on Apple Music">View on Apple Music</a></p>
+                    <div id="api-results" data-pianist-recordings data-itunes="{{ $artistId }}" aria-busy="true">
                         <p class="small text-muted mb-4" data-recordings-status role="status" aria-live="polite">Loading albums from Apple Music…</p>
                         <div class="row g-3" data-recordings-results></div>
                         <button type="button" class="btn btn-secondary" data-recordings-retry hidden>@icon('rotate-ccw')Try again</button>

@@ -4,9 +4,14 @@
     @include('layouts.html.google.manager-head')
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="A simple metronome. Tap to play, swipe to find your tempo.">
-    <title>Metronome | PianoLIT</title>
-    <link rel="canonical" href="{{ route('metronome.home') }}">
+    @php
+        $searchTitle = 'Online Metronome';
+        $searchDescription = 'Practice with a free online metronome from 20 to 300 beats per minute. Set the tempo, choose one to four beats per bar, and use a pulse or conductor display.';
+        $canonical = route('metronome.home');
+        $searchEntity = ['@type' => 'WebApplication', 'name' => $searchTitle, 'url' => $canonical, 'description' => $searchDescription, 'isAccessibleForFree' => true];
+    @endphp
+    <title>{{ $searchTitle }} | PianoLIT</title>
+    @include('components.seo.resource-head', ['siteName' => 'PianoLIT', 'searchImage' => asset('images/home/worlds/metronome.webp')])
     @include('layouts.html.google.fonts')
     @include('components.forms.number-fonts')
     @include('layouts.html.theme')
@@ -17,8 +22,13 @@
 <body class="public-site">
     @include('layouts.html.google.manager-body')
     @component('components.account.page', ['pageClasses' => 'account-page--metronome'])
-    @include('components.layout.public.header', ['transparentHeader' => true])
+    @component('components.layout.public.header', ['transparentHeader' => true, 'navigationLabel' => 'Metronome help and site navigation'])
+        @slot('navigationBeforeAccount')
+            <li class="nav-item"><a class="text-reset small text-nowrap" href="{{ route('metronome.guide') }}">How to use</a></li>
+        @endslot
+    @endcomponent
     <main>
+        <h1 class="visually-hidden">{{ $searchTitle }}</h1>
         <button
             class="metronome"
             type="button"

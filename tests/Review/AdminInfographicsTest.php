@@ -166,8 +166,10 @@ class AdminInfographicsTest extends ReviewTestCase
         Storage::disk('public')->assertExists([$infograph->cover_path, $infograph->thumbnail_path]);
         $path = $infograph->cover_path;
         $this->patch(route('admin.infographs.update', $infograph), ['name' => 'Renamed guide', 'description' => 'Updated description.'])
-            ->assertRedirect(route('admin.infographs.edit', 'renamed-guide'));
+            ->assertRedirect(route('admin.infographs.edit', 'new-infographic'));
         $infograph->refresh();
+        $this->assertSame('new-infographic', $infograph->slug);
+        $this->assertSame('Renamed guide', $infograph->name);
         $this->assertSame($path, $infograph->cover_path);
         $this->assertSame(700, (int) $infograph->width);
         $this->assertSame(0, $infograph->topics()->count());

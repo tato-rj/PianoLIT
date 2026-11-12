@@ -93,7 +93,6 @@ class PianistsController extends Controller
         $returnFilters = AdminTableFilters::query($table->filters(Request::create('/', 'GET', $request->query())), 'name_asc');
 
         $pianist->update([
-            'slug' => str_slug($request->name),
             'name' => $request->name,
             'date_of_birth' => carbon($request->date_of_birth)->format('Y-m-d'),
             'date_of_death' => $request->date_of_death ? carbon($request->date_of_death)->format('Y-m-d') : null,

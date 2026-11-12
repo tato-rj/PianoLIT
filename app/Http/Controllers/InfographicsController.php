@@ -15,21 +15,34 @@ class InfographicsController extends Controller
         $this->middleware('throttle:2')->only('updateScore');
     }
 
-    public function index(InfographicFilters $filters)
+    public function index(Request $request, InfographicFilters $filters)
     {
-        $infographs = Infograph::published()->latest()->filter($filters)->paginate(12)->withQueryString();
+        $infographs = Infograph::published()->latest()->orderByDesc('id')->filter($filters)->paginate(12)
+            ->appends($request->only('topics'));
         $topics = Topic::whereHas('infographs', function ($query) { $query->published(); })->ordered()->get();
+        $page = $infographs->currentPage();
+        $indexable = ! $request->query->has('topics') && $infographs->isNotEmpty();
+        $canonical = $indexable ? route('resources.infographs.index', $page > 1 ? ['page' => $page] : []) : null;
+        $response = response()->view('infographics.index', compact('infographs', 'topics', 'canonical'));
 
-        return view('infographics.index', compact('infographs', 'topics'));
+        return $indexable ? $response : $response->header('X-Robots-Tag', 'noindex');
     }
 
     public function show(Infograph $infograph)
     {
         $infograph->load('topics');
-        $related = $infograph->related();
+        $related = collect();
+        if ($topicIds = $infograph->topics->modelKeys()) {
+            $related = Infograph::published()->whereNotIn('id', [$infograph->id, 53])
+                ->withCount(['topics as shared_topics_count' => fn ($query) => $query->whereIn('infograph_topics.id', $topicIds)])
+                ->whereHas('topics', fn ($query) => $query->whereIn('infograph_topics.id', $topicIds))
+                ->orderByDesc('shared_topics_count')->latest('published_at')->orderByDesc('id')->limit(8)->get();
+        }
         $downloadPurchase = auth()->check() ? auth()->user()->purchasesOf($infograph)->first() : null;
-        
-        return view('infographics.show', compact('infograph', 'related', 'downloadPurchase'));
+        $canonical = $infograph->published_at ? route('resources.infographs.show', $infograph) : null;
+        $response = response()->view('infographics.show', compact('infograph', 'related', 'downloadPurchase', 'canonical'));
+
+        return $canonical ? $response : $response->header('X-Robots-Tag', 'noindex');
     }
 
     public function download(Infograph $infograph)

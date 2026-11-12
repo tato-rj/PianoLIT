@@ -1,12 +1,17 @@
-@extends('layouts.app', [
-    'title' => 'Great Pianists | PianoLIT Learn', 'bodyClass' => 'learn-home pianist-page',
-    'shareable' => [
-        'keywords' => 'pianists,classical music,piano recordings,biographies', 'title' => 'Great Pianists',
-        'description' => 'Meet remarkable pianists, explore their stories, and discover their recordings.',
-        'thumbnail' => asset('images/misc/thumbnails/pianists.jpg'),
-        'created_at' => carbon('16-09-2019'), 'updated_at' => carbon('16-09-2019'),
-    ],
-])
+@php
+    $searchTitle = 'Great Pianists'.($pianists->currentPage() > 1 ? ' | Page '.$pianists->currentPage() : '');
+    $searchDescription = 'Read biographies of classical pianists and explore their recordings. Find pianists by name, country, or nationality.';
+    $breadcrumbs = [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Learn', 'url' => route('learn.home')],
+        ['label' => 'Great Pianists'],
+    ];
+@endphp
+@extends('layouts.app', ['title' => $searchTitle.' | PianoLIT Learn', 'bodyClass' => 'learn-home pianist-page'])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['searchImage' => asset('images/misc/thumbnails/pianists.jpg')])
+@endsection
 
 @section('content')
 @php
@@ -14,13 +19,9 @@
     foreach ($countries as $country) $countryChoices[$country->id] = $country->name;
 @endphp
 <div class="container py-4 pb-5">
-    @include('components.navigation.breadcrumb', ['items' => [
-        ['label' => 'Home', 'url' => route('home')],
-        ['label' => 'Learn', 'url' => route('learn.home')],
-        ['label' => 'Great Pianists'],
-    ]])
+    @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
     @component('components.layout.hub-header', ['heading' => 'Great Pianists', 'preview' => false])
-        Remarkable artists. A lifetime of music.<br class="d-none d-md-block"> Get to know the pianists, then discover their recordings.
+        {{ $searchDescription }}
     @endcomponent
 
     @component('components.layout.editorial')

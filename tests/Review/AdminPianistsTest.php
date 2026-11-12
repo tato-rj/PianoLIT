@@ -101,7 +101,9 @@ class AdminPianistsTest extends ReviewTestCase
         $updated = array_merge($this->payload(), ['name' => 'A renamed pianist', 'date_of_birth' => '04/23/1985']);
         $cover = $created->cover_path;
         $this->patch(route('admin.pianists.update', ['pianist' => $created] + $context), $updated)
-            ->assertRedirect(route('admin.pianists.edit', ['pianist' => 'a-renamed-pianist'] + $context));
+            ->assertRedirect(route('admin.pianists.edit', ['pianist' => 'a-new-pianist'] + $context));
+        $this->assertSame('a-new-pianist', $created->fresh()->slug);
+        $this->assertSame('A renamed pianist', $created->fresh()->name);
         $this->assertSame($cover, $created->fresh()->cover_path);
         $this->assertSame($this->country->id, $created->fresh()->country_id);
         $this->assertSame(array_keys($original), array_keys($created->fresh()->toArray()));
@@ -182,7 +184,7 @@ class AdminPianistsTest extends ReviewTestCase
         $target = $this->pianists[0];
         $context = ['search' => 'Pianist', 'sort' => 'name_desc', 'page' => 2];
         $this->patch(route('admin.pianists.update', ['pianist' => $target] + $context), $this->payload() + ['editor_section' => 'pianist-music'])
-            ->assertRedirect(route('admin.pianists.edit', ['pianist' => 'a-new-pianist'] + $context).'#pianist-music');
+            ->assertRedirect(route('admin.pianists.edit', ['pianist' => $target] + $context).'#pianist-music');
         $target->refresh();
         $original = $target->toArray();
         $this->withExceptionHandling();

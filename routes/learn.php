@@ -2,6 +2,7 @@
 
 Route::view('/', 'learn.index')->name('learn.home');
 Route::get('quiz-sitemap.xml', 'QuizzesController@sitemap')->name('quizzes.sitemap');
+Route::get('resource-sitemap.xml', 'PublicSitemapsController@learnResources')->name('learn.resources.sitemap');
 
 Route::name('tools.')->group(function () {
     Route::get('circle-of-fifths', 'ToolsController@circleOfFifths')->name('circle-of-fifths');
