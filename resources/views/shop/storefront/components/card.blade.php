@@ -2,7 +2,7 @@
     <div class="shop-card__art">
         <a href="{{ $product['url'] }}" tabindex="-1" aria-hidden="true">
             @if($product['imageUrl'])
-                <img class="shop-card__overview" src="{{ $product['imageUrl'] }}" alt="" width="600" height="600" loading="lazy">
+                <img class="shop-card__overview" src="{{ $product['imageUrl'] }}" alt="" width="600" height="600" @if($prioritizeImage ?? false) fetchpriority="high" @else loading="lazy" @endif>
                 @if(!empty($product['closeupUrl']))
                     <img class="shop-card__detail" src="{{ $product['closeupUrl'] }}" alt="" width="600" height="600" loading="lazy" data-card-closeup>
                 @endif

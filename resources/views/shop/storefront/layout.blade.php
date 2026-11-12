@@ -20,8 +20,10 @@
     @include('components.layout.public.footer')
     @include('shop.storefront.components.alerts')
 </div>
-@include('shop.storefront.components.welcome-offer')
-@include('components.billing.checkout.host', ['cancelUrl' => route('shop.bag')])
+<div data-nosnippet>
+    @include('shop.storefront.components.welcome-offer')
+    @include('components.billing.checkout.host', ['cancelUrl' => route('shop.bag')])
+</div>
 @endsection
 
 @push('scripts')

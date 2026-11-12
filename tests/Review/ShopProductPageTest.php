@@ -160,7 +160,7 @@ class ShopProductPageTest extends ReviewTestCase
         $dom = new \DOMDocument;
         @$dom->loadHTML($html);
         $xpath = new \DOMXPath($dom);
-        $this->assertCount(1, $xpath->query('//*[@data-product-detail]//button[@data-bs-target="#product-share-modal"]/following-sibling::h2[1]'));
+        $this->assertCount(1, $xpath->query('//*[@data-product-detail]//button[@data-bs-target="#product-share-modal"]/following-sibling::h1[1]'));
         $this->assertSame($product->showRoute(), $xpath->query('//*[@id="product-share-modal"]//input[@readonly]')->item(0)->getAttribute('value'));
         $this->assertCount(6, $xpath->query('//*[@id="product-share-modal"]//a[starts-with(@aria-label,"Share via ")]'));
         $price = $xpath->query('//*[@data-product-price]')->item(0);

@@ -50,7 +50,7 @@ class ProductPage
         }
         $breadcrumbs[] = ['label' => $product['name']];
         $user = auth('web')->user();
-        $reviews = $item->publishedReviews()->latest()->get();
+        $reviews = $item->publishedReviews()->withExists('user')->latest()->get();
         $data = ['product' => $product, 'breadcrumbs' => $breadcrumbs, 'digitalProduct' => null, 'reviewProduct' => $item, 'previewPages' => $previewPages,
             'reviews' => $reviews, 'reviewCount' => $reviews->count(),
             'averageRating' => $reviews->count() ? number_format($reviews->avg('rating'), 1) : 0,

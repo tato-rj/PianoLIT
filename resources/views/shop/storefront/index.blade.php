@@ -1,7 +1,7 @@
 @extends('shop.storefront.layout', ['shopTitle' => $searchTitle])
 
 @section('page-metadata')
-    @include('components.seo.resource-head', ['siteName' => 'PianoLIT Shop'])
+    @include('components.seo.resource-head', ['siteName' => 'PianoLIT Shop', 'searchImage' => asset('images/home/worlds/shop.webp')])
 @endsection
 
 @section('shop-content')

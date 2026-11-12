@@ -42,19 +42,30 @@ class SearchMetadata
         $edition = $page['digitalProduct'];
         $name = $product['name'];
         $canonical = $public ? $product['url'] : null;
-        $searchTitle = $name.($edition ? ($product['category'] === 'ebooks' ? ' | eBook' : ' | Piano Sheet Music') : '').' | PianoLIT Shop';
+        $title = $name;
+        $author = $edition ? $this->text($edition->author) : '';
+        if ($author !== '' && $product['category'] === 'escores' && !Str::contains(Str::lower($title), Str::lower($author))) {
+            $title .= ' by '.$author;
+        }
+        $searchTitle = $title.($edition ? ($product['category'] === 'ebooks' ? ' | eBook' : ' | Piano Sheet Music') : '').' | PianoLIT Shop';
         $facts = [];
         if ($edition) {
             $facts['Edition'] = $product['label'].' · Digital download';
             if ($page['formats']) $facts['Format'] = $page['formats'];
             if ($edition->pages_count) $facts['Length'] = $edition->pages_count.' pages';
-            if ($edition->author) $facts[$product['category'] === 'ebooks' ? 'Author' : 'Composer'] = $edition->author;
+            if ($author !== '') $facts[$product['category'] === 'ebooks' ? 'Author' : 'Composer'] = $author;
         }
+        $materials = $product['materials'];
+        $material = !$edition && count($materials) === 1 && $materials[0]['label'] === null ? $this->text($materials[0]['text']) : '';
         $description = $this->text($product['subtitle'] ?? '') ?: $this->text($edition ? $edition->description : $product['description']);
         if ($description === '') {
-            $description = $name.' is '.($edition ? 'a digital '.($product['category'] === 'ebooks' ? 'piano book' : 'piano sheet music edition')
+            $description = $title.' is '.($edition ? 'a digital '.($product['category'] === 'ebooks' ? 'piano book' : 'piano sheet music edition')
                 : ($product['category'] === 'merchandise' ? 'an item' : 'a '.Str::lower($product['label']))).' from PianoLIT Shop.';
             if ($edition && $page['formats']) $description .= ' Available in '.$page['formats'].' format.';
+            if (!$edition && $material !== '') $description .= ' Material: '.rtrim($material, '.').'.';
+            if (!$edition && ($colors = array_diff($product['galleryColors'], ['Original']))) {
+                $description .= ' Available in '.implode(', ', $colors).'.';
+            }
         }
         $searchDescription = Str::limit($description, 157, '…');
         $gallery = $product['gallery']->reject(fn ($image) => !empty($image['detail']));
@@ -64,11 +75,13 @@ class SearchMetadata
             'description' => $description, 'category' => $edition && $product['category'] === 'escores' ? 'Piano sheet music' : $product['label'],
         ];
         if ($images = $this->images($gallery)) $searchEntity['image'] = $images;
+        if ($material !== '') $searchEntity['material'] = $material;
         if ($facts) {
             $searchEntity['additionalProperty'] = [];
             foreach ($facts as $label => $value) $searchEntity['additionalProperty'][] = ['@type' => 'PropertyValue', 'name' => $label, 'value' => $value];
         }
-        if ($page['reviewCount'] > 0 && (float) $page['averageRating'] >= 1 && (float) $page['averageRating'] <= 5) {
+        // The public summary can include editorial entries; only mark it up if all ratings come from customers.
+        if ($page['reviewCount'] > 0 && $page['reviews']->every(fn ($review) => $review->user_exists && $review->rating >= 1 && $review->rating <= 5)) {
             $searchEntity['aggregateRating'] = ['@type' => 'AggregateRating', 'ratingValue' => (float) $page['averageRating'], 'reviewCount' => $page['reviewCount']];
         }
 
