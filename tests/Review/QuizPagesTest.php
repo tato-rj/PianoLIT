@@ -334,11 +334,13 @@ class QuizPagesTest extends ReviewTestCase
         $url = route('quizzes.show', $quiz);
         $response = $this->get($url)->assertOk();
         $xpath = $this->xpath($response);
-        $this->assertSame('Beginner Music Theory Quiz', $xpath->evaluate('string(//article[@data-quiz]/header/h1)'));
+        $title = 'Can You Count the Beats? Music Theory for Beginners';
+        $this->assertSame($title, $xpath->evaluate('string(//article[@data-quiz]/header/h1)'));
+        $this->assertSame($title.' | PianoLIT Learn', $xpath->evaluate('normalize-space(//title)'));
         $this->assertStringContainsString('time signatures', $xpath->evaluate('string(//article[@data-quiz]/header/p)'));
         $this->assertSame($description, $quiz->fresh()->description);
 
         $quiz->update(['title' => 'Notes and Rhythm for Beginners', 'description' => 'Review note values and rhythm.']);
-        $this->get($url)->assertOk()->assertSee('Notes and Rhythm for Beginners')->assertSee('Review note values and rhythm.')->assertDontSee('Beginner Music Theory Quiz');
+        $this->get($url)->assertOk()->assertSee('Notes and Rhythm for Beginners')->assertSee('Review note values and rhythm.')->assertDontSee($title);
     }
 }
