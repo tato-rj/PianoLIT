@@ -6,7 +6,11 @@
 
 @isset($title)
 <div class="text-center mb-4">
-	<h2>{{$title ?? null}}</h2>
+    @if(!empty($pageHeading))
+        <h1 class="h2">{{ $title }}</h1>
+    @else
+        <h2>{{ $title }}</h2>
+    @endif
 	<p style="max-width: 80%" class="mx-auto">{!! $subtitle ?? null !!}</p>
 	{{$slot ?? null}}
 </div>

@@ -1,12 +1,37 @@
-@extends('webapp.layouts.app', ['title' => "$playlist->name - Piano Playlist"])
+@php
+    $searchTitle = $playlist->name.' - Piano Playlist';
+    $summary = trim($playlist->description ?: $playlist->subtitle ?: '');
+    $searchDescription = Str::limit(trim($playlist->name.' includes '.$totalPieceCount.' piano '.Str::plural('piece', $totalPieceCount).'. '.strip_tags($summary)), 160);
+    if ($canonical) {
+        $visiblePieces = $guestCap === null ? $pieces : $pieces->take($guestCap);
+        $items = $visiblePieces->values()->map(fn ($piece, $index) => [
+            '@type' => 'ListItem',
+            'position' => $index + 1,
+            'name' => $piece->medium_name,
+            'url' => route('webapp.pieces.show', $piece),
+        ]);
+        $searchEntity = [
+            '@type' => 'CollectionPage',
+            'url' => $canonical,
+            'name' => $playlist->name,
+            'description' => $searchDescription,
+            'mainEntity' => ['@type' => 'ItemList', 'itemListElement' => $items],
+        ];
+    }
+@endphp
+@extends('webapp.layouts.app', ['title' => $searchTitle])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['siteName' => 'PianoLIT', 'searchImage' => $playlist->cover_image ?: asset('images/webapp/collections/featured.webp')])
+@endsection
 
 @section('content')
 <div class="text-center mb-3">
     <div class="position-relative mb-3">
         @include('webapp.components.back')
-        <h3 class="m-0">{{$playlist->name}}</h3>
+        <h1 class="h3 m-0">{{ $playlist->name }}</h1>
     </div>
-    <p class="px-2">{{$playlist->description}}</p>
+    @if($summary)<p class="px-2">{{ $summary }}</p>@endif
 </div>
 <section class="playlist-page playlist-page--collection" data-playlist-page>
     <div class="text-center">

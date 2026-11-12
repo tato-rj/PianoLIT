@@ -1,7 +1,17 @@
-@extends('webapp.layouts.app', ['title' => 'Piano Collections'])
+@php
+    $searchTitle = 'Piano Collections';
+    $searchDescription = 'Browse curated collections of piano pieces grouped by composer, musical style, theme, and playing level.';
+    $canonical = route('webapp.playlists');
+    $searchEntity = ['@type' => 'CollectionPage', 'url' => $canonical, 'name' => $searchTitle, 'description' => $searchDescription];
+@endphp
+@extends('webapp.layouts.app', ['title' => $searchTitle])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['siteName' => 'PianoLIT', 'searchImage' => asset('images/webapp/collections/featured.webp')])
+@endsection
 
 @section('content')
-@component('webapp.layouts.header', ['title' => 'Collections', 'subtitle' => 'Browse piano pieces grouped by theme and level.'])
+@component('webapp.layouts.header', ['title' => 'Collections', 'subtitle' => $searchDescription, 'pageHeading' => true])
 @endcomponent
 
 <div class="collections-page" id="collections-page" @if(session('collection_access_prompt')) data-access-prompt="{{ session('collection_access_prompt') }}" @endif>
@@ -25,7 +35,7 @@
     <section class="collections-feature pastel-card" data-pastel-color="cream" aria-labelledby="featured-heading">
         <div class="collections-feature__copy">
             <span class="collections-eyebrow pastel-card__tag">FEATURED COLLECTION</span>
-            <h1 id="featured-heading">{{ $featured['playlist']->name }}</h1>
+            <h2 id="featured-heading">{{ $featured['playlist']->name }}</h2>
             <p>{{ $featured['playlist']->subtitle ?: 'Browse the pieces in this collection.' }}</p>
             <span class="collections-meta">{{ $featured['playlist']->pieces_count }} pieces</span>
             <a class="btn pastel-card__action" @include('webapp.playlists.link-attributes', ['playlist' => $featured['playlist']])>Explore collection @icon('arrow-right', ['mr' => 0])</a>

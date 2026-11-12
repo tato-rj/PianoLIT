@@ -4,6 +4,6 @@ Route::namespace('WebApp')->prefix('search')->middleware('search.driver')->name(
 	
 	Route::get('', 'SearchController@results')->name('results');
 
-	Route::get('count', 'SearchController@count')->name('count');
+	Route::get('count', 'SearchController@count')->middleware(\App\Http\Middleware\NoIndex::class)->name('count');
 
 });

@@ -1,5 +1,7 @@
 <?php
 
+Route::get('sitemap.xml', 'PublicSitemapsController@repertoire')->name('sitemap');
+
 Route::namespace('WebApp')->group(function() {
 
 	Route::get('', 'TabsController@discover')->name('discover');
@@ -18,7 +20,7 @@ Route::namespace('WebApp')->group(function() {
 
 	Route::get('playlists', 'TabsController@playlists')->name('playlists');
 	
-	Route::get('my-pieces', 'TabsController@myPieces')->name('my-pieces');
+	Route::get('my-pieces', 'TabsController@myPieces')->middleware(\App\Http\Middleware\NoIndex::class)->name('my-pieces');
 	
 	Route::get('settings', 'TabsController@settings')->name('settings');
 

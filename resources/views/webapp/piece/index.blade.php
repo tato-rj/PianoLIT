@@ -1,4 +1,8 @@
-@extends('webapp.layouts.app', ['title' => $piece->medium_name_with_composer])
+@extends('webapp.layouts.app', ['title' => $searchTitle])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['siteName' => 'PianoLIT', 'searchImage' => asset($piece->web_image_background)])
+@endsection
 
 @push('header')
 <link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">

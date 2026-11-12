@@ -5,17 +5,18 @@ namespace App\Http\Controllers\WebApp;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Playlist;
+use App\Services\WebApp\AccessPolicy;
 
 class PlaylistsController extends Controller
 {
-    public function show(Playlist $playlist)
+    public function show(Playlist $playlist, AccessPolicy $policy)
     {
         abort_unless($playlist->published_at && $playlist->published_at->lte(now()), 404);
 
-        $policy = app(\App\Services\WebApp\AccessPolicy::class);
         $collectionCap = $policy->cap('collections', auth('web')->user());
         if ($collectionCap === 0) {
-            return redirect()->route('webapp.playlists')->with('collection_access_prompt', $policy->promptTarget(auth('web')->user(), 'collections'));
+            return redirect()->route('webapp.playlists')->with('collection_access_prompt', $policy->promptTarget(auth('web')->user(), 'collections'))
+                ->header('X-Robots-Tag', 'noindex');
         }
 
         $query = $playlist->playablePieces()->with(['tutorials' => function ($query) {
@@ -31,7 +32,12 @@ class PlaylistsController extends Controller
         $totalPieceCount = (clone $query)->count();
         $pieces = $collectionCap !== null ? $query->limit($collectionCap)->get() : $query->get();
 
-        return view('webapp.playlists.show', compact('playlist', 'pieces', 'collectionCap', 'totalPieceCount'));
+        $guestCap = $policy->cap('collections', null);
+        $canonical = $guestCap !== 0 && $playlist->group === null && $totalPieceCount > 0
+            ? route('webapp.playlists.show', $playlist) : null;
+        $response = response()->view('webapp.playlists.show', compact('playlist', 'pieces', 'collectionCap', 'totalPieceCount', 'guestCap', 'canonical'));
+
+        return $canonical ? $response : $response->header('X-Robots-Tag', 'noindex');
     }
 
     public function pdf(Request $request, Playlist $playlist)

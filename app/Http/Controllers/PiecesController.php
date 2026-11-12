@@ -9,6 +9,6 @@ class PiecesController extends Controller
 {
     public function show(Piece $piece)
     {
-        return redirect(route('webapp.pieces.show', ['piece' => $piece] + request()->only(\App\Services\CampaignParameters::FIELDS)));
+        return redirect()->route('webapp.pieces.show', ['piece' => $piece] + request()->only(\App\Services\CampaignParameters::FIELDS), 301);
     }
 }

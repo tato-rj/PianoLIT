@@ -29,7 +29,7 @@
 			</div> --}}
 			@if($piece->hasDescription())
 			<div class="piece-description"  style="margin-bottom: 2rem;" data-piece-description>
-				<h5 class="mb-2">About this piece</h5>
+				<h2 class="h5 mb-2">About this piece</h2>
 				<div class="piece-description__content" id="piece-description">{{$piece->description}}</div>
 				<div class="d-flex justify-content-end">
 					<button type="button" class="piece-description__toggle" aria-controls="piece-description" aria-expanded="false" hidden>Read more</button>
@@ -37,9 +37,9 @@
 			</div>
 			@else
 			<div class="mb-3">
-				<h5 class="mb-2">About the composer</h5>
+				<h2 class="h5 mb-2">About the composer</h2>
 				<div id="composer-bio" class="mb-2">{{$piece->composer->biography}}</div>
-				<div>To learn more about {{$piece->composer->last_name}} <a href="{{route('webapp.composers.show', $piece->composer)}}">click here</a>.</div>
+				<div><a href="{{route('webapp.composers.show', $piece->composer)}}">More about {{ $piece->composer->name }}</a></div>
 			</div>
 			@endif
 			@if($piece->period && $piece->extended_level_name)
@@ -48,6 +48,21 @@
 			@endif
 		</div>
 	</div>
+    @if($facts || $resources)
+        <section class="mb-4" aria-labelledby="piece-details-heading">
+            <h2 id="piece-details-heading" class="h5 mb-3">Piece details</h2>
+            <dl class="row mb-0">
+                @foreach($facts as $label => $value)
+                    <dt class="col-sm-3">{{ $label }}</dt>
+                    <dd class="col-sm-9">{{ ucfirst($value) }}</dd>
+                @endforeach
+                @if($resources)
+                    <dt class="col-sm-3">Resources</dt>
+                    <dd class="col-sm-9">{{ ucfirst(implode(', ', $resources)) }}</dd>
+                @endif
+            </dl>
+        </section>
+    @endif
 	<div class="">
 {{-- 		<div class="mb-4 pb-4 border-bottom">
 			<div class="mb-2">

@@ -9,10 +9,24 @@ use App\Services\RecentlyViewedPieces;
 use App\Services\WebApp\PieceCards;
 use App\Services\Pieces\PageContent;
 use App\Services\WebApp\SimilarPieces;
+use App\Services\WebApp\PublicRepertoire;
 
 class PiecesController extends Controller
 {
-    public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed, PageContent $content)
+    public function index(PublicRepertoire $repertoire)
+    {
+        $pieces = $repertoire->pieces()->select('pieces.*')->with(['composer' => function ($query) {
+            $query->select('composers.id', 'composers.name')->setEagerLoads([]);
+        }, 'tags'])
+            ->orderBy('name')->orderBy('id')->paginate(24);
+        $page = $pieces->currentPage();
+        $canonical = $pieces->isNotEmpty() ? route('webapp.pieces.index', $page > 1 ? ['page' => $page] : []) : null;
+        $response = response()->view('webapp.piece.catalogue', compact('pieces', 'canonical'));
+
+        return $canonical ? $response : $response->header('X-Robots-Tag', 'noindex');
+    }
+
+    public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed, PageContent $content, PublicRepertoire $repertoire)
     {
         $data = $content->data($piece);
         if (auth('web')->check()) {
@@ -22,13 +36,14 @@ class PiecesController extends Controller
         }
         $sentences = ['Tuning the piano', 'Arranging rows of comfy seats', 'Adjusting the bench', 'Warming up fingers', 'Greeting the eager audience', 'Dimming the lights', 'Wrapping up'];
 
-        $response = response()->view('webapp.piece.index', array_merge($data, compact('sentences')));
+        $metadata = $repertoire->pieceMetadata($piece);
+        $response = response()->view('webapp.piece.index', array_merge($data, $metadata, compact('sentences')));
 
         if (request()->isMethod('GET') && app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user())) {
             $recentlyViewed->record(auth('web')->user(), $piece);
         }
 
-        return $response;
+        return $metadata['canonical'] ? $response : $response->header('X-Robots-Tag', 'noindex');
     }
 
     public function collection(Piece $piece)

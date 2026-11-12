@@ -1,4 +1,14 @@
-@extends('webapp.layouts.app', ['title' => 'Browse piano pieces'])
+@php
+    $searchTitle = 'Browse piano pieces';
+    $searchDescription = 'Discover piano pieces by level, composer, and musical style. Explore new repertoire, curated collections, and the free weekly pick.';
+    $canonical = route('webapp.discover');
+    $searchEntity = ['@type' => 'WebPage', 'url' => $canonical, 'name' => $searchTitle, 'description' => $searchDescription];
+@endphp
+@extends('webapp.layouts.app', ['title' => $searchTitle])
+
+@section('page-metadata')
+    @include('components.seo.resource-head', ['siteName' => 'PianoLIT', 'searchImage' => asset('images/webapp/thumbnail.jpg')])
+@endsection
 
 @push('header')
 <style>
@@ -9,7 +19,7 @@
 @endpush
 
 @section('content')
-@component('webapp.layouts.header', ['title' => 'Discover', 'subtitle' => 'Find pieces by level and musical preferences'])
+@component('webapp.layouts.header', ['title' => 'Discover', 'subtitle' => 'Browse piano pieces by level, composer, and musical style.', 'pageHeading' => true])
     @include('webapp.tour.button')
 @endcomponent
 
@@ -24,6 +34,12 @@
 		@endif
 	@endforeach
 </section>
+
+<nav class="d-flex flex-wrap justify-content-center gap-3 py-3" aria-label="More ways to browse piano repertoire">
+    <a href="{{ route('webapp.pieces.index') }}">Browse all piano pieces</a>
+    <a href="{{ route('webapp.search.results') }}">Search the repertoire</a>
+    <a href="{{ route('webapp.playlists') }}">Piano collections</a>
+</nav>
 
 @include('webapp.tour.modal')
 @include('webapp.discover.composers.modal')

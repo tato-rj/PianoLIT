@@ -7,8 +7,9 @@
     </div>
     <div class="collection-card__copy">
         <h3>{{ $card['playlist']->name }}</h3>
-        @if($expanded && $card['playlist']->subtitle)
-        <p>{{ $card['playlist']->subtitle }}</p>
+        @php($description = $card['playlist']->subtitle ?: $card['playlist']->description)
+        @if($description)
+        <p>{{ Str::words(strip_tags($description), $expanded ? 30 : 18) }}</p>
         @endif
         <span class="collections-meta">{{ $card['playlist']->pieces_count }} pieces</span>
         @if($expanded)

@@ -2,21 +2,20 @@
 
 Route::namespace('WebApp')->prefix('pieces')->name('pieces.')->group(function() {
 
-	Route::get('{piece}', 'PiecesController@show')->name('show');
+    Route::get('', 'PiecesController@index')->name('index');
 
-	Route::get('{piece}/collection', 'PiecesController@collection')->name('collection');
+	Route::get('{piece}', 'PiecesController@show')->name('show');
 
 	Route::get('{piece}/composer', 'PiecesController@composer')->name('composer');
 
-	Route::get('{piece}/timeline', 'PiecesController@timeline')->name('timeline');
-
-	Route::get('{piece}/similar', 'PiecesController@similar')->name('similar');
-
-	Route::get('{piece}/tutorial/{tutorial}', 'PiecesController@tutorial')->name('tutorial');
-	
-	Route::get('{piece}/appleMusic', 'PiecesController@appleMusic')->name('apple-music');
-
-	Route::get('{piece}/audio', 'PiecesController@audio')->name('audio');
+    Route::middleware(\App\Http\Middleware\NoIndex::class)->group(function () {
+        Route::get('{piece}/collection', 'PiecesController@collection')->name('collection');
+        Route::get('{piece}/timeline', 'PiecesController@timeline')->name('timeline');
+        Route::get('{piece}/similar', 'PiecesController@similar')->name('similar');
+        Route::get('{piece}/tutorial/{tutorial}', 'PiecesController@tutorial')->name('tutorial');
+        Route::get('{piece}/appleMusic', 'PiecesController@appleMusic')->name('apple-music');
+        Route::get('{piece}/audio', 'PiecesController@audio')->name('audio');
+    });
 
     Route::get('{piece}/score/annotations', 'ScoreAnnotationsController@show')->middleware('auth:web')->name('score.annotations.show');
     Route::put('{piece}/score/annotations', 'ScoreAnnotationsController@update')->middleware('auth:web')->name('score.annotations.update');
