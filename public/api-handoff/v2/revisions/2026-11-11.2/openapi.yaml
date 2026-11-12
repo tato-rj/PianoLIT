@@ -1,0 +1,2812 @@
+openapi: 3.0.3
+info:
+  title: PianoLIT mobile API v2 — Discover, Collections, piece detail, favorite folders and Find my match
+  version: 1.5.0
+  description: Independent v2 login and Discover. Web and v2 share App\Services\Discover\Feed.
+    Legacy /api routes remain supported indefinitely. Deployment/native verification
+    is recorded in the manifest; downloading this specification does not authenticate
+    an app. Find my match reuses the web tour draw and ranking. The completed native
+    steps 1–4 keep their existing design; replace only their data/calculations. New
+    match operations are implemented locally and disabled until media preparation
+    and deployment verification. Piece detail uses the shared Pieces\PageContent,
+    WebTimeline, PieceRecommendations and native bearer identity. Favorite-folder writes
+    reuse website records and limits; they are implemented locally with deployment pending.
+    Collections uses the shared web catalog, book series, weekly selections and categories with native bearer access.
+servers:
+- url: https://pianolit.com/api/v2
+  description: Login, Discover, confirmed piece-open history, piece detail and Collections
+    are live. Collections was verified on 2026-11-11. Match-tour activation, expanded
+    composer-pool acceptance and native/staging verification remain separate.
+security:
+- MobileBearer: []
+x-handoff:
+  revision: 2026-11-11.2
+  status: draft
+  implemented: true
+  native_integration: pending
+paths:
+  /collections:
+    get:
+      operationId: listCollectionsV2
+      summary: Load the Collections tab catalog and sections
+      description: >-
+        Includes the featured card once in collections. Use featured_collection_id
+        to select it. Returns all eligible cards ordered by saved collection order
+        then numeric ID, without pagination. All signed-in accounts see all cards.
+        Only the current featured collection can be opened without a membership.
+        Book series and their books follow editorial order. Suggested IDs refer to
+        the catalog in weekly display order. Categories provide IDs for local
+        Browse filtering and take no query parameter.
+      responses:
+        '200':
+          description: Complete catalog and sections. An empty collection catalog returns a null featured ID and empty collection, suggestion, and category arrays. Book series load independently.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionCatalogResponse'
+        '401':
+          $ref: '#/components/responses/CollectionUnauthenticated'
+        '429':
+          $ref: '#/components/responses/CollectionRateLimited'
+        '500':
+          $ref: '#/components/responses/CollectionServerError'
+  /collections/{collection}:
+    get:
+      operationId: getCollectionV2
+      summary: Read a curated collection and its ordered pieces
+      description: >-
+        Returns all visible piece rows in saved collection-piece order, with pivot
+        row ID breaking ties, without pagination. The current featured collection
+        is available to every signed-in account. A signed-in nonmember requesting a
+        regular collection gets its metadata and full count with access
+        membership_required and pieces []. Each row is a Discover PieceSummary.
+        In Collections, media.performance describes a saved PianoLIT performance video
+        with a nonempty URL. Fetch /pieces/{piece} for actual media authorization.
+        No analytics or history event is written.
+      parameters:
+      - name: collection
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Identifier'
+      responses:
+        '200':
+          description: Available detail with pieces, or locked detail with metadata and an empty pieces array.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDetailResponse'
+        '401':
+          $ref: '#/components/responses/CollectionUnauthenticated'
+        '404':
+          description: Unknown or ineligible collection (not_found) or malformed path ID (request_failed).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          $ref: '#/components/responses/CollectionRateLimited'
+        '500':
+          $ref: '#/components/responses/CollectionServerError'
+  /favorite-folders:
+    get:
+      operationId: listFavoriteFoldersV2
+      summary: List every owned folder and selected-piece state
+      description: Bearer only. Includes empty folders ordered by name then ID; no history/analytics writes.
+        Same shared records as website. Implemented locally, production deployment pending.
+      parameters:
+      - in: query
+        name: piece_id
+        required: true
+        schema:
+          type: string
+          pattern: ^[1-9][0-9]*$
+      responses:
+        '200':
+          description: Authoritative current state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteFolderListResponse'
+        '401':
+          description: 'unauthenticated: Missing/invalid/expired/revoked bearer; sign in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: Missing piece, missing folder or folder not owned. Malformed route paths
+            retain generic request_failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request: Invalid JSON/fields, name, ID string, duplicate name or UUID header.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: Obey Retry-After before retrying.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              description: Seconds until retry is permitted.
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: Retry later; preserve creation key/payload.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    post:
+      operationId: createFavoriteFolderV2
+      summary: Create a folder and optionally save one piece atomically
+      description: Bearer only; rejects unknown body properties. Trim name before validation (3–36 characters,
+        unique per account). Same website account limits. Optional account-scoped UUID Idempotency-Key active
+        for 24 hours from success; normalized name + optional piece ID determines payload identity. Same
+        key/data returns original folder with current state and 201, never reapplying later removals; deleted/non-owned
+        folder gives 404. Different data gives 409. Failed requests consume no key. After expiry a new request
+        is subject to name uniqueness/quotas. Without key no replay guarantee. Favorite writes share 30
+        requests/minute/account plus the outer v2 limiter. Deploy receipt migration before code; locally
+        implemented only. See examples/favorite-folders.md.
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Retain the same UUID and payload for retries of one submission; account scoped, 24-hour
+          active retention.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteFolderCreateRequest'
+            example:
+              name: Pieces to learn
+              piece_id: '1032'
+      responses:
+        '201':
+          description: Authoritative current state; creation replays also return 201.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteFolderMutationResponse'
+        '401':
+          description: 'unauthenticated: Missing/invalid/expired/revoked bearer; sign in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: 'favorite_folders_blocked, favorite_folder_limit_reached, favorite_saves_blocked
+            or favorite_piece_limit_reached: Same saved limits as website; removal stays allowed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: Missing piece, missing folder or folder not owned. Malformed route paths
+            retain generic request_failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request: Invalid JSON/fields, name, ID string, duplicate name or UUID header.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: 'idempotency_conflict: Active key reused with different validated request data.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: Obey Retry-After before retrying.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              description: Seconds until retry is permitted.
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: Retry later; preserve creation key/payload.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /favorite-folders/{folder}/pieces/{piece}:
+    parameters:
+    - in: path
+      name: folder
+      required: true
+      schema:
+        type: string
+        pattern: ^[1-9][0-9]*$
+    - in: path
+      name: piece
+      required: true
+      schema:
+        type: string
+        pattern: ^[1-9][0-9]*$
+    put:
+      operationId: saveFavoriteV2
+      summary: Ensure the piece is in this owned folder
+      description: Bearer only. No body or empty JSON object. Idempotent, returns current heart and folder
+        counts. Checks folder ownership on every request; never affects another folder. Already-present
+        PUT succeeds under lowered quotas; DELETE bypasses addition restrictions. Shared owner lock and
+        membership uniqueness prevent duplicate records. 30 writes/minute/account plus outer v2 limit; removals
+        are still throttled. Locally implemented; deployment pending.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Authoritative current state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteFolderMutationResponse'
+        '401':
+          description: 'unauthenticated: Missing/invalid/expired/revoked bearer; sign in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: 'favorite_folders_blocked, favorite_folder_limit_reached, favorite_saves_blocked
+            or favorite_piece_limit_reached: Same saved limits as website; removal stays allowed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: Missing piece, missing folder or folder not owned. Malformed route paths
+            retain generic request_failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request: Invalid JSON/fields, name, ID string, duplicate name or UUID header.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: Obey Retry-After before retrying.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              description: Seconds until retry is permitted.
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: Retry later; preserve creation key/payload.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    delete:
+      operationId: removeFavoriteV2
+      summary: Remove the piece from this owned folder only
+      description: Bearer only. No body or empty JSON object. Idempotent, returns current heart and folder
+        counts. Checks folder ownership on every request; never affects another folder. Already-present
+        PUT succeeds under lowered quotas; DELETE bypasses addition restrictions. Shared owner lock and
+        membership uniqueness prevent duplicate records. 30 writes/minute/account plus outer v2 limit; removals
+        are still throttled. Locally implemented; deployment pending.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Authoritative current state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteFolderMutationResponse'
+        '401':
+          description: 'unauthenticated: Missing/invalid/expired/revoked bearer; sign in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: Missing piece, missing folder or folder not owned. Malformed route paths
+            retain generic request_failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request: Invalid JSON/fields, name, ID string, duplicate name or UUID header.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: Obey Retry-After before retrying.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              description: Seconds until retry is permitted.
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: Retry later; preserve creation key/payload.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /auth/login:
+    post:
+      operationId: loginV2
+      summary: Sign in with the existing account email and password
+      security: []
+      description: Use the current native sign-in form. This endpoint checks the existing
+        users provider/password hash and issues a separate opaque 30-day credential.
+        Does not alter browser/legacy login, send email or mutate billing. A stored
+        legacy user ID cannot be exchanged for a token. Missing token after upgrade
+        requires one sign-in. No refresh token; repeat login on expiry. Password changes/deletion
+        invalidate tokens. Login is limited to 5 attempts/minute/IP.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '401':
+          description: Missing/invalid/expired/revoked credential, or incorrect email/password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Resource unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Invalid fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Too many requests; obey Retry-After.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: Server error; no internal details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Credential issued; no cookie required.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+  /auth/logout:
+    post:
+      operationId: logoutV2
+      summary: Revoke only the supplied credential
+      responses:
+        '401':
+          description: Missing/invalid/expired/revoked credential, or incorrect email/password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Resource unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Invalid fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Too many requests; obey Retry-After.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: Server error; no internal details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '204':
+          description: Revoked. Clear Keychain and account-specific data.
+  /discover:
+    get:
+      operationId: getDiscover
+      summary: Fetch the same Discover content as the webapp for this account
+      description: 'One ordered sections array; no analytics/history write. Content
+        uses the same catalogue cache, recommendation IDs, Free Pick clock, past highlights,
+        artwork and level grouping as web Discover. Empty sections are omitted. No
+        native media entitlement is granted. The browser-specific Access Limits matrix
+        is not used by native. Submitted user_id and query tokens cannot establish
+        identity. Read requests: 120/minute/IP, no-store/private.'
+      responses:
+        '401':
+          description: Missing/invalid/expired/revoked credential, or incorrect email/password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Resource unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Invalid fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Too many requests; obey Retry-After.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: Server error; no internal details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Current shared Discover content.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoverResponse'
+  /pieces/{piece}/view:
+    post:
+      operationId: recordPieceViewV2
+      summary: Record a confirmed piece open for the authenticated account
+      description: Call only after a piece opens successfully, never for feed/image
+        prefetch. No request body is required. Repeated calls update one account/piece
+        row. Existing analytics exclusions apply. Does not implement piece detail,
+        playback, favorites or analytics.
+      parameters:
+      - name: piece
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Identifier'
+      responses:
+        '401':
+          description: Missing/invalid/expired/revoked credential, or incorrect email/password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Resource unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Invalid fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Too many requests; obey Retry-After.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: Server error; no internal details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '204':
+          description: History updated, or excluded account intentionally skipped.
+  /match-tours:
+    post:
+      operationId: startMatchTourV2
+      summary: Start or reload an account-owned Find my match tour
+      description: 'Bearer required. Shared web draw: four distinct level examples,
+        four listening pieces and two contrasting taste pairs. Two-hour absolute expiry;
+        no sliding extension. Same account/start request_id returns the same tour.
+        A new UUID deliberately restarts without invalidating other tours. Limit 10
+        starts/minute/IP in addition to the overall 120 requests/minute/IP.'
+      x-deployment:
+        backend_status: implemented_locally
+        production_verified: false
+      responses:
+        '401':
+          description: 'unauthenticated: account credential invalid/missing/expired/revoked.
+            Only this error requires signing in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do
+            not sign out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: stale_tour, idempotency_conflict, incomplete_tour or tour_limit.
+            Reload; see the error code and match-tour guide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '410':
+          description: 'tour_expired: two-hour tour lifetime elapsed. Start with a
+            new UUID, retaining the account bearer.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request or invalid_answer: malformed fields or a choice
+            not served for this question.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after
+            waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body;
+            no internal details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account
+            signed in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Complete current tour snapshot. All JSON responses are private/no-store;
+            no cookies. New signed sample URLs are issued on each load.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchTourResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TourStartRequest'
+            example:
+              request_id: 11111111-1111-4111-8111-111111111111
+  /match-tours/{tour}:
+    get:
+      operationId: loadMatchTourV2
+      summary: Load choices, answers and progress
+      description: 'No advancement or recommendation reroll. Return all fixed choices
+        and accepted answers for back navigation. reading-2 is null until reading-1
+        is answered, then follows the website: easy → advanced; difficult → beginner,
+        with elementary fallback if no beginner sample. GET refreshes signed media
+        URLs without extending tour expiry.'
+      x-deployment:
+        backend_status: implemented_locally
+        production_verified: false
+      responses:
+        '401':
+          description: 'unauthenticated: account credential invalid/missing/expired/revoked.
+            Only this error requires signing in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do
+            not sign out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: stale_tour, idempotency_conflict, incomplete_tour or tour_limit.
+            Reload; see the error code and match-tour guide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '410':
+          description: 'tour_expired: two-hour tour lifetime elapsed. Start with a
+            new UUID, retaining the account bearer.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request or invalid_answer: malformed fields or a choice
+            not served for this question.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after
+            waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body;
+            no internal details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account
+            signed in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Complete current tour snapshot. All JSON responses are private/no-store;
+            no cookies. New signed sample URLs are issued on each load.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchTourResponse'
+      parameters:
+      - name: tour
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /match-tours/{tour}/answers/{slot}:
+    put:
+      operationId: answerMatchTourV2
+      summary: Submit or replace one answer
+      description: Send a fresh request_id and the latest integer revision for each
+        deliberate edit. Slots must be answered in sequence but any earlier answer
+        can be edited. A changed answer clears every later answer and the pinned match;
+        an identical value preserves later state and revision. Exact request retries
+        return the latest snapshot without repeating the mutation, even after further
+        edits. Reusing a UUID with a different body/slot returns 409. Row locking
+        and revisions prevent concurrent double advancement. Maximum 256 accepted
+        distinct request IDs per tour; restart after tour_limit. JSON null explicitly
+        skips taste-1/taste-2 only. IDs must belong to that tour and round; user_id,
+        local level calculations and client estimates cannot select results.
+      x-deployment:
+        backend_status: implemented_locally
+        production_verified: false
+      responses:
+        '401':
+          description: 'unauthenticated: account credential invalid/missing/expired/revoked.
+            Only this error requires signing in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do
+            not sign out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: stale_tour, idempotency_conflict, incomplete_tour or tour_limit.
+            Reload; see the error code and match-tour guide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '410':
+          description: 'tour_expired: two-hour tour lifetime elapsed. Start with a
+            new UUID, retaining the account bearer.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request or invalid_answer: malformed fields or a choice
+            not served for this question.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after
+            waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body;
+            no internal details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account
+            signed in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Complete current tour snapshot. All JSON responses are private/no-store;
+            no cookies. New signed sample URLs are issued on each load.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchTourResponse'
+      parameters:
+      - name: tour
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: slot
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - level
+          - listening
+          - reading-1
+          - reading-2
+          - taste-1
+          - taste-2
+          - mood
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TourAnswerRequest'
+            example:
+              request_id: 22222222-2222-4222-8222-222222222222
+              revision: 0
+              value: beginner
+  /match-tours/{tour}/result:
+    get:
+      operationId: getMatchTourResultV2
+      summary: Obtain one stable match after all five steps
+      description: After mood, tour status is ready and result remains null. This
+        endpoint uses the shared MatchTour keywords and MatchQuiz ranking/fallback/media
+        eligibility, pins one match and increments revision once. Repeats do not reroll.
+        No eligible result returns 503 no_match, never a false count of one. If a
+        pinned piece is withdrawn, return no_match rather than replacing it silently.
+        The result reuses PieceSummary; open the existing native piece page using
+        result.piece.target.id. This operation grants no full-media entitlement and
+        never writes piece-open history. Call the existing pieces/{piece}/view operation
+        only after actual native piece opening.
+      x-deployment:
+        backend_status: implemented_locally
+        production_verified: false
+      responses:
+        '401':
+          description: 'unauthenticated: account credential invalid/missing/expired/revoked.
+            Only this error requires signing in again.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do
+            not sign out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: stale_tour, idempotency_conflict, incomplete_tour or tour_limit.
+            Reload; see the error code and match-tour guide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '410':
+          description: 'tour_expired: two-hour tour lifetime elapsed. Start with a
+            new UUID, retaining the account bearer.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: 'invalid_request or invalid_answer: malformed fields or a choice
+            not served for this question.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after
+            waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body;
+            no internal details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account
+            signed in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '200':
+          description: Complete current tour snapshot. All JSON responses are private/no-store;
+            no cookies. New signed sample URLs are issued on each load.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchTourResponse'
+      parameters:
+      - name: tour
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /match-tour-media/{asset}/{kind}:
+    get:
+      operationId: getMatchTourSampleV2
+      summary: Fetch a bounded tour sample using its signed capability URL
+      security: []
+      description: Use the supplied URL verbatim without an Authorization header or
+        cookies. Signature covers the path and query. Expires at the earlier of 15
+        minutes after issuance or tour expiry. Native HTTP Range requests may read
+        only these bounded MP3/PNG files. Missing/tampered/expired signatures return
+        403, never 401. Images/artwork/portraits use public HTTPS URLs without a defined
+        expiry and may later change or disappear. Reload the bearer-authenticated
+        tour to refresh sample URLs. The server never redirects to original recordings,
+        PDFs or third-party media. All responses use private/no-store. Overall 120
+        requests/minute/IP includes media requests.
+      parameters:
+      - name: asset
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      - name: kind
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - audio
+          - excerpt
+          - sample
+      - name: expires
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: signature
+        in: query
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      responses:
+        '200':
+          description: Bounded sample bytes; never original media.
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '206':
+          description: Byte range of the same bounded sample.
+        '403':
+          description: 'media_url_expired: missing/invalid/expired capability. Reload
+            tour; do not sign out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: 'not_found: unknown, another account’s, or pruned tour. Do
+            not sign out.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: 'rate_limited: obey Retry-After; reuse request_id/body after
+            waiting.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: 'server_error: retry safely with the same request_id/body;
+            no internal details.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: tour_unavailable, media_unavailable or no_match. Keep the account
+            signed in; result remains null unless valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /pieces/{piece}:
+    get:
+      operationId: getPieceV2
+      summary: Load the native piece page from the shared web content sources
+      description: Use the existing Keychain v2 bearer. Signed-in accounts receive
+        metadata/about/timeline/recommendations and private favorite state. Native
+        full media uses the existing local active membership/trial/grace/super-user
+        state or the current scheduled Free Pick identity, never a row position or
+        browser Access Limits. Unentitled media has blocked mode and null source URLs;
+        missing media is unavailable. Copyrighted scores use external purchase links.
+        The original files/media hosts remain unchanged; do not forward API bearers
+        to them. This GET does not record history or implement favorite/annotation
+        writes. POST /pieces/{piece}/view remains a separate confirmed-open operation.
+        Random recommendation/release selection uses the existing web algorithms rather
+        than a separately curated native catalogue.
+      parameters:
+      - name: piece
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Identifier'
+      responses:
+        '200':
+          description: Read-only piece page content. No history, billing or favorite
+            mutation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PieceDetailResponse'
+        '401':
+          description: Missing, invalid, expired or revoked v2 credential.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing/invalid piece identity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limited; obey Retry-After.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+        '500':
+          description: Safe server error; no internal fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+components:
+  responses:
+    CollectionUnauthenticated:
+      description: Missing, expired, revoked or invalid v2 bearer (unauthenticated).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    CollectionRateLimited:
+      description: Rate limited (rate_limited). Follow Retry-After.
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    CollectionServerError:
+      description: Unexpected server error (server_error).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  securitySchemes:
+    MobileBearer:
+      type: http
+      scheme: bearer
+      description: 'POST /auth/login with the existing email/password obtains this
+        credential. Only Authorization: Bearer <access_token> is accepted. Store in
+        Keychain; send only to the fixed v2 origin. Legacy account IDs, cookies and
+        downloaded YAML are not credentials.'
+  schemas:
+    Identifier:
+      type: string
+      pattern: ^[1-9][0-9]*$
+      example: '123'
+    UtcInstant:
+      type: string
+      format: date-time
+      pattern: Z$
+    ResponseMeta:
+      type: object
+      required:
+      - request_id
+      properties:
+        request_id:
+          type: string
+          format: uuid
+    ErrorEnvelope:
+      type: object
+      required:
+      - error
+      - meta
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          - message
+          - fields
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            fields:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    Target:
+      type: object
+      required:
+      - kind
+      - id
+      - query
+      - web_url
+      properties:
+        kind:
+          type: string
+          enum:
+          - piece
+          - composer_pieces
+          - search
+          - composers
+          - catalogue
+          - highlights
+        id:
+          type: string
+          nullable: true
+        query:
+          type: string
+          nullable: true
+        web_url:
+          type: string
+          format: uri
+    UserSummary:
+      type: object
+      required:
+      - id
+      - first_name
+      - last_name
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        first_name:
+          type: string
+        last_name:
+          type: string
+    LoginRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          minLength: 1
+          maxLength: 4096
+          writeOnly: true
+    LoginResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - access_token
+          - token_type
+          - expires_at
+          - user
+          properties:
+            access_token:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+              description: Returned only at issuance. Store in Keychain; never in
+                logs/UserDefaults.
+            token_type:
+              type: string
+              enum:
+              - Bearer
+            expires_at:
+              $ref: '#/components/schemas/UtcInstant'
+            user:
+              $ref: '#/components/schemas/UserSummary'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    CollectionCard:
+      type: object
+      required:
+      - id
+      - title
+      - subtitle
+      - artwork_url
+      - piece_count
+      - featured_badge
+      - access
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        subtitle:
+          type: string
+          nullable: true
+        artwork_url:
+          type: string
+          format: uri
+          description: Saved cover or shared fallback artwork.
+        piece_count:
+          type: integer
+          minimum: 5
+          description: Full count of pieces with tutorials, including when locked.
+        featured_badge:
+          type: string
+          nullable: true
+          description: Saved editorial tag on the current featured card, null when absent or on a regular card.
+        access:
+          type: string
+          enum: [available, membership_required]
+    CollectionDetailCard:
+      allOf:
+      - $ref: '#/components/schemas/CollectionCard'
+      - type: object
+        required: [description]
+        properties:
+          description:
+            type: string
+            nullable: true
+    CollectionBook:
+      type: object
+      required: [id, number, title, level, cover_url, availability, detail_url]
+      properties:
+        id:
+          type: string
+          example: piano-solos-book-1
+        number:
+          type: integer
+          minimum: 1
+          description: Editorial book number, independent of array position.
+        title:
+          type: string
+        level:
+          type: string
+        cover_url:
+          type: string
+          format: uri
+        availability:
+          type: string
+          enum: [available, coming_soon]
+        detail_url:
+          type: string
+          format: uri
+          nullable: true
+          description: Public HTTPS book detail destination when available. Null for coming_soon.
+    CollectionBookSeries:
+      type: object
+      required: [id, title, books]
+      properties:
+        id:
+          type: string
+          example: piano-solos
+        title:
+          type: string
+        books:
+          type: array
+          description: Books in editorial display order.
+          items:
+            $ref: '#/components/schemas/CollectionBook'
+    CollectionCategory:
+      type: object
+      required: [id, label, collection_ids]
+      properties:
+        id:
+          type: string
+          pattern: '^(tag-[1-9][0-9]*|featured-[a-f0-9]{64})$'
+          description: Stable saved tag ID, or a key based on the exact trimmed label for older unlinked tags.
+        label:
+          type: string
+        collection_ids:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          description: Eligible catalog card IDs in catalog order.
+          items:
+            $ref: '#/components/schemas/Identifier'
+    CollectionCatalogResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [featured_collection_id, collections, book_series, suggested_collection_ids, categories]
+          properties:
+            featured_collection_id:
+              type: string
+              pattern: ^[1-9][0-9]*$
+              nullable: true
+              description: ID of the current featured card in collections, or null if none.
+            collections:
+              type: array
+              items:
+                $ref: '#/components/schemas/CollectionCard'
+            book_series:
+              type: array
+              description: Ordered series, independent of the repertoire catalog.
+              items:
+                $ref: '#/components/schemas/CollectionBookSeries'
+            suggested_collection_ids:
+              type: array
+              maxItems: 3
+              uniqueItems: true
+              description: Catalog IDs in shared weekly display order. May include the featured ID. Use each card's access value.
+              items:
+                $ref: '#/components/schemas/Identifier'
+            categories:
+              type: array
+              description: Categories in natural label order, case-insensitive with exact labels breaking ties. Filter Browse locally.
+              items:
+                $ref: '#/components/schemas/CollectionCategory'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    CollectionDetailResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [collection, pieces]
+          properties:
+            collection:
+              $ref: '#/components/schemas/CollectionDetailCard'
+            pieces:
+              type: array
+              items:
+                $ref: '#/components/schemas/PieceSummary'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ComposerSummary:
+      type: object
+      required:
+      - kind
+      - id
+      - name
+      - short_name
+      - portrait_url
+      - biography
+      - piece_count
+      - target
+      properties:
+        kind:
+          type: string
+          enum:
+          - composer
+        id:
+          $ref: '#/components/schemas/Identifier'
+        name:
+          type: string
+        short_name:
+          type: string
+        portrait_url:
+          type: string
+          format: uri
+        biography:
+          type: string
+        piece_count:
+          type: integer
+          minimum: 0
+        target:
+          $ref: '#/components/schemas/Target'
+    PieceSummary:
+      type: object
+      required:
+      - kind
+      - id
+      - title
+      - featured_title
+      - subtitle
+      - catalogue
+      - composer
+      - artwork_url
+      - difficulty
+      - is_new
+      - is_free_pick
+      - media
+      - target
+      properties:
+        kind:
+          type: string
+          enum:
+          - piece
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        featured_title:
+          type: string
+        subtitle:
+          type: string
+        catalogue:
+          type: string
+        composer:
+          $ref: '#/components/schemas/ComposerSummary'
+        artwork_url:
+          type: string
+          format: uri
+        difficulty:
+          type: string
+          nullable: true
+        is_new:
+          type: boolean
+        is_free_pick:
+          type: boolean
+        media:
+          type: object
+          required:
+          - performance
+          - synthesia
+          - tutorial
+          - audio
+          - score
+          properties:
+            performance:
+              type: boolean
+            synthesia:
+              type: boolean
+            tutorial:
+              type: boolean
+            audio:
+              type: boolean
+            score:
+              type: boolean
+        target:
+          $ref: '#/components/schemas/Target'
+    LevelSummary:
+      type: object
+      required:
+      - kind
+      - id
+      - title
+      - number
+      - piece_count
+      - target
+      properties:
+        kind:
+          type: string
+          enum:
+          - level
+        id:
+          type: string
+        title:
+          type: string
+        number:
+          type: integer
+          minimum: 0
+        piece_count:
+          type: integer
+          minimum: 0
+        target:
+          $ref: '#/components/schemas/Target'
+    LevelGroup:
+      type: object
+      required:
+      - id
+      - label
+      - items
+      properties:
+        id:
+          type: string
+          enum:
+          - rcm
+          - abrsm
+          - suzuki
+        label:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LevelSummary'
+    ContentSection:
+      type: object
+      required:
+      - id
+      - kind
+      - title
+      - items
+      - action
+      - featured_composer
+      properties:
+        id:
+          type: string
+          enum:
+          - free_pick
+          - composers
+          - recently_viewed
+          - latest_pieces
+          - for_you
+          - women_composers
+          - black_composers
+          - latin_american_composers
+          - american_composers
+          - italian_composers
+          - russian_composers
+          - ukrainian_composers
+          - past_highlights
+          - mood
+          - similar_to_free_pick
+        kind:
+          type: string
+          enum:
+          - featured_piece
+          - portrait_rail
+          - compact_piece_rail
+          - artwork_piece_rail
+          - personalized_piece_rail
+          - composer_feature
+          - highlight_rail
+        title:
+          type: string
+        items:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/PieceSummary'
+            - $ref: '#/components/schemas/ComposerSummary'
+        action:
+          type: object
+          required:
+          - kind
+          - id
+          - query
+          - web_url
+          properties:
+            kind:
+              type: string
+              enum:
+              - piece
+              - composer_pieces
+              - search
+              - composers
+              - catalogue
+              - highlights
+            id:
+              type: string
+              nullable: true
+            query:
+              type: string
+              nullable: true
+            web_url:
+              type: string
+              format: uri
+          nullable: true
+        featured_composer:
+          type: object
+          required:
+          - kind
+          - id
+          - name
+          - short_name
+          - portrait_url
+          - biography
+          - piece_count
+          - target
+          properties:
+            kind:
+              type: string
+              enum:
+              - composer
+            id:
+              $ref: '#/components/schemas/Identifier'
+            name:
+              type: string
+            short_name:
+              type: string
+            portrait_url:
+              type: string
+              format: uri
+            biography:
+              type: string
+            piece_count:
+              type: integer
+              minimum: 0
+            target:
+              $ref: '#/components/schemas/Target'
+          nullable: true
+    LevelsSection:
+      type: object
+      required:
+      - id
+      - kind
+      - title
+      - subtitle
+      - default_group
+      - groups
+      properties:
+        id:
+          type: string
+          enum:
+          - levels
+        kind:
+          type: string
+          enum:
+          - level_selector
+        title:
+          type: string
+        subtitle:
+          type: string
+        default_group:
+          type: string
+          enum:
+          - rcm
+          - abrsm
+          - suzuki
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/LevelGroup'
+    DiscoverResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - sections
+          properties:
+            sections:
+              type: array
+              items:
+                oneOf:
+                - $ref: '#/components/schemas/ContentSection'
+                - $ref: '#/components/schemas/LevelsSection'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    TourStartRequest:
+      type: object
+      required:
+      - request_id
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: Generate once per deliberate start. Retry the same UUID to
+            load that account-owned tour; a new UUID starts a separate tour.
+    TourAnswerRequest:
+      type: object
+      required:
+      - request_id
+      - revision
+      - value
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: Generate once per intended update; reuse the exact body for
+            network retries.
+        revision:
+          type: integer
+          minimum: 0
+        value:
+          type: string
+          nullable: true
+          maxLength: 64
+          description: 'level: choice value; listening/taste: served piece ID; reading:
+            easy or difficult; mood: choice value. JSON null explicitly skips a taste
+            round only. Missing/empty values and reading skips are invalid.'
+    TourComposer:
+      type: object
+      required:
+      - id
+      - name
+      - short_name
+      - portrait_url
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        name:
+          type: string
+        short_name:
+          type: string
+        portrait_url:
+          type: string
+          format: uri
+          pattern: ^https://
+    TourAudioPreview:
+      type: object
+      required:
+      - audio_url
+      - expires_at
+      - duration_seconds
+      properties:
+        audio_url:
+          type: string
+          format: uri
+          pattern: ^https://
+        expires_at:
+          $ref: '#/components/schemas/UtcInstant'
+        duration_seconds:
+          type: number
+          exclusiveMinimum: true
+          minimum: 0
+          maximum: 60.15
+          description: Actual MP3 sample duration. Configured preview cap defaults
+            to 60 seconds, with up to 150ms encoder padding; shorter recordings may
+            return less. Only bounded sample bytes are delivered.
+    TourPreviewPiece:
+      type: object
+      required:
+      - id
+      - title
+      - composer
+      - artwork_url
+      - audio_preview
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        composer:
+          $ref: '#/components/schemas/TourComposer'
+        artwork_url:
+          type: string
+          format: uri
+          pattern: ^https://
+        audio_preview:
+          $ref: '#/components/schemas/TourAudioPreview'
+    TourLevelChoice:
+      type: object
+      required:
+      - value
+      - label
+      - description
+      - piece
+      properties:
+        value:
+          type: string
+          enum:
+          - elementary
+          - beginner
+          - intermediate
+          - advanced
+        label:
+          type: string
+        description:
+          type: string
+        piece:
+          $ref: '#/components/schemas/TourPreviewPiece'
+    TourScoreMedia:
+      type: object
+      required:
+      - expires_at
+      - excerpt_url
+      - sample_url
+      properties:
+        expires_at:
+          $ref: '#/components/schemas/UtcInstant'
+        excerpt_url:
+          type: string
+          format: uri
+          pattern: ^https://
+          description: 900px-wide PNG, middle strip of page one, height approximately
+            40% of width.
+        sample_url:
+          type: string
+          format: uri
+          pattern: ^https://
+          description: 1800px-wide PNG of the same strip for native pinch zoom. No
+            full PDF/page is returned.
+    TourReadingSample:
+      type: object
+      required:
+      - id
+      - title
+      - composer
+      - score_sample
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        composer:
+          type: string
+        score_sample:
+          $ref: '#/components/schemas/TourScoreMedia'
+    TourNullableReadingSample:
+      type: object
+      required:
+      - id
+      - title
+      - composer
+      - score_sample
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        composer:
+          type: string
+        score_sample:
+          $ref: '#/components/schemas/TourScoreMedia'
+      nullable: true
+    TourMoodChoice:
+      type: object
+      required:
+      - value
+      - label
+      - icon
+      properties:
+        value:
+          type: string
+          enum:
+          - calm
+          - energetic
+          - romantic
+          - joyful
+          - dramatic
+          - mysterious
+          - playful
+          - reflective
+          - open
+        label:
+          type: string
+        icon:
+          type: string
+    TourQuestions:
+      type: object
+      required:
+      - level
+      - listening
+      - reading-1
+      - reading-2
+      - taste-1
+      - taste-2
+      - mood
+      properties:
+        level:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 4
+              maxItems: 4
+              items:
+                $ref: '#/components/schemas/TourLevelChoice'
+        listening:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 4
+              maxItems: 4
+              items:
+                $ref: '#/components/schemas/TourPreviewPiece'
+        reading-1:
+          $ref: '#/components/schemas/TourReadingSample'
+        reading-2:
+          $ref: '#/components/schemas/TourNullableReadingSample'
+        taste-1:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 2
+              maxItems: 2
+              items:
+                $ref: '#/components/schemas/TourPreviewPiece'
+        taste-2:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 2
+              maxItems: 2
+              items:
+                $ref: '#/components/schemas/TourPreviewPiece'
+        mood:
+          type: object
+          required:
+          - choices
+          properties:
+            choices:
+              type: array
+              minItems: 9
+              maxItems: 9
+              items:
+                $ref: '#/components/schemas/TourMoodChoice'
+    TourAnswers:
+      type: object
+      properties:
+        level:
+          type: string
+          enum:
+          - elementary
+          - beginner
+          - intermediate
+          - advanced
+        listening:
+          $ref: '#/components/schemas/Identifier'
+        reading-1:
+          type: string
+          enum:
+          - easy
+          - difficult
+        reading-2:
+          type: string
+          enum:
+          - easy
+          - difficult
+        taste-1:
+          type: string
+          nullable: true
+          pattern: ^[1-9][0-9]*$
+        taste-2:
+          type: string
+          nullable: true
+          pattern: ^[1-9][0-9]*$
+        mood:
+          type: string
+    TourCount:
+      type: object
+      required:
+      - value
+      - accuracy
+      properties:
+        value:
+          type: integer
+          minimum: 0
+        accuracy:
+          type: string
+          enum:
+          - exact
+          - estimated
+    TourProgress:
+      type: object
+      required:
+      - current_step
+      - round
+      - current_question
+      - initial_library_total
+      - remaining_pieces
+      properties:
+        current_step:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        round:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - null
+          nullable: true
+        current_question:
+          type: string
+          enum:
+          - level
+          - listening
+          - reading-1
+          - reading-2
+          - taste-1
+          - taste-2
+          - mood
+          - null
+          nullable: true
+        initial_library_total:
+          $ref: '#/components/schemas/TourCount'
+        remaining_pieces:
+          $ref: '#/components/schemas/TourCount'
+    TourResult:
+      type: object
+      required:
+      - piece
+      - explanation
+      properties:
+        piece:
+          $ref: '#/components/schemas/PieceSummary'
+        explanation:
+          type: string
+      nullable: true
+    MatchTour:
+      type: object
+      required:
+      - id
+      - expires_at
+      - revision
+      - status
+      - progress
+      - answers
+      - questions
+      - result
+      properties:
+        id:
+          type: string
+          format: uuid
+        expires_at:
+          $ref: '#/components/schemas/UtcInstant'
+        revision:
+          type: integer
+          minimum: 0
+        status:
+          type: string
+          enum:
+          - in_progress
+          - ready
+          - matched
+        progress:
+          $ref: '#/components/schemas/TourProgress'
+        answers:
+          $ref: '#/components/schemas/TourAnswers'
+        questions:
+          $ref: '#/components/schemas/TourQuestions'
+        result:
+          $ref: '#/components/schemas/TourResult'
+    MatchTourResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/MatchTour'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    PieceMoment:
+      type: object
+      required:
+      - id
+      - start_seconds
+      - end_seconds
+      - title
+      - comment
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        start_seconds:
+          type: number
+          minimum: 0
+        end_seconds:
+          type: number
+          nullable: true
+          minimum: 0
+        title:
+          type: string
+        comment:
+          type: string
+          nullable: true
+    PieceVideo:
+      type: object
+      required:
+      - id
+      - title
+      - category
+      - mode
+      - url
+      - moments
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        category:
+          type: string
+          nullable: true
+        mode:
+          type: string
+          enum:
+          - full
+          - blocked
+          - unavailable
+        url:
+          type: string
+          format: uri
+          nullable: true
+        moments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PieceMoment'
+    PieceAudio:
+      type: object
+      required:
+      - mode
+      - tracks
+      - moments
+      properties:
+        mode:
+          type: string
+          enum:
+          - full
+          - blocked
+          - unavailable
+        tracks:
+          type: array
+          items:
+            type: object
+            required:
+            - kind
+            - url
+            properties:
+              kind:
+                type: string
+                enum:
+                - full
+                - right_hand
+                - left_hand
+              url:
+                type: string
+                format: uri
+                nullable: true
+        moments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PieceMoment'
+    PieceScore:
+      type: object
+      required:
+      - mode
+      - is_public_domain
+      - pdf_url
+      - purchase_url
+      - version
+      - editor
+      - publisher
+      - copyright
+      properties:
+        mode:
+          type: string
+          enum:
+          - full
+          - blocked
+          - unavailable
+          - external
+        is_public_domain:
+          type: boolean
+        pdf_url:
+          type: string
+          format: uri
+          nullable: true
+        purchase_url:
+          type: string
+          format: uri
+          nullable: true
+        version:
+          type: string
+          nullable: true
+        editor:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        copyright:
+          type: string
+          nullable: true
+    PiecePageHeader:
+      allOf:
+      - $ref: '#/components/schemas/PieceSummary'
+      - type: object
+        required:
+        - composer
+        properties:
+          composer:
+            allOf:
+            - $ref: '#/components/schemas/ComposerSummary'
+            - type: object
+              required:
+              - lifespan
+              - born_year
+              - died_year
+              - country
+              properties:
+                lifespan:
+                  type: string
+                  nullable: true
+                born_year:
+                  type: integer
+                  nullable: true
+                died_year:
+                  type: integer
+                  nullable: true
+                country:
+                  type: object
+                  required:
+                  - id
+                  - name
+                  - flag_code
+                  properties:
+                    id:
+                      $ref: '#/components/schemas/Identifier'
+                    name:
+                      type: string
+                    flag_code:
+                      type: string
+                      nullable: true
+                  nullable: true
+    PieceMetadata:
+      type: object
+      required:
+      - name
+      - short_name
+      - long_name
+      - nickname
+      - key
+      - collection_name
+      - collection_number
+      - movement_number
+      - period
+      - level
+      - page_count_label
+      - composed_year
+      - published_year
+      - tags
+      properties:
+        name:
+          type: string
+        short_name:
+          type: string
+        long_name:
+          type: string
+        nickname:
+          type: string
+          nullable: true
+        key:
+          type: string
+          nullable: true
+        collection_name:
+          type: string
+          nullable: true
+        collection_number:
+          type: string
+          nullable: true
+        movement_number:
+          type: string
+          nullable: true
+        period:
+          type: string
+          nullable: true
+        level:
+          type: string
+          nullable: true
+        page_count_label:
+          type: string
+          nullable: true
+        composed_year:
+          type: integer
+          nullable: true
+        published_year:
+          type: integer
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - name
+            - type
+            properties:
+              id:
+                $ref: '#/components/schemas/Identifier'
+              name:
+                type: string
+              type:
+                type: string
+                nullable: true
+    PieceAbout:
+      type: object
+      required:
+      - description
+      - description_fallback
+      - for_whom
+      - rankings
+      properties:
+        description:
+          type: string
+          nullable: true
+        description_fallback:
+          type: string
+          nullable: true
+          enum:
+          - composer_biography
+          - null
+        for_whom:
+          type: string
+          nullable: true
+        rankings:
+          type: object
+          required:
+          - rcm
+          - abrsm
+          - suzuki
+          properties:
+            rcm:
+              type: string
+              nullable: true
+            abrsm:
+              type: string
+              nullable: true
+            suzuki:
+              type: string
+              nullable: true
+    FavoriteFolderForPiece:
+      type: object
+      required:
+      - id
+      - name
+      - piece_count
+      - has_piece
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]*$
+        name:
+          type: string
+        piece_count:
+          type: integer
+          minimum: 0
+        has_piece:
+          type: boolean
+    FavoriteFolderChange:
+      type: object
+      required:
+      - id
+      - name
+      - piece_count
+      - has_piece
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]*$
+        name:
+          type: string
+        piece_count:
+          type: integer
+          minimum: 0
+        has_piece:
+          type: boolean
+          nullable: true
+    FavoriteFolderCreateRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 36
+          description: Trimmed; unique within account using existing database comparison.
+        piece_id:
+          type: string
+          pattern: ^[1-9][0-9]*$
+    FavoriteFolderListResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - piece_id
+          - is_favorited
+          - favorite_folder_ids
+          - folders
+          - can_create_folder
+          properties:
+            piece_id:
+              type: string
+              pattern: ^[1-9][0-9]*$
+            is_favorited:
+              type: boolean
+            favorite_folder_ids:
+              type: array
+              uniqueItems: true
+              items:
+                type: string
+                pattern: ^[1-9][0-9]*$
+            folders:
+              type: array
+              items:
+                $ref: '#/components/schemas/FavoriteFolderForPiece'
+            can_create_folder:
+              type: boolean
+        meta: &id001
+          $ref: '#/components/schemas/ResponseMeta'
+    FavoriteFolderMutationResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - piece_id
+          - is_favorited
+          - favorite_folder_ids
+          - folder
+          - can_create_folder
+          properties:
+            piece_id:
+              type: string
+              pattern: ^[1-9][0-9]*$
+              nullable: true
+            is_favorited:
+              type: boolean
+              nullable: true
+            favorite_folder_ids:
+              type: array
+              uniqueItems: true
+              items:
+                type: string
+                pattern: ^[1-9][0-9]*$
+            folder:
+              $ref: '#/components/schemas/FavoriteFolderChange'
+            can_create_folder:
+              type: boolean
+        meta: *id001
+    PieceAccount:
+      type: object
+      required:
+      - is_favorited
+      - favorite_writes_supported
+      - annotations_supported
+      - history_path
+      properties:
+        is_favorited:
+          type: boolean
+        favorite_writes_supported:
+          type: boolean
+        annotations_supported:
+          type: boolean
+        history_path:
+          type: string
+    PieceNativeAccess:
+      type: object
+      required:
+      - full_media
+      - basis
+      properties:
+        full_media:
+          type: boolean
+        basis:
+          type: string
+          enum:
+          - membership_required
+          - membership
+          - super_user
+          - free_pick
+    PieceMedia:
+      type: object
+      required:
+      - performance
+      - synthesia
+      - lessons
+      - audio
+      - score
+      properties:
+        performance:
+          type: object
+          required:
+          - id
+          - title
+          - category
+          - mode
+          - url
+          - moments
+          properties:
+            id:
+              $ref: '#/components/schemas/Identifier'
+            title:
+              type: string
+            category:
+              type: string
+              nullable: true
+            mode:
+              type: string
+              enum:
+              - full
+              - blocked
+              - unavailable
+            url:
+              type: string
+              format: uri
+              nullable: true
+            moments:
+              type: array
+              items:
+                $ref: '#/components/schemas/PieceMoment'
+          nullable: true
+        synthesia:
+          type: object
+          required:
+          - id
+          - title
+          - category
+          - mode
+          - url
+          - moments
+          properties:
+            id:
+              $ref: '#/components/schemas/Identifier'
+            title:
+              type: string
+            category:
+              type: string
+              nullable: true
+            mode:
+              type: string
+              enum:
+              - full
+              - blocked
+              - unavailable
+            url:
+              type: string
+              format: uri
+              nullable: true
+            moments:
+              type: array
+              items:
+                $ref: '#/components/schemas/PieceMoment'
+          nullable: true
+        lessons:
+          type: array
+          items:
+            type: object
+            required:
+            - title
+            - videos
+            properties:
+              title:
+                type: string
+              videos:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PieceVideo'
+        audio:
+          $ref: '#/components/schemas/PieceAudio'
+        score:
+          $ref: '#/components/schemas/PieceScore'
+    PieceTimelineEvent:
+      type: object
+      required:
+      - id
+      - year
+      - date
+      - title
+      - description
+      - is_piece_milestone
+      - composer_milestone
+      - image_url
+      - source_url
+      - attribution
+      - image_credit
+      - image_source_url
+      - image_license
+      - image_license_url
+      properties:
+        id:
+          type: string
+        year:
+          type: integer
+        date:
+          type: string
+          format: date
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+        is_piece_milestone:
+          type: boolean
+        composer_milestone:
+          type: string
+          nullable: true
+        image_url:
+          type: string
+          format: uri
+          nullable: true
+        source_url:
+          type: string
+          format: uri
+          nullable: true
+        attribution:
+          type: string
+          nullable: true
+        image_credit:
+          type: string
+          nullable: true
+        image_source_url:
+          type: string
+          format: uri
+          nullable: true
+        image_license:
+          type: string
+          nullable: true
+        image_license_url:
+          type: string
+          format: uri
+          nullable: true
+    PieceTimeline:
+      type: object
+      required:
+      - period
+      - events
+      properties:
+        period:
+          type: object
+          required:
+          - born
+          - died
+          - start_year
+          - end_year
+          properties:
+            born:
+              type: integer
+              nullable: true
+            died:
+              type: integer
+              nullable: true
+            start_year:
+              type: integer
+            end_year:
+              type: integer
+          nullable: true
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/PieceTimelineEvent'
+    PieceRecommendation:
+      type: object
+      required:
+      - id
+      - title
+      - query
+      - web_url
+      - items
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        query:
+          type: string
+          nullable: true
+        web_url:
+          type: string
+          format: uri
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PieceSummary'
+    PieceDetail:
+      type: object
+      required:
+      - piece
+      - metadata
+      - about
+      - account
+      - access
+      - media
+      - timeline
+      - recommendations
+      - synthesia_releases
+      - share_url
+      properties:
+        piece:
+          $ref: '#/components/schemas/PiecePageHeader'
+        metadata:
+          $ref: '#/components/schemas/PieceMetadata'
+        about:
+          $ref: '#/components/schemas/PieceAbout'
+        account:
+          $ref: '#/components/schemas/PieceAccount'
+        access:
+          $ref: '#/components/schemas/PieceNativeAccess'
+        media:
+          $ref: '#/components/schemas/PieceMedia'
+        timeline:
+          $ref: '#/components/schemas/PieceTimeline'
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PieceRecommendation'
+        synthesia_releases:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - thumbnail_url
+            - piece
+            properties:
+              id:
+                $ref: '#/components/schemas/Identifier'
+              thumbnail_url:
+                type: string
+                format: uri
+                nullable: true
+              piece:
+                $ref: '#/components/schemas/PieceSummary'
+        share_url:
+          type: string
+          format: uri
+    PieceDetailResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/PieceDetail'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'

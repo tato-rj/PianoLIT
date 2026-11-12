@@ -1,21 +1,20 @@
 # Web app Collections
 
-The web app's `/playlists` page is now titled **Collections**. Its route name remains `webapp.playlists`; existing `webapp.playlists.show` links still open the same playlist/piece pages. The iOS API routes, controllers, shared API builder, stored covers, group values, and piece lists are unchanged.
+The web app's `/playlists` page is titled **Collections**. Its route name is `webapp.playlists`, and `webapp.playlists.show` opens collection detail. The legacy iOS playlist routes continue serving the original contract. See the [iOS v2 handoff](api/v2/examples/collections.md) for the catalog and detail API.
 
 ## Editorial controls
 
-Continue editing playlist names, subtitles, descriptions and piece selections in the existing administration. `config/collections.php` supplies **web-only** presentation:
+Continue editing playlist names, subtitles, descriptions and piece selections in the existing administration. The website and iOS v2 share the catalog content through `App\Services\Collections\Catalog`.
 
 The admin playlist list has a **Publish/Unpublish** button beside **Edit**. New playlists start unpublished. Only playlists with a non-null publication date that is not in the future appear in web Collections; unpublished detail URLs redirect to Discover through the web app's existing 404 handler. The one-time migration marks existing playlists as published so the current page stays populated; use the button to remove any of them from the web app. The legacy iOS playlist list and pieces endpoints continue to return the same playlists and JSON fields.
 
-- `featured`: preferred playlist name normalized as a slug (apostrophes removed). If unavailable, the first eligible playlist in the stored order is featured. The label is **Featured collection**, with no promised automatic refresh.
-- `inspiration`: ordered names for the three editorial suggestions. Only existing eligible playlists appear. If none match, the page uses up to three other eligible collections. Mockup-only titles and difficulty claims were not added to real playlists.
-- `categories`: mapping of normalized playlist names to browse categories (`mood`, `composer`, `level`, or `other`). Only categories with content get filter buttons. All eligible collections remain accessible under All, including `other`.
-- `books`: eight Piano Solos announcements using the supplied cover colors and level descriptions. They are **Coming soon**, not links to empty books. There are no invented selections, progress indicators, purchase links, or automatic book curation. The books occupy one horizontal row with native touch/trackpad scrolling and keyboard access. Previous/next buttons move one card, disable at the ends, hide when everything fits, and respect reduced-motion preferences. Without JavaScript the native scrolling row remains usable.
+- The featured collection and up to three suggestions share a weekly selection of eligible collections. Both clients render suggestions in the saved selection order.
+- Browse filters use saved Featured tags on eligible collections. All eligible collections remain accessible under All, including untagged cards.
+- `config/collections.php` stores the ordered book series, covers and level descriptions. The eight Piano Solos books are **Coming soon**. Set a book's public HTTPS `detail_url` when its detail page is published. The web books occupy one horizontal row with native touch, trackpad and keyboard scrolling. Previous and next buttons move one card and respect reduced motion.
 
 Playlist covers always use the existing admin upload, including the featured banner, inspiration cards, and browse library. There are no name-based image overrides. Missing/failed covers use the generic featured artwork as a fallback. Uploading a replacement through admin updates the cover on the next page request. Existing shared cover storage and mobile behavior remain unchanged; an admin cover change will also be visible to mobile clients through their existing cover field. The six generated playlist illustrations remain available as optional upload assets, separate from Books 1–8.
 
-Changing a playlist name can require updating its category/featured/inspiration mapping. Configuration changes require refreshing the config cache during deployment if it is enabled.
+Configuration changes require refreshing the config cache during deployment if it is enabled.
 
 The top callout links to the book announcements. A real “Continue” card should only be added once there is authenticated, account-owned book progress. When the books are ready, add dedicated curated book data and detail pages with ordered piece selections and teaching notes; shop links and automated collection generation remain future work.
 

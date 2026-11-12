@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: PianoLIT mobile API v2 — Discover, Collections, piece detail, favorite folders and Find my match
-  version: 1.4.0
+  version: 1.5.0
   description: Independent v2 login and Discover. Web and v2 share App\Services\Discover\Feed.
     Legacy /api routes remain supported indefinitely. Deployment/native verification
     is recorded in the manifest; downloading this specification does not authenticate
@@ -11,7 +11,7 @@ info:
     and deployment verification. Piece detail uses the shared Pieces\PageContent,
     WebTimeline, PieceRecommendations and native bearer identity. Favorite-folder writes
     reuse website records and limits; they are implemented locally with deployment pending.
-    Collections uses the shared web catalog and weekly feature with native bearer access.
+    Collections uses the shared web catalog, book series, weekly selections and categories with native bearer access.
 servers:
 - url: https://pianolit.com/api/v2
   description: Login, Discover, confirmed piece-open history, piece detail and Collections
@@ -20,7 +20,7 @@ servers:
 security:
 - MobileBearer: []
 x-handoff:
-  revision: 2026-11-11.1
+  revision: 2026-11-11.2
   status: draft
   implemented: true
   native_integration: pending
@@ -28,15 +28,18 @@ paths:
   /collections:
     get:
       operationId: listCollectionsV2
-      summary: List published curated repertoire collections
+      summary: Load the Collections tab catalog and sections
       description: >-
         Includes the featured card once in collections. Use featured_collection_id
         to select it. Returns all eligible cards ordered by saved collection order
         then numeric ID, without pagination. All signed-in accounts see all cards.
         Only the current featured collection can be opened without a membership.
+        Book series and their books follow editorial order. Suggested IDs refer to
+        the catalog in weekly display order. Categories provide IDs for local
+        Browse filtering and take no query parameter.
       responses:
         '200':
-          description: Complete catalog, including an explicit null featured ID and empty array when empty.
+          description: Complete catalog and sections. An empty collection catalog returns a null featured ID and empty collection, suggestion, and category arrays. Book series load independently.
           content:
             application/json:
               schema:
@@ -1310,13 +1313,70 @@ components:
           description:
             type: string
             nullable: true
+    CollectionBook:
+      type: object
+      required: [id, number, title, level, cover_url, availability, detail_url]
+      properties:
+        id:
+          type: string
+          example: piano-solos-book-1
+        number:
+          type: integer
+          minimum: 1
+          description: Editorial book number, independent of array position.
+        title:
+          type: string
+        level:
+          type: string
+        cover_url:
+          type: string
+          format: uri
+        availability:
+          type: string
+          enum: [available, coming_soon]
+        detail_url:
+          type: string
+          format: uri
+          nullable: true
+          description: Public HTTPS book detail destination when available. Null for coming_soon.
+    CollectionBookSeries:
+      type: object
+      required: [id, title, books]
+      properties:
+        id:
+          type: string
+          example: piano-solos
+        title:
+          type: string
+        books:
+          type: array
+          description: Books in editorial display order.
+          items:
+            $ref: '#/components/schemas/CollectionBook'
+    CollectionCategory:
+      type: object
+      required: [id, label, collection_ids]
+      properties:
+        id:
+          type: string
+          pattern: '^(tag-[1-9][0-9]*|featured-[a-f0-9]{64})$'
+          description: Stable saved tag ID, or a key based on the exact trimmed label for older unlinked tags.
+        label:
+          type: string
+        collection_ids:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          description: Eligible catalog card IDs in catalog order.
+          items:
+            $ref: '#/components/schemas/Identifier'
     CollectionCatalogResponse:
       type: object
       required: [data, meta]
       properties:
         data:
           type: object
-          required: [featured_collection_id, collections]
+          required: [featured_collection_id, collections, book_series, suggested_collection_ids, categories]
           properties:
             featured_collection_id:
               type: string
@@ -1327,6 +1387,23 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/CollectionCard'
+            book_series:
+              type: array
+              description: Ordered series, independent of the repertoire catalog.
+              items:
+                $ref: '#/components/schemas/CollectionBookSeries'
+            suggested_collection_ids:
+              type: array
+              maxItems: 3
+              uniqueItems: true
+              description: Catalog IDs in shared weekly display order. May include the featured ID. Use each card's access value.
+              items:
+                $ref: '#/components/schemas/Identifier'
+            categories:
+              type: array
+              description: Categories in natural label order, case-insensitive with exact labels breaking ties. Filter Browse locally.
+              items:
+                $ref: '#/components/schemas/CollectionCategory'
         meta:
           $ref: '#/components/schemas/ResponseMeta'
     CollectionDetailResponse:

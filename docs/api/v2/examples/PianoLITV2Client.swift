@@ -123,6 +123,32 @@ struct V2Collection: Decodable, Sendable {
 struct V2CollectionCatalog: Decodable, Sendable {
     let featured_collection_id: String?
     let collections: [V2Collection]
+    // Optional so the same decoder can read fixtures from the original handoff.
+    let book_series: [V2CollectionBookSeries]?
+    let suggested_collection_ids: [String]?
+    let categories: [V2CollectionCategory]?
+}
+
+struct V2CollectionBookSeries: Decodable, Sendable {
+    let id: String
+    let title: String
+    let books: [V2CollectionBook]
+}
+
+struct V2CollectionBook: Decodable, Sendable {
+    let id: String
+    let number: Int
+    let title: String
+    let level: String
+    let cover_url: URL
+    let availability: String
+    let detail_url: URL?
+}
+
+struct V2CollectionCategory: Decodable, Sendable {
+    let id: String
+    let label: String
+    let collection_ids: [String]
 }
 
 struct V2CollectionDetail: Decodable, Sendable {

@@ -1,5 +1,5 @@
 schema_version: 1
-revision: 2026-11-11.1
+revision: 2026-11-11.2
 updated_on: '2026-11-11'
 title: PianoLIT iOS v2 handoff
 status: draft
@@ -25,7 +25,9 @@ runtime:
     verified on 2026-11-11: HTTPS bearer boundary, shared catalog and featured identity,
     ordered featured detail, regular membership locks, native piece navigation, and
     no history or analytics writes. Synthetic account and token rows were rolled back.
-    Native acceptance remains pending.'
+    Revision 2026-11-11.2 was also production verified for book order, cover assets,
+    availability, weekly suggestion order, catalog access and ordered category
+    assignments. Native acceptance remains pending.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -145,6 +147,11 @@ consumer_rules:
   same v2 bearer. See examples/collections.md for the membership lock, piece
   navigation and removed Follow a path flow.
 changelog:
+- revision: 2026-11-11.2
+  changes:
+  - Extended GET /collections with ordered book_series, suggested_collection_ids and categories.
+  - Reused the web app book metadata, weekly suggestions and saved category assignments.
+  - Updated Swift decoders and the complete and empty JSON fixtures.
 - revision: 2026-11-11.1
   changes:
   - Added authenticated GET /collections and GET /collections/{collection},

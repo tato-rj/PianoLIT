@@ -13,6 +13,9 @@ source:
   featured: The web app's shared weekly selection. featured_collection_id is null when no collection qualifies.
   artwork: Saved collection cover or shared fallback.
   order: Catalog uses saved collection order then ID. Detail uses saved collection-piece order then pivot ID. Neither response is paginated.
+  book_series: Ordered editorial series and books with stable IDs, cover URLs, availability and nullable HTTPS detail destinations. All current Piano Solos books are coming soon.
+  suggestions: Ordered weekly suggested IDs from the same selection used by the website. Use each catalog card's access.
+  categories: Shared filters ordered by label. Use category collection IDs to filter the loaded Browse catalog locally.
 access:
   catalog: All signed-in accounts see all eligible card metadata and full counts.
   detail: The featured collection is available to every signed-in account. Active members, eligible trials and grace periods, and super users can open every eligible collection.

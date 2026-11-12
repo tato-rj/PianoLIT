@@ -1,0 +1,29 @@
+id: collections
+status: draft
+backend_status: production_verified
+ios_status: pending_integration
+title: Collections
+routes:
+  catalog: GET /api/v2/collections
+  detail: GET /api/v2/collections/{collection}
+  piece: GET /api/v2/pieces/{piece}
+authentication: Existing Keychain v2 bearer. No user_id or browser session.
+source:
+  catalog: The shared web catalog selects published general collections with at least six attached pieces and five pieces with tutorials.
+  featured: The web app's shared weekly selection. featured_collection_id is null when no collection qualifies.
+  artwork: Saved collection cover or shared fallback.
+  order: Catalog uses saved collection order then ID. Detail uses saved collection-piece order then pivot ID. Neither response is paginated.
+  book_series: Ordered editorial series and books with stable IDs, cover URLs, availability and nullable HTTPS detail destinations. All current Piano Solos books are coming soon.
+  suggestions: Ordered weekly suggested IDs from the same selection used by the website. Use each catalog card's access.
+  categories: Shared filters ordered by label. Use category collection IDs to filter the loaded Browse catalog locally.
+access:
+  catalog: All signed-in accounts see all eligible card metadata and full counts.
+  detail: The featured collection is available to every signed-in account. Active members, eligible trials and grace periods, and super users can open every eligible collection.
+  locked: HTTP 200 with collection.access membership_required, full metadata and count, and pieces [].
+  piece: Every visible row can open its v2 piece metadata. The piece endpoint independently decides native media access.
+integration:
+  summary: Reuse Discover PieceSummary. Collections media.performance indicates a saved performance video with a nonempty URL.
+  follow_a_path: Omit this legacy flow in v2. The installed legacy app continues to use /api/playlists/journey.
+  analytics: No extra collection detail call or collection event. Existing confirmed piece-open history is separate.
+  examples: examples/collections.md
+  contract: openapi.yaml
