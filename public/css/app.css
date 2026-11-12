@@ -33562,7 +33562,6 @@ body.score-editor-fullscreen-open .playlist-player--piece {
   }
   .resource-card--poster .resource-card__art--poster {
     height: auto;
-    justify-content: flex-start;
   }
   .resource-card--poster .resource-card__art--poster img {
     max-height: 14rem;

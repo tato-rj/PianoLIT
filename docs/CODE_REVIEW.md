@@ -6,6 +6,7 @@
 - `infographics.card`, directory/related grids, the shared resource-card Sass and the Design System specimen use the same presentation. Download destinations, authentication, purchase flow, saved descriptions, original files and mobile/API output are unchanged. No migration or new JavaScript is needed. Updated `docs/DESIGN_TOKENS.md` and rebuilt app/admin CSS and manifest entries; the build also includes existing source changes for blog reading progress and promotion-bar corners.
 - Verified the rendered gallery with the first twelve public posters in an isolated SQLite fixture, at 1440, 768, 390 and 320 pixels. Entire posters remain visible, there is no horizontal overflow, and native keyboard navigation reaches one link per guide. The local catalog itself is empty; preview fixtures did not modify it.
 - Production build, final CSS/build regressions and `git diff --check` pass. Of 53 existing infographic/Learn/course/pianist checks, 46 pass; seven failures for retired newsletter controls, campaign recording and old empty-state copy reproduce with the original shared templates. These are separate from the card change. Production deployment remains pending.
+- Follow-up: The mobile poster layout now inherits the shared artwork centering from `_resource-card.scss`. Three differently sized posters had equal left and right spacing in the 680px browser preview. Rebuilt app and admin CSS and verified the asset checks.
 
 ### 2026-11-12 — Keep piece details factual and concise (P3, complete locally)
 

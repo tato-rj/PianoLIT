@@ -27745,7 +27745,6 @@ body.admin-dashboard-page .admin-main {
   }
   .resource-card--poster .resource-card__art--poster {
     height: auto;
-    justify-content: flex-start;
   }
   .resource-card--poster .resource-card__art--poster img {
     max-height: 14rem;
