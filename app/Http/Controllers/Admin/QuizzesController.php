@@ -64,7 +64,6 @@ class QuizzesController extends Controller
         $returnFilters = \App\Support\AdminTableFilters::query(app(\App\Services\Admin\QuizzesTable::class)->filters(Request::create('/', 'GET', $request->query())));
         \DB::transaction(function () use ($request, $quiz, $form) {
             $quiz->update([
-                'slug' => str_slug($form->title),
                 'title' => $form->title,
                 'level_id' => $form->level_id,
                 'description' => $form->description,

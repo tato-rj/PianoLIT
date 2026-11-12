@@ -13,7 +13,7 @@ class QuizResultShare
         abort_unless($quiz->published_at && $total > 0 && $total <= 999 && $score >= 0 && $score <= $total, 404);
         $parameters = ['quiz' => $quiz->slug, 'score' => $score, 'total' => $total];
         $url = URL::signedRoute('quizzes.share', $parameters);
-        $title = trim(preg_replace('/\s+/u', ' ', strip_tags($quiz->title)), '. ');
+        $title = trim(preg_replace('/\s+/u', ' ', strip_tags(app(QuizPageContent::class)->for($quiz)['title'])), '. ');
         $challenge = $score === $total ? 'Can you match it?' : 'Can you beat it?';
         $headline = "I scored {$score}/{$total} on {$title}";
         $share = LinkShare::forMessage($url, $headline, $headline.' '.$challenge, 'My PianoLIT quiz score', $headline.' '.$challenge);

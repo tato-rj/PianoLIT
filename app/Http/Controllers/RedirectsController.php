@@ -20,6 +20,11 @@ class RedirectsController extends Controller
         $path = preg_replace('#^/(?:resources/infographs|infographs)(?=/|\?|$)#', '/infographics', $request->getRequestUri());
         $path = preg_replace('#^/resources/great-pianists(?=/|\?|$)#', '/great-pianists', $path);
         $path = preg_replace('#^/tools/(?=(?:circle-of-fifths|chord-finder|scales|arpeggios)(?:/|\?|$))#', '/', $path);
+        $path = preg_replace_callback('#^/quizzes/([a-z0-9-]+)/?(?=\?|$)#', function ($match) {
+            $slug = config('quiz-search.redirects.'.$match[1]);
+
+            return $slug ? '/quizzes/'.$slug : $match[0];
+        }, $path);
         abort_if($request->getSchemeAndHttpHost() === $learn && $request->getRequestUri() === $path, 404);
 
         return redirect()->away($learn.$path, 301);

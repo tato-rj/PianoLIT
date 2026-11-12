@@ -65,7 +65,7 @@ class QuizPagesTest extends ReviewTestCase
         $draft = $this->quiz('Draft challenge', ['published_at' => null]);
         $draftTopic = Model::withoutEvents(function () { return create(Topic::class, ['name' => 'Draft topic', 'slug' => 'draft-topic']); });
         $draft->topics()->attach($draftTopic);
-        $response = $this->get('http://learn.localhost/quizzes?topics=theory&level=beginner')->assertOk()
+        $response = $this->get('http://learn.localhost/quizzes?topics=theory&level=beginner')->assertOk()->assertHeader('X-Robots-Tag', 'noindex')
             ->assertSee('Available quizzes')->assertDontSee('Draft challenge')->assertDontSee('Advanced theory')->assertDontSee('Composer challenge')->assertDontSee('Draft topic');
         $xpath = $this->xpath($response);
         $this->assertCount(12, $xpath->query('//a[contains(@class,"resource-card")]'));
@@ -78,6 +78,10 @@ class QuizPagesTest extends ReviewTestCase
         $this->get('http://learn.localhost/quizzes?topics=theory&level=beginner&page=2')->assertOk()->assertSee('Theory challenge 13');
         $this->get('http://learn.localhost/quizzes?topics=theory&level=')->assertOk()->assertSee('Advanced theory');
         $this->get('http://learn.localhost/quizzes?level=missing')->assertOk()->assertSee('No quizzes match these filters');
+        $page2 = $this->get('http://learn.localhost/quizzes?page=2&utm_source=email')->assertOk()->assertHeaderMissing('X-Robots-Tag');
+        $this->assertSame('http://learn.localhost/quizzes?page=2', $this->xpath($page2)->evaluate('string(//link[@rel="canonical"]/@href)'));
+        $page2->assertDontSee('utm_source', false)->assertSee('Music Quizzes | Page 2');
+        $this->get('http://learn.localhost/quizzes?page=99')->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
         $this->preview($response, 'directory');
         Mail::assertNothingOutgoing();
     }
@@ -88,7 +92,8 @@ class QuizPagesTest extends ReviewTestCase
             ['Q' => 'Listen to this phrase [storage/quiz/audio/phrase.mp3]', 'A' => ['Major[x]', 'Minor']],
             ['Q' => 'Name this note [storage/quiz/images/note.png]', 'A' => ['C', 'D[x]']],
         ])]);
-        $response = $this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk()
+        $url = route('quizzes.show', $quiz);
+        $response = $this->get($url.'?utm_source=email')->assertOk()->assertHeaderMissing('X-Robots-Tag')
             ->assertSee('Discover the piano')->assertDontSee('Test your knowledge')->assertSee('Answer each question, then see your score.')->assertSee('Start quiz')->assertDontSee('Your progress')->assertSee('Review answers')
             ->assertSee('Created')->assertSee('Times answered')->assertSee('Average score')->assertSee('No scores yet')
             ->assertSee('http://learn.localhost/quizzes/'.$quiz->slug.'/feedback', false)
@@ -100,7 +105,15 @@ class QuizPagesTest extends ReviewTestCase
         $this->assertCount(2, $xpath->query('//button[@data-quiz-answer and @correct]'));
         $this->assertCount(1, $xpath->query('//audio[@controls and @preload="none"]//source[contains(@src,"/storage/quiz/audio/phrase.mp3")]'));
         $this->assertCount(1, $xpath->query('//img[contains(@src,"/storage/quiz/images/note.png") and @alt]'));
-        $this->assertCount(1, $xpath->query('//div[@id="quiz-content" and @hidden]'));
+        $this->assertCount(1, $xpath->query('//div[@id="quiz-content" and @hidden and @data-nosnippet]'));
+        $this->assertSame($url, $xpath->evaluate('string(//link[@rel="canonical"]/@href)'));
+        $schema = json_decode($xpath->evaluate('string(//script[@type="application/ld+json"])'), true, 512, JSON_THROW_ON_ERROR);
+        [$breadcrumbs, $resource] = $schema['@graph'];
+        $this->assertSame($url, $breadcrumbs['itemListElement'][3]['item']);
+        $this->assertSame('LearningResource', $resource['@type']);
+        $this->assertSame('Quiz', $resource['learningResourceType']);
+        $this->assertSame('Discover the piano', $resource['name']);
+        $this->assertArrayNotHasKey('hasPart', $resource);
         $this->assertCount(1, $xpath->query('//button[@data-quiz-start and @aria-describedby="quiz-start-description"]'));
         $this->assertCount(1, $xpath->query('//div[contains(@class,"quiz-launcher")]//button[@data-quiz-start and contains(@class,"rounded-circle")]'));
         $this->assertCount(1, $xpath->query('//dl[@aria-label="Quiz statistics"]//time[@datetime="'.$quiz->created_at->toDateString().'"]'));
@@ -228,7 +241,7 @@ class QuizPagesTest extends ReviewTestCase
                 $this->assertStringContainsString($share['url'], implode(' ', $params));
             }
             $before = DB::table('quiz_results')->count();
-            $page = $this->get($share['url'])->assertOk()->assertSee('Take the quiz');
+            $page = $this->get($share['url'])->assertOk()->assertHeader('X-Robots-Tag', 'noindex')->assertSee('Take the quiz');
             $meta = $this->xpath($page);
             $this->assertSame($share['url'], $meta->query('//meta[@property="og:url"]')->item(0)->getAttribute('content'));
             $this->assertSame($share['image'], $meta->query('//meta[@property="og:image"]')->item(0)->getAttribute('content'));
@@ -274,20 +287,58 @@ class QuizPagesTest extends ReviewTestCase
         $draft = $this->quiz('Unpublished quiz', ['published_at' => null]);
         $this->withExceptionHandling()->get('http://learn.localhost/quizzes/'.$draft->slug)->assertNotFound();
         $this->actingAs(create(Admin::class), 'admin');
-        $this->get('http://learn.localhost/quizzes/'.$draft->slug)->assertOk()->assertSee('Admin preview');
+        $this->get('http://learn.localhost/quizzes/'.$draft->slug)->assertOk()->assertHeader('X-Robots-Tag', 'noindex')->assertSee('Admin preview');
         $empty = $this->quiz('Coming soon', ['questions' => serialize([])]);
-        $response = $this->get('http://learn.localhost/quizzes/'.$empty->slug)->assertOk()->assertSee('This quiz is being prepared');
+        $response = $this->get('http://learn.localhost/quizzes/'.$empty->slug)->assertOk()->assertHeader('X-Robots-Tag', 'noindex')->assertSee('This quiz is being prepared');
         $this->assertCount(0, $this->xpath($response)->query('//button[@data-quiz-start]'));
     }
 
     public function test_recommendations_only_show_other_published_quizzes_in_shared_cards()
     {
         $quiz = $this->quiz('Main challenge');
-        $this->quiz('Another discovery');
+        $topic = Model::withoutEvents(fn () => create(Topic::class, ['name' => 'Piano', 'slug' => 'piano']));
+        $quiz->topics()->attach($topic);
+        $related = $this->quiz('Another discovery', ['published_at' => now()->subDay()]);
+        $related->topics()->attach($topic);
+        $other = $this->quiz('Unrelated challenge');
         $this->quiz('Hidden discovery', ['published_at' => null]);
         $response = $this->get('http://learn.localhost/quizzes/'.$quiz->slug)->assertOk()->assertSee('Another discovery')->assertDontSee('Hidden discovery');
         $xpath = $this->xpath($response);
-        $this->assertCount(1, $xpath->query('//a[contains(@class,"resource-card")]'));
-        $this->assertCount(0, $xpath->query('//a[contains(@class,"resource-card") and @href="http://learn.localhost/quizzes/'.$quiz->slug.'"]'));
+        $links = $xpath->query('//section[@aria-labelledby="more-quizzes-title"]//a[contains(@class,"resource-card")]/@href');
+        $this->assertSame([route('quizzes.show', $related), route('quizzes.show', $other)], array_map(fn ($node) => $node->value, iterator_to_array($links)));
+    }
+
+    public function test_sitemap_and_historical_redirects_point_to_playable_quiz_pages()
+    {
+        $quiz = $this->quiz('Beginner notation', ['slug' => 'music-notation-for-beginners']);
+        $this->quiz('Unpublished quiz', ['published_at' => null]);
+        $this->quiz('Empty quiz', ['questions' => serialize([])]);
+
+        $sitemap = $this->get(route('quizzes.sitemap'))->assertOk()->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+        $xml = simplexml_load_string($sitemap->getContent());
+        $this->assertSame([route('quizzes.index'), route('quizzes.show', $quiz)], array_map('strval', $xml->xpath('//*[local-name()="loc"]')));
+        $this->call('HEAD', route('quizzes.sitemap'))->assertOk();
+
+        $query = '?utm_content=A%20%26%20B';
+        foreach (['localhost', 'learn.localhost'] as $host) {
+            $this->call('HEAD', 'http://'.$host.'/quizzes/music-notation-for-beginnerst'.$query)
+                ->assertStatus(301)->assertRedirect(route('quizzes.show', $quiz).$query);
+        }
+        $this->get(route('quizzes.show', $quiz))->assertOk();
+    }
+
+    public function test_audited_copy_appears_before_play_and_yields_to_editor_changes()
+    {
+        $description = 'Are you just starting out? Here is a quiz that will cover all the basics you should know about music notation, rhythm, and theory.';
+        $quiz = $this->quiz('Music theory for beginners', ['description' => $description]);
+        $url = route('quizzes.show', $quiz);
+        $response = $this->get($url)->assertOk();
+        $xpath = $this->xpath($response);
+        $this->assertSame('Beginner Music Theory Quiz', $xpath->evaluate('string(//article[@data-quiz]/header/h1)'));
+        $this->assertStringContainsString('time signatures', $xpath->evaluate('string(//article[@data-quiz]/header/p)'));
+        $this->assertSame($description, $quiz->fresh()->description);
+
+        $quiz->update(['title' => 'Notes and Rhythm for Beginners', 'description' => 'Review note values and rhythm.']);
+        $this->get($url)->assertOk()->assertSee('Notes and Rhythm for Beginners')->assertSee('Review note values and rhythm.')->assertDontSee('Beginner Music Theory Quiz');
     }
 }

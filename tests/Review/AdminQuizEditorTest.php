@@ -81,7 +81,9 @@ class AdminQuizEditorTest extends ReviewTestCase
         $topic = create(Topic::class);
         $quiz->topics()->attach($topic);
         $this->patch(route('admin.quizzes.update', ['quiz' => $quiz, 'search' => 'notes']), $this->data())
-            ->assertRedirect(route('admin.quizzes.edit', ['quiz' => 'saved-quiz', 'search' => 'notes']));
+            ->assertRedirect(route('admin.quizzes.edit', ['quiz' => $quiz, 'search' => 'notes']));
+        $this->assertSame('reading-notes', $quiz->fresh()->slug);
+        $this->assertSame('Saved quiz', $quiz->fresh()->title);
         $this->assertSame('quiz/cover_image/cover.jpg', $quiz->fresh()->cover_path);
         $this->assertSame(0, $quiz->topics()->count());
         Storage::disk('public')->assertExists([$quiz->cover_path, $quiz->thumbnail_path]);

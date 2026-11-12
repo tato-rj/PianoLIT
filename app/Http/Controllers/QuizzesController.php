@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Quiz\{Quiz, Topic, Level};
 use App\Filters\QuizFilters;
+use App\Services\QuizPageContent;
+use App\Services\QuizResultComparison;
 use Illuminate\Http\Request;
 use App\Services\QuizResultShare;
 
@@ -14,14 +16,31 @@ class QuizzesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(QuizFilters $filters)
+    public function index(Request $request, QuizFilters $filters)
     {
         $quizzes = Quiz::published()->with(['level', 'topics'])->latest()->orderByDesc('id')
-            ->filter($filters)->paginate(12)->withQueryString();
+            ->filter($filters)->paginate(12)->appends($request->only('topics', 'level'));
         $levels = Level::whereHas('quizzes', function ($query) { $query->published(); })->orderBy('id')->get();
         $topics = Topic::whereHas('quizzes', function ($query) { $query->published(); })->orderBy('name')->get();
 
-        return view('games.quizzes.index', compact(['quizzes', 'levels', 'topics']));
+        $page = $quizzes->currentPage();
+        $filtered = $request->query->has('topics') || $request->query->has('level');
+        $indexable = ! $filtered && $quizzes->isNotEmpty();
+        $canonical = $indexable ? route('quizzes.index', $page > 1 ? ['page' => $page] : []) : null;
+        $response = response()->view('games.quizzes.index', compact('quizzes', 'levels', 'topics', 'canonical'));
+
+        return $indexable ? $response : $response->header('X-Robots-Tag', 'noindex');
+    }
+
+    public function sitemap()
+    {
+        $urls = Quiz::published()->select(['id', 'slug', 'questions'])->orderBy('id')->get()
+            ->filter(fn (Quiz $quiz) => count($quiz->questions) > 0)
+            ->map(fn (Quiz $quiz) => route('quizzes.show', $quiz));
+
+        if ($urls->isNotEmpty()) $urls->prepend(route('quizzes.index'));
+
+        return response()->view('components.seo.sitemap', compact('urls'), 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
     }
 
     /**
@@ -30,27 +49,39 @@ class QuizzesController extends Controller
      * @param  \App\Quiz  $quiz
      * @return \Illuminate\Http\Response
      */
-    public function show(Quiz $quiz)
+    public function show(Quiz $quiz, QuizPageContent $content)
     {
+        $preview = ! $quiz->published_at;
+        abort_if($preview && ! auth()->guard('admin')->check(), 404);
         $quiz->loadMissing(['topics', 'level']);
-        $suggestions = $quiz->suggestions(4)->with('level')->get();
+        $suggestions = $this->related($quiz);
+        $statistics = app(QuizResultComparison::class)->beforeCurrentPlay($quiz, 0, count($quiz->questions));
+        $copy = $content->for($quiz);
+        $canonical = ! $preview && count($quiz->questions) ? route('quizzes.show', $quiz) : null;
+        $response = response()->view('games.quizzes.show', compact('quiz', 'suggestions', 'statistics', 'preview', 'copy', 'canonical'));
 
-        if (! $quiz->published_at && ! auth()->guard('admin')->check()) {
-            abort(404);
+        return $canonical ? $response : $response->header('X-Robots-Tag', 'noindex');
+    }
+
+    private function related(Quiz $quiz)
+    {
+        $related = Quiz::published()->with('level')->whereKeyNot($quiz->getKey());
+        $topicIds = $quiz->topics->modelKeys();
+        if ($topicIds) {
+            $related->withCount(['topics as shared_topics_count' => fn ($query) => $query->whereIn('quiz_topics.id', $topicIds)])
+                ->orderByDesc('shared_topics_count');
         }
 
-        $statistics = app(\App\Services\QuizResultComparison::class)->beforeCurrentPlay($quiz, 0, count($quiz->questions));
-
-        return view('games.quizzes.show', compact(['quiz', 'suggestions', 'statistics']))->with('preview', ! $quiz->published_at);
+        return $related->orderByDesc('published_at')->orderByDesc('id')->limit(4)->get();
     }
 
     public function feedback(Request $request, Quiz $quiz)
     {
         if (! is_array($request->answers))
-            return view('components.feedback.error')->render();
+            return response()->view('components.feedback.error')->header('X-Robots-Tag', 'noindex');
 
         $feedback = $quiz->evaluate($request->answers);
-        $comparison = app(\App\Services\QuizResultComparison::class)->beforeCurrentPlay($quiz, $feedback['score'], $feedback['questions_count']);
+        $comparison = app(QuizResultComparison::class)->beforeCurrentPlay($quiz, $feedback['score'], $feedback['questions_count']);
 
         if (traffic()->isRealVisitor()) {
             $quiz->results()->create([
@@ -61,13 +92,13 @@ class QuizzesController extends Controller
 
         $share = $quiz->published_at && $feedback['questions_count'] > 0 && $feedback['questions_count'] <= 999
             ? app(QuizResultShare::class)->data($quiz, $feedback['score'], $feedback['questions_count']) : null;
-        return view('games.quizzes.feedback', compact('feedback', 'share', 'comparison'))->render();
+        return response()->view('games.quizzes.feedback', compact('feedback', 'share', 'comparison'))->header('X-Robots-Tag', 'noindex');
     }
 
     public function share(Quiz $quiz, int $score, int $total, QuizResultShare $sharing)
     {
         $share = $sharing->data($quiz, $score, $total);
-        return view('games.quizzes.share', compact('quiz', 'share'));
+        return response()->view('games.quizzes.share', compact('quiz', 'share'))->header('X-Robots-Tag', 'noindex');
     }
 
     public function shareImage(Request $request, Quiz $quiz, int $score, int $total, QuizResultShare $sharing)

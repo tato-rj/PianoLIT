@@ -1,20 +1,20 @@
-@extends('layouts.app', [
-    'title' => rtrim($quiz->title, '. ').' | PianoLIT Learn', 'bodyClass' => 'learn-home quiz-page',
-    'shareable' => [
-        'keywords' => 'music quiz,piano,music theory', 'title' => rtrim($quiz->title, '. '),
-        'description' => $quiz->description, 'thumbnail' => $quiz->thumbnail_image(),
-        'created_at' => $quiz->created_at->format(DateTime::ISO8601), 'updated_at' => $quiz->updated_at->format(DateTime::ISO8601),
-    ],
-])
-
-@section('content')
-<div class="container py-4 pb-5">
-    @include('components.navigation.breadcrumb', ['items' => [
+@php
+    $breadcrumbs = [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Learn', 'url' => route('learn.home')],
         ['label' => 'Quizzes', 'url' => route('quizzes.index')],
-        ['label' => rtrim($quiz->title, '. ')],
-    ]])
+        ['label' => $copy['title']],
+    ];
+@endphp
+@extends('layouts.app', ['title' => $copy['title'].' | PianoLIT Learn', 'bodyClass' => 'learn-home quiz-page'])
+
+@section('page-metadata')
+    @include('games.quizzes.search-head', ['searchTitle' => $copy['title'], 'searchDescription' => $copy['description']])
+@endsection
+
+@section('content')
+<div class="container py-4 pb-5">
+    @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
     @component('components.layout.editorial')
         <article id="quiz" data-url="{{ route('quizzes.feedback', $quiz->slug) }}" data-quiz>
             @if(!empty($preview))
@@ -26,8 +26,8 @@
                         @foreach($quiz->topics as $topic)<a class="btn btn-secondary btn-sm" href="{{ route('quizzes.index', ['topics' => $topic->slug]) }}">{{ ucfirst($topic->name) }}</a>@endforeach
                     </div>
                 @endif
-                <h1 class="h2 mb-3">{{ rtrim($quiz->title, '. ') }}</h1>
-                <p class="text-muted mb-0">{{ $quiz->description }}</p>
+                <h1 class="h2 mb-3">{{ $copy['title'] }}</h1>
+                <p class="text-muted mb-0">{{ $copy['description'] }}</p>
             </header>
             <div class="quiz-launcher" data-quiz-introduction>
                 <div class="quiz-launcher-art" aria-hidden="true">
@@ -59,7 +59,7 @@
 
             @component('components.dialogs.modal', ['id' => 'quiz-result-modal', 'titleId' => 'quiz-dialog-title', 'centered' => true, 'data' => ['quiz-modal' => ''], 'options' => ['size' => 'lg', 'header' => ['raw' => true], 'body' => ['padding' => 0]]])
             @slot('header')
-                <span id="quiz-dialog-title" class="visually-hidden">{{ rtrim($quiz->title, '. ') }}</span>
+                <span id="quiz-dialog-title" class="visually-hidden">{{ $copy['title'] }}</span>
                 <div class="quiz-progress" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="{{ count($quiz->questions) }}" aria-valuenow="0">
                     @foreach($quiz->questions as $question)
                         <span class="quiz-progress-step" data-quiz-progress-step aria-hidden="true"></span>
@@ -68,7 +68,7 @@
                 <strong class="quiz-streak small d-block text-start mt-2" data-quiz-streak hidden></strong>
             @endslot
             @slot('body')
-                <div id="quiz-content" hidden data-quiz-content>
+                <div id="quiz-content" hidden data-quiz-content data-nosnippet>
                     @include('games.quizzes.questions')
                     <div class="quiz-next d-flex justify-content-end gap-2 mt-auto pt-3">
                         <button type="button" class="btn btn-secondary" data-quiz-back disabled>Back</button>

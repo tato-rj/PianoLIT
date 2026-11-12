@@ -1,6 +1,9 @@
+@php
+    $cardCopy = app(\App\Services\QuizPageContent::class)->for($quiz);
+@endphp
 @component('components.cards.resource', [
-    'id' => $cardId ?? 'quiz-'.$quiz->id, 'title' => rtrim($quiz->title, '. '),
-    'description' => Str::limit($quiz->description, 180),
+    'id' => $cardId ?? 'quiz-'.$quiz->id, 'title' => $cardCopy['title'],
+    'description' => Str::limit($cardCopy['description'], 180),
     'format' => ($quiz->level ? ucfirst($quiz->level->name).' · ' : '').count($quiz->questions).' '.Str::plural('question', count($quiz->questions)).' · '.$quiz->duration,
     'url' => route('quizzes.show', $quiz->slug), 'action' => 'Try this quiz', 'artworkClass' => 'resource-card__art--cover',
 ])

@@ -1,13 +1,4 @@
-<meta name="description" content="{{ $searchDescription }}">
-<meta name="robots" content="max-image-preview:large">
-<meta property="og:site_name" content="PianoLIT Blog">
-<meta property="og:type" content="{{ isset($article) ? 'article' : 'website' }}">
-<meta property="og:title" content="{{ $searchTitle }}">
-<meta property="og:description" content="{{ $searchDescription }}">
-@if($canonical)
-    <link rel="canonical" href="{{ $canonical }}">
-    <meta property="og:url" content="{{ $canonical }}">
-@endif
+@include('components.seo.page-head', ['siteName' => 'PianoLIT Blog', 'ogType' => isset($article) ? 'article' : 'website'])
 
 @isset($article)
     @php

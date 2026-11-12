@@ -1,6 +1,7 @@
 <?php
 
 Route::view('/', 'learn.index')->name('learn.home');
+Route::get('quiz-sitemap.xml', 'QuizzesController@sitemap')->name('quizzes.sitemap');
 
 Route::name('tools.')->group(function () {
     Route::get('circle-of-fifths', 'ToolsController@circleOfFifths')->name('circle-of-fifths');
@@ -43,7 +44,8 @@ Route::prefix('great-pianists')->name('resources.pianists.')->group(function () 
 
 Route::prefix('quizzes')->name('quizzes.')->group(function () {
     Route::get('', 'QuizzesController@index')->name('index');
-    Route::get('{quiz}', 'QuizzesController@show')->name('show');
+    Route::get('{quiz}', 'QuizzesController@show')->name('show')
+        ->missing(fn (\Illuminate\Http\Request $request) => app(\App\Http\Controllers\RedirectsController::class)->learn($request));
     Route::get('{quiz}/feedback', 'QuizzesController@feedback')->name('feedback');
     Route::get('{quiz}/results/{score}/{total}', 'QuizzesController@share')->where(['score' => '[0-9]{1,3}', 'total' => '[0-9]{1,3}'])->middleware(\App\Http\Middleware\ValidateQuizShareSignature::class)->name('share');
     Route::get('{quiz}/results/{score}/{total}/image.png', 'QuizzesController@shareImage')->where(['score' => '[0-9]{1,3}', 'total' => '[0-9]{1,3}'])->middleware(\App\Http\Middleware\ValidateQuizShareSignature::class)->name('share-image');

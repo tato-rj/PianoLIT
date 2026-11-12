@@ -1,4 +1,17 @@
-@extends('layouts.app', ['title' => 'Quizzes | PianoLIT Learn', 'bodyClass' => 'learn-home quiz-page'])
+@php
+    $directoryTitle = 'Music Quizzes'.($quizzes->currentPage() > 1 ? ' | Page '.$quizzes->currentPage() : '');
+    $directoryDescription = 'Take free music quizzes on piano, music theory, ear training, composers and classical music history. Filter by topic and difficulty.';
+    $breadcrumbs = [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Learn', 'url' => route('learn.home')],
+        ['label' => 'Quizzes'],
+    ];
+@endphp
+@extends('layouts.app', ['title' => $directoryTitle.' | PianoLIT Learn', 'bodyClass' => 'learn-home quiz-page'])
+
+@section('page-metadata')
+    @include('games.quizzes.search-head', ['searchTitle' => $directoryTitle, 'searchDescription' => $directoryDescription])
+@endsection
 
 @section('content')
 @php
@@ -13,13 +26,9 @@
     foreach ($levels as $level) $levelChoices[$level->slug] = ucfirst($level->name);
 @endphp
 <div class="container py-4 pb-5">
-    @include('components.navigation.breadcrumb', ['items' => [
-        ['label' => 'Home', 'url' => route('home')],
-        ['label' => 'Learn', 'url' => route('learn.home')],
-        ['label' => 'Quizzes'],
-    ]])
-    @component('components.layout.hub-header', ['heading' => 'Quizzes', 'preview' => false])
-        Quizzes about piano music, theory, and music history.
+    @include('components.navigation.breadcrumb', ['items' => $breadcrumbs])
+    @component('components.layout.hub-header', ['heading' => 'Music Quizzes', 'preview' => false])
+        {{ $directoryDescription }}
     @endcomponent
 
     @include('components.navigation.topic-navigation', ['items' => $topicLinks, 'label' => 'Quiz topics'])

@@ -33,7 +33,7 @@ class PostsController extends Controller
         $urls = Post::published()->without('topics')->orderBy('id')->pluck('slug')
             ->map(fn ($slug) => route('posts.show', $slug))->prepend(route('posts.index'));
 
-        return response()->view('blog.sitemap', compact('urls'), 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
+        return response()->view('components.seo.sitemap', compact('urls'), 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
     }
 
     /**
