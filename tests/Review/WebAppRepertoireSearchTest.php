@@ -56,12 +56,13 @@ class WebAppRepertoireSearchTest extends ReviewTestCase
         return array_map('strval', $xml->xpath('//*[local-name()="loc"]'));
     }
 
-    public function test_canonical_piece_uses_visible_catalogue_facts_and_keeps_media_fragments_out_of_search()
+    public function test_canonical_piece_keeps_composition_metadata_and_excludes_media_fragments_from_search()
     {
         $piece = $this->piece(['score_path' => 'prelude.pdf']);
         $canonical = route('webapp.pieces.show', $piece);
         $response = $this->get($canonical.'?utm_source=audit')->assertOk()->assertHeaderMissing('X-Robots-Tag')
-            ->assertSeeText('Piece details')->assertSeeText('E minor')->assertSeeText('The left hand carries a repeating figure.');
+            ->assertDontSee('piece-details-heading')->assertDontSeeText('Piece details')
+            ->assertSeeTextInOrder(['The left hand carries a repeating figure.', 'Level guide']);
         $this->assertSame($canonical, $this->xpath($response)->evaluate('string(//link[@rel="canonical"]/@href)'));
         $this->assertStringContainsString('Full Composer Name', $this->xpath($response)->evaluate('string(//title)'));
         $entity = $this->schema($response)['mainEntity'];
@@ -98,7 +99,7 @@ class WebAppRepertoireSearchTest extends ReviewTestCase
         $this->assertSame(route('webapp.discover'), $this->xpath($welcome)->evaluate('string(//link[@rel="canonical"]/@href)'));
     }
 
-    public function test_piece_details_omit_redundant_resources_and_metadata_does_not_promote_lessons()
+    public function test_piece_page_omits_redundant_resources_and_metadata_does_not_promote_lessons()
     {
         $piece = $this->piece(['score_path' => 'score.pdf', 'audio_path' => 'recording.mp3']);
         $performance = Model::withoutEvents(fn () => create(Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance']));
@@ -106,7 +107,7 @@ class WebAppRepertoireSearchTest extends ReviewTestCase
         $performance->moments()->create(['title' => 'Theme', 'start_time' => 1, 'end_time' => 8, 'sort_order' => 0, 'comment' => 'Listen for the inner voice.']);
         $metadata = app(\App\Services\WebApp\PublicRepertoire::class)->pieceMetadata($piece->fresh());
         $this->assertSame(['sheet music', 'audio recording', 'performance video', 'timed video commentary'], $metadata['resources']);
-        $response = $this->get(route('webapp.pieces.show', $piece))->assertOk()->assertSeeText('Piece details')
+        $response = $this->get(route('webapp.pieces.show', $piece))->assertOk()->assertSeeText('Level guide')
             ->assertDontSeeText('Available resources')->assertDontSeeText('video lessons');
         $this->assertCount(0, $this->xpath($response)->query('//dt[text()="Resources"]'));
         $performance->moments()->update(['comment' => '   ']);

@@ -48,17 +48,6 @@
 			@endif
 		</div>
 	</div>
-    @if($facts)
-        <section class="mb-4" aria-labelledby="piece-details-heading">
-            <h2 id="piece-details-heading" class="h5 mb-3">Piece details</h2>
-            <dl class="row mb-0">
-                @foreach($facts as $label => $value)
-                    <dt class="col-sm-3">{{ $label }}</dt>
-                    <dd class="col-sm-9">{{ ucfirst($value) }}</dd>
-                @endforeach
-            </dl>
-        </section>
-    @endif
 	<div class="">
 {{-- 		<div class="mb-4 pb-4 border-bottom">
 			<div class="mb-2">

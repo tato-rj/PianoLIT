@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-12 — Remove Piece details from the About tab (P3, complete locally)
+
+- Removed the Piece details section shown in Arthur’s screenshot and the unused facts array in `PublicRepertoire`. The page still includes the Level guide, recommendations and Timeline tab. The existing composition metadata still supplies the musical key. The edit is limited to the browser piece page and requires no asset build or migration.
+- Verified the local piece page in Chrome at 1440 and 390 pixels. All 24 focused repertoire, composer timeline and v2 piece tests pass. Production deployment is pending.
+
 ### 2026-11-12 — Read full timeline summaries (P3, complete locally)
 
 - Timeline previews clipped at two lines now open the saved summary in the shared modal on piece and composer pages. Only overflowing descriptions show Read more. Keyboard dismissal returns focus to the opener, and Sources & credits remains a separate disclosure.

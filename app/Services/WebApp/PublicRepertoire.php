@@ -38,14 +38,7 @@ class PublicRepertoire
         $credit = $piece->is_attributed_to ? ' attributed to ' : ' by ';
         $searchTitle = $name.$credit.$composer;
         $level = $piece->extended_level_name;
-        $facts = array_filter([
-            'Key or mode' => trim((string) $piece->key),
-            'Period' => optional($piece->period)->name,
-            'Collection' => $piece->collection_name,
-            'Composed' => $piece->composed_in,
-            'First published' => $piece->published_in,
-            'Techniques' => $piece->tags->where('type', 'technique')->pluck('name')->implode(', '),
-        ]);
+        $key = trim((string) $piece->key);
         $resources = $this->availableResources($piece);
         $overview = $searchTitle.'.';
         if ($level) $overview .= ' Rated '.$level.' on PianoLIT.';
@@ -56,7 +49,7 @@ class PublicRepertoire
         $canonical = $this->hasContent($piece) ? route('webapp.pieces.show', $piece) : null;
 
         $composition = ['@type' => 'MusicComposition', 'name' => $name];
-        if (isset($facts['Key or mode'])) $composition['musicalKey'] = $facts['Key or mode'];
+        if ($key) $composition['musicalKey'] = $key;
         if (!$piece->is_attributed_to) {
             $composition['composer'] = ['@type' => 'Person', 'name' => $composer, 'url' => route('webapp.composers.show', $piece->composer)];
         }
@@ -68,7 +61,7 @@ class PublicRepertoire
             'mainEntity' => $composition,
         ];
 
-        return compact('searchTitle', 'searchDescription', 'searchEntity', 'canonical', 'facts', 'resources');
+        return compact('searchTitle', 'searchDescription', 'searchEntity', 'canonical', 'resources');
     }
 
     private function availableResources(Piece $piece): array
