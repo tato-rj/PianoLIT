@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TimelineEventForm;
 use App\Services\Timeline\{TimelineDiscoverySession, WikimediaDiscovery};
 use Illuminate\Database\QueryException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 
 class TimelineEventsController extends Controller
@@ -51,6 +52,20 @@ class TimelineEventsController extends Controller
     {
         $event->update($request->validated());
         return redirect()->route('admin.timeline-events.index')->with('status', 'The timeline event has been updated.');
+    }
+
+    public function summary(TimelineEvent $event, WikimediaDiscovery $discovery)
+    {
+        try {
+            $summary = $discovery->summaryForSource($event->source_url);
+        } catch (ConnectionException | \RuntimeException $e) {
+            return response()->json(['message' => 'Wikipedia is unavailable right now. Try again shortly.'], 503);
+        }
+        if ($summary === null) {
+            return response()->json(['message' => 'No Wikipedia summary was available for this event.'], 404);
+        }
+
+        return response()->json(['description' => $summary]);
     }
 
     public function destroy(Request $request, TimelineEvent $event)

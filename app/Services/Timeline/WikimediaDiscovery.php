@@ -258,20 +258,11 @@ class WikimediaDiscovery
         if (!$events) return [];
         // Text/image enrichment is optional; dated Wikidata candidates still work if it fails.
         try {
-            $pages = $this->pages(self::WIKIPEDIA_ENDPOINT, array_unique(array_column($events, 'article_title')), [
-                'action' => 'query', 'format' => 'json', 'formatversion' => 2,
-                'redirects' => 1, 'prop' => 'extracts|pageimages|info', 'inprop' => 'url',
-                'exintro' => 1, 'explaintext' => 1, 'exchars' => 450, 'exlimit' => 10,
-                'piprop' => 'thumbnail|name', 'pithumbsize' => 480, 'pilicense' => 'free', 'pilimit' => 10,
-            ]);
+            $pages = $this->wikipediaPages(array_unique(array_column($events, 'article_title')));
             $files = [];
             foreach ($events as &$event) {
                 $page = $pages[$event['article_title']] ?? [];
-                if (!empty($page['extract'])) {
-                    // Omit pronunciation/parenthetical digressions from the short card summary.
-                    $summary = preg_replace('/\s*\([^()]*\)/u', '', $page['extract']);
-                    $event['description'] = Str::limit(trim(preg_replace('/\s+/u', ' ', $summary)), 220);
-                }
+                $event['description'] = $this->leadSummary($page['extract'] ?? '') ?? $event['description'];
                 if (!empty($page['pageimage']) && !empty($page['thumbnail']['source'])) {
                     $event['image_file'] = 'File:'.str_replace('_', ' ', $page['pageimage']);
                     $event['thumbnail'] = $page['thumbnail']['source'];
@@ -309,12 +300,48 @@ class WikimediaDiscovery
         }, $events);
     }
 
+    public function summaryForSource(string $url): ?string
+    {
+        $source = parse_url($url);
+        if (($source['scheme'] ?? null) !== 'https' || ($source['host'] ?? null) !== 'en.wikipedia.org'
+            || !Str::startsWith($source['path'] ?? '', '/wiki/')) return null;
+
+        $title = rawurldecode(substr($source['path'], strlen('/wiki/')));
+        if ($title === '' || str_contains($title, '|')) return null;
+
+        $pages = $this->wikipediaPages([$title]);
+        return $this->leadSummary($pages[$title]['extract'] ?? '');
+    }
+
+    private function wikipediaPages(array $titles): array
+    {
+        return $this->pages(self::WIKIPEDIA_ENDPOINT, $titles, [
+            'action' => 'query', 'format' => 'json', 'formatversion' => 2,
+            'redirects' => 1, 'prop' => 'extracts|pageimages|info', 'inprop' => 'url',
+            'exintro' => 1, 'explaintext' => 1, 'exlimit' => 10,
+            'piprop' => 'thumbnail|name', 'pithumbsize' => 480, 'pilicense' => 'free', 'pilimit' => 10,
+        ]);
+    }
+
+    private function leadSummary(string $extract): ?string
+    {
+        $paragraph = preg_split('/\R/u', trim($extract), 2)[0] ?? '';
+        $paragraph = trim(preg_replace('/\s+/u', ' ', $paragraph));
+        if (mb_strlen($paragraph) <= 2000) return $paragraph !== '' ? $paragraph : null;
+
+        // Unusually long leads must still fit the editor. End at a sentence boundary.
+        $prefix = mb_substr($paragraph, 0, 2001);
+        preg_match('/^(.+[.!?]["”’]?)\s+\p{Lu}/u', $prefix, $match);
+        return $match[1] ?? null;
+    }
+
     private function pages(string $endpoint, array $titles, array $params): array
     {
+        $cachePrefix = $endpoint === self::WIKIPEDIA_ENDPOINT ? 'timeline.wikimedia.page.v2.' : 'timeline.wikimedia.page.v1.';
         $pages = [];
         $missing = [];
         foreach ($titles as $title) {
-            $cached = Cache::get('timeline.wikimedia.page.v1.'.sha1($endpoint.$title));
+            $cached = Cache::get($cachePrefix.sha1($endpoint.$title));
             if ($cached !== null) $pages[$title] = $cached;
             else $missing[] = $title;
         }
@@ -331,7 +358,7 @@ class WikimediaDiscovery
                 $title = $original;
                 for ($i = 0; $i < 3 && isset($aliases[$title]); $i++) $title = $aliases[$title];
                 $pages[$original] = $found->get($title, []);
-                Cache::put('timeline.wikimedia.page.v1.'.sha1($endpoint.$original), $pages[$original], now()->addMinutes(config('wikimedia.cache_minutes')));
+                Cache::put($cachePrefix.sha1($endpoint.$original), $pages[$original], now()->addMinutes(config('wikimedia.cache_minutes')));
             }
         }
         return $pages;

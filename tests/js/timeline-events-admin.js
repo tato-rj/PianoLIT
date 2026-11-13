@@ -52,6 +52,7 @@ async function main() {
     const requests = [];
     const storage = new Map([['pianolit.timeline.library', JSON.stringify({year: '1730', searchId: 'old-search'})]]);
     const context = {
+        Event,
         document: {body: element(), createElement: () => element(), getElementById: id => ids[id]},
         sessionStorage: {getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value), removeItem: key => storage.delete(key)},
         window: {axios: {post(url, data, options) {
@@ -190,6 +191,37 @@ async function main() {
     await settle();
     assert.strictEqual(ids['page-heading'].textContent, 'Timeline events', 'Use the authoritative server count');
     assert.strictEqual(ids['timeline-saved-count'].textContent, '4');
+
+    const summaryField = element();
+    summaryField.value = 'Old excerpt...';
+    let inputEvent;
+    summaryField.dispatchEvent = event => { inputEvent = event; };
+    const summaryStatus = element();
+    const summaryForm = {elements: {description: summaryField}, querySelector: () => summaryStatus};
+    const fetchSummary = element();
+    fetchSummary.dataset.url = '/events/2/summary';
+    fetchSummary.closest = () => summaryForm;
+    const clickSummary = () => ids['timeline-saved'].events.click({target: {closest: () => fetchSummary}});
+    const firstSummary = clickSummary();
+    await clickSummary();
+    assert.strictEqual(requests.length, 14, 'One request while the summary is loading');
+    assert.strictEqual(requests[13].url, '/events/2/summary');
+    assert.strictEqual(requests[13].options.headers['X-CSRF-TOKEN'], 'csrf');
+    summaryField.value = 'My draft';
+    requests[13].resolve({data: {description: 'Complete summary.'}});
+    await firstSummary;
+    assert.strictEqual(summaryField.value, 'My draft');
+    const retry = clickSummary();
+    requests[14].reject({response: {status: 503, data: {message: 'Wikipedia is unavailable.'}}});
+    await retry;
+    assert.strictEqual(summaryStatus.textContent, 'Wikipedia is unavailable.');
+    assert.strictEqual(summaryField.value, 'My draft');
+    const replacement = clickSummary();
+    requests[15].resolve({data: {description: 'Complete summary.'}});
+    await replacement;
+    assert.strictEqual(summaryField.value, 'Complete summary.');
+    assert.strictEqual(inputEvent.type, 'input');
+    assert.strictEqual(fetchSummary.disabled, false);
 
     const cardFor = (id, date) => {
         const card = element();

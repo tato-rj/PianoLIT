@@ -27,7 +27,11 @@
           @input(['bag' => $eventBag, 'id' => 'event-date-'.$event->id, 'name' => 'event_date', 'label' => 'Exact date (optional)', 'type' => 'date', 'value' => $event->event_date, 'required' => false, 'oldInputKey' => $oldPrefix.'event_date'])
           @input(['bag' => $eventBag, 'id' => 'event-title-'.$event->id, 'name' => 'title', 'label' => 'Title', 'limit' => 255, 'value' => $event->title, 'grid' => 'timeline-title-field', 'oldInputKey' => $oldPrefix.'title'])
         </div>
-        @textarea(['bag' => $eventBag, 'id' => 'event-description-'.$event->id, 'name' => 'description', 'label' => 'Short description', 'value' => $event->description, 'rows' => 2, 'limit' => 2000, 'oldInputKey' => $oldPrefix.'description'])
+        @textarea(['bag' => $eventBag, 'id' => 'event-description-'.$event->id, 'name' => 'description', 'label' => 'Event summary', 'value' => $event->description, 'rows' => 4, 'limit' => 2000, 'oldInputKey' => $oldPrefix.'description'])
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <button type="button" class="btn btn-outline-secondary btn-sm timeline-fetch-summary" data-url="{{route('admin.timeline-events.summary', $event)}}">Get Wikipedia summary</button>
+          <span class="small text-muted timeline-summary-status" role="status"></span>
+        </div>
         <details class="timeline-image-fields mb-3"><summary class="small text-muted">Image and attribution</summary>
           <p class="small text-muted mt-2 mb-3">When replacing an image, update its source, credit and license below.</p>
           <div class="timeline-image-inputs">

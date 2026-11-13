@@ -100,11 +100,19 @@
         line-height: 1.6;
     }
     .piece-timeline-title,
-    .piece-timeline-description {
+    &.has-summary-modal .piece-timeline-description {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
         overflow: hidden;
+    }
+    .piece-timeline-more {
+        font-size: 0.875rem;
+        text-decoration: underline;
+        &:focus-visible {
+            color: var(--color-text, #212529);
+            text-decoration-thickness: 2px;
+        }
     }
     .piece-timeline-sources {
         padding-top: 0.65rem;
@@ -267,4 +275,8 @@
             }
         }
     }
+}
+
+#timeline-summary-text {
+    white-space: pre-line;
 }

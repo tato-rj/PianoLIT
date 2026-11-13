@@ -56,6 +56,7 @@ class ComposerTimelineTest extends ReviewTestCase
         $first = $this->event(1800, '1800-03-21');
         $artwork = $this->event(1820, null, [
             'title' => 'Curated <artwork> & context',
+            'description' => 'This <em>summary</em> has a full paragraph available in the timeline dialog.',
             'image_url' => 'https://upload.wikimedia.org/timeline-example.jpg',
             'image_source_url' => 'https://commons.wikimedia.org/wiki/File:Example.jpg',
             'image_credit' => 'Example artist', 'image_license' => 'Public domain',
@@ -73,6 +74,9 @@ class ComposerTimelineTest extends ReviewTestCase
             'The existing composer curiosity.', 'The existing composer biography.', 'Contemporary peer',
             'id="composer-timeline-title"', 'Timeline Composer was born', 'Curated &lt;artwork&gt; &amp; context', 'Timeline Composer died',
         ], false)->assertSee('Sources &amp; credits', false)
+            ->assertSee('This &lt;em&gt;summary&lt;/em&gt; has a full paragraph available in the timeline dialog.', false)
+            ->assertSee('data-bs-target="#timeline-summary-modal"', false)
+            ->assertSee('aria-labelledby="timeline-summary-title"', false)
             ->assertSee($artwork->image_url, false)->assertSee($artwork->source_url, false)
             ->assertSee($artwork->image_source_url, false)->assertSee('Public domain')
             ->assertDontSee('This piece')->assertDontSee('was composed')->assertDontSee('was published')

@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-12 — Read full timeline summaries (P3, complete locally)
+
+- Timeline previews clipped at two lines now open the saved summary in the shared modal on piece and composer pages. Only overflowing descriptions show Read more. Keyboard dismissal returns focus to the opener, and Sources & credits remains a separate disclosure.
+- The existing Wikimedia import uses the opening paragraph within the editor’s 2,000-character limit. The saved-event editor’s Get Wikipedia summary action reads the saved source and fills the editable field. Save changes publishes it. Existing saved excerpts can be replaced individually. Page rendering uses the saved text and does not call Wikipedia. The admin route, timeline views and scripts, and compiled app CSS ship together. No database migration or API contract change is required.
+- Verified both reported Wikipedia examples, the modal in local Chrome at 1440, 390 and 320 pixels, the focused timeline JavaScript checks, CSS and asset checks. Forty of 41 related PHP checks pass. The timeline selection-count failure also occurs with the original test. The broader JavaScript runner stops in the unchanged TinyMCE subdomain test because its fixture lacks `document`. Production deployment is pending.
+
 ### 2026-11-12 — Unbox infographic directory cards (P3, complete locally)
 
 - Arthur's reference showed full posters confined inside gray, bordered cards. `components.cards.resource` now supports an explicit `poster` variant: full uncropped artwork directly on the page, a shared paper shadow, sentence-case format labels, two-line summaries and one native View & download action. Desktop retains two columns; phones place artwork beside the text. The shared card lift respects reduced motion and keyboard focus underlines the action.

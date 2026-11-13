@@ -13,7 +13,12 @@
     <div class="piece-timeline-copy">
       @if($event['highlight'])<span class="piece-timeline-label">This piece</span>@endif
       <h6 class="piece-timeline-title">{{$event['title']}}</h6>
-      <p class="piece-timeline-description text-muted mb-0">{{$event['description']}}</p>
+      <div class="position-relative">
+        <p class="piece-timeline-description text-muted mb-0">{{$event['description']}}</p>
+        <button type="button" class="piece-timeline-more btn btn-link stretched-link p-0 border-0" hidden
+          data-bs-toggle="modal" data-bs-target="#timeline-summary-modal" aria-haspopup="dialog"
+          aria-label="Read more about {{$event['title']}}">Read more</button>
+      </div>
       @if(!empty($event['source_url']))
       <details class="piece-timeline-sources small text-muted mt-2">
         <summary>Sources &amp; credits</summary>

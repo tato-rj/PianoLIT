@@ -209,6 +209,32 @@
                 card.querySelector('.timeline-save-status').textContent = message(error, 'Could not save this event. Please try again.');
             }).then(function () { setBusy(false); });
     });
+    saved.addEventListener('click', async function (event) {
+        var button = event.target.closest('.timeline-fetch-summary');
+        if (!button || button.disabled) return;
+        var editor = button.closest('form');
+        var field = editor.elements.description;
+        var summaryStatus = editor.querySelector('.timeline-summary-status');
+        var original = field.value;
+        button.disabled = true;
+        summaryStatus.textContent = 'Getting summary…';
+        try {
+            var response = await request(button.dataset.url, {});
+            if (field.value !== original) {
+                summaryStatus.textContent = 'The summary changed while loading. Your edits are still in the field.';
+                return;
+            }
+            field.value = response.data.description;
+            field.dispatchEvent(new Event('input', {bubbles: true}));
+            summaryStatus.textContent = 'Summary loaded. Save changes to use it on the timeline.';
+        } catch (error) {
+            var data = error.response && error.response.data;
+            summaryStatus.textContent = data && [404, 503].includes(error.response.status)
+                ? data.message : 'Could not get the Wikipedia summary. Try again.';
+        } finally {
+            button.disabled = false;
+        }
+    });
     saved.addEventListener('submit', function (event) {
         var removeForm = event.target.closest('.timeline-remove');
         if (!removeForm) return;

@@ -157,6 +157,59 @@ class TimelineEventsTest extends ReviewTestCase
         $this->assertDatabaseHas('timeline_events', ['id' => $event->id, 'year' => 1798, 'title' => 'Curated title']);
     }
 
+    public function test_new_imports_and_saved_event_suggestions_use_the_complete_opening_paragraph()
+    {
+        $summary = str_repeat('The exhibition brought together artists from several cities. ', 5)
+            .'The organizers published a catalogue after it closed.';
+        $extract = $summary."\nDetails from another paragraph.";
+        $endpoint = WikimediaDiscovery::WIKIPEDIA_ENDPOINT;
+        Http::swap(new \Illuminate\Http\Client\Factory);
+        Http::fake([$endpoint.'*' => Http::response(['query' => [
+            'normalized' => [['from' => 'Event_1', 'to' => 'Event 1']],
+            'pages' => [['title' => 'Event 1', 'extract' => $extract]],
+        ]])]);
+
+        $candidate = $this->candidate(1);
+        $enriched = (new WikimediaDiscovery)->enrich([$candidate + ['article_title' => 'Event 1']])[0];
+        $this->assertSame($summary, $enriched['description']);
+        $this->saveCandidate($enriched)->assertOk();
+        $this->assertDatabaseHas('timeline_events', ['description' => $summary]);
+
+        $event = TimelineEvent::firstOrFail();
+        $event->update(['description' => 'The exhibition brought together...']);
+        $url = route('admin.timeline-events.summary', $event);
+        $this->postJson($url, ['source_url' => 'https://example.com/forged'])->assertOk()
+            ->assertExactJson(['description' => $summary]);
+        $this->assertSame('The exhibition brought together...', $event->fresh()->description);
+        Http::assertSentCount(2);
+        Http::assertSent(function ($request) use ($endpoint) {
+            return str_starts_with($request->url(), $endpoint) && $request['titles'] === 'Event_1'
+                && (string) $request['exintro'] === '1' && !isset($request['exchars']);
+        });
+
+        auth('admin')->logout();
+        $this->withExceptionHandling()->postJson($url)->assertUnauthorized();
+        Http::assertSentCount(2);
+    }
+
+    public function test_missing_and_unavailable_wikipedia_summaries_keep_the_saved_text()
+    {
+        $event = TimelineEvent::create($this->candidate(1));
+        $url = route('admin.timeline-events.summary', $event);
+        Http::swap(new \Illuminate\Http\Client\Factory);
+        Http::fake([WikimediaDiscovery::WIKIPEDIA_ENDPOINT.'*' => Http::sequence()
+            ->push(['query' => ['pages' => [['title' => 'Event_1']]]])
+            ->push(['error' => ['code' => 'maxlag']], 503)]);
+
+        $this->postJson($url)->assertNotFound();
+        $event->update(['source_url' => 'https://en.wikipedia.org/wiki/Another_event']);
+        $this->postJson($url)->assertStatus(503);
+        $event->update(['source_url' => 'https://example.com/wiki/Another_event']);
+        $this->postJson($url)->assertNotFound();
+        Http::assertSentCount(2);
+        $this->assertSame('A notable musical work.', $event->fresh()->description);
+    }
+
     public function test_database_uniqueness_blocks_alternate_date_claims_but_keeps_birth_and_death()
     {
         TimelineEvent::create($this->candidate(1));
