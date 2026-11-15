@@ -8,6 +8,7 @@
     if (!page) return;
     var list = page.querySelector('[data-playlist-tracks]');
     var player = page.querySelector('[data-playlist-player]');
+    if (!player) return;
     var status = page.querySelector('[data-playlist-status]');
     var audio = null, current = null, queue = [], shuffle = false, loop = 0, rate = 1, volume = 0.5, muted = false, busy = false;
     var started = false, previewStopped = false, selection = 0;
@@ -15,8 +16,6 @@
     var volumeInput = player.querySelector('[data-volume]');
     var volumeControl = player.querySelector('.playlist-player__volume');
     var deviceVolume = win.matchMedia ? win.matchMedia('(max-width: 991px), (pointer: coarse)') : null;
-    var main = page.closest('main');
-    var originalMargin = main ? main.style.marginBottom : '';
     var launch = piecePage ? doc.getElementById('launch-audio') : null;
     var launchLabel = launch ? launch.querySelector('[data-listen-label]') : null;
     var launchText = launchLabel ? launchLabel.textContent : '';
@@ -56,16 +55,8 @@
     }
     function layout() {
         syncVolume();
-        var menu = doc.getElementById('menu');
-        var menuHeight = menu ? menu.getBoundingClientRect().height : 0;
-        page.style.setProperty('--playlist-menu-height', menuHeight + 'px');
         var height = player.hidden ? 0 : player.getBoundingClientRect().height;
-        if (piecePage) doc.documentElement.style.setProperty('--piece-player-height', height + 'px');
-        if (main) {
-            // Piece pages keep their existing spacing and reserve the audio band once.
-            if (piecePage) main.style.marginBottom = height ? 'calc(' + (originalMargin || 'var(--webapp-menu-space, 82px) + 16px') + ' + ' + height + 'px)' : originalMargin;
-            else main.style.marginBottom = 'calc(var(--webapp-menu-space, ' + menuHeight + 'px) + ' + (height + 32) + 'px)';
-        }
+        doc.documentElement.style.setProperty('--playlist-player-height', Math.ceil(height) + 'px');
     }
     function syncVolume() {
         var useDevice = !!deviceVolume && deviceVolume.matches;
@@ -404,6 +395,11 @@
         });
     }
     player.querySelector('[data-player-toggle]').addEventListener('click', toggle);
+    player.querySelector('[data-player-close]').addEventListener('click', function () {
+        var focusTarget = launch || (current && current.querySelector('[data-track-play]')) || page.querySelector('[data-play-all]');
+        closePlayer();
+        if (focusTarget) focusTarget.focus({preventScroll: true});
+    });
     player.querySelector('[data-next]').addEventListener('click', function () { if (!piecePage) advance(1, false); });
     player.querySelector('[data-previous]').addEventListener('click', function () {
         if (audio && audio.currentTime > 3) { previewStopped = false; audio.currentTime = 0; play(); }
@@ -433,7 +429,7 @@
         else if (deviceVolume.addListener) deviceVolume.addListener(layout);
     }
     win.addEventListener('pagehide', function () { finishDrag(true); if (audio) audio.pause(); });
-    if (win.ResizeObserver) { var resize = new win.ResizeObserver(layout); resize.observe(player); var menu = doc.getElementById('menu'); if (menu) resize.observe(menu); }
+    if (win.ResizeObserver) new win.ResizeObserver(layout).observe(player);
     doc.addEventListener('show.bs.offcanvas', closePlayer);
     // Media events do not bubble; capture also covers videos loaded later.
     doc.addEventListener('play', function (event) {
@@ -449,9 +445,8 @@
                 else select(playable()[0], true);
             });
         }
-        player.querySelector('[data-player-close]').addEventListener('click', function () {
-            closePlayer();
-            if (launch) launch.focus();
+        doc.addEventListener('hidden.bs.tab', function (event) {
+            if (event.target.id === 'main-nav-tab-score' && !player.hidden) closePlayer();
         });
         win.PieceAudioPlayer = {pause: function () { if (audio) audio.pause(); }};
     }

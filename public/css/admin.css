@@ -29974,8 +29974,12 @@ button.bg-primary:focus {
   }
 }
 
-.webapp-navigation {
+#webapp {
   --webapp-navigation-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  --score-controls-bottom: max(var(--webapp-navigation-bottom), calc(8px + var(--playlist-player-height, 0px)));
+}
+
+.webapp-navigation {
   --webapp-navigation-selected: #e4e4e4;
   position: fixed;
   z-index: 1030;
@@ -30011,11 +30015,16 @@ button.bg-primary:focus {
 }
 
 #webapp main {
-  margin-bottom: calc(var(--webapp-menu-space, 92px) + 16px);
+  margin-bottom: calc(max(var(--webapp-menu-space, 92px), var(--playlist-player-height, 0px)) + 16px);
+}
+
+#webapp:has([data-playlist-player]:not([hidden]), .tab-pane.active > .score-editor) [data-webapp-navigation] {
+  visibility: hidden;
 }
 
 #webapp main:has(.tab-pane.active > .score-editor) {
   padding-bottom: 0;
+  margin-bottom: calc(var(--score-controls-bottom) + 24px);
 }
 
 .webapp-navigation .menu-link {
@@ -30073,7 +30082,7 @@ button.bg-primary:focus {
   }
 }
 @media (max-width: 991.98px) {
-  .webapp-navigation {
+  #webapp {
     --webapp-navigation-bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px));
   }
   .webapp-navigation .webapp-menu-label {
@@ -30081,16 +30090,6 @@ button.bg-primary:focus {
   }
   .webapp-navigation .menu-link {
     min-height: 44px;
-  }
-  .playlist-player,
-  .score-editor .score-footer {
-    transition: bottom 220ms ease;
-  }
-}
-@media (max-width: 991.98px) and (prefers-reduced-motion: reduce) {
-  .playlist-player,
-  .score-editor .score-footer {
-    transition: none;
   }
 }
 .account-library-empty {

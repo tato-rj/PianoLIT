@@ -1,5 +1,4 @@
 .score-editor {
-    --score-menu-height: var(--webapp-menu-height, 82px);
     position: relative;
     // left: 50%;
     // width: calc(100vw - 32px);
@@ -281,14 +280,7 @@
         // Keep page controls below Bootstrap's offcanvas panel and backdrop.
         z-index: $zindex-fixed;
         left: 50%;
-        bottom: 12px;
-        // The measured menu height already includes its bottom safe-area gap.
-        // When the menu is hidden/fullscreen, keep the controls above that area.
-        bottom: max(
-            calc(12px + var(--piece-player-height, 0px)),
-            calc(env(safe-area-inset-bottom, 0px) + var(--piece-player-height, 0px)),
-            calc(8px + var(--score-menu-height) + var(--piece-player-height, 0px))
-        );
+        bottom: var(--score-controls-bottom);
         transform: translateX(-50%);
         display: flex;
         align-items: center;
@@ -457,7 +449,7 @@
     }
 
     &.is-fullscreen {
-        --score-menu-height: 0px;
+        --score-controls-bottom: max(12px, env(safe-area-inset-bottom, 0px), calc(8px + var(--playlist-player-height, 0px)));
         touch-action: pan-x pan-y;
         --score-toolbar-height: 84px;
         position: fixed;
@@ -468,7 +460,7 @@
         max-width: none;
         height: 100dvh;
         margin: 0 !important;
-        padding: 12px 12px calc(100px + var(--piece-player-height, 0px));
+        padding: 12px 12px calc(100px + var(--playlist-player-height, 0px));
         overflow-y: auto;
         background: #eef3f9;
         .score-toolbar {
@@ -524,7 +516,7 @@
         padding-bottom: var(--score-controls-space, 108px);
         &.is-fullscreen {
             --score-toolbar-height: 36px;
-            padding-bottom: calc(126px + var(--piece-player-height, 0px));
+            padding-bottom: calc(126px + var(--playlist-player-height, 0px));
         }
         // width: calc(100vw - 20px);
         // margin-left: calc(-50vw + 10px);

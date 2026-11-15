@@ -1,7 +1,7 @@
 const assert = require('assert');
 const init = require('../../resources/js/components/webapp-navigation');
 
-function setup(controlsHeight) {
+function setup(controlsHeight, player) {
     const events = {}, menuEvents = {}, documentEvents = {}, frames = [], values = {}, classes = new Set();
     let clock = 0, pinned = false, height = 68, bottom = '12px';
     const mobile = {matches: true};
@@ -11,12 +11,16 @@ function setup(controlsHeight) {
         classList: {toggle(name, on) { if (on) classes.add(name); else classes.delete(name); }}};
     const controls = controlsHeight === undefined ? null : {getBoundingClientRect: () => ({height: controlsHeight})};
     const doc = {activeElement: null, documentElement: {scrollHeight: 4800, style: {setProperty(name, value) { values[name] = value; }}},
-        querySelector: selector => selector === '[data-webapp-navigation]' ? menu : selector === '.score-editor .score-footer' ? controls : (pinned ? {} : null),
+        querySelector: selector => selector === '[data-webapp-navigation]' ? menu : selector === '.score-editor .score-footer' ? controls : selector === '[data-playlist-player]' ? player : (pinned ? {} : null),
         getElementById: () => null, addEventListener: (name, callback) => { documentEvents[name] = callback; }};
     const win = {document: doc, scrollY: 0, innerHeight: 800, performance: {now: () => clock},
         matchMedia: () => mobile, getComputedStyle: () => ({bottom}),
         addEventListener: (name, callback) => { events[name] = callback; },
-        requestAnimationFrame: callback => { frames.push(callback); return frames.length; }};
+        requestAnimationFrame: callback => { frames.push(callback); return frames.length; },
+        MutationObserver: class {
+            constructor(callback) { this.callback = callback; }
+            observe(target) { target.notify = this.callback; }
+        }};
     const api = init(win);
     return {win, doc, menu, api, mobile, events, menuEvents, documentEvents, values, frames,
         hidden: () => classes.has('is-scrolled-away'),
@@ -35,12 +39,21 @@ function main() {
     assert.strictEqual(score.values['--score-controls-space'], '128px', 'Responsive control rows update their clearance.');
     score.controlsHeight(0);
     assert.strictEqual(score.values['--score-controls-space'], '128px', 'A hidden score tab retains its last visible clearance.');
+    score.documentEvents['shown.bs.tab']();
+    assert(!score.hidden(), 'Switching tabs restores navigation after mobile scrolling.');
+
+    const player = {hidden: false};
+    const listening = setup(undefined, player);
+    listening.scroll(120);
+    assert(listening.hidden());
+    player.hidden = true;
+    player.notify();
+    assert(!listening.hidden(), 'Closing the player restores navigation after mobile scrolling.');
 
     const app = setup();
-    assert.strictEqual(app.values['--webapp-menu-height'], '80px', 'Player offset includes the floating gap.');
+    assert.strictEqual(app.values['--webapp-menu-space'], '80px', 'Navigation spacing includes the floating gap.');
     app.scroll(120);
     assert(app.hidden(), 'A fast downward scroll hides navigation.');
-    assert.strictEqual(app.values['--webapp-menu-height'], '0px', 'Players move down when navigation hides.');
     assert.strictEqual(app.values['--webapp-menu-space'], '80px', 'Content spacing stays stable.');
     app.events.resize();
     assert(app.hidden(), 'Mobile browser chrome resizing does not reveal navigation mid-gesture.');
@@ -66,9 +79,9 @@ function main() {
     app.scroll(-40); assert(!app.hidden(), 'Top overscroll always leaves navigation visible.');
 
     app.dimensions(68, '34px');
-    assert.strictEqual(app.values['--webapp-menu-height'], '102px', 'The safe-area gap is part of the player offset.');
+    assert.strictEqual(app.values['--webapp-menu-space'], '102px', 'Navigation spacing includes the safe-area gap.');
     app.dimensions(0, '34px');
-    assert.strictEqual(app.values['--webapp-menu-height'], '0px', 'Intentionally absent menus reserve no space.');
+    assert.strictEqual(app.values['--webapp-menu-space'], '0px', 'Intentionally absent menus reserve no space.');
     app.dimensions(68, '12px');
     app.scroll(240); assert(app.hidden());
     app.mobile.matches = false; app.events.resize();

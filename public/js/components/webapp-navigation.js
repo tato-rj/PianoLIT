@@ -9,6 +9,7 @@
     menu.dataset.navigationReady = 'true';
     const mobile = win.matchMedia('(max-width: 991.98px)');
     const scoreControls = doc.querySelector('.score-editor .score-footer');
+    const player = doc.querySelector('[data-playlist-player]');
     let hidden = false;
     let space = -1;
     let direction = 0;
@@ -23,11 +24,6 @@
         return Math.max(0, Math.min(win.scrollY || 0, end));
     }
 
-    function publishSpace() {
-        doc.documentElement.style.setProperty('--webapp-menu-space', space + 'px');
-        doc.documentElement.style.setProperty('--webapp-menu-height', (hidden ? 0 : space) + 'px');
-    }
-
     function reveal() {
         setHidden(false);
         direction = travel = 0;
@@ -39,7 +35,6 @@
         if (hidden === next) return;
         hidden = next;
         menu.classList.toggle('is-scrolled-away', hidden);
-        publishSpace();
     }
 
     function measure() {
@@ -51,7 +46,10 @@
         }
         const height = menu.getBoundingClientRect().height;
         const next = height ? Math.ceil(height + (parseFloat(win.getComputedStyle(menu).bottom) || 0)) : 0;
-        if (space !== next) { space = next; publishSpace(); }
+        if (space !== next) {
+            space = next;
+            doc.documentElement.style.setProperty('--webapp-menu-space', space + 'px');
+        }
     }
 
     function pinned() {
@@ -86,6 +84,11 @@
     win.addEventListener('pageshow', () => { reveal(); measure(); });
     menu.addEventListener('focusin', reveal);
     ['show.bs.offcanvas', 'hidden.bs.offcanvas', 'show.bs.modal', 'hidden.bs.modal'].forEach(name => doc.addEventListener(name, reveal));
+    if (scoreControls) doc.addEventListener('shown.bs.tab', () => { reveal(); measure(); });
+    if (player && win.MutationObserver) {
+        new win.MutationObserver(() => { if (player.hidden) reveal(); })
+            .observe(player, {attributes: true, attributeFilter: ['hidden']});
+    }
     if (win.ResizeObserver) {
         const observer = new win.ResizeObserver(measure);
         observer.observe(menu);

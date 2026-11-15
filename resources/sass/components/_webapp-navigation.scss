@@ -21,8 +21,12 @@
     }
 }
 
-.webapp-navigation {
+#webapp {
     --webapp-navigation-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+    --score-controls-bottom: max(var(--webapp-navigation-bottom), calc(8px + var(--playlist-player-height, 0px)));
+}
+
+.webapp-navigation {
     --webapp-navigation-selected: #e4e4e4;
     position: fixed;
     z-index: 1030;
@@ -60,13 +64,18 @@
 }
 
 #webapp main {
-    margin-bottom: calc(var(--webapp-menu-space, 92px) + 16px);
+    margin-bottom: calc(max(var(--webapp-menu-space, 92px), var(--playlist-player-height, 0px)) + 16px);
+}
+
+#webapp:has([data-playlist-player]:not([hidden]), .tab-pane.active > .score-editor) [data-webapp-navigation] {
+    visibility: hidden;
 }
 
 // The score and navigation already reserve clearance for their fixed controls.
 // Feedback floats above them and does not need a third empty block here.
 #webapp main:has(.tab-pane.active > .score-editor) {
     padding-bottom: 0;
+    margin-bottom: calc(var(--score-controls-bottom) + 24px);
 }
 
 .webapp-navigation .menu-link {
@@ -123,7 +132,7 @@
 }
 
 @media (max-width: 991.98px) {
-    .webapp-navigation {
+    #webapp {
         // Let the capsule sit into the home-indicator inset, like native bars.
         // Its inner padding keeps the icon targets above the indicator itself.
         --webapp-navigation-bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) - 12px));
@@ -131,12 +140,4 @@
 
     .webapp-navigation .webapp-menu-label { display: none; }
     .webapp-navigation .menu-link { min-height: 44px; }
-
-    .playlist-player,
-    .score-editor .score-footer { transition: bottom 220ms ease; }
-
-    @media (prefers-reduced-motion: reduce) {
-        .playlist-player,
-        .score-editor .score-footer { transition: none; }
-    }
 }

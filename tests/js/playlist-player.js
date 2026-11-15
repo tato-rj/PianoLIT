@@ -53,6 +53,8 @@ module.exports = async function () {
     page.children['[data-playlist-player]'] = player;
     player.children['[data-speed]'] = [.5, .75, 1, 1.25, 1.5, 2].map(speed => new Element({'data-speed': String(speed)}));
     const doc = new Element(); doc.querySelector = selector => selector === '[data-playlist-page]' ? page : null; doc.getElementById = id => { promptedModal = id; return new Element(); }; doc.createElement = () => new Element();
+    doc.documentElement = new Element();
+    doc.documentElement.style.setProperty = function (name, value) { this[name] = value; };
     const win = {Audio, IntersectionObserver: class { constructor() { assert.fail('Duration labels need no background media observation'); } }, bootstrap: {Modal: {getOrCreateInstance: () => ({show() { upgrades++; }})}}, innerHeight: 800, requestAnimationFrame() { return 1; }, cancelAnimationFrame() {}, scrollBy() {}, addEventListener() {}, axios: {
         patch(url, data) { return new Promise((resolve, reject) => patches.push({url, data, resolve, reject})); },
         post(url) { return new Promise((resolve, reject) => posts.push({url, resolve, reject})); }
@@ -92,6 +94,17 @@ module.exports = async function () {
     tracks[0].querySelector('[data-track-play]').fire('click');
     assert(!player.hidden && !first.paused, 'The current folder track reopens and resumes the band');
     assert.strictEqual(recordings.length, 1, 'Offcanvas dismissal retains the existing media element');
+
+    const trackPlay = tracks[0].querySelector('[data-track-play]');
+    let focused = false;
+    trackPlay.focus = () => { focused = true; };
+    player.querySelector('[data-player-close]').fire('click');
+    assert(player.hidden && first.paused, 'Closing the folder player hides it and pauses playback');
+    assert.strictEqual(doc.documentElement.style['--playlist-player-height'], '0px');
+    assert(focused, 'Closing restores focus to the active track control');
+    trackPlay.fire('click');
+    assert(!player.hidden && !first.paused, 'The folder player can reopen after closing');
+    assert.strictEqual(first.currentTime, 4, 'Closing keeps the current playback position');
 
     player.querySelector('[data-player-toggle]').fire('click');
     assert(first.paused);
@@ -373,9 +386,6 @@ module.exports = async function () {
         assert.strictEqual(launch.querySelector('[data-listen-play-icon]').hidden, open);
         assert.strictEqual(launch.querySelector('[data-listen-close-icon]').hidden, !open);
     }
-    const pieceMain = new Element(); pieceMain.style.marginBottom = '24px';
-    piecePage.closest = () => pieceMain;
-    piecePage.style.setProperty = function (name, value) { this[name] = value; };
     const pieceTracks = ['full'].map(hand => {
         const row = new Element({'data-hand': hand, 'data-title': 'The Storm', 'data-composer': 'Burgmüller', 'data-audio': '/' + hand + '.mp3', 'data-preview': '10', 'data-artwork': '/art.jpg', 'data-duration-label': '4:34'});
         row.querySelector = () => null;
@@ -399,15 +409,13 @@ module.exports = async function () {
     assert(pieceBand.hidden);
     assertListenToggle(false);
     assert.strictEqual(recordings.length, beforePiece, 'Piece recordings remain unloaded before Listen');
-    assert.strictEqual(pieceMain.style.marginBottom, '24px', 'Hidden band preserves the original page spacing');
+    assert.strictEqual(pieceDoc.documentElement.style['--playlist-player-height'], '0px');
     launch.fire('click');
     const pieceAudio = recordings[beforePiece];
     assert(!pieceBand.hidden); assert(!pieceAudio.paused);
     assert.strictEqual(sourceUrl(pieceAudio), '/full.mp3');
     assert.strictEqual(pieceBand.querySelector('[data-duration]').textContent, '4:34');
-    assert.strictEqual(piecePage.style['--playlist-menu-height'], '80px', 'Piece band accounts for persistent navigation');
-    assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '80px', 'Score toolbar receives the band height');
-    assert.strictEqual(pieceMain.style.marginBottom, 'calc(24px + 80px)', 'Opening audio adds only the band height to existing page spacing');
+    assert.strictEqual(pieceDoc.documentElement.style['--playlist-player-height'], '80px', 'Score toolbar receives the band height');
     assert.strictEqual(launch.getAttribute('aria-expanded'), 'true');
     assertListenToggle(true);
     assert.strictEqual(videoPauses, 1, 'Listen pauses piece videos');
@@ -416,7 +424,7 @@ module.exports = async function () {
     assert(pieceBand.hidden && pieceAudio.paused, 'The score Close button hides and pauses the player');
     assertListenToggle(false);
     assert.strictEqual(pieceAudio.currentTime, 4, 'Closing preserves the playback position');
-    assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px');
+    assert.strictEqual(pieceDoc.documentElement.style['--playlist-player-height'], '0px');
     launch.fire('click');
     assert(!pieceBand.hidden && !pieceAudio.paused, 'The score Listen button reopens and resumes the player');
     assertListenToggle(true);
@@ -424,8 +432,7 @@ module.exports = async function () {
     assert.strictEqual(recordings.length, beforePiece + 1, 'Reopening reuses the recording');
     pieceDoc.fire('show.bs.offcanvas', {target: new Element({'id': 'save-to-offcanvas'})});
     assert(pieceBand.hidden && pieceAudio.paused, 'Piece players close and pause when an offcanvas opens');
-    assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px', 'Panel opening releases the score toolbar offset');
-    assert.strictEqual(pieceMain.style.marginBottom, '24px');
+    assert.strictEqual(pieceDoc.documentElement.style['--playlist-player-height'], '0px', 'Panel opening releases the score toolbar offset');
     assert.strictEqual(launch.getAttribute('aria-expanded'), 'false');
     assertListenToggle(false);
     launch.fire('click');
@@ -445,8 +452,7 @@ module.exports = async function () {
     launch.fire('click'); assert.strictEqual(pieceAudio.currentTime, 0); assert(!pieceAudio.paused);
     pieceBand.querySelector('[data-player-close]').fire('click');
     assert(pieceAudio.paused); assert(pieceBand.hidden);
-    assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px');
-    assert.strictEqual(pieceMain.style.marginBottom, '24px');
+    assert.strictEqual(pieceDoc.documentElement.style['--playlist-player-height'], '0px');
     assert.strictEqual(launch.getAttribute('aria-expanded'), 'false');
     assertListenToggle(false);
     launch.fire('click'); assert(!pieceBand.hidden); assert(!pieceAudio.paused);
@@ -469,13 +475,14 @@ module.exports = async function () {
         assert(!pieceBand.hidden && !pieceAudio.paused);
         pieceDoc.fire('play', {target: {tagName: 'VIDEO', id: videoId}});
         assert(pieceBand.hidden && pieceAudio.paused, videoId + ' playback hides and pauses audio');
-        assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px');
+        assert.strictEqual(pieceDoc.documentElement.style['--playlist-player-height'], '0px');
         assert.strictEqual(launch.getAttribute('aria-expanded'), 'false');
         assertListenToggle(false);
     }
     launch.fire('click');
     assert(!pieceBand.hidden && !pieceAudio.paused, 'Listen reopens after video playback');
-    pieceBand.querySelector('[data-player-close]').fire('click');
+    pieceDoc.fire('hidden.bs.tab', {target: {id: 'main-nav-tab-score'}});
+    assert(pieceBand.hidden && pieceAudio.paused, 'Leaving the score tab closes its audio band');
     pieceTracks.forEach(row => row.setAttribute('data-audio-blocked', 'true'));
     const piecePlay = pieceAudio.play;
     let piecePlayCalls = 0;

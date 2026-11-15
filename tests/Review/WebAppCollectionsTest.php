@@ -141,7 +141,7 @@ class WebAppCollectionsTest extends ReviewTestCase
         $response = $this->get($url)->assertOk()->assertViewHas('totalPieceCount', $count)->assertViewHas('pieces', function ($pieces) { return $pieces->count() === 3; });
         $dom = new \DOMDocument(); @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
         $this->assertSame($count.' pieces', trim($xpath->query('//*[@data-collection-count]')->item(0)->textContent));
-        $response->assertSee('Showing 3 of '.$count.' pieces');
+        $response->assertSee('Showing 3 of '.$count.' pieces')->assertSee('data-player-close', false);
         $this->exportCollectionPreview('limited-detail-'.$count, $response);
         $user->update(['super_user' => true]);
         $full = $this->get($url)->assertOk()->assertViewHas('totalPieceCount', $count)->assertViewHas('pieces', function ($pieces) use ($count) { return $pieces->count() === $count; })

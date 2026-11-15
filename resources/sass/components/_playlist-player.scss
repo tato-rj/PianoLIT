@@ -192,14 +192,14 @@
 }
 .playlist-player {
     position: fixed;
-    bottom: var(--webapp-menu-height, var(--playlist-menu-height, 82px));
+    bottom: 0;
     left: 0;
     right: 0;
     z-index: 100;
-    padding: 12px 24px;
+    padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0px));
     &__inner {
         display: grid;
-        grid-template-columns: minmax(180px, 1fr) minmax(180px, 1.55fr) 154px 154px 90px;
+        grid-template-columns: minmax(180px, 1fr) minmax(180px, 1.55fr) 154px 154px max-content;
         align-items: center;
         gap: 22px;
         max-width: 1220px;
@@ -286,7 +286,16 @@
         opacity: 0.5;
     }
     &__speed {
+        display: flex;
+        align-items: center;
+        gap: 4px;
         justify-self: end;
+    }
+    &__close {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
     }
     &__sections-toggle {
         width: 60px;
@@ -376,7 +385,7 @@
 }
 @media (max-width: 991px) {
     .playlist-player__inner {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 130px 80px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 130px max-content;
         gap: 16px;
     }
     .playlist-player__volume {
@@ -388,7 +397,7 @@
         grid-column: 4;
     }
     .playlist-player--has-sections .playlist-player__inner {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 130px 80px 60px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 130px max-content 60px;
     }
     .playlist-player__sections-toggle {
         grid-row: 1;
@@ -416,7 +425,7 @@
 @media (min-width: 576px) and (max-width: 991px) {
     .playlist-player--has-sections {
         .playlist-player__inner {
-            grid-template-columns: minmax(0, 1fr) 130px 80px 60px;
+            grid-template-columns: minmax(0, 1fr) 130px max-content 60px;
         }
         .playlist-player__identity {
             grid-row: 1;
@@ -517,17 +526,16 @@
         }
     }
     .playlist-player {
-        padding: 16px 18px 12px;
+        padding-top: 16px;
+        padding-inline: 18px;
     }
     .playlist-tracks--readonly .playlist-track {
         grid-template-columns: 18px 38px 10px minmax(0, 1fr) 30px 28px 56px;
     }
-    .playlist-player__inner {
-        grid-template-columns: minmax(0, 1fr) 100px;
-        gap: 16px;
-    }
+    .playlist-player__inner,
     .playlist-player--has-sections .playlist-player__inner {
-        grid-template-columns: minmax(0, 1fr) 100px;
+        grid-template-columns: minmax(0, 1fr) max-content;
+        gap: 16px;
     }
     .playlist-player__identity {
         grid-row: 1;
@@ -603,14 +611,14 @@
 
 @media (min-width: 992px) {
     .playlist-player--device-volume .playlist-player__inner {
-        grid-template-columns: minmax(180px, 1fr) minmax(180px, 1.55fr) 154px 90px;
+        grid-template-columns: minmax(180px, 1fr) minmax(180px, 1.55fr) 154px max-content;
     }
     .playlist-player--has-sections .playlist-player__inner {
-        grid-template-columns: minmax(160px, 1fr) minmax(160px, 1.55fr) 144px 124px 90px 60px;
+        grid-template-columns: minmax(160px, 1fr) minmax(160px, 1.55fr) 144px 124px max-content 60px;
         gap: 18px;
     }
     .playlist-player--device-volume.playlist-player--has-sections .playlist-player__inner {
-        grid-template-columns: minmax(160px, 1fr) minmax(160px, 1.55fr) 144px 90px 60px;
+        grid-template-columns: minmax(160px, 1fr) minmax(160px, 1.55fr) 144px max-content 60px;
     }
     .playlist-player__sections-toggle {
         grid-row: auto;
@@ -628,20 +636,11 @@
     }
 }
 
-// Stack the piece band above navigation; fullscreen covers the navigation.
 [data-piece-player-page] [hidden] {
     display: none !important;
 }
 .playlist-player--piece {
-    bottom: var(--webapp-menu-height, 82px);
     z-index: 1051;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    .playlist-player__close {
-        flex-shrink: 0;
-        width: 32px;
-        height: 40px;
-        margin-left: auto;
-    }
     .playlist-player__status {
         max-width: 1220px;
         margin: 8px auto 0;
@@ -655,6 +654,5 @@
     }
 }
 body.score-editor-fullscreen-open .playlist-player--piece {
-    bottom: 0;
     z-index: 2010;
 }
