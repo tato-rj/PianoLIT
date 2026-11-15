@@ -162,10 +162,12 @@ class PieceContentAccessTest extends ReviewTestCase
     public function test_piece_audio_band_has_shared_controls_and_only_the_main_recording()
     {
         setFreePick($this->piece, true);
+        $this->piece->updateQuietly(['audio_duration_seconds' => 274]);
         $this->tutorial->moments()->create(['title' => 'Audio theme', 'start_time' => 0, 'sort_order' => 0, 'comment' => 'Audio detail stays out of the band.']);
         $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
             ->assertSee('data-piece-player-page', false)->assertDontSee('data-player-hands', false)
             ->assertSee('data-audio="'.storage('full.mp3').'"', false)
+            ->assertSee('data-duration-label="4:34"', false)
             ->assertDontSee('data-audio="'.storage('right.mp3').'"', false)->assertDontSee('data-audio="'.storage('left.mp3').'"', false)
             ->assertSee('data-player-close', false)->assertSee('data-speed="0.75"', false)
             ->assertSee('/js/views/playlist-player.js?id=', false)->assertSee('/js/views/playlist-moments.js?id=', false)

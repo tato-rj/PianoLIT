@@ -106,16 +106,14 @@
         }
     }
     function timeline() {
-        var duration = audio && Number.isFinite(audio.duration) ? audio.duration : 0;
+        var mediaDuration = audio && Number.isFinite(audio.duration) ? audio.duration : 0;
         var limit = current ? Number(current.getAttribute('data-preview')) : 0;
-        seek.max = audioBlocked() ? 0 : (limit > 0 ? Math.min(limit, duration) : duration);
-        seek.disabled = audioBlocked() || !duration;
+        seek.max = audioBlocked() ? 0 : (limit > 0 ? Math.min(limit, mediaDuration) : mediaDuration);
+        seek.disabled = audioBlocked() || !mediaDuration;
         seek.value = audio ? Math.min(audio.currentTime || 0, Number(seek.max)) : 0;
         player.querySelector('[data-elapsed]').textContent = time(audio ? audio.currentTime : 0);
-        player.querySelector('[data-duration]').textContent = time(duration);
-        seek.setAttribute('aria-valuetext', time(Number(seek.value)) + ' of ' + time(Number(seek.max)));
-        var durationLabel = current && current.querySelector('[data-track-duration]');
-        if (duration && durationLabel) durationLabel.textContent = time(duration);
+        var endLabel = limit > 0 ? time(Number(seek.max)) : current && current.getAttribute('data-duration-label');
+        seek.setAttribute('aria-valuetext', time(Number(seek.value)) + (endLabel ? ' of ' + endLabel : ''));
         if (sections) sections.synchronize(audio);
     }
     function upgrade() {
@@ -185,7 +183,6 @@
     }
     function select(row, autoplay) {
         if (!row || !row.getAttribute('data-audio')) return;
-        stopMetadata();
         selection++;
         if (audio) audio.pause();
         current = row; previewStopped = false; started = !!autoplay;
@@ -193,6 +190,7 @@
         player.hidden = false;
         player.querySelector('[data-player-title]').textContent = row.getAttribute('data-title');
         player.querySelector('[data-player-composer]').textContent = row.getAttribute('data-composer');
+        player.querySelector('[data-duration]').textContent = row.getAttribute('data-duration-label') || '—';
         player.querySelector('[data-player-artwork]').src = row.getAttribute('data-artwork');
         if (sections) sections.select(row);
         // Keep the same media element for every selection, including manual
@@ -434,7 +432,7 @@
         if (deviceVolume.addEventListener) deviceVolume.addEventListener('change', layout);
         else if (deviceVolume.addListener) deviceVolume.addListener(layout);
     }
-    win.addEventListener('pagehide', function () { finishDrag(true); stopMetadata(); if (audio) audio.pause(); });
+    win.addEventListener('pagehide', function () { finishDrag(true); if (audio) audio.pause(); });
     if (win.ResizeObserver) { var resize = new win.ResizeObserver(layout); resize.observe(player); var menu = doc.getElementById('menu'); if (menu) resize.observe(menu); }
     doc.addEventListener('show.bs.offcanvas', closePlayer);
     // Media events do not bubble; capture also covers videos loaded later.
@@ -458,48 +456,5 @@
         win.PieceAudioPlayer = {pause: function () { if (audio) audio.pause(); }};
     }
     renumber();
-    // Use one retained metadata element, and release it before playback. Loading
-    // more recordings in the background must never compete with the iOS player.
-    var metadataQueue = [], metadataAudio = null, metadataCancel = null, metadataStopped = false, observer = null;
-    function stopMetadata() {
-        metadataStopped = true; metadataQueue = [];
-        if (observer) observer.disconnect();
-        if (metadataCancel) metadataCancel();
-        metadataAudio = null;
-    }
-    function probe() {
-        if (metadataStopped || metadataCancel || !metadataQueue.length) return;
-        var row = metadataQueue.shift(), media = metadataAudio || new win.Audio(), finished = false;
-        metadataAudio = media; media.preload = 'metadata';
-        var timer;
-        function cleanup() {
-            if (finished) return; finished = true;
-            win.clearTimeout(timer);
-            media.removeEventListener('loadedmetadata', loaded);
-            media.removeEventListener('durationchange', loaded);
-            media.removeEventListener('error', done);
-            metadataCancel = null;
-            media.playlistSource.removeAttribute('src'); media.load();
-        }
-        function loaded() {
-            if (finished || metadataStopped) return;
-            if (Number.isFinite(media.duration) && media.duration > 0) {
-                row.querySelector('[data-track-duration]').textContent = time(media.duration);
-                done();
-            }
-        }
-        function done() { if (finished) return; cleanup(); probe(); }
-        metadataCancel = cleanup;
-        timer = win.setTimeout(done, 10000);
-        media.addEventListener('loadedmetadata', loaded); media.addEventListener('durationchange', loaded); media.addEventListener('error', done);
-        setSource(media, row.getAttribute('data-audio')); media.load();
-    }
-    if (!piecePage && win.IntersectionObserver) {
-        observer = new win.IntersectionObserver(function (entries) {
-            if (metadataStopped) return;
-            entries.forEach(function (entry) { if (entry.isIntersecting) { observer.unobserve(entry.target); metadataQueue.push(entry.target); } }); probe();
-        }, {rootMargin: '150px'});
-        playable().forEach(function (row) { observer.observe(row); });
-    }
     return {time: time};
 }));

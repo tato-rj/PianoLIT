@@ -108,6 +108,23 @@ class PlaylistPlayerTest extends ReviewTestCase
         }
     }
 
+    public function test_collection_and_folder_show_the_saved_recording_duration_before_playback()
+    {
+        $this->openCollectionPolicy();
+        $this->user->update(['super_user' => true]);
+        $this->actingAs($this->user, 'web');
+        $this->pieces[0]->updateQuietly(['audio_duration_seconds' => 274]);
+
+        foreach ([route('webapp.playlists.show', $this->playlist), route('webapp.users.favorites.folders.show', $this->folder)] as $url) {
+            $this->get($url)->assertOk()
+                ->assertSee('data-duration-label="4:34"', false)
+                ->assertSee('data-track-duration aria-label="Duration">4:34</span>', false)
+                ->assertSee('data-escore-duration>4:34</span>', false)
+                ->assertSee('data-track-duration aria-label="Duration">—</span>', false)
+                ->assertSee('data-escore-duration>—</span>', false);
+        }
+    }
+
     private function previewHtml($html)
     {
         $html = str_replace(['http://my.localhost', 'http://localhost'], 'http://127.0.0.1:8769', $html);

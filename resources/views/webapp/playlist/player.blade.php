@@ -9,7 +9,7 @@
             <button class="btn-raw text-muted playlist-player__close" type="button" data-player-close aria-label="Close audio player">@icon('close', ['mr' => 0])</button>
             @endif
         </div>
-        <div class="playlist-player__timeline text-muted"><span data-elapsed>0:00</span><div class="playlist-player__progress"><input class="form-range" type="range" min="0" max="0" step="0.1" value="0" data-seek aria-label="Playback position" disabled><div class="playlist-player__markers" data-section-markers aria-label="Section markers"></div></div><span data-duration>0:00</span></div>
+        <div class="playlist-player__timeline text-muted"><span data-elapsed>0:00</span><div class="playlist-player__progress"><input class="form-range" type="range" min="0" max="0" step="0.1" value="0" data-seek aria-label="Playback position" disabled><div class="playlist-player__markers" data-section-markers aria-label="Section markers"></div></div><span data-duration>—</span></div>
         <div class="playlist-player__transport">
             <button class="btn-raw" type="button" data-previous aria-label="{{ !empty($piecePlayer) ? 'Restart recording' : 'Previous piece' }}">@icon('skip-back', ['mr' => 0, 'filled' => true])</button>
             <button class="btn btn-secondary btn-sm playlist-player__toggle" type="button" data-player-toggle aria-label="Play" disabled><span data-play-icon>@icon('play', ['mr' => 0, 'filled' => true])</span><span data-pause-icon hidden>@icon('pause', ['mr' => 0, 'filled' => true])</span></button>

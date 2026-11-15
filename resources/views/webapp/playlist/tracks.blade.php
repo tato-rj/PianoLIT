@@ -10,10 +10,11 @@
     @php($hasTrackAccess = $piece->hasWebMediaAccess(auth('web')->user(), 'audio'))
     @php($trackLimit = app(\App\Services\WebApp\AccessPolicy::class)->mediaLimit('audio', auth('web')->user(), $piece))
     @php($audioBlocked = $trackLimit === 0)
+    @php($durationLabel = $piece->audioDurationLabel())
     @php($audioMoments = collect(optional($piece->tutorials->first())->listeningMoments() ?: [])->map(function ($moment) { return \Illuminate\Support\Arr::except($moment, ['comment']); })->all())
     <article class="playlist-track border-bottom" data-track data-id="{{isset($favorites) ? $favorites->values()->get($loop->index)->id : $piece->id}}"
         data-has-score="{{$piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user()) ? 'true' : 'false'}}" data-piece-id="{{$piece->id}}" data-title="{{$piece->short_name}}" data-composer="{{$piece->composer->short_name}}"
-        data-audio="{{$piece->audio_path ? $piece->audio : ''}}" data-preview="{{$hasTrackAccess || $audioBlocked ? 0 : $trackLimit}}"
+        data-audio="{{$piece->audio_path ? $piece->audio : ''}}" data-preview="{{$hasTrackAccess || $audioBlocked ? 0 : $trackLimit}}" data-duration-label="{{$durationLabel}}"
         @if($audioBlocked) data-audio-blocked="true" @endif
         data-audio-moments="{{json_encode($audioMoments)}}"
         data-access-prompt="{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'audio', $piece) }}" data-artwork="{{$piece->web_image_background}}">
@@ -23,7 +24,7 @@
         </button>
         <span class="playlist-track__level bg-{{$piece->level_name}}-raw" title="{{ucfirst($piece->level_name ?: 'Unknown')}} level"></span>
         <div class="playlist-track__identity"><span class="playlist-track__title" title="{{$piece->short_name}}">{{$piece->short_name}}</span><span class="playlist-track__composer text-muted">{{$piece->composer->short_name}}</span></div>
-        <span class="playlist-track__duration text-muted" data-track-duration aria-label="Duration">—</span>
+        <span class="playlist-track__duration text-muted" data-track-duration aria-label="Duration">{{$durationLabel ?? '—'}}</span>
         @include('webapp.components.favorite', ['favoriteClasses' => 'text-danger playlist-track__favorite', 'favoriteStyle' => '', 'favoriteIconMargin' => 0, 'favoriteColor' => 'danger', 'favoriteSaved' => isset($folder) ? true : ($piece->webapp_is_favorited ?? false)])
         <a class="btn btn-secondary btn-sm playlist-track__go" href="{{route('webapp.pieces.show', $piece)}}" data-activity-label="{{ $piece->medium_name_with_composer }}">Go @icon('arrow-right', ['mr' => 0])</a>
         @if($canReorder)

@@ -39,6 +39,8 @@ module.exports = async function () {
     const page = new Element(), list = new Element({'data-folder-id': '1', 'data-url-reorder': '/folders/1/reorder'}), player = new Element({'data-preview-modal': 'piece-upgrade-modal', 'data-preview-message': 'Your preview has ended. Go Premium to hear the full piece.'});
     list.items = [0, 1, 2].map(index => new Element({'data-id': String(index + 1), 'data-title': 'Piece ' + index, 'data-composer': 'Composer', 'data-audio': index === 2 ? '' : index === 0 ? '/legacy.MPGA?version=1' : '/recording.mp4', 'data-preview': index === 1 ? '10' : '0', 'data-artwork': '/art.jpg'}));
     const tracks = list.items.slice();
+    tracks[0].setAttribute('data-duration-label', '4:34');
+    tracks[0].querySelector('[data-track-duration]').textContent = '4:34';
     list.querySelectorAll = () => list.items.filter(item => item.getAttribute('data-id'));
     Object.defineProperty(list, 'lastElementChild', {get: () => list.items[list.items.length - 1] || null});
     list.appendChild = row => { const index = list.items.indexOf(row); if (index >= 0) list.items.splice(index, 1); list.items.push(row); };
@@ -51,7 +53,7 @@ module.exports = async function () {
     page.children['[data-playlist-player]'] = player;
     player.children['[data-speed]'] = [.5, .75, 1, 1.25, 1.5, 2].map(speed => new Element({'data-speed': String(speed)}));
     const doc = new Element(); doc.querySelector = selector => selector === '[data-playlist-page]' ? page : null; doc.getElementById = id => { promptedModal = id; return new Element(); }; doc.createElement = () => new Element();
-    const win = {Audio, bootstrap: {Modal: {getOrCreateInstance: () => ({show() { upgrades++; }})}}, innerHeight: 800, requestAnimationFrame() { return 1; }, cancelAnimationFrame() {}, scrollBy() {}, addEventListener() {}, axios: {
+    const win = {Audio, IntersectionObserver: class { constructor() { assert.fail('Duration labels need no background media observation'); } }, bootstrap: {Modal: {getOrCreateInstance: () => ({show() { upgrades++; }})}}, innerHeight: 800, requestAnimationFrame() { return 1; }, cancelAnimationFrame() {}, scrollBy() {}, addEventListener() {}, axios: {
         patch(url, data) { return new Promise((resolve, reject) => patches.push({url, data, resolve, reject})); },
         post(url) { return new Promise((resolve, reject) => posts.push({url, resolve, reject})); }
     }};
@@ -66,6 +68,12 @@ module.exports = async function () {
     tracks[0].querySelector('[data-track-play]').fire('click');
     assert.strictEqual(player.hidden, false, 'Playing a track reveals the player');
     const first = recordings[0];
+    assert.strictEqual(player.querySelector('[data-duration]').textContent, '4:34');
+    first.duration = 186.5; first.fire('durationchange');
+    assert.strictEqual(player.querySelector('[data-seek]').max, 186.5, 'Seeking uses the active recording bounds');
+    assert.strictEqual(player.querySelector('[data-seek]').getAttribute('aria-valuetext'), '0:00 of 4:34');
+    assert.strictEqual(tracks[0].querySelector('[data-track-duration]').textContent, '4:34');
+    assert.strictEqual(player.querySelector('[data-duration]').textContent, '4:34', 'Playback metadata cannot overwrite the saved label');
     const firstRejection = first.reject, firstEnded = first.events.ended;
     assert(!first.paused);
     assert.strictEqual(first.getAttribute('src'), null, 'A direct src must not override the typed source');
@@ -93,6 +101,9 @@ module.exports = async function () {
     assert.strictEqual(first.playbackRate, 1.5);
     tracks[1].querySelector('[data-track-play]').fire('click');
     const second = recordings[0];
+    second.fire('loadedmetadata');
+    assert.strictEqual(player.querySelector('[data-duration]').textContent, '—', 'A missing saved duration stays unknown after playback starts');
+    assert(player.querySelector('[data-seek]').getAttribute('aria-valuetext').endsWith(' of 0:10'), 'The preview seek control announces its limit');
     assert.strictEqual(recordings.length, 1, 'Manual track changes reuse the authorized audio element');
     assert.strictEqual(sourceUrl(second), '/recording.mp4');
     assert.strictEqual(second.playlistSource.getAttribute('type'), 'video/mp4', 'Mixed-format playlists update the source type');
@@ -243,67 +254,11 @@ module.exports = async function () {
     assert.strictEqual(player.hidden, false, 'Play all reveals the player');
     assert(!recordings[recordings.length - 1].paused, 'Play all starts playback');
 
-    // Exercise delayed iOS metadata and a background loader racing a user tap.
-    recordings.forEach(recording => recording.pause());
-    const timers = new Map(); let timerId = 0, observer, hiddenPage;
-    win.setTimeout = callback => { timers.set(++timerId, callback); return timerId; };
-    win.clearTimeout = id => timers.delete(id);
+    let hiddenPage;
     win.addEventListener = (event, callback) => { if (event === 'pagehide') hiddenPage = callback; };
-    win.IntersectionObserver = class {
-        constructor(callback) { this.callback = callback; this.disconnected = false; observer = this; }
-        observe() {}
-        unobserve() {}
-        disconnect() { this.disconnected = true; }
-    };
-    tracks[0].attributes['data-audio'] = '/legacy.MPGA?version=1';
-    list.items = tracks.slice();
-    initialize(doc, win);
-    const initialCount = recordings.length;
-    observer.callback(tracks.slice(0, 2).map(target => ({target, isIntersecting: true})));
-    assert.strictEqual(recordings.length, initialCount + 1, 'Metadata reads use a single retained audio element');
-    const metadata = recordings[initialCount];
-    assert.strictEqual(metadata.playlistSource.getAttribute('type'), 'audio/mpeg', 'Duration probes also type legacy MPGA');
-    const staleMetadata = metadata.events.loadedmetadata;
-    metadata.duration = NaN;
-    metadata.fire('loadedmetadata');
-    assert.strictEqual(sourceUrl(metadata), '/legacy.MPGA?version=1', 'Unknown duration waits for a later durationchange');
-    metadata.duration = 154; metadata.fire('durationchange');
-    assert.strictEqual(tracks[0].querySelector('[data-track-duration]').textContent, '2:34');
-    assert.strictEqual(sourceUrl(metadata), '/recording.mp4');
-    assert.strictEqual(metadata.playlistSource.getAttribute('type'), 'video/mp4');
-    assert.strictEqual(recordings.length, initialCount + 1, 'Reading the next duration reuses the metadata element');
-    tracks[0].querySelector('[data-track-play]').fire('click');
-    assert(observer.disconnected, 'Playback disconnects background metadata observation');
-    assert.strictEqual(timers.size, 0, 'Playback cancels background metadata timeouts');
-    assert.strictEqual(metadata.events.loadedmetadata, undefined, 'Cancelled metadata listeners are removed');
-    assert.strictEqual(sourceUrl(metadata), '', 'Playback releases the background recording source');
-    const playback = recordings[initialCount + 1];
-    playback.duration = NaN; playback.fire('loadedmetadata');
-    playback.duration = 186; playback.fire('durationchange');
-    assert.strictEqual(tracks[0].querySelector('[data-track-duration]').textContent, '3:06', 'Late playback duration updates the row');
-    assert.strictEqual(player.querySelector('[data-duration]').textContent, '3:06');
-    metadata.duration = 999; staleMetadata();
-    assert.strictEqual(tracks[0].querySelector('[data-track-duration]').textContent, '3:06', 'Cancelled metadata cannot overwrite playback duration');
-    observer.callback(tracks.map(target => ({target, isIntersecting: true})));
-    assert.strictEqual(recordings.length, initialCount + 2, 'Scrolling never restarts background audio after playback');
-    tracks[1].querySelector('[data-track-play]').fire('click');
-    assert.strictEqual(recordings.length, initialCount + 2, 'Every track uses the same playback element');
-    hiddenPage(); assert(playback.paused);
-
-    // Without playback, a slow or failed duration must not block later tracks.
-    initialize(doc, win);
-    observer.callback(tracks.slice(0, 2).map(target => ({target, isIntersecting: true})));
-    const timedMetadata = recordings[recordings.length - 1];
-    timedMetadata.duration = NaN;
-    const timeout = timers.values().next().value;
-    timeout();
-    assert.strictEqual(sourceUrl(timedMetadata), '/recording.mp4', 'Timed-out metadata advances to the next track');
-    timedMetadata.fire('error');
-    assert.strictEqual(timers.size, 0, 'Failed metadata clears its timeout');
-    hiddenPage();
 
     // Known MP3/M4A types are explicit; unknown extensions keep browser detection.
-    delete win.IntersectionObserver;
+    list.items = tracks.slice();
     initialize(doc, win);
     for (const [url, type] of [['/recording.mp3#fragment', 'audio/mpeg'], ['/recording.m4a', 'audio/mp4'], ['/recording.wav', null]]) {
         tracks[0].attributes['data-audio'] = url;
@@ -314,6 +269,7 @@ module.exports = async function () {
         tracks[1].querySelector('[data-track-play]').fire('click');
     }
     hiddenPage();
+    assert(recordings[recordings.length - 1].paused, 'Leaving the page pauses playback');
 
     let sectionCallbacks, sectionSelections = [];
     win.VideoMoments = {};
@@ -421,7 +377,7 @@ module.exports = async function () {
     piecePage.closest = () => pieceMain;
     piecePage.style.setProperty = function (name, value) { this[name] = value; };
     const pieceTracks = ['full'].map(hand => {
-        const row = new Element({'data-hand': hand, 'data-title': 'The Storm', 'data-composer': 'Burgmüller', 'data-audio': '/' + hand + '.mp3', 'data-preview': '10', 'data-artwork': '/art.jpg'});
+        const row = new Element({'data-hand': hand, 'data-title': 'The Storm', 'data-composer': 'Burgmüller', 'data-audio': '/' + hand + '.mp3', 'data-preview': '10', 'data-artwork': '/art.jpg', 'data-duration-label': '4:34'});
         row.querySelector = () => null;
         return row;
     });
@@ -448,6 +404,7 @@ module.exports = async function () {
     const pieceAudio = recordings[beforePiece];
     assert(!pieceBand.hidden); assert(!pieceAudio.paused);
     assert.strictEqual(sourceUrl(pieceAudio), '/full.mp3');
+    assert.strictEqual(pieceBand.querySelector('[data-duration]').textContent, '4:34');
     assert.strictEqual(piecePage.style['--playlist-menu-height'], '80px', 'Piece band accounts for persistent navigation');
     assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '80px', 'Score toolbar receives the band height');
     assert.strictEqual(pieceMain.style.marginBottom, 'calc(24px + 80px)', 'Opening audio adds only the band height to existing page spacing');
@@ -535,5 +492,5 @@ module.exports = async function () {
     assert.strictEqual(piecePlayCalls, 1, 'Unmarked zero-preview tracks retain full playback');
     pieceAudio.currentTime = 35; pieceAudio.fire('timeupdate');
     assert(!pieceAudio.paused);
-    console.log('Passed: performance/Synthesia/dynamic video dismissal, captured media events and audio exclusion; offcanvas dismissal across folder, collection and piece players; piece Listen/Close, score spacing, main recording, full playback and previews; typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
+    console.log('Passed: performance/Synthesia/dynamic video dismissal, captured media events and audio exclusion; offcanvas dismissal across folder, collection and piece players; piece Listen/Close, score spacing, main recording, full playback and previews; typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, saved duration labels, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
 };

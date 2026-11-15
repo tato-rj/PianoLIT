@@ -42,7 +42,7 @@
                         <button class="btn-raw text-muted escore-drag" type="button" data-escore-drag aria-label="Reorder {{ $piece->medium_name }}; use up and down arrow keys" @unless($eligible) disabled @endunless>@icon('grip-vertical', ['mr' => 0])</button>
                         <span class="small text-muted" data-escore-row-number>{{ $loop->iteration }}</span>
                         <div class="escore-piece-identity"><span data-escore-piece-title>{{ $piece->medium_name }}</span><span class="text-muted" data-escore-piece-composer> · {{ $piece->composer->short_name }}</span>@unless($eligible)<small class="text-muted d-block">{{ !$piece->score_path ? 'Score unavailable' : (!$piece->is_public_domain ? 'Public-domain score required' : 'Score exports unavailable') }}</small>@endunless</div>
-                        <span class="small text-muted escore-piece-duration" data-escore-duration>—</span>
+                        <span class="small text-muted escore-piece-duration" data-escore-duration>{{ $piece->audioDurationLabel() ?? '—' }}</span>
                     </article>
                     @endforeach
                 </div>

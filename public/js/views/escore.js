@@ -417,13 +417,6 @@
             visible = true;
             setPreviewBusy(false);
             var playlist = modal.closest('[data-playlist-page]') || document.querySelector('[data-playlist-page]');
-            if (playlist) {
-                qa('[data-escore-piece]').forEach(function (row) {
-                    var track = playlist.querySelector('[data-track][data-piece-id="' + row.dataset.escorePiece + '"]');
-                    var duration = track && track.querySelector('[data-track-duration]');
-                    if (duration) row.querySelector('[data-escore-duration]').textContent = duration.textContent;
-                });
-            }
             if (form.dataset.folder === 'true' && playlist) {
                 var tracks = Array.from(playlist.querySelectorAll('[data-track][data-piece-id]'));
                 if (playlist.querySelector('[data-playlist-tracks]')) {

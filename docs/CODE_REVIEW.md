@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-14 — Use saved recording durations on my.pianolit (P3, complete locally)
+
+- Collections, favorites folders, the eScore picker and the shared audio player display the same saved duration as the iOS v2 API. Missing durations display as a dash. The playlist no longer loads media in the background to fill in labels. Playback metadata still provides seek bounds and section timing.
+- The focused web, API and JavaScript checks and the full production build passed. The broader PHP run passed 71 of 73 checks. Both failures also occurred on the original revision, as did the general JavaScript runner's admin-subdomain fixture error and the checked-in metronome manifest hash mismatch. Kept the two rebuilt scripts and their verified manifest entries. Production deployment is pending.
+
 ### 2026-11-14 — Recording duration in iOS piece summaries (P3, complete locally)
 
 - The web Collections player reads the full recording duration from browser audio metadata. V2 now includes nullable `duration_seconds` in each piece summary, including collection rows. `Piece` measures new recordings when the full audio path changes. The backfill command measures existing recordings in batches. The new column is hidden from legacy serialization.

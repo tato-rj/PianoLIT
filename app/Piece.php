@@ -333,6 +333,18 @@ class Piece extends PianoLit
         return $count;
     }
 
+    public function audioDurationSeconds(): ?int
+    {
+        return $this->hasAudio() ? $this->audio_duration_seconds : null;
+    }
+
+    public function audioDurationLabel(): ?string
+    {
+        $seconds = $this->audioDurationSeconds();
+
+        return $seconds === null ? null : sprintf('%d:%02d', intdiv($seconds, 60), $seconds % 60);
+    }
+
     public function scopeWithAudio($query)
     {
         return $query->whereNotNull('audio_path');
