@@ -4,10 +4,13 @@ namespace App\Services\Collections;
 
 use App\Playlist;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 
 class Catalog
 {
+    private const SELECTION_KEY = 'webapp.collections.weekly-selection';
+
     public function entries(): Collection
     {
         return Playlist::whereNull('group')->published()->has('pieces', '>', 5)
@@ -85,26 +88,69 @@ class Catalog
 
     public function weeklySelection(Collection $entries): array
     {
-        if ($entries->isEmpty()) {
+        $ids = $entries->modelKeys();
+        if ($ids === []) {
             return [null, []];
         }
 
-        $ids = $entries->modelKeys();
-        $count = min(3, count($ids));
-        $key = 'webapp.collections.weekly-selection';
-        $selection = Cache::get($key);
-
-        // Cache only IDs so admin edits and publication eligibility stay current.
-        if (! $selection || ! in_array($selection['featured'], $ids, true)
-            || count($selection['inspiration']) !== $count
-            || array_diff($selection['inspiration'], $ids)) {
-            $selection = [
-                'featured' => $entries->random()->getKey(),
-                'inspiration' => $entries->random($count)->modelKeys(),
-            ];
-            Cache::put($key, $selection, now()->addWeek());
+        $selection = Cache::get(self::SELECTION_KEY);
+        if (! $this->validSelection($selection, $ids)) {
+            $selection = $this->saveSelection($ids);
         }
 
         return [$selection['featured'], $selection['inspiration']];
+    }
+
+    public function rotateWeeklySelection(): void
+    {
+        $ids = $this->entries()->modelKeys();
+        if ($ids !== []) {
+            $this->saveSelection($ids, true);
+        }
+    }
+
+    private function validSelection(?array $selection, array $ids): bool
+    {
+        // Cache only IDs so admin edits and publication eligibility stay current.
+        return $selection && in_array($selection['featured'], $ids, true)
+            && count($selection['inspiration']) === min(3, count($ids))
+            && ! array_diff($selection['inspiration'], $ids);
+    }
+
+    private function saveSelection(array $ids, bool $rotate = false): array
+    {
+        return Cache::lock(self::SELECTION_KEY.':lock', 10)->block(5, function () use ($ids, $rotate) {
+            $cached = Cache::get(self::SELECTION_KEY);
+            if (! $rotate && $this->validSelection($cached, $ids)) {
+                return $cached;
+            }
+
+            $previous = $rotate ? $cached : null;
+            $featuredIds = array_diff($ids, [$previous['featured'] ?? null]);
+            $selection = [
+                'featured' => Arr::random($featuredIds ?: $ids),
+                'inspiration' => $this->selectSuggestions($ids, $previous['inspiration'] ?? []),
+            ];
+            if (! Cache::put(self::SELECTION_KEY, $selection, now()->addWeek()) && $rotate) {
+                throw new \RuntimeException('The Collections selection could not be refreshed.');
+            }
+
+            return $selection;
+        });
+    }
+
+    private function selectSuggestions(array $ids, array $previous): array
+    {
+        shuffle($ids);
+        $new = array_diff($ids, $previous);
+        $repeat = array_intersect($ids, $previous);
+        $suggestions = array_slice(array_merge($new, $repeat), 0, 3);
+
+        // When every eligible collection already appears, change the display order.
+        if ($suggestions === $previous && count($suggestions) > 1) {
+            $suggestions[] = array_shift($suggestions);
+        }
+
+        return $suggestions;
     }
 }

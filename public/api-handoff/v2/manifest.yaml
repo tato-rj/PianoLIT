@@ -1,6 +1,6 @@
 schema_version: 1
-revision: 2026-11-11.2
-updated_on: '2026-11-11'
+revision: 2026-11-14.1
+updated_on: '2026-11-14'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -26,8 +26,9 @@ runtime:
     featured detail, regular membership locks, native piece navigation, and no history
     or analytics writes. Synthetic account and token rows were rolled back. Revision
     2026-11-11.2 was also production verified for book order, cover assets, availability,
-    weekly suggestion order, catalog access and ordered category assignments. Native
-    acceptance remains pending.'
+    weekly suggestion order, catalog access and ordered category assignments. The
+    new piece duration field is implemented locally. Production deployment and duration
+    backfill are pending. Native acceptance remains pending.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -46,8 +47,8 @@ entrypoints:
   collections_examples: examples/collections.md
 files:
 - path: README.md
-  bytes: 10942
-  sha256: 63d87c94f183dadf70cd11b8e38dfc8b43ac3110ab323300a6ec1fceee64a37e
+  bytes: 11224
+  sha256: 7a99a7f6d06b6a114cdec3775ac22cdfdc63cbc0db6dd50d8e5385ca33873c0a
 - path: foundations.yaml
   bytes: 5830
   sha256: f5dd95d5709a522f35a7e44959ca7917c6510590e7a35438744b1625bea3bd2e
@@ -55,8 +56,8 @@ files:
   bytes: 10384
   sha256: 3a26ddf1df6e7fdc7e992d2d629b57cd6ae7a16cd75763c7f20291165a28ebe0
 - path: openapi.yaml
-  bytes: 85028
-  sha256: 05eb7d55f83ab1f3525de7e951d8f9e78a0cb04e10e9697f505a73a5988ae1d9
+  bytes: 85356
+  sha256: 3a1dd6a43be56e096815eee189dce88d5fa06ee4d1cdc03cfb59ca656a264f77
 - path: design.yaml
   bytes: 2740
   sha256: 094fef76502c95677b0f36acb9045d3930633257ee93192184b02ce896dbe330
@@ -73,8 +74,8 @@ files:
   bytes: 183
   sha256: 28b67a3a1694e2f2e92c75066870b0d385e149b2fad0e335545de84f038510e6
 - path: examples/PianoLITV2Client.swift
-  bytes: 20572
-  sha256: 89bdcd8c36f6e9afa0d94c56be4548394269f5d6861dd732a197bceb409ba7cb
+  bytes: 20603
+  sha256: 35d8f30e8fd55ed24efea568019e1dc37677a7011991fef5b347fa1099fe9fd0
 - path: screens/find-my-match.yaml
   bytes: 4284
   sha256: f673b463d8b521c1a5e225c5904fa9b914444b1753c82de8d2bcd802e90a11c2
@@ -112,17 +113,17 @@ files:
   bytes: 3064
   sha256: cef027c84c232abefb06952601bd8e8ae15bda8ed9cdeb027647f6c2d7e61ee5
 - path: screens/collections.yaml
-  bytes: 2114
-  sha256: 11d2c9e8c92450a6149820d448cde3830b3d9d814655a599ca18310a790f1f85
+  bytes: 2271
+  sha256: 8768ac2778bf38b8d171cd5463ee392a29d858cff6d295301cafc3faa6555527
 - path: examples/collections.md
-  bytes: 9107
-  sha256: 794f00c69d41500252ded51d1ed8ab5715af056d1749253f4dd1c2ef46f6580e
+  bytes: 10203
+  sha256: f393f32641337f7a8367c1817c2c381621726c83fd769ef6b7bb2bb7a627f814
 - path: fixtures/collections-catalog.json
   bytes: 3910
   sha256: b157abc6461ab6cb433de6825ecafb4eab06f8f70d70edf480aa62702fae4ad5
 - path: fixtures/collections-detail.json
-  bytes: 6695
-  sha256: 8319bfd1e492b32baf6bd02ea6c00732f10305c73ab118da3eefb23c54806faa
+  bytes: 6863
+  sha256: a35fbdff556681db94b8085cbaf3d6a947906a909837936f05e2b13058576478
 - path: fixtures/collections-empty.json
   bytes: 233
   sha256: e1f4bc004149459b6fb7521cdb85204618bd680cf99ac232413322d370c16bde
@@ -203,6 +204,11 @@ consumer_rules:
   same v2 bearer. See examples/collections.md for the membership lock, piece navigation
   and removed Follow a path flow.
 changelog:
+- revision: 2026-11-14.1
+  changes:
+  - Added nullable duration_seconds to v2 piece summaries, including Collections rows.
+  - Measured full recordings at upload and added a command to backfill existing recordings.
+  - Updated the Swift decoder, OpenAPI contract and Collections detail fixture.
 - revision: 2026-11-11.2
   changes:
   - Extended GET /collections with ordered book_series, suggested_collection_ids and
@@ -294,4 +300,4 @@ changelog:
   - Established the handoff format, shared API proposals and compatibility boundaries.
   - Inventoried Discover against the current web implementation.
   - No runtime endpoints, migrations, Swift changes or deployment in this revision.
-base_path: revisions/2026-11-11.2/
+base_path: revisions/2026-11-14.1/

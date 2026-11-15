@@ -7,6 +7,7 @@ use App\Billing\Membership;
 use App\Billing\Sources\Stripe;
 use App\Services\Admin\PlaylistTags;
 use App\Services\Api\V2\Tokens;
+use App\Services\Pieces\AudioDuration;
 use App\Services\WebApp\Collections;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Cache, Http, Redis};
@@ -184,6 +185,7 @@ class ApiV2CollectionsTest extends ReviewTestCase
             ->assertJsonPath('data.pieces.0.difficulty', 'intermediate')
             ->assertJsonPath('data.pieces.0.media.score', true)
             ->assertJsonPath('data.pieces.0.media.audio', true)
+            ->assertJsonPath('data.pieces.0.duration_seconds', null)
             ->assertJsonPath('data.pieces.0.media.performance', true)
             ->assertJsonPath('data.pieces.1.media.performance', false)
             ->assertJsonPath('data.pieces.1.difficulty', null)
@@ -201,6 +203,42 @@ class ApiV2CollectionsTest extends ReviewTestCase
         $this->assertDatabaseCount('activity_events', 0);
         $this->assertDatabaseCount('piece_views', 0);
         Http::assertNothingSent();
+    }
+
+    public function test_full_recording_duration_is_backfilled_and_replaced_with_the_recording()
+    {
+        [$featured, , $pieces] = $this->catalog();
+        $piece = $pieces->first();
+        $pieces[1]->updateQuietly(['audio_path' => 'fixtures/missing.mp3']);
+        $pieces[2]->updateQuietly(['audio_path_rh' => 'fixtures/right-hand.mp3']);
+        config(['match-tour.ffprobe' => PHP_BINARY]);
+        $this->mock(AudioDuration::class, function ($audio) {
+            $audio->shouldReceive('seconds')->once()->with('fixtures/full.mp3')->andReturn(274);
+            $audio->shouldReceive('seconds')->twice()->with('fixtures/missing.mp3')->andReturn(null);
+            $audio->shouldReceive('seconds')->once()->with('fixtures/replacement.mp3')->andReturn(177);
+        });
+
+        for ($run = 0; $run < 2; $run++) {
+            $this->artisan('pieces:backfill-audio-durations')
+                ->expectsOutput('Saved '.(1 - $run).' durations. Unavailable recordings: 1.')
+                ->assertExitCode(1);
+        }
+        $headers = $this->credential($this->user());
+        $url = self::PATH.'/'.$featured->id;
+        $rows = collect($this->getJson($url, $headers)->assertOk()->json('data.pieces'))->keyBy('id');
+        $this->assertSame(274, $rows[$piece->id]['duration_seconds']);
+        $this->assertNull($rows[$pieces[1]->id]['duration_seconds']);
+        $this->assertNull($rows[$pieces[2]->id]['duration_seconds']);
+        $this->getJson('/api/v2/pieces/'.$piece->id, $headers)->assertOk()
+            ->assertJsonPath('data.piece.duration_seconds', 274)
+            ->assertJsonPath('data.media.audio.tracks.0.url', null);
+        $this->assertArrayNotHasKey('audio_duration_seconds', $piece->fresh()->toArray());
+
+        $piece->update(['audio_path' => 'fixtures/replacement.mp3']);
+        $this->getJson($url, $headers)->assertOk()->assertJsonPath('data.pieces.0.duration_seconds', 177);
+        $piece->update(['audio_path' => null]);
+        $this->getJson($url, $headers)->assertOk()->assertJsonPath('data.pieces.0.duration_seconds', null);
+        $this->assertNull($piece->fresh()->audio_duration_seconds);
     }
 
     public function test_regular_detail_rechecks_local_membership_and_weekly_featured_id()

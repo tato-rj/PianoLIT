@@ -8,7 +8,7 @@ Continue editing playlist names, subtitles, descriptions and piece selections in
 
 The admin playlist list has a **Publish/Unpublish** button beside **Edit**. New playlists start unpublished. Only playlists with a non-null publication date that is not in the future appear in web Collections; unpublished detail URLs redirect to Discover through the web app's existing 404 handler. The one-time migration marks existing playlists as published so the current page stays populated; use the button to remove any of them from the web app. The legacy iOS playlist list and pieces endpoints continue to return the same playlists and JSON fields.
 
-- The featured collection and up to three suggestions share a weekly selection of eligible collections. Both clients render suggestions in the saved selection order.
+- The featured collection and up to three suggestions share a weekly selection of eligible collections. The admin **Refresh Discover and Collections** button rotates both sections immediately. It chooses a different featured collection when available and prioritizes collections that were absent from the previous suggestions. Both clients render suggestions in the saved selection order.
 - Browse filters use saved Featured tags on eligible collections. All eligible collections remain accessible under All, including untagged cards.
 - `config/collections.php` stores the ordered book series, covers and level descriptions. The eight Piano Solos books are **Coming soon**. Set a book's public HTTPS `detail_url` when its detail page is published. The web books occupy one horizontal row with native touch, trackpad and keyboard scrolling. Previous and next buttons move one card and respect reduced motion.
 

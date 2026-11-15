@@ -1,0 +1,128 @@
+{
+  "data": {
+    "featured_collection_id": "81",
+    "collections": [
+      {
+        "id": "92",
+        "title": "Piano studies",
+        "subtitle": null,
+        "artwork_url": "https://example.test/images/webapp/collections/featured.webp",
+        "piece_count": 6,
+        "featured_badge": null,
+        "access": "membership_required"
+      },
+      {
+        "id": "81",
+        "title": "Short piano pieces",
+        "subtitle": "Five works for intermediate pianists",
+        "artwork_url": "https://example.test/storage/collections/short-pieces.jpg",
+        "piece_count": 5,
+        "featured_badge": "Level",
+        "access": "available"
+      }
+    ],
+    "book_series": [
+      {
+        "id": "piano-solos",
+        "title": "Piano Solos",
+        "books": [
+          {
+            "id": "piano-solos-book-1",
+            "number": 1,
+            "title": "Piano Solos · Book 1",
+            "level": "Elementary",
+            "cover_url": "https://example.test/images/webapp/collections/book-1.webp",
+            "availability": "coming_soon",
+            "detail_url": null
+          },
+          {
+            "id": "piano-solos-book-2",
+            "number": 2,
+            "title": "Piano Solos · Book 2",
+            "level": "Elementary to beginner",
+            "cover_url": "https://example.test/images/webapp/collections/book-2.webp",
+            "availability": "coming_soon",
+            "detail_url": null
+          },
+          {
+            "id": "piano-solos-book-3",
+            "number": 3,
+            "title": "Piano Solos · Book 3",
+            "level": "Beginner",
+            "cover_url": "https://example.test/images/webapp/collections/book-3.webp",
+            "availability": "coming_soon",
+            "detail_url": null
+          },
+          {
+            "id": "piano-solos-book-4",
+            "number": 4,
+            "title": "Piano Solos · Book 4",
+            "level": "Beginner to intermediate",
+            "cover_url": "https://example.test/images/webapp/collections/book-4.webp",
+            "availability": "coming_soon",
+            "detail_url": null
+          },
+          {
+            "id": "piano-solos-book-5",
+            "number": 5,
+            "title": "Piano Solos · Book 5",
+            "level": "Intermediate",
+            "cover_url": "https://example.test/images/webapp/collections/book-5.webp",
+            "availability": "coming_soon",
+            "detail_url": null
+          },
+          {
+            "id": "piano-solos-book-6",
+            "number": 6,
+            "title": "Piano Solos · Book 6",
+            "level": "Intermediate",
+            "cover_url": "https://example.test/images/webapp/collections/book-6.webp",
+            "availability": "coming_soon",
+            "detail_url": null
+          },
+          {
+            "id": "piano-solos-book-7",
+            "number": 7,
+            "title": "Piano Solos · Book 7",
+            "level": "Intermediate to advanced",
+            "cover_url": "https://example.test/images/webapp/collections/book-7.webp",
+            "availability": "coming_soon",
+            "detail_url": null
+          },
+          {
+            "id": "piano-solos-book-8",
+            "number": 8,
+            "title": "Piano Solos · Book 8",
+            "level": "Advanced",
+            "cover_url": "https://example.test/images/webapp/collections/book-8.webp",
+            "availability": "coming_soon",
+            "detail_url": null
+          }
+        ]
+      }
+    ],
+    "suggested_collection_ids": [
+      "81",
+      "92"
+    ],
+    "categories": [
+      {
+        "id": "tag-4",
+        "label": "Level",
+        "collection_ids": [
+          "81"
+        ]
+      },
+      {
+        "id": "tag-7",
+        "label": "Technique",
+        "collection_ids": [
+          "92"
+        ]
+      }
+    ]
+  },
+  "meta": {
+    "request_id": "00000000-0000-4000-8000-000000003001"
+  }
+}

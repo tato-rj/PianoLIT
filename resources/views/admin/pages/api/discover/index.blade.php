@@ -3,7 +3,7 @@
 @section('content')
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'code', 'title' => 'Discover', 'subtitle' => 'Preview and refresh the web app’s free pick and featured composers.'])
+    @include('admin.components.page.title', ['icon' => 'code', 'title' => 'Discover', 'subtitle' => 'Preview the web app’s free pick and featured composers.'])
 
     <div class="admin-discover">
       <div class="admin-discover-controls">
@@ -13,11 +13,11 @@
             $refreshAt = preg_match('/^app\.discover-(\d+)$/', $key ?? '', $matches)
                 ? carbon((int) $matches[1])->addDay() : null;
           @endphp
-          <p class="admin-discover-refresh-time">{{ $refreshAt && $refreshAt->isFuture() ? 'Auto refresh ' . $refreshAt->diffForHumans() : 'Refreshes automatically each day' }}</p>
+          <p class="admin-discover-refresh-time">{{ $refreshAt && $refreshAt->isFuture() ? 'Discover refreshes ' . $refreshAt->diffForHumans() : 'Discover refreshes daily' }}</p>
         </div>
         <form method="POST" action="{{route('redis.update')}}">
           @csrf
-          <button type="submit" class="btn btn-outline-success btn-sm">@icon('refresh-cw', ['mr' => 1])Refresh discover page</button>
+          <button type="submit" class="btn btn-outline-success btn-sm">@icon('refresh-cw', ['mr' => 1])Refresh Discover and Collections</button>
         </form>
       </div>
 

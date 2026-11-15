@@ -350,6 +350,57 @@ class WebAppCollectionsTest extends ReviewTestCase
         }
     }
 
+    /** @dataProvider refreshCatalogSizes */
+    public function test_discover_refresh_rotates_both_collection_sections($size)
+    {
+        $ids = [];
+        for ($index = 0; $index < $size; $index++) {
+            $ids[] = $this->playlist('Collection '.$index)->id;
+        }
+
+        Redis::shouldReceive('set')->with('app.discover', \Mockery::pattern('/^app\.discover-\d+$/'))->once()->andReturn(true);
+        Redis::shouldReceive('set')->with('app.explore', \Mockery::pattern('/^app\.explore-\d+$/'))->once()->andReturn(true);
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+
+        $before = $this->get(route('webapp.playlists'))->assertOk();
+        $oldFeatured = data_get($before->viewData('featured'), 'playlist.id');
+        $oldSuggestions = $before->viewData('inspiration')->pluck('playlist.id')->all();
+
+        $discoverUrl = route('admin.api.discover');
+        $refreshUrl = route('redis.update', [], false);
+        $this->get($discoverUrl)->assertOk()
+            ->assertSee('action="'.route('redis.update').'"', false)
+            ->assertSee('Refresh Discover and Collections');
+        $this->from($discoverUrl)->post($refreshUrl)
+            ->assertRedirect($discoverUrl)
+            ->assertSessionHas('status', 'Discover and Collections have been refreshed.');
+
+        $after = $this->get(route('webapp.playlists'))->assertOk();
+        $featured = data_get($after->viewData('featured'), 'playlist.id');
+        $suggestions = $after->viewData('inspiration')->pluck('playlist.id')->all();
+        $this->assertCount(min(3, $size), array_unique($suggestions));
+        $this->assertEmpty(array_diff($suggestions, $ids));
+
+        if ($size > 1) {
+            $this->assertContains($featured, $ids);
+            $this->assertNotSame($oldFeatured, $featured);
+            $this->assertNotSame($oldSuggestions, $suggestions);
+            $this->assertCount(min(3, max(0, $size - 3)), array_diff($suggestions, $oldSuggestions));
+        } else {
+            $this->assertSame($ids[0] ?? null, $featured);
+            $this->assertSame($ids, $suggestions);
+        }
+
+        $reloaded = $this->get(route('webapp.playlists'))->assertOk();
+        $this->assertSame($featured, data_get($reloaded->viewData('featured'), 'playlist.id'));
+        $this->assertSame($suggestions, $reloaded->viewData('inspiration')->pluck('playlist.id')->all());
+    }
+
+    public static function refreshCatalogSizes(): array
+    {
+        return [[0], [1], [3], [4], [6]];
+    }
+
     public function test_withdrawn_cached_collections_are_replaced_immediately()
     {
         foreach (['One', 'Two', 'Three', 'Four', 'Five'] as $name) $this->playlist($name);

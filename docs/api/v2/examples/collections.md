@@ -84,6 +84,30 @@ The Collections performance flag represents a saved PianoLIT performance
 video with a nonempty URL. External score purchase links and playback access
 come from the piece detail. Collections responses contain no original media URLs.
 
+## Piece duration
+
+Read each row's `duration_seconds` as an optional integer. It is the duration of
+the full audio recording, rounded down to whole seconds. The same field appears
+in v2 piece summaries on Discover and in the piece detail header. Hide the
+duration label when the value is null or missing. Duration is available with the
+row's other display metadata even when playback access is locked.
+
+```swift
+let durationLabel = piece.duration_seconds.map {
+    String(format: "%d:%02d", $0 / 60, $0 % 60)
+}
+```
+
+A value of `274` displays as `4:34`.
+
+For deployment, install `ffprobe` on the application host and make it available
+to PHP. Within the release window, deploy the model with the hidden storage
+field and run `2026_11_14_220000_add_audio_duration_to_pieces.php`. After the
+migration, run `php artisan pieces:backfill-audio-durations` on the host with the
+public recording files. The command skips measured recordings and reports the
+piece IDs it could not measure. Run it again after restoring any missing or
+unreadable recordings. New full audio uploads are measured when saved.
+
 ## Access and navigation
 
 - Every signed-in account can see all collection cards, including locked cards

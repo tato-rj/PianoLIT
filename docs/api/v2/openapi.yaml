@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: PianoLIT mobile API v2 — Discover, Collections, piece detail, favorite folders and Find my match
-  version: 1.5.0
+  version: 1.6.0
   description: Independent v2 login and Discover. Web and v2 share App\Services\Discover\Feed.
     Legacy /api routes remain supported indefinitely. Deployment/native verification
     is recorded in the manifest; downloading this specification does not authenticate
@@ -20,7 +20,7 @@ servers:
 security:
 - MobileBearer: []
 x-handoff:
-  revision: 2026-11-11.2
+  revision: 2026-11-14.1
   status: draft
   implemented: true
   native_integration: pending
@@ -61,7 +61,8 @@ paths:
         regular collection gets its metadata and full count with access
         membership_required and pieces []. Each row is a Discover PieceSummary.
         In Collections, media.performance describes a saved PianoLIT performance video
-        with a nonempty URL. Fetch /pieces/{piece} for actual media authorization.
+        with a nonempty URL. duration_seconds gives the full recording's duration for
+        display. Fetch /pieces/{piece} for actual media authorization.
         No analytics or history event is written.
       parameters:
       - name: collection
@@ -1497,6 +1498,12 @@ components:
           type: boolean
         is_free_pick:
           type: boolean
+        duration_seconds:
+          type: integer
+          minimum: 0
+          nullable: true
+          description: Full recording duration in seconds, rounded down. Null when unavailable. Older API versions may omit the field.
+          example: 274
         media:
           type: object
           required:

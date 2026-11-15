@@ -5,6 +5,7 @@ namespace App;
 use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Builder;
 use App\Traits\{PieceExtraAttributes, PieceStatus, HasMedia};
+use App\Services\Pieces\AudioDuration;
 use Illuminate\Http\Request;
 use App\Tools\Cropper;
 
@@ -14,7 +15,8 @@ class Piece extends PianoLit
     
     protected $folder = 'pieces';
     protected $withCount = ['views', 'tags', 'favorites', 'tutorials'];
-    protected $casts = ['is_free' => 'boolean', 'is_attributed_to' => 'boolean', 'show_on_tour' => 'boolean'];
+    protected $casts = ['is_free' => 'boolean', 'is_attributed_to' => 'boolean', 'show_on_tour' => 'boolean', 'audio_duration_seconds' => 'integer'];
+    protected $hidden = ['audio_duration_seconds'];
     protected $dates = ['highlighted_at'];
     protected $with = ['composer'];
     protected $appends = [
@@ -54,6 +56,14 @@ class Piece extends PianoLit
     public static function boot()
     {
         parent::boot();
+
+        self::saving(function (Piece $piece) {
+            if ($piece->isDirty('audio_path') && ($piece->audio_path || $piece->exists)) {
+                $piece->audio_duration_seconds = $piece->audio_path
+                    ? app(AudioDuration::class)->seconds($piece->audio_path)
+                    : null;
+            }
+        });
 
         self::deleting(function($piece) {
             $piece->tags()->detach();

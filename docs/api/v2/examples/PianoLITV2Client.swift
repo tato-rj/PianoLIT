@@ -104,6 +104,7 @@ struct V2Piece: Decodable, Sendable {
     let difficulty: String?
     let is_new: Bool
     let is_free_pick: Bool
+    let duration_seconds: Int?
     let media: Media
     let target: V2Target
     // Availability and is_free_pick are display metadata, not playback grants.

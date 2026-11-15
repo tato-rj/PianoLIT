@@ -23,6 +23,7 @@ access:
   piece: Every visible row can open its v2 piece metadata. The piece endpoint independently decides native media access.
 integration:
   summary: Reuse Discover PieceSummary. Collections media.performance indicates a saved performance video with a nonempty URL.
+  duration: Format duration_seconds as minutes and two-digit seconds. Hide the label when the value is null or missing. Deployment and backfill are pending.
   follow_a_path: Omit this legacy flow in v2. The installed legacy app continues to use /api/playlists/journey.
   analytics: No extra collection detail call or collection event. Existing confirmed piece-open history is separate.
   examples: examples/collections.md

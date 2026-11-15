@@ -1,5 +1,16 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-14 — Recording duration in iOS piece summaries (P3, complete locally)
+
+- The web Collections player reads the full recording duration from browser audio metadata. V2 now includes nullable `duration_seconds` in each piece summary, including collection rows. `Piece` measures new recordings when the full audio path changes. The backfill command measures existing recordings in batches. The new column is hidden from legacy serialization.
+- All 77 API v2 and piece-editor tests passed. The broader run passed 111 of 115 tests. The four failures in playlist and publication checks also occurred on the original revision. Verified MP3 and M4A probing, missing recordings, the Swift decoder and the OpenAPI handoff. Production migration, backfill and iOS display wiring are pending. See [Collections for iOS](api/v2/examples/collections.md#piece-duration).
+
+### 2026-11-14 — Refresh Featured and Suggested Collections from Discover (P3, complete locally)
+
+- The admin Discover button previously rotated the Discover and Explore cache prefixes while Collections kept its separate weekly selection. The same form now reads **Refresh Discover and Collections**. `Admin\RedisController` also rotates the shared selection in `Collections\Catalog` and confirms the refresh in the page alert.
+- The featured collection changes when an eligible alternative exists. Suggestions prioritize previously absent collections and change order when the catalog fits in the row. Web and iOS v2 read the same saved selection. Weekly expiry and the scheduled Free Pick refresh keep their existing behavior. The change requires no migration or asset rebuild.
+- Five new route-level cases pass for empty, single-entry, and larger catalogs. The broader run had five failures in admin routing, the piece editor, and publication checks. All five also fail on the original revision. Production deployment is pending.
+
 ### 2026-11-12 — Remove Piece details from the About tab (P3, complete locally)
 
 - Removed the Piece details section shown in Arthur’s screenshot and the unused facts array in `PublicRepertoire`. The page still includes the Level guide, recommendations and Timeline tab. The existing composition metadata still supplies the musical key. The edit is limited to the browser piece page and requires no asset build or migration.

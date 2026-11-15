@@ -1,5 +1,10 @@
 # PianoLIT iOS v2 connection
 
+Revision **2026-11-14.1** adds `duration_seconds` to v2 piece summaries. It
+gives Collections rows the duration of the full recording in whole seconds.
+Production deployment and catalogue backfill are pending.
+See [Collections integration](examples/collections.md#piece-duration).
+
 Revision **2026-11-11.2** adds book series, weekly suggestion IDs and category
 filters to the existing bearer-authenticated Collections catalog. Use
 `collections()` and `collection(id:)` in the Swift example. The original
@@ -170,7 +175,7 @@ The Swift developer can fetch hash-verified files with:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-11-11.2 --output /path/to/ios-repository/BackendHandoff
+  --revision 2026-11-14.1 --output /path/to/ios-repository/BackendHandoff
 ```
 
 This fetch copies documentation/examples, not an installed network connection.

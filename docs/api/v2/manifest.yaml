@@ -1,6 +1,6 @@
 schema_version: 1
-revision: 2026-11-11.2
-updated_on: '2026-11-11'
+revision: 2026-11-14.1
+updated_on: '2026-11-14'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -27,7 +27,8 @@ runtime:
     no history or analytics writes. Synthetic account and token rows were rolled back.
     Revision 2026-11-11.2 was also production verified for book order, cover assets,
     availability, weekly suggestion order, catalog access and ordered category
-    assignments. Native acceptance remains pending.'
+    assignments. The new piece duration field is implemented locally. Production
+    deployment and duration backfill are pending. Native acceptance remains pending.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -147,6 +148,11 @@ consumer_rules:
   same v2 bearer. See examples/collections.md for the membership lock, piece
   navigation and removed Follow a path flow.
 changelog:
+- revision: 2026-11-14.1
+  changes:
+  - Added nullable duration_seconds to v2 piece summaries, including Collections rows.
+  - Measured full recordings at upload and added a command to backfill existing recordings.
+  - Updated the Swift decoder, OpenAPI contract and Collections detail fixture.
 - revision: 2026-11-11.2
   changes:
   - Extended GET /collections with ordered book_series, suggested_collection_ids and categories.

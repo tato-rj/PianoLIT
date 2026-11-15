@@ -103,6 +103,7 @@ class ApiV2DiscoverTest extends ReviewTestCase
     {
         app(RecentlyViewedPieces::class)->record($this->user, $this->piece);
         $cached = serialize(Cache::get('app.discover'.Api::WEB_DISCOVER_CACHE_SUFFIX));
+        $this->piece->fresh()->updateQuietly(['audio_path' => 'fixtures/full.mp3', 'audio_duration_seconds' => 274]);
         $response = $this->feed(['user_id' => $this->other->id])->assertOk()->assertHeader('Cache-Control', 'no-store, private')->assertHeaderMissing('Set-Cookie');
         if ($fixture = getenv('API_V2_DISCOVER_FIXTURE')) file_put_contents($fixture, json_encode($response->json(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
         $sections = collect($response->json('data.sections'))->keyBy('id');
@@ -120,6 +121,8 @@ class ApiV2DiscoverTest extends ReviewTestCase
         $card = $sections['latest_pieces']['items'][0];
         $this->assertSame($rows->firstWhere('title', 'Latest pieces')['content']->first()->discover_artwork_url, $card['artwork_url']);
         $this->assertSame('piece', $card['target']['kind']);
+        $this->assertSame(274, $card['duration_seconds']);
+        $this->assertTrue($card['media']['audio']);
         $this->assertArrayHasKey('performance', $card['media']);
         $this->assertFalse($card['media']['performance'], 'The compatibility field cannot advertise retired user submissions.');
         foreach (['source', 'user_id', 'score', 'audio', 'password', 'favorites', 'webapp_has_synthesia'] as $field) $this->assertArrayNotHasKey($field, $card);

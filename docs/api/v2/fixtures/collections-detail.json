@@ -37,6 +37,7 @@
         "difficulty": "intermediate",
         "is_new": false,
         "is_free_pick": false,
+        "duration_seconds": 274,
         "media": {
           "performance": true,
           "synthesia": false,
@@ -77,6 +78,7 @@
         "difficulty": "intermediate",
         "is_new": false,
         "is_free_pick": false,
+        "duration_seconds": 423,
         "media": {
           "performance": false,
           "synthesia": true,
@@ -117,6 +119,7 @@
         "difficulty": null,
         "is_new": false,
         "is_free_pick": false,
+        "duration_seconds": null,
         "media": {
           "performance": false,
           "synthesia": true,
@@ -157,6 +160,7 @@
         "difficulty": "intermediate",
         "is_new": false,
         "is_free_pick": false,
+        "duration_seconds": null,
         "media": {
           "performance": false,
           "synthesia": true,
@@ -197,6 +201,7 @@
         "difficulty": "intermediate",
         "is_new": false,
         "is_free_pick": false,
+        "duration_seconds": null,
         "media": {
           "performance": false,
           "synthesia": true,

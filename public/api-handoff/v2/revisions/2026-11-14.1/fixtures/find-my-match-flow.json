@@ -1,0 +1,3081 @@
+{
+  "synthetic": true,
+  "exchanges": [
+    {
+      "request": {
+        "method": "POST",
+        "path": "/match-tours",
+        "body": {
+          "request_id": "11111111-1111-4111-8111-000000000001"
+        }
+      },
+      "response": {
+        "data": {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "expires_at": "2026-11-03T19:00:00Z",
+          "revision": 0,
+          "status": "in_progress",
+          "progress": {
+            "current_step": 1,
+            "round": null,
+            "current_question": "level",
+            "initial_library_total": {
+              "value": 16,
+              "accuracy": "exact"
+            },
+            "remaining_pieces": {
+              "value": 16,
+              "accuracy": "exact"
+            }
+          },
+          "answers": {},
+          "questions": {
+            "level": {
+              "choices": [
+                {
+                  "value": "elementary",
+                  "label": "Elementary",
+                  "description": "Simple melodies and rhythms",
+                  "piece": {
+                    "id": "9",
+                    "title": "Fixture piece 8",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "beginner",
+                  "label": "Beginner",
+                  "description": "Hands together and basic chords",
+                  "piece": {
+                    "id": "6",
+                    "title": "Fixture piece 5",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "intermediate",
+                  "label": "Intermediate",
+                  "description": "Independent hands, shaping and pedal",
+                  "piece": {
+                    "id": "11",
+                    "title": "Fixture piece 10",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "description": "Demanding technique and control",
+                  "piece": {
+                    "id": "12",
+                    "title": "Fixture piece 11",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                }
+              ]
+            },
+            "listening": {
+              "choices": [
+                {
+                  "id": "15",
+                  "title": "Fixture piece 14",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "16",
+                  "title": "Fixture piece 15",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "8",
+                  "title": "Fixture piece 7",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "4",
+                  "title": "Fixture piece 3",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "reading-1": {
+              "id": "3",
+              "title": "Fixture piece 2",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "reading-2": null,
+            "taste-1": {
+              "choices": [
+                {
+                  "id": "11",
+                  "title": "Fixture piece 10",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "12",
+                  "title": "Fixture piece 11",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "taste-2": {
+              "choices": [
+                {
+                  "id": "9",
+                  "title": "Fixture piece 8",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "13",
+                  "title": "Fixture piece 12",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "mood": {
+              "choices": [
+                {
+                  "value": "calm",
+                  "label": "Calm & peaceful",
+                  "icon": "moon"
+                },
+                {
+                  "value": "energetic",
+                  "label": "Energetic",
+                  "icon": "sun"
+                },
+                {
+                  "value": "romantic",
+                  "label": "Romantic",
+                  "icon": "heart"
+                },
+                {
+                  "value": "joyful",
+                  "label": "Joyful",
+                  "icon": "sprout"
+                },
+                {
+                  "value": "dramatic",
+                  "label": "Dramatic",
+                  "icon": "cloud"
+                },
+                {
+                  "value": "mysterious",
+                  "label": "Mysterious",
+                  "icon": "mountain"
+                },
+                {
+                  "value": "playful",
+                  "label": "Playful",
+                  "icon": "sparkles"
+                },
+                {
+                  "value": "reflective",
+                  "label": "Reflective",
+                  "icon": "waves"
+                },
+                {
+                  "value": "open",
+                  "label": "Open to anything",
+                  "icon": "sparkles"
+                }
+              ]
+            }
+          },
+          "result": null
+        },
+        "meta": {
+          "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-000000000001"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "path": "/match-tours/33333333-3333-4333-8333-333333333333/answers/level",
+        "body": {
+          "request_id": "11111111-1111-4111-8111-000000000002",
+          "revision": 0,
+          "value": "beginner"
+        }
+      },
+      "response": {
+        "data": {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "expires_at": "2026-11-03T19:00:00Z",
+          "revision": 1,
+          "status": "in_progress",
+          "progress": {
+            "current_step": 2,
+            "round": null,
+            "current_question": "listening",
+            "initial_library_total": {
+              "value": 16,
+              "accuracy": "exact"
+            },
+            "remaining_pieces": {
+              "value": 12,
+              "accuracy": "estimated"
+            }
+          },
+          "answers": {
+            "level": "beginner"
+          },
+          "questions": {
+            "level": {
+              "choices": [
+                {
+                  "value": "elementary",
+                  "label": "Elementary",
+                  "description": "Simple melodies and rhythms",
+                  "piece": {
+                    "id": "9",
+                    "title": "Fixture piece 8",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "beginner",
+                  "label": "Beginner",
+                  "description": "Hands together and basic chords",
+                  "piece": {
+                    "id": "6",
+                    "title": "Fixture piece 5",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "intermediate",
+                  "label": "Intermediate",
+                  "description": "Independent hands, shaping and pedal",
+                  "piece": {
+                    "id": "11",
+                    "title": "Fixture piece 10",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "description": "Demanding technique and control",
+                  "piece": {
+                    "id": "12",
+                    "title": "Fixture piece 11",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                }
+              ]
+            },
+            "listening": {
+              "choices": [
+                {
+                  "id": "15",
+                  "title": "Fixture piece 14",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "16",
+                  "title": "Fixture piece 15",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "8",
+                  "title": "Fixture piece 7",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "4",
+                  "title": "Fixture piece 3",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "reading-1": {
+              "id": "3",
+              "title": "Fixture piece 2",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "reading-2": null,
+            "taste-1": {
+              "choices": [
+                {
+                  "id": "11",
+                  "title": "Fixture piece 10",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "12",
+                  "title": "Fixture piece 11",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "taste-2": {
+              "choices": [
+                {
+                  "id": "9",
+                  "title": "Fixture piece 8",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "13",
+                  "title": "Fixture piece 12",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "mood": {
+              "choices": [
+                {
+                  "value": "calm",
+                  "label": "Calm & peaceful",
+                  "icon": "moon"
+                },
+                {
+                  "value": "energetic",
+                  "label": "Energetic",
+                  "icon": "sun"
+                },
+                {
+                  "value": "romantic",
+                  "label": "Romantic",
+                  "icon": "heart"
+                },
+                {
+                  "value": "joyful",
+                  "label": "Joyful",
+                  "icon": "sprout"
+                },
+                {
+                  "value": "dramatic",
+                  "label": "Dramatic",
+                  "icon": "cloud"
+                },
+                {
+                  "value": "mysterious",
+                  "label": "Mysterious",
+                  "icon": "mountain"
+                },
+                {
+                  "value": "playful",
+                  "label": "Playful",
+                  "icon": "sparkles"
+                },
+                {
+                  "value": "reflective",
+                  "label": "Reflective",
+                  "icon": "waves"
+                },
+                {
+                  "value": "open",
+                  "label": "Open to anything",
+                  "icon": "sparkles"
+                }
+              ]
+            }
+          },
+          "result": null
+        },
+        "meta": {
+          "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-000000000002"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "path": "/match-tours/33333333-3333-4333-8333-333333333333/answers/listening",
+        "body": {
+          "request_id": "11111111-1111-4111-8111-000000000003",
+          "revision": 1,
+          "value": "15"
+        }
+      },
+      "response": {
+        "data": {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "expires_at": "2026-11-03T19:00:00Z",
+          "revision": 2,
+          "status": "in_progress",
+          "progress": {
+            "current_step": 3,
+            "round": 1,
+            "current_question": "reading-1",
+            "initial_library_total": {
+              "value": 16,
+              "accuracy": "exact"
+            },
+            "remaining_pieces": {
+              "value": 8,
+              "accuracy": "estimated"
+            }
+          },
+          "answers": {
+            "level": "beginner",
+            "listening": "15"
+          },
+          "questions": {
+            "level": {
+              "choices": [
+                {
+                  "value": "elementary",
+                  "label": "Elementary",
+                  "description": "Simple melodies and rhythms",
+                  "piece": {
+                    "id": "9",
+                    "title": "Fixture piece 8",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "beginner",
+                  "label": "Beginner",
+                  "description": "Hands together and basic chords",
+                  "piece": {
+                    "id": "6",
+                    "title": "Fixture piece 5",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "intermediate",
+                  "label": "Intermediate",
+                  "description": "Independent hands, shaping and pedal",
+                  "piece": {
+                    "id": "11",
+                    "title": "Fixture piece 10",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "description": "Demanding technique and control",
+                  "piece": {
+                    "id": "12",
+                    "title": "Fixture piece 11",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                }
+              ]
+            },
+            "listening": {
+              "choices": [
+                {
+                  "id": "15",
+                  "title": "Fixture piece 14",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "16",
+                  "title": "Fixture piece 15",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "8",
+                  "title": "Fixture piece 7",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "4",
+                  "title": "Fixture piece 3",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "reading-1": {
+              "id": "3",
+              "title": "Fixture piece 2",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "reading-2": null,
+            "taste-1": {
+              "choices": [
+                {
+                  "id": "11",
+                  "title": "Fixture piece 10",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "12",
+                  "title": "Fixture piece 11",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "taste-2": {
+              "choices": [
+                {
+                  "id": "9",
+                  "title": "Fixture piece 8",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "13",
+                  "title": "Fixture piece 12",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "mood": {
+              "choices": [
+                {
+                  "value": "calm",
+                  "label": "Calm & peaceful",
+                  "icon": "moon"
+                },
+                {
+                  "value": "energetic",
+                  "label": "Energetic",
+                  "icon": "sun"
+                },
+                {
+                  "value": "romantic",
+                  "label": "Romantic",
+                  "icon": "heart"
+                },
+                {
+                  "value": "joyful",
+                  "label": "Joyful",
+                  "icon": "sprout"
+                },
+                {
+                  "value": "dramatic",
+                  "label": "Dramatic",
+                  "icon": "cloud"
+                },
+                {
+                  "value": "mysterious",
+                  "label": "Mysterious",
+                  "icon": "mountain"
+                },
+                {
+                  "value": "playful",
+                  "label": "Playful",
+                  "icon": "sparkles"
+                },
+                {
+                  "value": "reflective",
+                  "label": "Reflective",
+                  "icon": "waves"
+                },
+                {
+                  "value": "open",
+                  "label": "Open to anything",
+                  "icon": "sparkles"
+                }
+              ]
+            }
+          },
+          "result": null
+        },
+        "meta": {
+          "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-000000000003"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "path": "/match-tours/33333333-3333-4333-8333-333333333333/answers/reading-1",
+        "body": {
+          "request_id": "11111111-1111-4111-8111-000000000004",
+          "revision": 2,
+          "value": "easy"
+        }
+      },
+      "response": {
+        "data": {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "expires_at": "2026-11-03T19:00:00Z",
+          "revision": 3,
+          "status": "in_progress",
+          "progress": {
+            "current_step": 3,
+            "round": 2,
+            "current_question": "reading-2",
+            "initial_library_total": {
+              "value": 16,
+              "accuracy": "exact"
+            },
+            "remaining_pieces": {
+              "value": 8,
+              "accuracy": "estimated"
+            }
+          },
+          "answers": {
+            "level": "beginner",
+            "listening": "15",
+            "reading-1": "easy"
+          },
+          "questions": {
+            "level": {
+              "choices": [
+                {
+                  "value": "elementary",
+                  "label": "Elementary",
+                  "description": "Simple melodies and rhythms",
+                  "piece": {
+                    "id": "9",
+                    "title": "Fixture piece 8",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "beginner",
+                  "label": "Beginner",
+                  "description": "Hands together and basic chords",
+                  "piece": {
+                    "id": "6",
+                    "title": "Fixture piece 5",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "intermediate",
+                  "label": "Intermediate",
+                  "description": "Independent hands, shaping and pedal",
+                  "piece": {
+                    "id": "11",
+                    "title": "Fixture piece 10",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "description": "Demanding technique and control",
+                  "piece": {
+                    "id": "12",
+                    "title": "Fixture piece 11",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                }
+              ]
+            },
+            "listening": {
+              "choices": [
+                {
+                  "id": "15",
+                  "title": "Fixture piece 14",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "16",
+                  "title": "Fixture piece 15",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "8",
+                  "title": "Fixture piece 7",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "4",
+                  "title": "Fixture piece 3",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "reading-1": {
+              "id": "3",
+              "title": "Fixture piece 2",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "reading-2": {
+              "id": "4",
+              "title": "Fixture piece 3",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "taste-1": {
+              "choices": [
+                {
+                  "id": "11",
+                  "title": "Fixture piece 10",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "12",
+                  "title": "Fixture piece 11",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "taste-2": {
+              "choices": [
+                {
+                  "id": "9",
+                  "title": "Fixture piece 8",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "13",
+                  "title": "Fixture piece 12",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "mood": {
+              "choices": [
+                {
+                  "value": "calm",
+                  "label": "Calm & peaceful",
+                  "icon": "moon"
+                },
+                {
+                  "value": "energetic",
+                  "label": "Energetic",
+                  "icon": "sun"
+                },
+                {
+                  "value": "romantic",
+                  "label": "Romantic",
+                  "icon": "heart"
+                },
+                {
+                  "value": "joyful",
+                  "label": "Joyful",
+                  "icon": "sprout"
+                },
+                {
+                  "value": "dramatic",
+                  "label": "Dramatic",
+                  "icon": "cloud"
+                },
+                {
+                  "value": "mysterious",
+                  "label": "Mysterious",
+                  "icon": "mountain"
+                },
+                {
+                  "value": "playful",
+                  "label": "Playful",
+                  "icon": "sparkles"
+                },
+                {
+                  "value": "reflective",
+                  "label": "Reflective",
+                  "icon": "waves"
+                },
+                {
+                  "value": "open",
+                  "label": "Open to anything",
+                  "icon": "sparkles"
+                }
+              ]
+            }
+          },
+          "result": null
+        },
+        "meta": {
+          "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-000000000004"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "path": "/match-tours/33333333-3333-4333-8333-333333333333/answers/reading-2",
+        "body": {
+          "request_id": "11111111-1111-4111-8111-000000000005",
+          "revision": 3,
+          "value": "easy"
+        }
+      },
+      "response": {
+        "data": {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "expires_at": "2026-11-03T19:00:00Z",
+          "revision": 4,
+          "status": "in_progress",
+          "progress": {
+            "current_step": 4,
+            "round": 1,
+            "current_question": "taste-1",
+            "initial_library_total": {
+              "value": 16,
+              "accuracy": "exact"
+            },
+            "remaining_pieces": {
+              "value": 3,
+              "accuracy": "estimated"
+            }
+          },
+          "answers": {
+            "level": "beginner",
+            "listening": "15",
+            "reading-1": "easy",
+            "reading-2": "easy"
+          },
+          "questions": {
+            "level": {
+              "choices": [
+                {
+                  "value": "elementary",
+                  "label": "Elementary",
+                  "description": "Simple melodies and rhythms",
+                  "piece": {
+                    "id": "9",
+                    "title": "Fixture piece 8",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "beginner",
+                  "label": "Beginner",
+                  "description": "Hands together and basic chords",
+                  "piece": {
+                    "id": "6",
+                    "title": "Fixture piece 5",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "intermediate",
+                  "label": "Intermediate",
+                  "description": "Independent hands, shaping and pedal",
+                  "piece": {
+                    "id": "11",
+                    "title": "Fixture piece 10",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "description": "Demanding technique and control",
+                  "piece": {
+                    "id": "12",
+                    "title": "Fixture piece 11",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                }
+              ]
+            },
+            "listening": {
+              "choices": [
+                {
+                  "id": "15",
+                  "title": "Fixture piece 14",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "16",
+                  "title": "Fixture piece 15",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "8",
+                  "title": "Fixture piece 7",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "4",
+                  "title": "Fixture piece 3",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "reading-1": {
+              "id": "3",
+              "title": "Fixture piece 2",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "reading-2": {
+              "id": "4",
+              "title": "Fixture piece 3",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "taste-1": {
+              "choices": [
+                {
+                  "id": "11",
+                  "title": "Fixture piece 10",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "12",
+                  "title": "Fixture piece 11",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "taste-2": {
+              "choices": [
+                {
+                  "id": "9",
+                  "title": "Fixture piece 8",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "13",
+                  "title": "Fixture piece 12",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "mood": {
+              "choices": [
+                {
+                  "value": "calm",
+                  "label": "Calm & peaceful",
+                  "icon": "moon"
+                },
+                {
+                  "value": "energetic",
+                  "label": "Energetic",
+                  "icon": "sun"
+                },
+                {
+                  "value": "romantic",
+                  "label": "Romantic",
+                  "icon": "heart"
+                },
+                {
+                  "value": "joyful",
+                  "label": "Joyful",
+                  "icon": "sprout"
+                },
+                {
+                  "value": "dramatic",
+                  "label": "Dramatic",
+                  "icon": "cloud"
+                },
+                {
+                  "value": "mysterious",
+                  "label": "Mysterious",
+                  "icon": "mountain"
+                },
+                {
+                  "value": "playful",
+                  "label": "Playful",
+                  "icon": "sparkles"
+                },
+                {
+                  "value": "reflective",
+                  "label": "Reflective",
+                  "icon": "waves"
+                },
+                {
+                  "value": "open",
+                  "label": "Open to anything",
+                  "icon": "sparkles"
+                }
+              ]
+            }
+          },
+          "result": null
+        },
+        "meta": {
+          "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-000000000005"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "path": "/match-tours/33333333-3333-4333-8333-333333333333/answers/taste-1",
+        "body": {
+          "request_id": "11111111-1111-4111-8111-000000000006",
+          "revision": 4,
+          "value": "11"
+        }
+      },
+      "response": {
+        "data": {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "expires_at": "2026-11-03T19:00:00Z",
+          "revision": 5,
+          "status": "in_progress",
+          "progress": {
+            "current_step": 4,
+            "round": 2,
+            "current_question": "taste-2",
+            "initial_library_total": {
+              "value": 16,
+              "accuracy": "exact"
+            },
+            "remaining_pieces": {
+              "value": 3,
+              "accuracy": "estimated"
+            }
+          },
+          "answers": {
+            "level": "beginner",
+            "listening": "15",
+            "reading-1": "easy",
+            "reading-2": "easy",
+            "taste-1": "11"
+          },
+          "questions": {
+            "level": {
+              "choices": [
+                {
+                  "value": "elementary",
+                  "label": "Elementary",
+                  "description": "Simple melodies and rhythms",
+                  "piece": {
+                    "id": "9",
+                    "title": "Fixture piece 8",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "beginner",
+                  "label": "Beginner",
+                  "description": "Hands together and basic chords",
+                  "piece": {
+                    "id": "6",
+                    "title": "Fixture piece 5",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "intermediate",
+                  "label": "Intermediate",
+                  "description": "Independent hands, shaping and pedal",
+                  "piece": {
+                    "id": "11",
+                    "title": "Fixture piece 10",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "description": "Demanding technique and control",
+                  "piece": {
+                    "id": "12",
+                    "title": "Fixture piece 11",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                }
+              ]
+            },
+            "listening": {
+              "choices": [
+                {
+                  "id": "15",
+                  "title": "Fixture piece 14",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "16",
+                  "title": "Fixture piece 15",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "8",
+                  "title": "Fixture piece 7",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "4",
+                  "title": "Fixture piece 3",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "reading-1": {
+              "id": "3",
+              "title": "Fixture piece 2",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "reading-2": {
+              "id": "4",
+              "title": "Fixture piece 3",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "taste-1": {
+              "choices": [
+                {
+                  "id": "11",
+                  "title": "Fixture piece 10",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "12",
+                  "title": "Fixture piece 11",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "taste-2": {
+              "choices": [
+                {
+                  "id": "9",
+                  "title": "Fixture piece 8",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "13",
+                  "title": "Fixture piece 12",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "mood": {
+              "choices": [
+                {
+                  "value": "calm",
+                  "label": "Calm & peaceful",
+                  "icon": "moon"
+                },
+                {
+                  "value": "energetic",
+                  "label": "Energetic",
+                  "icon": "sun"
+                },
+                {
+                  "value": "romantic",
+                  "label": "Romantic",
+                  "icon": "heart"
+                },
+                {
+                  "value": "joyful",
+                  "label": "Joyful",
+                  "icon": "sprout"
+                },
+                {
+                  "value": "dramatic",
+                  "label": "Dramatic",
+                  "icon": "cloud"
+                },
+                {
+                  "value": "mysterious",
+                  "label": "Mysterious",
+                  "icon": "mountain"
+                },
+                {
+                  "value": "playful",
+                  "label": "Playful",
+                  "icon": "sparkles"
+                },
+                {
+                  "value": "reflective",
+                  "label": "Reflective",
+                  "icon": "waves"
+                },
+                {
+                  "value": "open",
+                  "label": "Open to anything",
+                  "icon": "sparkles"
+                }
+              ]
+            }
+          },
+          "result": null
+        },
+        "meta": {
+          "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-000000000006"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "path": "/match-tours/33333333-3333-4333-8333-333333333333/answers/taste-2",
+        "body": {
+          "request_id": "11111111-1111-4111-8111-000000000007",
+          "revision": 5,
+          "value": null
+        }
+      },
+      "response": {
+        "data": {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "expires_at": "2026-11-03T19:00:00Z",
+          "revision": 6,
+          "status": "in_progress",
+          "progress": {
+            "current_step": 5,
+            "round": null,
+            "current_question": "mood",
+            "initial_library_total": {
+              "value": 16,
+              "accuracy": "exact"
+            },
+            "remaining_pieces": {
+              "value": 2,
+              "accuracy": "estimated"
+            }
+          },
+          "answers": {
+            "level": "beginner",
+            "listening": "15",
+            "reading-1": "easy",
+            "reading-2": "easy",
+            "taste-1": "11",
+            "taste-2": null
+          },
+          "questions": {
+            "level": {
+              "choices": [
+                {
+                  "value": "elementary",
+                  "label": "Elementary",
+                  "description": "Simple melodies and rhythms",
+                  "piece": {
+                    "id": "9",
+                    "title": "Fixture piece 8",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "beginner",
+                  "label": "Beginner",
+                  "description": "Hands together and basic chords",
+                  "piece": {
+                    "id": "6",
+                    "title": "Fixture piece 5",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "intermediate",
+                  "label": "Intermediate",
+                  "description": "Independent hands, shaping and pedal",
+                  "piece": {
+                    "id": "11",
+                    "title": "Fixture piece 10",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "description": "Demanding technique and control",
+                  "piece": {
+                    "id": "12",
+                    "title": "Fixture piece 11",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                }
+              ]
+            },
+            "listening": {
+              "choices": [
+                {
+                  "id": "15",
+                  "title": "Fixture piece 14",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "16",
+                  "title": "Fixture piece 15",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "8",
+                  "title": "Fixture piece 7",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "4",
+                  "title": "Fixture piece 3",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "reading-1": {
+              "id": "3",
+              "title": "Fixture piece 2",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "reading-2": {
+              "id": "4",
+              "title": "Fixture piece 3",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "taste-1": {
+              "choices": [
+                {
+                  "id": "11",
+                  "title": "Fixture piece 10",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "12",
+                  "title": "Fixture piece 11",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "taste-2": {
+              "choices": [
+                {
+                  "id": "9",
+                  "title": "Fixture piece 8",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "13",
+                  "title": "Fixture piece 12",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "mood": {
+              "choices": [
+                {
+                  "value": "calm",
+                  "label": "Calm & peaceful",
+                  "icon": "moon"
+                },
+                {
+                  "value": "energetic",
+                  "label": "Energetic",
+                  "icon": "sun"
+                },
+                {
+                  "value": "romantic",
+                  "label": "Romantic",
+                  "icon": "heart"
+                },
+                {
+                  "value": "joyful",
+                  "label": "Joyful",
+                  "icon": "sprout"
+                },
+                {
+                  "value": "dramatic",
+                  "label": "Dramatic",
+                  "icon": "cloud"
+                },
+                {
+                  "value": "mysterious",
+                  "label": "Mysterious",
+                  "icon": "mountain"
+                },
+                {
+                  "value": "playful",
+                  "label": "Playful",
+                  "icon": "sparkles"
+                },
+                {
+                  "value": "reflective",
+                  "label": "Reflective",
+                  "icon": "waves"
+                },
+                {
+                  "value": "open",
+                  "label": "Open to anything",
+                  "icon": "sparkles"
+                }
+              ]
+            }
+          },
+          "result": null
+        },
+        "meta": {
+          "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-000000000007"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "path": "/match-tours/33333333-3333-4333-8333-333333333333/answers/mood",
+        "body": {
+          "request_id": "11111111-1111-4111-8111-000000000008",
+          "revision": 6,
+          "value": "calm"
+        }
+      },
+      "response": {
+        "data": {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "expires_at": "2026-11-03T19:00:00Z",
+          "revision": 7,
+          "status": "ready",
+          "progress": {
+            "current_step": null,
+            "round": null,
+            "current_question": null,
+            "initial_library_total": {
+              "value": 16,
+              "accuracy": "exact"
+            },
+            "remaining_pieces": {
+              "value": 2,
+              "accuracy": "estimated"
+            }
+          },
+          "answers": {
+            "level": "beginner",
+            "listening": "15",
+            "reading-1": "easy",
+            "reading-2": "easy",
+            "taste-1": "11",
+            "taste-2": null,
+            "mood": "calm"
+          },
+          "questions": {
+            "level": {
+              "choices": [
+                {
+                  "value": "elementary",
+                  "label": "Elementary",
+                  "description": "Simple melodies and rhythms",
+                  "piece": {
+                    "id": "9",
+                    "title": "Fixture piece 8",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "beginner",
+                  "label": "Beginner",
+                  "description": "Hands together and basic chords",
+                  "piece": {
+                    "id": "6",
+                    "title": "Fixture piece 5",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "intermediate",
+                  "label": "Intermediate",
+                  "description": "Independent hands, shaping and pedal",
+                  "piece": {
+                    "id": "11",
+                    "title": "Fixture piece 10",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "description": "Demanding technique and control",
+                  "piece": {
+                    "id": "12",
+                    "title": "Fixture piece 11",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                }
+              ]
+            },
+            "listening": {
+              "choices": [
+                {
+                  "id": "15",
+                  "title": "Fixture piece 14",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "16",
+                  "title": "Fixture piece 15",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "8",
+                  "title": "Fixture piece 7",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "4",
+                  "title": "Fixture piece 3",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "reading-1": {
+              "id": "3",
+              "title": "Fixture piece 2",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "reading-2": {
+              "id": "4",
+              "title": "Fixture piece 3",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "taste-1": {
+              "choices": [
+                {
+                  "id": "11",
+                  "title": "Fixture piece 10",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "12",
+                  "title": "Fixture piece 11",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "taste-2": {
+              "choices": [
+                {
+                  "id": "9",
+                  "title": "Fixture piece 8",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "13",
+                  "title": "Fixture piece 12",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "mood": {
+              "choices": [
+                {
+                  "value": "calm",
+                  "label": "Calm & peaceful",
+                  "icon": "moon"
+                },
+                {
+                  "value": "energetic",
+                  "label": "Energetic",
+                  "icon": "sun"
+                },
+                {
+                  "value": "romantic",
+                  "label": "Romantic",
+                  "icon": "heart"
+                },
+                {
+                  "value": "joyful",
+                  "label": "Joyful",
+                  "icon": "sprout"
+                },
+                {
+                  "value": "dramatic",
+                  "label": "Dramatic",
+                  "icon": "cloud"
+                },
+                {
+                  "value": "mysterious",
+                  "label": "Mysterious",
+                  "icon": "mountain"
+                },
+                {
+                  "value": "playful",
+                  "label": "Playful",
+                  "icon": "sparkles"
+                },
+                {
+                  "value": "reflective",
+                  "label": "Reflective",
+                  "icon": "waves"
+                },
+                {
+                  "value": "open",
+                  "label": "Open to anything",
+                  "icon": "sparkles"
+                }
+              ]
+            }
+          },
+          "result": null
+        },
+        "meta": {
+          "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-000000000008"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/match-tours/33333333-3333-4333-8333-333333333333/result"
+      },
+      "response": {
+        "data": {
+          "id": "33333333-3333-4333-8333-333333333333",
+          "expires_at": "2026-11-03T19:00:00Z",
+          "revision": 8,
+          "status": "matched",
+          "progress": {
+            "current_step": null,
+            "round": null,
+            "current_question": null,
+            "initial_library_total": {
+              "value": 16,
+              "accuracy": "exact"
+            },
+            "remaining_pieces": {
+              "value": 1,
+              "accuracy": "exact"
+            }
+          },
+          "answers": {
+            "level": "beginner",
+            "listening": "15",
+            "reading-1": "easy",
+            "reading-2": "easy",
+            "taste-1": "11",
+            "taste-2": null,
+            "mood": "calm"
+          },
+          "questions": {
+            "level": {
+              "choices": [
+                {
+                  "value": "elementary",
+                  "label": "Elementary",
+                  "description": "Simple melodies and rhythms",
+                  "piece": {
+                    "id": "9",
+                    "title": "Fixture piece 8",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "beginner",
+                  "label": "Beginner",
+                  "description": "Hands together and basic chords",
+                  "piece": {
+                    "id": "6",
+                    "title": "Fixture piece 5",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "intermediate",
+                  "label": "Intermediate",
+                  "description": "Independent hands, shaping and pedal",
+                  "piece": {
+                    "id": "11",
+                    "title": "Fixture piece 10",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "description": "Demanding technique and control",
+                  "piece": {
+                    "id": "12",
+                    "title": "Fixture piece 11",
+                    "composer": {
+                      "id": "1",
+                      "name": "Fixture Composer",
+                      "short_name": "F. Composer",
+                      "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                    },
+                    "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                    "audio_preview": {
+                      "expires_at": "2026-11-03T17:15:00Z",
+                      "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                      "duration_seconds": 60
+                    }
+                  }
+                }
+              ]
+            },
+            "listening": {
+              "choices": [
+                {
+                  "id": "15",
+                  "title": "Fixture piece 14",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "16",
+                  "title": "Fixture piece 15",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "8",
+                  "title": "Fixture piece 7",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "4",
+                  "title": "Fixture piece 3",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "reading-1": {
+              "id": "3",
+              "title": "Fixture piece 2",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "reading-2": {
+              "id": "4",
+              "title": "Fixture piece 3",
+              "composer": "F. Composer",
+              "score_sample": {
+                "expires_at": "2026-11-03T17:15:00Z",
+                "excerpt_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/excerpt?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                "sample_url": "https://pianolit.com/api/v2/match-tour-media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/sample?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            },
+            "taste-1": {
+              "choices": [
+                {
+                  "id": "11",
+                  "title": "Fixture piece 10",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "12",
+                  "title": "Fixture piece 11",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "taste-2": {
+              "choices": [
+                {
+                  "id": "9",
+                  "title": "Fixture piece 8",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                },
+                {
+                  "id": "13",
+                  "title": "Fixture piece 12",
+                  "composer": {
+                    "id": "1",
+                    "name": "Fixture Composer",
+                    "short_name": "F. Composer",
+                    "portrait_url": "https://pianolit.com/storage/fixture.jpg"
+                  },
+                  "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+                  "audio_preview": {
+                    "expires_at": "2026-11-03T17:15:00Z",
+                    "audio_url": "https://pianolit.com/api/v2/match-tour-media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/audio?expires=1793726100&signature=0000000000000000000000000000000000000000000000000000000000000000",
+                    "duration_seconds": 60
+                  }
+                }
+              ]
+            },
+            "mood": {
+              "choices": [
+                {
+                  "value": "calm",
+                  "label": "Calm & peaceful",
+                  "icon": "moon"
+                },
+                {
+                  "value": "energetic",
+                  "label": "Energetic",
+                  "icon": "sun"
+                },
+                {
+                  "value": "romantic",
+                  "label": "Romantic",
+                  "icon": "heart"
+                },
+                {
+                  "value": "joyful",
+                  "label": "Joyful",
+                  "icon": "sprout"
+                },
+                {
+                  "value": "dramatic",
+                  "label": "Dramatic",
+                  "icon": "cloud"
+                },
+                {
+                  "value": "mysterious",
+                  "label": "Mysterious",
+                  "icon": "mountain"
+                },
+                {
+                  "value": "playful",
+                  "label": "Playful",
+                  "icon": "sparkles"
+                },
+                {
+                  "value": "reflective",
+                  "label": "Reflective",
+                  "icon": "waves"
+                },
+                {
+                  "value": "open",
+                  "label": "Open to anything",
+                  "icon": "sparkles"
+                }
+              ]
+            }
+          },
+          "result": {
+            "piece": {
+              "kind": "piece",
+              "id": "15",
+              "title": "Fixture piece 14",
+              "featured_title": "Fixture piece 14",
+              "subtitle": "F. Composer",
+              "catalogue": "B 54 No.5",
+              "composer": {
+                "kind": "composer",
+                "id": "1",
+                "name": "Fixture Composer",
+                "short_name": "F. Composer",
+                "portrait_url": "https://pianolit.com/storage/fixture.jpg",
+                "biography": "Quod aperiam natus est quo qui. Placeat in sit dolorem aut nemo iste saepe laboriosam.",
+                "piece_count": 16,
+                "target": {
+                  "kind": "composer_pieces",
+                  "id": "1",
+                  "query": null,
+                  "web_url": "https://my.pianolit.com/search?search=Fixture%20Composer&model=App%5CComposer"
+                }
+              },
+              "artwork_url": "https://pianolit.com/storage/fixture.jpg",
+              "difficulty": "intermediate",
+              "is_new": true,
+              "is_free_pick": false,
+              "media": {
+                "performance": false,
+                "synthesia": false,
+                "tutorial": true,
+                "audio": true,
+                "score": true
+              },
+              "target": {
+                "kind": "piece",
+                "id": "15",
+                "query": null,
+                "web_url": "https://my.pianolit.com/pieces/15"
+              }
+            },
+            "explanation": "It shares the calm character of the pieces you enjoyed. Its character fits your mood: calm & peaceful. Your playing level and sight-reading answers guided us toward intermediate repertoire."
+          }
+        },
+        "meta": {
+          "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-000000000009"
+        }
+      }
+    }
+  ],
+  "description": "Synthetic complete five-step flow captured from isolated backend tests. Origins and signatures canonicalized; these are not playable URLs or credentials."
+}
