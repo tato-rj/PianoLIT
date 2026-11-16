@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-15 — Remove the public catalogue and standalone search landing page
+
+- The November 11 web app SEO work introduced both pages and the two Discover links. Removed the `/pieces` listing route and view, the standalone search presentation, both Discover links and both sitemap entries. Bare HTML requests to `/search` redirect to the existing Explore search form. Search results, filters and fragments still use `/search`. Individual piece pages and the Collections link remain available.
+- All 39 focused PHP tests, both search JavaScript tests and the isolated production build checks passed. The five failures in the 116-test PHP run also reproduced on the original revision.
+
 ### 2026-11-14 — Use saved recording durations on my.pianolit (P3, complete locally)
 
 - Collections, favorites folders, the eScore picker and the shared audio player display the same saved duration as the iOS v2 API. Missing durations display as a dash. The playlist no longer loads media in the background to fill in labels. Playback metadata still provides seek bounds and section timing.

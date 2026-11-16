@@ -36,8 +36,6 @@
 </section>
 
 <nav class="d-flex flex-wrap justify-content-center gap-3 py-3" aria-label="More ways to browse piano repertoire">
-    <a href="{{ route('webapp.pieces.index') }}">Browse all piano pieces</a>
-    <a href="{{ route('webapp.search.results') }}">Search the repertoire</a>
     <a href="{{ route('webapp.playlists') }}">Piano collections</a>
 </nav>
 

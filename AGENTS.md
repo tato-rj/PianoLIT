@@ -275,6 +275,7 @@ Use `@icon('pianolit')` for the PianoLIT web app wherever a compact platform ico
 
 ## Working rules
 
+- Create public-facing pages or add public navigation links only when Arthur explicitly requests them. This also applies to SEO work.
 - Check `git status` first; preserve unrelated user changes. Do not edit `.env`, expose credentials, or execute maintenance/queue/billing/email commands against the normal environment as verification.
 - Production application code is deployed through Git pulls. Do not copy edits over tracked server files: that blocks later pulls. Keep code changes in the repository and deploy the committed revision; server-only secrets, caches and operational configuration stay outside tracked files. Preserve unrelated server changes and back up any emergency edit before reconciling it with Git.
 - Validate request shapes and restrict user-controlled model names, columns, paths, and sort keys. Authenticate identity independently of submitted user IDs; folder ownership checks alone do not solve mobile API authentication.

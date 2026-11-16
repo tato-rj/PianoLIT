@@ -37,10 +37,12 @@ class WebAppGuestAccessTest extends ReviewTestCase
 
     public function test_visitors_can_browse_all_main_pages_without_an_account()
     {
-        foreach (['discover', 'welcome', 'explore', 'highlights', 'playlists', 'composers.index', 'tour', 'my-pieces', 'terms', 'privacy', 'membership.pricing', 'search.results'] as $name) {
+        foreach (['discover', 'welcome', 'explore', 'highlights', 'playlists', 'composers.index', 'tour', 'my-pieces', 'terms', 'privacy', 'membership.pricing'] as $name) {
             $this->get(route('webapp.'.$name))->assertOk();
             $this->assertGuest('web');
         }
+        $this->get(route('webapp.search.results', ['for' => 'Guest repertoire test']))->assertOk();
+        $this->get(route('webapp.search.results'))->assertStatus(301)->assertRedirect(route('webapp.explore'));
         $this->get(route('webapp.settings'))->assertStatus(301)->assertRedirect(route('webapp.discover'));
         $this->call('HEAD', route('webapp.settings'))->assertStatus(301)->assertRedirect(route('webapp.discover'));
         $this->assertSame(0, User::count());

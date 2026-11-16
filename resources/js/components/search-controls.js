@@ -168,7 +168,7 @@
     });
     search.addEventListener('submit', function (event) {
         term.value = term.value.trim();
-        if (!isResults || search.hasAttribute('data-search-landing')) return;
+        if (!isResults) return;
         event.preventDefault();
         var url = clearOptions(new URL(search.action, root.location.href));
         url.searchParams.set('for', term.value);

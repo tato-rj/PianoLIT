@@ -2,8 +2,6 @@
 
 Route::namespace('WebApp')->prefix('pieces')->name('pieces.')->group(function() {
 
-    Route::get('', 'PiecesController@index')->name('index');
-
 	Route::get('{piece}', 'PiecesController@show')->name('show');
 
 	Route::get('{piece}/composer', 'PiecesController@composer')->name('composer');

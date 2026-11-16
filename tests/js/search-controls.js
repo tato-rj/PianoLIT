@@ -9,7 +9,7 @@ module.exports = function () {
     }
     const saved = {};
     const storage = {getItem: key => saved[key] || null, setItem: (key, value) => saved[key] = value, removeItem: key => delete saved[key]};
-    function fixture(href, isResults = true, sessionStorage = storage, isLanding = false) {
+    function fixture(href, isResults = true, sessionStorage = storage) {
         const groups = Object.entries({level: ['elementary', 'advanced'], period: ['baroque'], length: [], type: ['pedagogical'], ensemble: ['solo', '4 hands']}).map(([facet, values]) => {
             const group = node({'data-search-facet': facet});
             group.buttons = values.map(value => node({'data-search-value': value, 'aria-pressed': 'false'}));
@@ -26,7 +26,6 @@ module.exports = function () {
         panel.querySelectorAll = () => groups;
         panel.querySelector = selector => inputs[selector];
         search.action = 'https://my.example.test/search';
-        search.hasAttribute = name => name === 'data-search-landing' && isLanding;
         search.querySelector = selector => selector === '.search-controls-toggle' ? toggle : query;
         search.querySelectorAll = () => search.children.filter(child => !child.removed);
         let hidden = 0, refreshed = 0, clears = 0, filters;
@@ -84,10 +83,6 @@ module.exports = function () {
     assert.strictEqual(f.summary.textContent, 'Any length');
     f.reset.events.click(); f.applyNow();
     assert.strictEqual(f.toggle.classList['is-active'], false);
-
-    const landing = fixture('https://my.example.test/search', true, storage, true);
-    assert.strictEqual(landing.submitQuery(' Mozart '), false, 'The first search navigates to a results page');
-    assert.strictEqual(landing.query.value, 'Mozart');
 
     const explore = fixture('https://my.example.test/explore', false);
     explore.click('ensemble', 'solo'); explore.video.checked = true; explore.applyNow();

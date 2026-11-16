@@ -30,12 +30,14 @@ class SearchController extends Controller
         }
 
         $trackingKeys = array_merge(CampaignParameters::FIELDS, ['utm_term', 'gclid', 'fbclid']);
-        $searchLanding = !array_diff(array_keys($request->query()), $trackingKeys);
+        if (!array_diff(array_keys($request->query()), $trackingKeys)) {
+            return redirect()->route('webapp.explore', $request->query(), 301);
+        }
+
         $searchValue = $request->query('search');
         $searchValue = is_string($searchValue) ? $searchValue : '';
-        $response = response()->view('webapp.search.index', compact('searchLanding', 'searchValue'));
 
-        return $searchLanding ? $response : $response->header('X-Robots-Tag', 'noindex');
+        return response()->view('webapp.search.index', compact('searchValue'))->header('X-Robots-Tag', 'noindex');
     }
 
     public function count(Api $api, Request $request)

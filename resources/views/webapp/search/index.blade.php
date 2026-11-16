@@ -1,14 +1,4 @@
-@php
-    $searchTitle = $searchValue !== '' ? 'Search results for '.Str::limit($searchValue, 90) : 'Search Piano Pieces';
-    $searchDescription = 'Find piano pieces by title, composer, or catalogue number. Filter by difficulty and available sheet music, recordings, or videos.';
-    $canonical = $searchLanding ? route('webapp.search.results') : null;
-    $searchEntity = ['@type' => 'WebPage', 'url' => $canonical, 'name' => $searchTitle, 'description' => $searchDescription];
-@endphp
-@extends('webapp.layouts.app', ['title' => $searchTitle])
-
-@section('page-metadata')
-    @include('components.seo.resource-head', ['siteName' => 'PianoLIT', 'searchImage' => asset('images/webapp/thumbnail.jpg')])
-@endsection
+@extends('webapp.layouts.app', ['title' => $searchValue !== '' ? 'Search results for '.Str::limit($searchValue, 90) : 'Search'])
 
 @push('header')
 <script type="text/javascript">
@@ -20,23 +10,11 @@ window.searchRequestId = 0;
 @endpush
 
 @section('content')
-@include('webapp.layouts.header', [
-    'title' => $searchLanding ? 'Search piano pieces' : null,
-    'subtitle' => $searchDescription,
-    'pageHeading' => true,
-])
+@include('webapp.layouts.header')
 
-<section class="{{ $searchLanding ? 'mb-2 mt-4' : 'mb-2' }}">
+<section class="mb-2">
 	@include('webapp.search.form', ['searchPlaceholder' => 'Title, composer, or catalogue number'])
 </section>
-
-@if($searchLanding)
-    <nav class="d-flex flex-wrap justify-content-center gap-3 mb-4" aria-label="Browse the piano repertoire">
-        <a href="{{ route('webapp.pieces.index') }}">Browse all piano pieces</a>
-        <a href="{{ route('webapp.composers.index') }}">Browse composers</a>
-        <a href="{{ route('webapp.explore') }}">Explore by level and style</a>
-    </nav>
-@endif
 
 <p id="search-results-count" class="text-muted small text-center" role="status" style="display: none;"></p>
 

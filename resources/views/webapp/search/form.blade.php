@@ -1,5 +1,5 @@
 @php($queryField = !empty($directorySearch) ? 'search' : 'for')
-<form method="GET" action="{{ route('webapp.search.results') }}" id="search-form" @if(!empty($searchLanding)) data-search-landing @endif>
+<form method="GET" action="{{ route('webapp.search.results') }}" id="search-form">
   <div class="input-icon">
     @icon('search', ['color' => 'grey', 'size' => 'lg'])
     <input type="text" name="{{ $queryField }}" value="{{ $searchValue ?? request($queryField) }}" class="form-control search-input pianolit-input w-100" aria-label="{{ $searchLabel ?? 'Search repertoire' }}" placeholder="{{ $searchPlaceholder ?? 'Search here...' }}" data-search-term>

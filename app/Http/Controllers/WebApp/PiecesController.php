@@ -13,19 +13,6 @@ use App\Services\WebApp\PublicRepertoire;
 
 class PiecesController extends Controller
 {
-    public function index(PublicRepertoire $repertoire)
-    {
-        $pieces = $repertoire->pieces()->select('pieces.*')->with(['composer' => function ($query) {
-            $query->select('composers.id', 'composers.name')->setEagerLoads([]);
-        }, 'tags'])
-            ->orderBy('name')->orderBy('id')->paginate(24);
-        $page = $pieces->currentPage();
-        $canonical = $pieces->isNotEmpty() ? route('webapp.pieces.index', $page > 1 ? ['page' => $page] : []) : null;
-        $response = response()->view('webapp.piece.catalogue', compact('pieces', 'canonical'));
-
-        return $canonical ? $response : $response->header('X-Robots-Tag', 'noindex');
-    }
-
     public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed, PageContent $content, PublicRepertoire $repertoire)
     {
         $data = $content->data($piece);

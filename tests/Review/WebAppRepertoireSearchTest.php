@@ -76,25 +76,28 @@ class WebAppRepertoireSearchTest extends ReviewTestCase
             ->assertStatus(301)->assertRedirect($canonical.'?utm_source=audit');
     }
 
-    public function test_catalogue_and_sitemap_include_pieces_with_content_and_paginate_without_javascript()
+    public function test_catalogue_is_removed_and_discover_and_sitemap_keep_existing_destinations()
     {
         $empty = $this->piece(['name' => 'Unfilled entry', 'description' => null]);
         $public = $this->piece(['name' => 'AAA Study']);
-        for ($i = 1; $i <= 24; $i++) {
-            $this->piece(['name' => sprintf('Study %02d', $i)]);
-        }
+        $catalogueUrl = rtrim(route('webapp.discover'), '/').'/pieces';
 
         $urls = $this->sitemap();
-        $this->assertCount(29, $urls);
+        $this->assertContains(route('webapp.discover'), $urls);
+        $this->assertContains(route('webapp.playlists'), $urls);
         $this->assertContains(route('webapp.pieces.show', $public), $urls);
         $this->assertNotContains(route('webapp.pieces.show', $empty), $urls);
+        $this->assertNotContains($catalogueUrl, $urls);
+        $this->assertNotContains(route('webapp.search.results'), $urls);
         $this->get(route('webapp.pieces.show', $empty))->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
-        $first = $this->get(route('webapp.pieces.index'))->assertOk()->assertSeeText('AAA Study')->assertDontSeeText('Unfilled entry');
-        $this->assertStringContainsString('page=2', $first->getContent());
-        $secondUrl = route('webapp.pieces.index', ['page' => 2]);
-        $second = $this->get($secondUrl.'&utm_source=audit')->assertOk()->assertSeeText('Study 24');
-        $this->assertSame($secondUrl, $this->xpath($second)->evaluate('string(//link[@rel="canonical"]/@href)'));
-        $this->get(route('webapp.pieces.index', ['page' => 100]))->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
+        $this->withExceptionHandling();
+        $this->get($catalogueUrl)->assertNotFound();
+        $this->get($catalogueUrl.'?page=2')->assertNotFound();
+        $this->withoutExceptionHandling();
+        $this->get(route('webapp.discover'))->assertOk()
+            ->assertDontSeeText('Browse all piano pieces')
+            ->assertDontSeeText('Search the repertoire')
+            ->assertSeeText('Piano collections');
         $welcome = $this->get(route('webapp.welcome'))->assertOk();
         $this->assertSame(route('webapp.discover'), $this->xpath($welcome)->evaluate('string(//link[@rel="canonical"]/@href)'));
     }
@@ -115,17 +118,17 @@ class WebAppRepertoireSearchTest extends ReviewTestCase
         $this->assertNotContains('timed video commentary', $metadata['resources']);
     }
 
-    public function test_only_the_clean_search_landing_is_indexable()
+    public function test_bare_search_redirects_to_explore_and_results_remain_available()
     {
-        $landing = $this->get(route('webapp.search.results', ['utm_source' => 'audit']))->assertOk()->assertHeaderMissing('X-Robots-Tag');
-        $this->assertSame(route('webapp.search.results'), $this->xpath($landing)->evaluate('string(//link[@rel="canonical"]/@href)'));
-        $this->assertSame('Search piano pieces', $this->xpath($landing)->evaluate('string(//main//h1)'));
-        $landing->assertSee('href="'.route('webapp.pieces.index').'"', false);
+        $this->get(route('webapp.search.results'))->assertStatus(301)->assertRedirect(route('webapp.explore'));
+        $this->get(route('webapp.search.results', ['utm_source' => 'audit']))
+            ->assertStatus(301)->assertRedirect(route('webapp.explore', ['utm_source' => 'audit']));
         $query = '<img src=x onerror=alert(1)>';
         $results = $this->get(route('webapp.search.results', ['for' => $query]))->assertOk()->assertHeader('X-Robots-Tag', 'noindex')
             ->assertSee($query)->assertDontSee($query, false);
         $this->assertCount(0, $this->xpath($results)->query('//main//h1 | //link[@rel="canonical"]'));
         $this->assertSame($query, $this->xpath($results)->evaluate('string(//form[@id="search-form"]/div/input[@name="for"]/@value)'));
+        $this->get(route('webapp.search.results', ['catalogue' => 1]))->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
         $fragment = $this->getJson(route('webapp.search.results', ['catalogue' => 1, 'page' => 2]))
             ->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
         $this->assertSame('', $fragment->getContent());

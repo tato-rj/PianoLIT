@@ -19,9 +19,7 @@ class PublicSitemapsController extends Controller
     {
         $urls = collect([
             route('webapp.discover'),
-            route('webapp.pieces.index'),
             route('webapp.playlists'),
-            route('webapp.search.results'),
         ])->concat($repertoire->pieces()->select('pieces.id')->orderBy('id')->pluck('id')
             ->map(fn ($id) => route('webapp.pieces.show', $id)));
 
