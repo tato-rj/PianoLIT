@@ -94,11 +94,13 @@ class WebAppRepertoireSearchTest extends ReviewTestCase
         $this->get($catalogueUrl)->assertNotFound();
         $this->get($catalogueUrl.'?page=2')->assertNotFound();
         $this->withoutExceptionHandling();
-        $this->get(route('webapp.discover'))->assertOk()
+        $discover = $this->get(route('webapp.discover'))->assertOk()
             ->assertDontSeeText('Browse all piano pieces')
             ->assertDontSeeText('Search the repertoire')
-            ->assertSeeText('Piano collections');
-        $welcome = $this->get(route('webapp.welcome'))->assertOk();
+            ->assertDontSeeText('Piano collections');
+        $this->assertCount(1, $this->xpath($discover)->query('//nav[@id="menu"]//a[@href="'.route('webapp.playlists').'"]'));
+        $this->get(route('webapp.playlists'))->assertOk();
+        $welcome = $this->get(route('webapp.welcome'))->assertOk()->assertDontSeeText('Piano collections');
         $this->assertSame(route('webapp.discover'), $this->xpath($welcome)->evaluate('string(//link[@rel="canonical"]/@href)'));
     }
 

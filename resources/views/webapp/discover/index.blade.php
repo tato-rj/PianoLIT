@@ -35,10 +35,6 @@
 	@endforeach
 </section>
 
-<nav class="d-flex flex-wrap justify-content-center gap-3 py-3" aria-label="More ways to browse piano repertoire">
-    <a href="{{ route('webapp.playlists') }}">Piano collections</a>
-</nav>
-
 @include('webapp.tour.modal')
 @include('webapp.discover.composers.modal')
 @if($membershipConfirmation ?? null)

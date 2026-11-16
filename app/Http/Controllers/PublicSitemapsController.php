@@ -49,7 +49,7 @@ class PublicSitemapsController extends Controller
 
     public function metronome()
     {
-        $urls = [route('metronome.home'), route('metronome.guide')];
+        $urls = [route('metronome.home')];
 
         return response()->view('components.seo.sitemap', compact('urls'), 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
     }

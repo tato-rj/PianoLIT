@@ -22,11 +22,7 @@
 <body class="public-site">
     @include('layouts.html.google.manager-body')
     @component('components.account.page', ['pageClasses' => 'account-page--metronome'])
-    @component('components.layout.public.header', ['transparentHeader' => true, 'navigationLabel' => 'Metronome help and site navigation'])
-        @slot('navigationBeforeAccount')
-            <li class="nav-item"><a class="text-reset small text-nowrap" href="{{ route('metronome.guide') }}">How to use</a></li>
-        @endslot
-    @endcomponent
+    @include('components.layout.public.header', ['transparentHeader' => true])
     <main>
         <h1 class="visually-hidden">{{ $searchTitle }}</h1>
         <button

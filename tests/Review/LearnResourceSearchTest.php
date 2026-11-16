@@ -71,7 +71,7 @@ class LearnResourceSearchTest extends ReviewTestCase
             $guide->showRoute(),
             route('resources.pianists.show', $artist),
         ], $this->sitemap('http://learn.localhost/resource-sitemap.xml'));
-        $this->assertSame(['http://metronome.localhost', 'http://metronome.localhost/guide'], $this->sitemap('http://metronome.localhost/sitemap.xml'));
+        $this->assertSame(['http://metronome.localhost'], $this->sitemap('http://metronome.localhost/sitemap.xml'));
         $this->get($draft->showRoute())->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
         $this->withExceptionHandling()->get('http://localhost/resource-sitemap.xml')->assertNotFound();
     }
@@ -102,7 +102,8 @@ class LearnResourceSearchTest extends ReviewTestCase
         foreach (config('infographic-guides') as $slug => $entry) {
             $guide = $this->guide($slug, ['cover_path' => 'infograph/'.$entry['image']]);
             $response = $this->get($guide->showRoute())->assertOk()
-                ->assertSeeText($entry['text'])->assertSee($entry['alt']);
+                ->assertSeeText($entry['text'])->assertSee($entry['alt'])
+                ->assertDontSee('href="http://metronome.localhost/guide"', false);
             $schema = json_decode($this->head($response)->evaluate('string(//script[@type="application/ld+json"])'), true, 512, JSON_THROW_ON_ERROR);
             $image = $schema['@graph'][1];
             $this->assertSame('ImageObject', $image['@type']);
@@ -139,14 +140,13 @@ class LearnResourceSearchTest extends ReviewTestCase
     {
         $root = $this->get('http://metronome.localhost/?utm_source=audit')->assertOk()->assertSee('data-metronome');
         $this->assertSame('Online Metronome', $this->head($root)->evaluate('string(//h1)'));
-        $this->assertCount(1, $this->head($root)->query('//a[@href="http://metronome.localhost/guide"]'));
-        $this->get('http://metronome.localhost/guide')->assertOk()->assertSeeText('At 60 BPM, you hear one beat per second.')
-            ->assertSeeText('Open the metronome');
+        $this->assertCount(0, $this->head($root)->query('//a[@href="http://metronome.localhost/guide"]'));
         $this->get('http://learn.localhost/circle-of-fifths')->assertOk()->assertSeeText('A natural minor');
         $this->get('http://learn.localhost/chord-finder')->assertOk()->assertSeeText('first inversion');
         $url = 'http://learn.localhost/chord-finder/analyse?notes[]=C&notes[]=E&notes[]=G';
         $this->get($url)->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
         $this->get($url.'&dev=1')->assertOk()->assertHeader('X-Robots-Tag', 'noindex')
             ->assertHeader('Content-Type', 'application/json');
+        $this->withExceptionHandling()->get('http://metronome.localhost/guide')->assertNotFound();
     }
 }

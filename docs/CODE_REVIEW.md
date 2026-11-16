@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-15 — Remove the Metronome guide and the extra Discover link
+
+- Deleted the Metronome guide route and view. Removed its header link, its links from Practice mistakes, Rhythmic values and Speed markings, and its Metronome sitemap entry. Removed the extra Piano collections link from Discover and its Welcome alias. The Collections page is still available from the web app menu.
+- The 11 focused PHP checks and 144 Metronome JavaScript checks passed. The two failures in the broader PHP run also reproduced on the original revision.
+
 ### 2026-11-15 — Remove the public catalogue and standalone search landing page
 
 - The November 11 web app SEO work introduced both pages and the two Discover links. Removed the `/pieces` listing route and view, the standalone search presentation, both Discover links and both sitemap entries. Bare HTML requests to `/search` redirect to the existing Explore search form. Search results, filters and fragments still use `/search`. Individual piece pages and the Collections link remain available.

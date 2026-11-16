@@ -12,7 +12,6 @@ return [
         'image' => 'practice-mistakes.jpg',
         'alt' => 'Illustrated guide to five common piano practice mistakes',
         'text' => 'Listen closely as you play. If a passage keeps going wrong, slow down and check your fingering. Repeat it at a speed where you can play it accurately before bringing it back up to tempo.',
-        'tool' => ['route' => 'metronome.guide', 'label' => 'How to practice with a metronome'],
     ],
     'bach-family' => [
         'image' => 'bach-family.jpg',
@@ -116,7 +115,6 @@ return [
         'image' => 'rhythm-values.jpg',
         'alt' => 'Note-value tree from whole notes to sixty-fourth notes',
         'text' => 'A whole note has the same duration as two half notes or four quarter notes. Each quarter note divides into two eighth notes. The chart continues the same pattern through sixteenth, thirty-second, and sixty-fourth notes.',
-        'tool' => ['route' => 'metronome.guide', 'label' => 'Practice counting with a metronome'],
     ],
     'sentence-vs-period' => [
         'image' => 'sentence-vs-period.jpg',
@@ -132,7 +130,6 @@ return [
         'image' => 'speed-markings.jpg',
         'alt' => 'Tempo markings arranged from grave to presto',
         'text' => 'Tempo words describe how fast a passage should move. Adagio indicates a slow pace, andante suggests a walking pace, and allegro indicates a fast or lively pace. The markings describe a range of speeds, with the exact tempo depending on the music.',
-        'tool' => ['route' => 'metronome.guide', 'label' => 'Set and practice a tempo with the metronome'],
     ],
     'steps-to-become-a-better-pianist' => [
         'image' => 'steps_become_better_pianist.jpg',
