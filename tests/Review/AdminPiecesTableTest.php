@@ -72,19 +72,19 @@ class AdminPiecesTableTest extends ReviewTestCase
         $this->assertStringNotContainsString('Web views', strip_tags($headers[1][6]));
         $this->assertStringNotContainsString('cdn.datatables.net', $html);
         $this->assertStringContainsString('class="admin-table__table admin-pieces-table"', $html);
-        foreach (['without_videos', 'without_moments', 'without_synthesia'] as $filter) {
+        foreach (['without_videos', 'without_moments', 'without_synthesia', 'without_pianolit_escore'] as $filter) {
             preg_match('/<input[^>]*name="'.$filter.'"[^>]*>/', $html, $input);
             $this->assertNotEmpty($input);
             $this->assertStringNotContainsString('checked', $input[0]);
         }
-        foreach (['Missing video', 'Missing moments', 'Missing synthesia'] as $label) {
+        foreach (['Missing video', 'Missing moments', 'Missing synthesia', 'Missing PianoLIT eScore'] as $label) {
             $this->assertStringContainsString('>'.$label.'</label>', $html);
         }
         $row = $this->table(['order' => [['column' => 0, 'dir' => 'asc']]])->assertOk()->json('data.0');
         $this->assertEqualsCanonicalizing(['id', 'name', 'composer', 'tags', 'level', 'ranking', 'favorited', 'actions'], array_keys($row));
         $this->assertSame('A. Adams', $row['composer']['short_name']);
         foreach (['name', 'tags', 'level', 'ranking', 'favorited', 'actions'] as $column) {
-            $item = Piece::with('tags')->findOrFail($row['id']);
+            $item = app(\App\Services\Admin\PiecesTable::class)->withScheduleMedia(Piece::with('tags'))->findOrFail($row['id']);
             $this->assertSame(view('admin.pages.pieces.table.'.$column, compact('item'))->render(), $row[$column]);
         }
     }
@@ -189,6 +189,21 @@ class AdminPiecesTableTest extends ReviewTestCase
         return $this->get(route('admin.pieces.index', $parameters));
     }
 
+    public function test_missing_pianolit_escore_includes_external_unknown_and_absent_pdfs()
+    {
+        $this->pieces[0]->updateQuietly(['score_source' => 'pianolit', 'score_path' => 'scores/pianolit.pdf']);
+        $this->pieces[1]->updateQuietly(['score_source' => 'external', 'score_path' => 'scores/external.pdf']);
+        $this->pieces[2]->updateQuietly(['score_path' => 'scores/unknown.pdf']);
+        $this->pieces[3]->updateQuietly(['score_source' => 'pianolit', 'score_path' => null]);
+
+        $filters = ['without_pianolit_escore' => 1];
+        $expected = $this->pieces->slice(1)->pluck('id')->all();
+        $this->assertEqualsCanonicalizing($expected, $this->directory($filters)->assertOk()->viewData('pieces')->pluck('id')->all());
+        $this->assertEqualsCanonicalizing($expected, $this->ids($filters));
+        $this->assertEqualsCanonicalizing([$this->pieces[2]->id, $this->pieces[3]->id],
+            $this->directory($filters + ['without_videos' => 1])->assertOk()->viewData('pieces')->pluck('id')->all());
+    }
+
     public function test_directory_filters_sorts_and_paginates_the_complete_query()
     {
         foreach (['id', 'name', 'composer', 'tags', 'level', 'highlight', 'favorites', 'updated'] as $column) {
@@ -280,7 +295,7 @@ class AdminPiecesTableTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('//table[@id="pieces-table"]//a[@href="'.route('admin.pieces.edit', $piece).'"]')->length);
         $this->directory(['search' => 'does-not-exist'])->assertOk()->assertSee('No matching pieces');
         $this->withExceptionHandling();
-        foreach ([['search' => ['bad']], ['without_videos' => ['bad']], ['sort' => 'password_asc'], ['page' => -1], ['per_page' => 1000]] as $invalid) {
+        foreach ([['search' => ['bad']], ['without_videos' => ['bad']], ['without_pianolit_escore' => ['bad']], ['sort' => 'password_asc'], ['page' => -1], ['per_page' => 1000]] as $invalid) {
             $this->getJson(route('admin.pieces.index', $invalid))->assertUnprocessable();
         }
         auth()->guard('admin')->logout();
@@ -305,7 +320,10 @@ class AdminPiecesTableTest extends ReviewTestCase
             $counts[] = count($queries);
             $this->assertCount($size, $data['pieces']);
             $this->assertCount(1, array_filter(array_column($queries, 'query'), fn ($sql) => strpos($sql, 'activity_events') !== false));
-            $this->assertStringNotContainsString('from "tutorials"', implode(' ', array_column($queries, 'query')));
+            $videoQueries = array_values(array_filter(array_column($queries, 'query'), fn ($sql) => str_contains($sql, 'from "tutorials"')));
+            $this->assertCount(1, $videoQueries);
+            $this->assertStringContainsString('as "has_schedule_performance"', $videoQueries[0]);
+            $this->assertStringContainsString('as "has_schedule_synthesia"', $videoQueries[0]);
         }
         $this->assertSame([7, 7], $counts);
     }

@@ -13,12 +13,14 @@ function fixture(serverNow = '2026-10-20T09:00:00-04:00') {
         setCustomValidity(message) { this.validationMessage = message; }});
     const hour = node({value: '08:00', options: Array.from({length: 24}, (_, i) => ({value: String(i).padStart(2, '0') + ':00'}))});
     const scheduled = {}, calendar = {}, submit = {}, label = {}, title = {}, error = {hidden: false}, dateError = {}, sendEmail = {checked: false};
+    const mediaWarning = {hidden: false}, missingList = {textContent: 'Audio'};
     const picker = {dataset: {blockedDates: '["2026-10-23"]'}, datePicker: {
         configure(minimum) { this.minimum = minimum; }, setDisabled(disabled) { this.disabled = disabled; },
         setValue(value) { date.value = value; }
     }};
     const nodes = {'[data-freepick-calendar]': calendar, '[data-date-picker]': picker, '[data-freepick-submit]': submit,
         '[data-freepick-submit-label]': label, '[data-freepick-title]': title, '[data-freepick-date-error]': dateError,
+        '[data-freepick-media-warning]': mediaWarning, '[data-freepick-missing-list]': missingList,
         '[value="now"]': now, '[value="later"]': later, '#freepick-send-email': sendEmail};
     const fields = {scheduled_date: date, scheduled_hour: hour, scheduled_at: scheduled};
     let valid = true, restored = 0, elapsed = 0;
@@ -34,7 +36,7 @@ function fixture(serverNow = '2026-10-20T09:00:00-04:00') {
         document: {getElementById() { return modal; }, addEventListener() {}}, window, Date: ClockDate, Intl
     });
     return {now, later, date, hour, scheduled, calendar, picker, submit, label, title, error, dateError, form, modal, window,
-        restored, sendEmail, validity(value) { valid = value; }, advance(ms) { elapsed += ms; },
+        restored, sendEmail, mediaWarning, missingList, validity(value) { valid = value; }, advance(ms) { elapsed += ms; },
         laterMode() { now.checked = false; later.checked = true; later.listeners.change(); }};
 }
 
@@ -46,6 +48,8 @@ module.exports = function () {
     assert.strictEqual(datePicker.parse('2026-11-01').getDate(), 1, 'Calendar dates are independent of schedule DST instants.');
     const f = fixture();
     assert.strictEqual(f.restored, 1, 'A server validation failure reopens the modal.');
+    f.modal.listeners['show.bs.modal']({});
+    assert.strictEqual(f.missingList.textContent, 'Audio', 'Restoring the modal keeps the server-rendered warning.');
     assert.strictEqual(f.sendEmail.checked, false, 'A restored unchecked email choice is preserved.');
     assert.strictEqual(f.date.disabled, true, 'Immediate selection omits stale calendar input.');
     assert.strictEqual(f.hour.value, '08:00', 'The default time is 8am.');
@@ -75,7 +79,8 @@ module.exports = function () {
     assert.strictEqual(f.submit.disabled, true);
     f.form.listeners.submit({preventDefault() { prevented++; }});
     assert.strictEqual(prevented, 2, 'Repeated keyboard submission cannot schedule twice.');
-    f.modal.listeners['show.bs.modal']({relatedTarget: {dataset: {freepickUrl: '/pieces/2/schedule?sort=id_asc', freepickName: '<script>Piece two</script>'}}});
+    f.modal.listeners['show.bs.modal']({relatedTarget: {dataset: {freepickUrl: '/pieces/2/schedule?sort=id_asc',
+        freepickName: '<script>Piece two</script>', freepickMissing: 'PianoLIT eScore, Synthesia'}}});
     assert.strictEqual(f.form.action, '/pieces/2/schedule?sort=id_asc');
     assert.strictEqual(f.title.textContent, '<script>Piece two</script>', 'Titles are inserted as text.');
     assert.strictEqual(f.now.checked, true);
@@ -85,6 +90,11 @@ module.exports = function () {
     assert.strictEqual(f.sendEmail.checked, true, 'Each new modal selection defaults to automatically sending the email.');
     assert.strictEqual(f.error.hidden, true);
     assert.strictEqual(f.submit.disabled, false);
+    assert.strictEqual(f.mediaWarning.hidden, false);
+    assert.strictEqual(f.missingList.textContent, 'PianoLIT eScore, Synthesia');
+    f.modal.listeners['show.bs.modal']({relatedTarget: {dataset: {freepickUrl: '/pieces/3/schedule', freepickName: 'Piece three', freepickMissing: ''}}});
+    assert.strictEqual(f.mediaWarning.hidden, true, 'Opening a complete piece hides the previous warning.');
+    assert.strictEqual(f.missingList.textContent, '');
     f.window.listeners.pageshow();
     assert.strictEqual(f.submit.disabled, false);
     const late = fixture('2026-10-20T23:05:00-04:00');

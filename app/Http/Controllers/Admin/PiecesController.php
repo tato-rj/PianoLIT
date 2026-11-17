@@ -6,10 +6,6 @@ use App\{Piece, Composer, Tag, Api};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Files\Uploaders\ImageUpload;
-use App\Services\Pieces\ScoreSource;
-use App\Support\AdminTableFilters;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\{Rule, ValidationException};
 
 class PiecesController extends Controller
 {
@@ -20,13 +16,14 @@ class PiecesController extends Controller
      */
     public function index()
     {
+        $table = app(\App\Services\Admin\PiecesTable::class);
         if (request()->ajax())
-            return app(\App\Services\Admin\PiecesTable::class)->response(request());
+            return $table->response(request());
 
-        $data = app(\App\Services\Admin\PiecesTable::class)->get(request());
+        $data = $table->get(request());
         $errors = session('errors');
         $data['failedFreePick'] = $errors && $errors->getBag('freepick')->any()
-            ? Piece::find((int) old('freepick_piece_id')) : null;
+            ? $table->withScheduleMedia(Piece::query())->find((int) old('freepick_piece_id')) : null;
         $data['freePickScheduleOptions'] = app(\App\Services\FreePickSchedule::class)->options();
         return view('admin.pages.pieces.index', $data);
     }
@@ -297,32 +294,6 @@ class PiecesController extends Controller
 
         return response()->json(['level_name' => ucfirst($piece->level->name), 'level_id' => $piece->level->id,
             'extended_level_name' => ucfirst($piece->extendedLevel->name)]);
-    }
-
-    public function updateScoreSource(Request $request, Piece $piece)
-    {
-        abort_unless($request->user('admin')->isManager(), 403);
-        $bag = 'scoreSource'.$piece->id;
-        $filters = app(\App\Services\Admin\PiecesTable::class)->filters($request);
-        $data = $request->validateWithBag($bag, [
-            'score_source' => ['required', 'string', Rule::in(array_keys(ScoreSource::LABELS))],
-            'score_source_url' => ['sometimes', 'nullable', 'string', 'max:2048', 'url', 'regex:/^https?:\/\//i'],
-            'score_version' => 'required|string|size:64',
-            'return_to_editor' => 'sometimes|boolean',
-        ]);
-
-        $query = DB::table('pieces')->where('id', $piece->id)->where('score_path', $piece->score_path);
-        $attributes = array_intersect_key($data, array_flip(['score_source', 'score_source_url']));
-        if (!$piece->score_path || $data['score_version'] !== hash('sha256', $piece->score_path)
-            || (!$query->update($attributes) && !$query->exists())) {
-            throw ValidationException::withMessages(['score_source' => 'The saved PDF changed. Reload the page and try again.'])->errorBag($bag);
-        }
-
-        $destination = !empty($data['return_to_editor'])
-            ? route('admin.pieces.edit', $piece).'#piece-score-source'
-            : route('admin.pieces.index', AdminTableFilters::query($filters, 'updated_desc'));
-
-        return redirect($destination)->with('status', 'Score source saved.');
     }
 
     public function updateTag(Request $request, Piece $piece)

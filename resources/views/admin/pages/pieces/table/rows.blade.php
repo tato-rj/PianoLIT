@@ -33,7 +33,11 @@
         @endif
     </td>
     <td class="text-nowrap">
-        @include('admin.pages.pieces.table.score-source')
+        @if(trim((string) $item->score_path) === '')
+            <span class="text-muted">No PDF</span>
+        @else
+            {{ \App\Services\Pieces\ScoreSource::LABELS[$item->score_source] ?? 'Unknown' }}
+        @endif
     </td>
     <td>
         <div class="d-flex flex-nowrap justify-content-end align-items-center gap-2">

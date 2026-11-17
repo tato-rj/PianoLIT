@@ -21,7 +21,6 @@
     </div>
     @can('update', $piece)
     @if($piece->score_path)
-        <a href="#piece-score-source" class="btn btn-sm btn-outline-secondary mt-4">Edit score source</a>
         <button type="submit" form="delete-score-form" class="btn btn-sm btn-danger mt-4">@icon('trash-2')Delete score</button>
     @endif
     @endcan

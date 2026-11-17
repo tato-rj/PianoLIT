@@ -11,6 +11,8 @@
     const submit = form.querySelector('[data-freepick-submit]');
     const label = form.querySelector('[data-freepick-submit-label]');
     const error = form.querySelector('[data-freepick-date-error]');
+    const mediaWarning = form.querySelector('[data-freepick-media-warning]');
+    const missingList = form.querySelector('[data-freepick-missing-list]');
     const blocked = JSON.parse(picker.dataset.blockedDates || '[]');
     const loadedAt = Date.now(), serverTime = Date.parse(form.dataset.now);
     const clock = new Intl.DateTimeFormat('en-CA', {
@@ -62,6 +64,9 @@
         if (!trigger) { update(); return; }
         form.action = trigger.dataset.freepickUrl;
         form.querySelector('[data-freepick-title]').textContent = trigger.dataset.freepickName;
+        const missing = trigger.dataset.freepickMissing || '';
+        missingList.textContent = missing;
+        mediaWarning.hidden = !missing;
         form.querySelector('[value="now"]').checked = true;
         form.querySelector('[value="later"]').checked = false;
         if (picker.datePicker) picker.datePicker.setValue('');

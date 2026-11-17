@@ -1,5 +1,6 @@
 @php
     $failedPick = $failedFreePick ?? null;
+    $missingMedia = $failedPick ? implode(', ', app(\App\Services\Admin\PiecesTable::class)->missingScheduleMedia($failedPick)) : '';
     $scheduleOptions = $freePickScheduleOptions ?? app(\App\Services\FreePickSchedule::class)->options();
     $savedSchedule = is_string(old('scheduled_at')) ? old('scheduled_at') : '';
     $savedDate = preg_match('/^(\d{4}-\d{2}-\d{2})T/', $savedSchedule, $match) ? $match[1] : '';
@@ -18,6 +19,14 @@
                 <div class="alert alert-red" role="alert" data-freepick-error>{{ $errors->getBag('freepick')->first() }}</div>
             @endif
             <p class="font-weight-bold mb-4" data-freepick-title>{{ $failedPick ? $failedPick->long_name : '' }}</p>
+            <div data-freepick-media-warning @if(!$missingMedia) hidden @endif>
+                @component('components.feedback.alert', ['color' => 'yellow', 'fullX' => true])
+                    @slot('message')
+                        <strong class="d-block">Missing content</strong>
+                        <span data-freepick-missing-list>{{ $missingMedia }}</span>
+                    @endslot
+                @endcomponent
+            </div>
             <fieldset class="mb-4">
                 <legend class="small text-muted mb-2">When should this piece become the Freepick?</legend>
                 @include('components.forms.checkbox', ['type' => 'radio', 'id' => 'freepick-now', 'name' => 'mode', 'value' => 'now', 'label' => 'Make it Freepick immediately', 'checked' => !$failedPick || old('mode') !== 'later'])

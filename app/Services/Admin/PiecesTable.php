@@ -6,6 +6,7 @@ use App\{Composer, Piece};
 use App\Analytics\PieceViewCounts;
 use App\Services\Pieces\ScoreSource;
 use App\Support\AdminTableFilters;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -13,6 +14,13 @@ use Yajra\DataTables\EloquentDataTable;
 
 class PiecesTable
 {
+    public const MISSING_CONTENT_FILTERS = [
+        'without_videos' => 'Missing video',
+        'without_moments' => 'Missing moments',
+        'without_synthesia' => 'Missing synthesia',
+        'without_pianolit_escore' => 'Missing PianoLIT eScore',
+    ];
+
     const SORTS = [
         'updated_desc' => 'Updated · newest', 'updated_asc' => 'Updated · oldest',
         'id_desc' => 'ID · highest', 'id_asc' => 'ID · lowest',
@@ -27,10 +35,7 @@ class PiecesTable
 
     public function filters(Request $request)
     {
-        return AdminTableFilters::fromRequest($request, self::SORTS, 'updated_desc', [
-            'without_videos' => 'sometimes|boolean',
-            'without_moments' => 'sometimes|boolean',
-            'without_synthesia' => 'sometimes|boolean',
+        return AdminTableFilters::fromRequest($request, self::SORTS, 'updated_desc', $this->missingContentRules() + [
             'creator_id' => 'sometimes|integer|min:1',
             'itunes' => 'sometimes|string|max:255',
             'videos' => 'sometimes|string|max:255',
@@ -44,7 +49,7 @@ class PiecesTable
     public function get(Request $request)
     {
         $filters = $this->filters($request);
-        $pieces = $this->query($filters)->paginate($filters['per_page'], ['*'], 'page', $filters['page'] ?? 1)
+        $pieces = $this->withScheduleMedia($this->query($filters))->paginate($filters['per_page'], ['*'], 'page', $filters['page'] ?? 1)
             ->appends(AdminTableFilters::query(array_diff_key($filters, ['page' => true]), 'updated_desc'));
         $returnFilters = AdminTableFilters::query($filters, 'updated_desc');
         if (in_array($filters['sort'], ['views_desc', 'views_asc'], true)) {
@@ -56,6 +61,26 @@ class PiecesTable
         }
 
         return compact('pieces', 'filters', 'returnFilters', 'pieceViews');
+    }
+
+    public function withScheduleMedia(Builder $query): Builder
+    {
+        return $query->withExists([
+            'tutorials as has_schedule_performance' => fn ($videos) => $this->performance($videos)->whereRaw("TRIM(video_url) <> ''"),
+            'tutorials as has_schedule_synthesia' => fn ($videos) => $this->synthesia($videos)->whereRaw("TRIM(video_url) <> ''"),
+        ]);
+    }
+
+    public function missingScheduleMedia(Piece $piece): array
+    {
+        $available = [
+            'PianoLIT eScore' => $piece->score_source === ScoreSource::PIANOLIT && trim((string) $piece->score_path) !== '',
+            'Synthesia' => $piece->has_schedule_synthesia,
+            'Audio' => $piece->hasAudio(),
+            'Performance video' => $piece->has_schedule_performance,
+        ];
+
+        return array_keys(array_filter($available, fn ($present) => !$present));
     }
 
     public function query(array $filters)
@@ -108,7 +133,7 @@ class PiecesTable
 
     public function response(Request $request)
     {
-        $request->validate([
+        $request->validate($this->missingContentRules() + [
             'draw' => 'sometimes|integer|min:0',
             'start' => 'sometimes|integer|min:0|max:10000000',
             'length' => 'sometimes|integer|min:1|max:100',
@@ -123,9 +148,6 @@ class PiecesTable
             'columns.*.name' => 'nullable|string|max:100',
             'columns.*.search' => 'sometimes|array',
             'columns.*.search.value' => 'nullable|string|max:255',
-            'without_videos' => 'sometimes|boolean',
-            'without_moments' => 'sometimes|boolean',
-            'without_synthesia' => 'sometimes|boolean',
             'creator_id' => 'sometimes|integer|min:1',
             'itunes' => 'sometimes|string|max:255',
             'videos' => 'sometimes|string|max:255',
@@ -144,7 +166,7 @@ class PiecesTable
             ->whereNull('retired_at')->where('scheduled_at', '>', now('UTC'))->orderBy('scheduled_at')->limit(1), 'next_freepick_at');
         if ($request->filled('is_free')) $query->free($request->boolean('is_free'));
 
-        $table = (new EloquentDataTable($query))
+        $table = (new EloquentDataTable($this->withScheduleMedia($query)))
             // Hide appends and relations BEFORE serialization, so no media/history
             // queries run for unused data. Templates still use the loaded models.
             ->makeHidden((new Piece)->adminTableHiddenAttributes())
@@ -152,7 +174,7 @@ class PiecesTable
             ->whitelist([])
             ->addColumn('composer', function ($piece) { return ['short_name' => $piece->composer->short_name]; })
             ->filter(function ($query) use ($request) {
-                $this->applyFilters($query, array_merge($request->only(['without_videos', 'without_moments', 'without_synthesia']), ['search' => trim((string) $request->input('search.value', ''))]));
+                $this->applyFilters($query, $request->only(array_keys(self::MISSING_CONTENT_FILTERS)) + ['search' => trim((string) $request->input('search.value', ''))]);
             })
             ->order(function ($query) use ($request) {
                 $ordered = false;
@@ -174,26 +196,35 @@ class PiecesTable
         return $table->rawColumns(['name', 'tags', 'level', 'ranking', 'favorited', 'actions'])->make(true);
     }
 
+    private function missingContentRules(): array
+    {
+        return array_fill_keys(array_keys(self::MISSING_CONTENT_FILTERS), 'sometimes|boolean');
+    }
+
+    private function performance($videos)
+    {
+        return $videos->where(fn ($videos) => $videos->where('type', 'Performance')->orWhere('category', 'performance'));
+    }
+
+    private function synthesia($videos)
+    {
+        return $videos->where(fn ($videos) => $videos->where('type', 'like', '%synthesia%')->orWhere('category', 'synthesia'));
+    }
+
     protected function applyFilters($query, array $filters)
     {
-        $performance = function ($videos) {
-            $videos->where(function ($videos) {
-                $videos->where('type', 'Performance')->orWhere('category', 'performance');
-            });
-        };
-        if (!empty($filters['without_videos'])) $query->whereDoesntHave('tutorials', $performance);
+        if (!empty($filters['without_videos'])) $query->whereDoesntHave('tutorials', fn ($videos) => $this->performance($videos));
         if (!empty($filters['without_moments'])) {
-            $query->whereHas('tutorials', $performance)
-                ->whereDoesntHave('tutorials', function ($videos) use ($performance) {
-                    $performance($videos);
-                    $videos->whereHas('moments');
-                });
+            $query->whereHas('tutorials', fn ($videos) => $this->performance($videos))
+                ->whereDoesntHave('tutorials', fn ($videos) => $this->performance($videos)->whereHas('moments'));
         }
         if (!empty($filters['without_synthesia'])) {
-            $query->whereDoesntHave('tutorials', function ($videos) {
-                $videos->where(function ($videos) {
-                    $videos->where('type', 'like', '%synthesia%')->orWhere('category', 'synthesia');
-                });
+            $query->whereDoesntHave('tutorials', fn ($videos) => $this->synthesia($videos));
+        }
+        if (!empty($filters['without_pianolit_escore'])) {
+            $query->where(function ($query) {
+                $query->whereNull('pieces.score_source')->orWhere('pieces.score_source', '!=', ScoreSource::PIANOLIT)
+                    ->orWhereNull('pieces.score_path')->orWhereRaw("TRIM(pieces.score_path) = ''");
             });
         }
         foreach (preg_split('/\s+/u', $filters['search']) as $term) {

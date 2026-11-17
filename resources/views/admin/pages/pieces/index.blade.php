@@ -34,7 +34,7 @@
             <fieldset class="w-100 mb-0">
                 <legend class="small text-muted mb-1">Missing content (temporary)</legend>
                 <div class="d-flex flex-wrap gap-3 small text-muted">
-                    @foreach(['without_videos' => 'Missing video', 'without_moments' => 'Missing moments', 'without_synthesia' => 'Missing synthesia'] as $filter => $label)
+                    @foreach(\App\Services\Admin\PiecesTable::MISSING_CONTENT_FILTERS as $filter => $label)
                     @include('components.forms.checkbox', ['id' => 'pieces-filter-'.$filter, 'name' => $filter, 'value' => '1', 'label' => $label, 'checked' => !empty($filters[$filter]), 'classes' => 'mb-0'])
                     @endforeach
                 </div>

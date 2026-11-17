@@ -2,7 +2,7 @@
 
 namespace Tests\Review;
 
-use App\{Admin, FreePick, Piece, User};
+use App\{Admin, FreePick, Piece, Tutorial, User};
 use App\Api\Api;
 use App\Services\FreePickSchedule;
 use Illuminate\Database\Eloquent\Model;
@@ -170,16 +170,38 @@ class FreePickScheduleTest extends ReviewTestCase
 
     public function test_admin_schedule_preserves_filters_uses_route_identity_and_restores_validation_modal()
     {
-        $parameters = ['piece' => $this->first, 'search' => $this->first->name, 'sort' => 'id_asc'];
+        $parameters = ['piece' => $this->first, 'search' => $this->first->name, 'sort' => 'id_asc', 'without_pianolit_escore' => 1];
         $this->post(route('admin.pieces.schedule', $parameters), ['mode' => 'now', 'piece_id' => $this->second->id])
             ->assertRedirect(route('admin.pieces.index', array_diff_key($parameters, ['piece' => true])));
         $this->assertTrue($this->first->is_free);
         $this->withExceptionHandling();
         $this->from(route('admin.pieces.index'))->post(route('admin.pieces.schedule', $this->first), ['mode' => 'later', 'scheduled_at' => '2026-10-19T12:00'])
             ->assertRedirect(route('admin.pieces.index'))->assertSessionHasErrors('scheduled_at', null, 'freepick');
-        $this->get(route('admin.pieces.index'))->assertOk()->assertSee('data-restore="true"', false)->assertSee('value="2026-10-19T12:00"', false);
+        $this->get(route('admin.pieces.index', ['search' => 'no matches']))->assertOk()
+            ->assertSee('data-restore="true"', false)->assertSee('value="2026-10-19T12:00"', false)
+            ->assertSee('data-freepick-missing-list>PianoLIT eScore, Synthesia, Audio, Performance video</span>', false);
         auth('admin')->logout();
         $this->post(route('admin.pieces.schedule', $this->first), ['mode' => 'now'])->assertRedirect(route('admin.login.show'));
+    }
+
+    public function test_schedule_warning_lists_only_missing_media_and_requires_usable_video_links()
+    {
+        $this->first->updateQuietly(['score_source' => 'pianolit', 'score_path' => 'scores/edition.pdf', 'audio_path' => 'app/audio/full.mp3']);
+        $this->second->updateQuietly(['score_source' => 'external', 'score_path' => 'scores/external.pdf', 'audio_path' => 'app/audio/other.mp3']);
+        Model::withoutEvents(function () {
+            create(Tutorial::class, ['piece_id' => $this->first->id, 'type' => 'Performance', 'category' => 'legacy']);
+            create(Tutorial::class, ['piece_id' => $this->first->id, 'type' => 'Tutorial', 'category' => 'synthesia']);
+            create(Tutorial::class, ['piece_id' => $this->second->id, 'type' => 'Synthesia tutorial', 'category' => 'legacy']);
+            create(Tutorial::class, ['piece_id' => $this->second->id, 'type' => 'Performance', 'category' => 'performance', 'video_url' => ' ']);
+        });
+
+        $response = $this->get(route('admin.pieces.index'))->assertOk();
+        $document = new \DOMDocument;
+        @$document->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($document);
+        $this->assertSame('', $xpath->query('//button[@data-freepick-piece="'.$this->first->id.'"]')->item(0)->getAttribute('data-freepick-missing'));
+        $this->assertSame('PianoLIT eScore, Performance video', $xpath->query('//button[@data-freepick-piece="'.$this->second->id.'"]')->item(0)->getAttribute('data-freepick-missing'));
+        $this->assertCount(1, $xpath->query('//*[@data-freepick-media-warning and @hidden]'));
     }
 
     public function test_migration_preserves_legacy_ios_piece_json_and_explicit_current_selection()

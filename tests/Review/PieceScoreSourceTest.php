@@ -2,7 +2,7 @@
 
 namespace Tests\Review;
 
-use App\{Admin, Composer, Piece};
+use App\{Admin, Composer, Piece, Tag};
 use App\Services\Pieces\ScoreSource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
@@ -80,65 +80,66 @@ class PieceScoreSourceTest extends ReviewTestCase
         $this->assertStringContainsString('Matched: 0. Unknown: 4. Saved: 0.', Artisan::output());
     }
 
-    public function test_source_controls_preserve_filters_validate_links_and_reject_stale_and_unauthorized_writes()
+    public function test_score_source_is_read_only_in_the_directory_and_absent_from_the_editor_form()
     {
-        $piece = $this->piece('Branded piece', ['score_path' => 'scores/edition.pdf']);
-        $manager = create(Admin::class, ['role' => 'manager']);
-        $this->actingAs($manager, 'admin');
-        $index = route('admin.pieces.index', ['filter_score_source' => 'unknown']);
-        $editor = route('admin.pieces.edit', $piece);
-        $source = route('admin.pieces.update-score-source', $piece);
-        $version = hash('sha256', $piece->score_path);
-        $this->get($index)->assertOk()->assertSee('Branded piece')->assertSee('table-score-source-'.$piece->id);
-        $this->get($editor)->assertOk()->assertSee('Source link (optional)');
+        $piece = $this->piece('Branded piece', ['score_path' => 'scores/edition.pdf', 'score_source' => 'pianolit']);
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $response = $this->get(route('admin.pieces.index', ['filter_score_source' => 'pianolit']))->assertOk();
+        $document = new \DOMDocument;
+        @$document->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($document);
+        $row = $xpath->query('//button[@data-freepick-piece="'.$piece->id.'"]/ancestor::tr')->item(0);
+        $this->assertStringContainsString('PianoLIT eScore', $row->textContent);
+        $this->assertCount(0, $xpath->query('.//form', $row));
+        $this->get(route('admin.pieces.edit', $piece))->assertOk()->assertSee('name="score"', false)
+            ->assertDontSee('Edit score source')->assertDontSee('name="score_source"', false);
 
-        $this->patch($source.'?filter_score_source=unknown', ['score_source' => 'pianolit', 'score_version' => $version])
-            ->assertRedirect($index);
-        $this->assertSame('pianolit', $piece->fresh()->score_source);
-        $this->get($index)->assertOk()->assertDontSee('Branded piece');
-
-        $this->patch($source, ['score_source' => 'external', 'score_source_url' => 'https://example.test/edition',
-            'score_version' => $version, 'return_to_editor' => 1])->assertRedirect($editor.'#piece-score-source');
-        $this->assertSame('https://example.test/edition', $piece->fresh()->score_source_url);
-        $serialized = $piece->fresh()->setAppends([])->attributesToArray();
+        $serialized = $piece->setAppends([])->attributesToArray();
         $this->assertArrayNotHasKey('score_source', $serialized);
         $this->assertArrayNotHasKey('score_source_url', $serialized);
-
-        $this->withExceptionHandling()->from($editor)->patch($source, ['score_source' => 'external',
-            'score_source_url' => 'ftp://example.test/edition', 'score_version' => $version])->assertSessionHasErrors('score_source_url', null, 'scoreSource'.$piece->id);
-        $piece->update(['score_path' => 'scores/replacement.pdf']);
-        $this->withExceptionHandling()->from($editor)->patch($source, ['score_source' => 'pianolit', 'score_version' => $version])
-            ->assertSessionHasErrors('score_source', null, 'scoreSource'.$piece->id);
-        $this->assertSame('external', $piece->fresh()->score_source);
-
-        $this->actingAs(create(Admin::class, ['role' => 'editor']), 'admin')->patch($source, ['score_source' => 'pianolit',
-            'score_version' => hash('sha256', 'scores/replacement.pdf')])->assertForbidden();
     }
 
-    public function test_replacing_and_deleting_a_pdf_reset_its_source_and_new_uploads_are_detected()
+    public function test_creating_and_editing_pieces_detect_score_source_from_the_uploaded_pdf()
     {
         $this->requirePoppler();
-        $piece = $this->piece('Replace score', ['score_path' => 'app/score/old.pdf', 'score_source' => 'external',
-            'score_source_url' => 'https://example.test/edition']);
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
         $disk = Storage::disk('public');
-        $disk->put($piece->score_path, 'old PDF');
-        $piece->saveScore(UploadedFile::fake()->createWithContent('original.pdf', $this->pdf('PianoLIT eScore')));
-        $disk->assertMissing('app/score/old.pdf');
+        $payload = ['name' => 'Upload a score', 'key' => 'C major', 'composer_id' => create(Composer::class)->id, 'is_public' => 'on'];
+        foreach (['period' => 'classical', 'length' => 'short', 'level' => 'elementary'] as $type => $name) {
+            $payload[$type] = [create(Tag::class, compact('type', 'name'))->id];
+        }
+        Model::withoutEvents(function () use ($payload) {
+            $this->post(route('admin.pieces.store'), $payload + [
+                'score' => UploadedFile::fake()->createWithContent('original.pdf', $this->pdf('PianoLIT eScore')),
+            ])->assertRedirect()->assertSessionHas('status');
+        });
+        $piece = Piece::where('name', $payload['name'])->firstOrFail();
         $disk->assertExists($piece->score_path);
-        $this->assertSame('pianolit', $piece->fresh()->score_source);
-        $this->assertNull($piece->fresh()->score_source_url);
+        $this->assertSame('pianolit', $piece->score_source);
 
         $oldPath = $piece->score_path;
-        $piece->saveScore(UploadedFile::fake()->createWithContent('next.pdf', $this->pdf('Other edition')));
+        $piece->updateQuietly(['score_source_url' => 'https://example.test/old']);
+        $this->post(route('admin.pieces.update', $piece), $payload + [
+            '_method' => 'PATCH', 'score' => UploadedFile::fake()->createWithContent('replacement.pdf', $this->pdf('Other edition')),
+            'score_source' => 'pianolit', 'score_source_url' => 'https://example.test/forged',
+        ])->assertRedirect()->assertSessionHas('status');
+        $piece->refresh();
         $disk->assertMissing($oldPath);
-        $this->assertNull($piece->fresh()->score_source);
+        $disk->assertExists($piece->score_path);
+        $this->assertNull($piece->score_source);
+        $this->assertNull($piece->score_source_url);
+
+        $this->post(route('admin.pieces.update', $piece), $payload + [
+            '_method' => 'PATCH', 'score' => UploadedFile::fake()->createWithContent('branded.pdf', $this->pdf('PianoLIT eScore')),
+        ])->assertRedirect()->assertSessionHas('status');
+        $piece->refresh();
+        $this->assertSame('pianolit', $piece->score_source);
 
         $oldPath = $piece->score_path;
-        $piece->update(['score_source' => 'external', 'score_source_url' => 'https://example.test/other']);
-        $piece->deleteScore();
+        $this->delete(route('admin.pieces.destroy-file', $piece), ['method' => 'deleteScore'])->assertRedirect();
+        $piece->refresh();
         $disk->assertMissing($oldPath);
-        $this->assertNull($piece->fresh()->score_path);
-        $this->assertNull($piece->fresh()->score_source);
-        $this->assertNull($piece->fresh()->score_source_url);
+        $this->assertNull($piece->score_path);
+        $this->assertNull($piece->score_source);
     }
 }
