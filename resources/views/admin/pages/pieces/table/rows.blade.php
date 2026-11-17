@@ -32,6 +32,9 @@
             <span class="text-muted">Unavailable</span>
         @endif
     </td>
+    <td class="text-nowrap">
+        @include('admin.pages.pieces.table.score-source')
+    </td>
     <td>
         <div class="d-flex flex-nowrap justify-content-end align-items-center gap-2">
             @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.pieces.edit', $item), 'attributes' => ['aria-label' => 'Edit '.$item->long_name]]])

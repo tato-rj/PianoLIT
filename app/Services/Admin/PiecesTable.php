@@ -4,9 +4,11 @@ namespace App\Services\Admin;
 
 use App\{Composer, Piece};
 use App\Analytics\PieceViewCounts;
+use App\Services\Pieces\ScoreSource;
 use App\Support\AdminTableFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\EloquentDataTable;
 
 class PiecesTable
@@ -33,6 +35,7 @@ class PiecesTable
             'itunes' => 'sometimes|string|max:255',
             'videos' => 'sometimes|string|max:255',
             'score_path' => 'sometimes|string|max:255',
+            'filter_score_source' => ['nullable', 'string', Rule::in(array_keys(ScoreSource::LABELS))],
             'audio_path' => 'sometimes|string|max:255',
             'is_free' => 'sometimes|string|max:255',
         ]);
@@ -69,6 +72,15 @@ class PiecesTable
             else $query->where('pieces.'.$column, $filters[$column]);
         }
         $this->applyFilters($query, $filters);
+        if ($source = $filters['filter_score_source'] ?? null) {
+            $query->whereNotNull('pieces.score_path')->where('pieces.score_path', '!=', '');
+            $query->where(function ($query) use ($source) {
+                $query->where('pieces.score_source', $source);
+                if ($source === ScoreSource::UNKNOWN) {
+                    $query->orWhereNull('pieces.score_source');
+                }
+            });
+        }
         if (isset($filters['is_free'])) $query->free(filter_var($filters['is_free'], FILTER_VALIDATE_BOOLEAN));
         [$sort, $direction] = explode('_', $filters['sort']);
         $columns = ['id' => 0, 'name' => 1, 'composer' => 2, 'tags' => 3, 'level' => 4, 'highlight' => 5, 'favorites' => 6];

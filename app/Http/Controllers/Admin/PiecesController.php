@@ -6,6 +6,10 @@ use App\{Piece, Composer, Tag, Api};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Files\Uploaders\ImageUpload;
+use App\Services\Pieces\ScoreSource;
+use App\Support\AdminTableFilters;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\{Rule, ValidationException};
 
 class PiecesController extends Controller
 {
@@ -295,6 +299,32 @@ class PiecesController extends Controller
             'extended_level_name' => ucfirst($piece->extendedLevel->name)]);
     }
 
+    public function updateScoreSource(Request $request, Piece $piece)
+    {
+        abort_unless($request->user('admin')->isManager(), 403);
+        $bag = 'scoreSource'.$piece->id;
+        $filters = app(\App\Services\Admin\PiecesTable::class)->filters($request);
+        $data = $request->validateWithBag($bag, [
+            'score_source' => ['required', 'string', Rule::in(array_keys(ScoreSource::LABELS))],
+            'score_source_url' => ['sometimes', 'nullable', 'string', 'max:2048', 'url', 'regex:/^https?:\/\//i'],
+            'score_version' => 'required|string|size:64',
+            'return_to_editor' => 'sometimes|boolean',
+        ]);
+
+        $query = DB::table('pieces')->where('id', $piece->id)->where('score_path', $piece->score_path);
+        $attributes = array_intersect_key($data, array_flip(['score_source', 'score_source_url']));
+        if (!$piece->score_path || $data['score_version'] !== hash('sha256', $piece->score_path)
+            || (!$query->update($attributes) && !$query->exists())) {
+            throw ValidationException::withMessages(['score_source' => 'The saved PDF changed. Reload the page and try again.'])->errorBag($bag);
+        }
+
+        $destination = !empty($data['return_to_editor'])
+            ? route('admin.pieces.edit', $piece).'#piece-score-source'
+            : route('admin.pieces.index', AdminTableFilters::query($filters, 'updated_desc'));
+
+        return redirect($destination)->with('status', 'Score source saved.');
+    }
+
     public function updateTag(Request $request, Piece $piece)
     {
         $request->validate(['id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('tags', 'id')->whereNotIn('type', ['level', 'period', 'length'])]]);
@@ -348,15 +378,11 @@ class PiecesController extends Controller
 
     public function destroyFile(Request $request, Piece $piece)
     {
-        $method = $request->method;
+        $this->authorize('update', $piece);
+        $request->validate(['method' => 'required|in:deleteScore']);
+        $piece->deleteScore();
 
-        if (method_exists($piece, $method)) {
-            $piece->$method();
-
-            return back()->with(['status' => 'The file has been successfully removed!']);
-        }
-
-        return back()->with(['status' => 'The file could not be removed']);
+        return back()->with('status', 'The score was removed.');
     }
 
     /**

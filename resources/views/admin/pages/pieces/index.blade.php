@@ -13,6 +13,7 @@
         'action' => route('admin.pieces.index'), 'state' => $filters,
         'hidden' => array_intersect_key($filters, array_flip(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'])),
         'search' => ['label' => 'Find a piece', 'placeholder' => 'Piece, composer, catalogue, tag or ID'],
+        'filters' => [['name' => 'filter_score_source', 'label' => 'Score source', 'options' => ['' => 'All sources'] + \App\Services\Pieces\ScoreSource::LABELS]],
         'sorts' => array_diff_key(\App\Services\Admin\PiecesTable::SORTS, array_flip(['tags_asc', 'tags_desc'])),
         'columns' => [
             ['label' => 'ID', 'sort' => ['asc' => 'id_asc', 'desc' => 'id_desc']],
@@ -22,6 +23,7 @@
             ['label' => 'Highlighted', 'sort' => ['asc' => 'highlight_asc', 'desc' => 'highlight_desc']],
             ['label' => 'Favorited', 'sort' => ['asc' => 'favorites_asc', 'desc' => 'favorites_desc']],
             ['label' => 'Views', 'class' => 'text-end', 'sort' => ['asc' => 'views_asc', 'desc' => 'views_desc']],
+            ['label' => 'Score source'],
             ['label' => 'Actions', 'hidden' => true],
         ],
         'tableClass' => 'admin-pieces-table',

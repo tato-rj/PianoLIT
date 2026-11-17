@@ -55,6 +55,7 @@
     @manager
     @can('update', $piece)
     @if($piece->score_path)
+    @include('admin.pages.pieces.fields.score-source')
     <form id="delete-score-form" method="POST" action="{{ route('admin.pieces.destroy-file', $piece) }}">
         @csrf
         @method('DELETE')

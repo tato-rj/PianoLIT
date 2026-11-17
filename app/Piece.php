@@ -3,9 +3,12 @@
 namespace App;
 
 use Laravel\Scout\Searchable;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use App\Traits\{PieceExtraAttributes, PieceStatus, HasMedia};
 use App\Services\Pieces\AudioDuration;
+use App\Services\Pieces\ScoreSource;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use App\Tools\Cropper;
 
@@ -16,7 +19,7 @@ class Piece extends PianoLit
     protected $folder = 'pieces';
     protected $withCount = ['views', 'tags', 'favorites', 'tutorials'];
     protected $casts = ['is_free' => 'boolean', 'is_attributed_to' => 'boolean', 'show_on_tour' => 'boolean', 'audio_duration_seconds' => 'integer'];
-    protected $hidden = ['audio_duration_seconds'];
+    protected $hidden = ['audio_duration_seconds', 'score_source', 'score_source_url'];
     protected $dates = ['highlighted_at'];
     protected $with = ['composer'];
     protected $appends = [
@@ -610,25 +613,51 @@ class Piece extends PianoLit
 
     public function generateScoreName()
     {
-        return 'pianolit-' . str_slug($this->long_name) . '-' . lastnchar(mt_rand(), 4);
+        return 'pianolit-' . substr(str_slug($this->long_name), 0, 200) . '-' . strtolower(Str::random(16));
     }
 
     public function saveScore($file)
     {
-        if (\Storage::disk('public')->exists($this->score_path))
-            \Storage::disk('public')->delete($this->score_path);
+        [$source] = app(ScoreSource::class)->inspect($file->getPathname());
+        $filename = $this->generateScoreName().'.'.$file->extension();
+        $path = $file->storeAs('app/score', $filename, 'public');
+        if (!$path) {
+            throw ValidationException::withMessages(['score' => 'The score could not be saved.']);
+        }
 
-        $filename = $this->generateScoreName() . '.' . $file->extension();
+        try {
+            $previous = $this->replaceScoreFile($path, $source);
+        } catch (\Throwable $exception) {
+            \Storage::disk('public')->delete($path);
+            throw $exception;
+        }
+        if ($previous) {
+            \Storage::disk('public')->delete($previous);
+        }
 
-        return $this->update(['score_path' => $file->storeAs('app/score', $filename, 'public')]);
+        return true;
     }
 
     public function deleteScore()
     {
-        if (\Storage::disk('public')->exists($this->score_path))
-            \Storage::disk('public')->delete($this->score_path);
-        
-        return $this->update(['score_path' => null]);
+        $previous = $this->replaceScoreFile(null, null);
+        if ($previous) {
+            \Storage::disk('public')->delete($previous);
+        }
+        return true;
+    }
+
+    private function replaceScoreFile(?string $path, ?string $source): ?string
+    {
+        $attributes = ['score_path' => $path, 'score_source' => $source, 'score_source_url' => null];
+        $previous = $this->getConnection()->transaction(function () use ($attributes) {
+            $current = $this->newModelQuery()->whereKey($this->id)->lockForUpdate()->firstOrFail();
+            $previous = $current->score_path;
+            $current->fill($attributes)->saveQuietly();
+            return $previous;
+        });
+        $this->fill($attributes)->syncOriginalAttributes(array_keys($attributes));
+        return $previous;
     }
 
     public function cover_image()
