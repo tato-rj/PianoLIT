@@ -1,0 +1,39 @@
+id: favorite_folders
+status: draft
+backend_status: implemented_locally
+ios_status: pending_integration
+depends_on: [foundations, piece]
+objective: Save and remove pieces in the same account-owned folders as the website.
+operations:
+  list: GET /api/v2/favorite-folders?piece_id={piece}
+  save: PUT /api/v2/favorite-folders/{folder}/pieces/{piece}
+  remove: DELETE /api/v2/favorite-folders/{folder}/pieces/{piece}
+  create: POST /api/v2/favorite-folders
+authentication: Existing v2 bearer; no user_id, browser cookies or CSRF. Recheck owned folder on every mutation and replay.
+contracts:
+  reference: openapi.yaml
+  guide: examples/favorite-folders.md
+  list: All owned folders, including empty ones; string IDs, names, piece counts, Boolean has_piece, overall is_favorited, favorite_folder_ids and can_create_folder.
+  mutation: Authoritative current piece state, folder state and creation availability; HTTP 200 for PUT/DELETE and 201 for POST including replay.
+  create: Trimmed unique 3–36 character name plus optional decimal string piece_id; folder and selected-piece save are atomic.
+  idempotency: Optional account-scoped UUID Idempotency-Key; successful receipt active for 24 hours, different validated data gives 409, identical retry returns current state without reapplying later removals. Deleted folder gives 404 and is never recreated during retention.
+  errors: Existing error/meta envelope; stable 401/404/422/403/409/429 codes and Retry-After as detailed in the guide.
+source_of_truth:
+  tables: [favorite_folders, favorites]
+  native_service: app/Services/Api/V2/FavoriteFolders.php
+  permissions: App\Services\WebApp\FavoriteAccess uses the same saved AccessPolicy folder/folder_pieces limits for browser and v2 writes.
+  concurrency: Owner row lock shared with browser additions, owned folder row lock, database membership uniqueness and transactional durable receipts. No toggles in v2.
+  heart: At least one saved record and its folder must both belong to this account; legacy unfiled favorites stay untouched.
+  compatibility: No legacy route, shared model serialization, original media, billing or existing website response changes.
+native:
+  detail_flag: account.favorite_writes_supported is true; account.is_favorited uses the same owned-folder query.
+  success: Use returned state for heart and counts; play small pink-heart save animation only after successful save.
+  ordering: Serialize piece mutations and discard stale picker/account responses; refresh after external edits, without assuming push delivery.
+deployment:
+  migration: 2026_11_09_120000_create_api_v2_favorite_folder_receipts.php before matching code.
+  secrets_or_flags: None; preserve Match-tour activation and native media rules.
+  production: Pending deployment and HTTPS verification.
+acceptance:
+  local: ApiV2FavoriteFoldersTest plus existing piece, Discover, website favorites and access-policy regressions.
+  mysql: Disposable socket-only MySQL 8.4.2 applied migrations; concurrent same-key creations, distinct folder-cap races, repeated PUT/DELETE and mixed web/v2 piece-cap races pass.
+  pending: Production migration/deployment and HTTPS checks; native picker/heart/animation, offline/retry, quota and account-switch acceptance.

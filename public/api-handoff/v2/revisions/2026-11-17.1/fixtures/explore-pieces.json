@@ -1,0 +1,52 @@
+{
+    "data": {
+        "pieces": [
+            {
+                "kind": "piece",
+                "id": "1",
+                "title": "Morning study",
+                "featured_title": "Morning study",
+                "subtitle": "E. Composer",
+                "catalogue": "Op.1",
+                "composer": {
+                    "kind": "composer",
+                    "id": "1",
+                    "name": "Example Composer",
+                    "short_name": "E. Composer",
+                    "portrait_url": "https://example.test/storage/fixtures/composer.jpg",
+                    "biography": "A composer biography.",
+                    "piece_count": 3,
+                    "target": {
+                        "kind": "composer_pieces",
+                        "id": "1",
+                        "query": null,
+                        "web_url": "https://my.example.test/search?search=Example%20Composer&model=App%5CComposer"
+                    }
+                },
+                "artwork_url": "https://example.test/storage/fixtures/study.jpg",
+                "difficulty": "elementary",
+                "is_new": true,
+                "is_free_pick": false,
+                "duration_seconds": null,
+                "media": {
+                    "performance": false,
+                    "synthesia": false,
+                    "tutorial": true,
+                    "audio": false,
+                    "score": false
+                },
+                "target": {
+                    "kind": "piece",
+                    "id": "1",
+                    "query": null,
+                    "web_url": "https://my.example.test/pieces/1"
+                }
+            }
+        ],
+        "page": 1,
+        "next_page": null
+    },
+    "meta": {
+        "request_id": "00000000-0000-4000-8000-000000004003"
+    }
+}

@@ -1,0 +1,79 @@
+id: find_my_match
+status: draft
+backend_status: implemented_locally
+evidence_date: '2026-11-03'
+deployment:
+  target_base_url: https://pianolit.com/api/v2
+  production_verified: false
+  staging_base_url: null
+  enabled_by_default: false
+  instructions: examples/find-my-match.md
+native:
+  ui: Keep the completed UIKit/storyboard design for steps 1–4 unchanged
+  integration: Replace bundled examples and local difficulty/count calculations with tour JSON; connect mood and the existing native piece page
+  native_source_available: false
+  device_acceptance: pending
+source_of_truth:
+  draw_and_moods: app/Services/WebApp/MatchTour.php
+  ranking: app/Services/WebApp/MatchQuiz.php
+  original_fallback: app/Resources/FindYourMatch/Quiz.php
+  final_summary: app/Services/Api/V2/DiscoverResponse.php
+  preview_preparation: app/Services/Api/V2/MatchTourMedia.php
+operations:
+  start: POST /match-tours
+  load: GET /match-tours/{tour}
+  answer: PUT /match-tours/{tour}/answers/{slot}
+  final: GET /match-tours/{tour}/result
+steps:
+- number: 1
+  title: Your level
+  slot: level
+  choices: [elementary, beginner, intermediate, advanced]
+  presentation: Four equally sized existing native choices; label, short description, piece ID/title, composer/portrait and bounded audio preview
+- number: 2
+  title: Listening
+  slot: listening
+  choices: Four served piece IDs with title, composer, artwork and bounded audio preview
+- number: 3
+  title: Sight-reading
+  slots: [reading-1, reading-2]
+  choices: [easy, difficult]
+  labels: [Easy for me, Difficult for me]
+  adaptive: First intermediate sample; easy selects advanced next, difficult selects beginner next (elementary fallback if beginner unavailable)
+  media: Middle strip of first score page as 900px excerpt and 1800px zoomable PNG of the same content; no full PDF/page
+- number: 4
+  title: Your taste
+  slots: [taste-1, taste-2]
+  choices: Two served pieces per round, or explicit JSON null to skip that round
+- number: 5
+  title: Mood
+  slot: mood
+  choices: Shared MatchTour::MOODS values, labels and icon hints
+  completion: All answers accepted yields ready; fetch result to obtain one pinned PieceSummary
+state:
+  lifetime: Two hours from creation, never extended by reads or answers
+  ownership: Bearer-derived account ID; UUID is an identifier and cannot authenticate
+  restart: POST with a new request_id; an old start request_id reloads its original tour
+  back: Use returned fixed questions and answers; opening a previous screen does not mutate state
+  update: Replace an earlier answer using latest revision and a new request_id; clear all later answers and the result
+  retry: Identical request_id/body returns current snapshot without repeating the mutation
+  concurrency: Database row locks, integer revision checks, account/start-key uniqueness and transactional saves
+  receipts: At most 256 accepted update UUIDs per tour; retry receipts retained with the tour
+  retention: Hourly prune command deletes state/receipts one day after expiration; subsequent requests return 404
+counts:
+  initial_library_total: Exact Piece count at tour creation, including outside the matching pool
+  remaining_pieces: Display estimates mirroring the website after level/listening/reading/taste, never exact candidate-pool queries
+  final: Exactly one only after a valid match exists; no-match errors never invent a final count
+boundaries:
+- No cookies, CSRF, browser Access Limits or submitted identity
+- No full audio/PDF URLs, entitlements, billing, favorites or piece-open history writes
+- Preview samples require signed capability URLs, never an API bearer on media/artwork requests
+- Existing native piece screen opens result.piece.target.id; only its successful open records history
+- Existing v2 and legacy contracts remain unchanged
+fixtures:
+  complete_flow: fixtures/find-my-match-flow.json
+  errors: fixtures/find-my-match-errors.json
+verification:
+  automated: tests/Review/ApiV2MatchTourTest.php and existing MatchTour/ApiV2Discover regressions
+  media: Real synthetic recording encoding and score crop checks, plus signed delivery/expiry/range checks
+  pending: Production migration/media preparation and synthetic HTTPS checks; MySQL concurrency acceptance; native phone/iPad complete-flow/back/retry/zoom/audio checks

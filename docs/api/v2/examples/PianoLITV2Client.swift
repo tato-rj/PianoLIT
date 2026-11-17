@@ -78,6 +78,7 @@ struct V2Composer: Decodable, Sendable {
     let short_name: String
     let portrait_url: URL
     let biography: String
+    let curiosity: String?
     let piece_count: Int
     let target: V2Target
     let lifespan: String?
@@ -223,6 +224,94 @@ struct V2Discover: Decodable, Sendable {
     // Render by kind/id, never row position. Skip unknown kinds.
 }
 
+struct V2ExploreResultsTarget: Decodable, Sendable {
+    enum Scope: String, Decodable, Sendable { case catalogue, highlights }
+    let kind: String
+    let scope: Scope
+    let tag_ids: [String]
+    let label: String?
+}
+
+struct V2ExploreFacet: Decodable, Sendable {
+    let id: String
+    let name: String
+    let piece_count: Int
+    let artwork_url: URL?
+    let target: V2ExploreResultsTarget
+}
+
+struct V2ExploreCategory: Decodable, Sendable {
+    let id: String
+    let name: String
+    let tags: [V2ExploreFacet]
+}
+
+struct V2ExploreOriginal: Decodable, Sendable {
+    let id: String
+    let title: String
+    let description: String?
+    let artwork_url: URL?
+    let target: V2Target
+}
+
+struct V2ExploreHarmony: Decodable, Sendable {
+    struct Target: Decodable, Sendable {
+        let kind: String
+        let piece_id: String
+        let video_id: String
+    }
+    let id: String
+    let title: String
+    let composer: V2Composer
+    let description: String?
+    let artwork_url: URL
+    let access: V2PieceDetail.Access
+    let target: Target
+}
+
+enum V2ExploreItem: Decodable, Sendable {
+    case category(V2ExploreCategory)
+    case piece(V2Piece)
+    case original(V2ExploreOriginal)
+    case period(V2ExploreFacet)
+    case level(V2ExploreFacet)
+    case composer(V2Composer)
+    case harmony(V2ExploreHarmony)
+    case unsupported
+
+    private enum CodingKeys: String, CodingKey { case kind }
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        switch try values.decode(String.self, forKey: .kind) {
+        case "category": self = .category(try V2ExploreCategory(from: decoder))
+        case "piece": self = .piece(try V2Piece(from: decoder))
+        case "original": self = .original(try V2ExploreOriginal(from: decoder))
+        case "period": self = .period(try V2ExploreFacet(from: decoder))
+        case "level": self = .level(try V2ExploreFacet(from: decoder))
+        case "composer": self = .composer(try V2Composer(from: decoder))
+        case "harmony_lesson": self = .harmony(try V2ExploreHarmony(from: decoder))
+        default: self = .unsupported
+        }
+    }
+}
+
+struct V2Explore: Decodable, Sendable {
+    struct Section: Decodable, Sendable {
+        let id: String
+        let kind: String
+        let title: String
+        let items: [V2ExploreItem]
+        let action: V2ExploreResultsTarget?
+    }
+    let sections: [Section]
+}
+
+struct V2ExplorePieces: Decodable, Sendable {
+    let pieces: [V2Piece]
+    let page: Int
+    let next_page: Int?
+}
+
 private enum V2Keychain {
     static var query: [String: Any] {
         [kSecClass as String: kSecClassGenericPassword,
@@ -297,6 +386,19 @@ actor PianoLITV2Client {
     func discover() async throws -> V2Discover {
         let bytes = try await authenticated("discover", method: "GET")
         return try JSONDecoder().decode(V2Envelope<V2Discover>.self, from: bytes).data
+    }
+
+    func explore() async throws -> V2Explore {
+        let bytes = try await authenticated("explore", method: "GET")
+        return try JSONDecoder().decode(V2Envelope<V2Explore>.self, from: bytes).data
+    }
+
+    func explorePieces(scope: V2ExploreResultsTarget.Scope = .catalogue, tagIDs: [String] = [],
+                       page: Int = 1) async throws -> V2ExplorePieces {
+        var query = [URLQueryItem(name: "scope", value: scope.rawValue), URLQueryItem(name: "page", value: String(page))]
+        query += tagIDs.map { URLQueryItem(name: "tag_ids[]", value: $0) }
+        let bytes = try await authenticated("explore/pieces", method: "GET", query: query)
+        return try JSONDecoder().decode(V2Envelope<V2ExplorePieces>.self, from: bytes).data
     }
 
     func piece(id: String) async throws -> V2PieceDetail {

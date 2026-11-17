@@ -1,0 +1,18 @@
+{
+  "data": {
+    "collection": {
+      "id": "92",
+      "title": "Piano studies",
+      "subtitle": null,
+      "artwork_url": "https://example.test/images/webapp/collections/featured.webp",
+      "piece_count": 6,
+      "featured_badge": null,
+      "access": "membership_required",
+      "description": "Six studies for developing technique."
+    },
+    "pieces": []
+  },
+  "meta": {
+    "request_id": "00000000-0000-4000-8000-000000003004"
+  }
+}

@@ -1,6 +1,6 @@
 schema_version: 1
-revision: 2026-11-14.1
-updated_on: '2026-11-14'
+revision: 2026-11-17.1
+updated_on: '2026-11-17'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -28,7 +28,9 @@ runtime:
     2026-11-11.2 was also production verified for book order, cover assets, availability,
     weekly suggestion order, catalog access and ordered category assignments. The
     new piece duration field is implemented locally. Production deployment and duration
-    backfill are pending. Native acceptance remains pending.'
+    backfill are pending. Explore feed and filtered results were production verified
+    on 2026-11-17, including the legacy route, bearer errors, tag matches, highlights
+    ordering and Harmony access through piece detail. Native acceptance remains pending.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -45,10 +47,12 @@ entrypoints:
   favorite_examples: examples/favorite-folders.md
   collections: screens/collections.yaml
   collections_examples: examples/collections.md
+  explore: screens/explore.yaml
+  explore_examples: examples/explore.md
 files:
 - path: README.md
-  bytes: 11224
-  sha256: 7a99a7f6d06b6a114cdec3775ac22cdfdc63cbc0db6dd50d8e5385ca33873c0a
+  bytes: 11475
+  sha256: 7255de5bebe8922b89a48b61d261ac821fa681b535edf4cf021ba93d6a690855
 - path: foundations.yaml
   bytes: 5830
   sha256: f5dd95d5709a522f35a7e44959ca7917c6510590e7a35438744b1625bea3bd2e
@@ -56,8 +60,8 @@ files:
   bytes: 10384
   sha256: 3a26ddf1df6e7fdc7e992d2d629b57cd6ae7a16cd75763c7f20291165a28ebe0
 - path: openapi.yaml
-  bytes: 85356
-  sha256: 3a1dd6a43be56e096815eee189dce88d5fa06ee4d1cdc03cfb59ca656a264f77
+  bytes: 94062
+  sha256: 5c69bdbf5973fff20ad26bd98ed9cecd2259292217bc76278f80938fb3947fbd
 - path: design.yaml
   bytes: 2740
   sha256: 094fef76502c95677b0f36acb9045d3930633257ee93192184b02ce896dbe330
@@ -74,8 +78,8 @@ files:
   bytes: 183
   sha256: 28b67a3a1694e2f2e92c75066870b0d385e149b2fad0e335545de84f038510e6
 - path: examples/PianoLITV2Client.swift
-  bytes: 20603
-  sha256: 35d8f30e8fd55ed24efea568019e1dc37677a7011991fef5b347fa1099fe9fd0
+  bytes: 23947
+  sha256: 111f40fa16a695bad38533f25863d7e14495ba565034267e3b83295a4e7096bd
 - path: screens/find-my-match.yaml
   bytes: 4284
   sha256: f673b463d8b521c1a5e225c5904fa9b914444b1753c82de8d2bcd802e90a11c2
@@ -130,6 +134,21 @@ files:
 - path: fixtures/collections-locked.json
   bytes: 451
   sha256: 16a763fff2b84f18f2f1996205ced830ab02cba61bf081d3d024845e5c37f91f
+- path: screens/explore.yaml
+  bytes: 1317
+  sha256: 390bf4d99804544d2e6ec4e1f072acc84f23f361e8ea7a5fe3749aaaa615426f
+- path: examples/explore.md
+  bytes: 5064
+  sha256: 038e0b5bfe03b3e1dc9b5a8404a0fc33e3ea8d931d34cd595e74643c62bf8813
+- path: fixtures/explore-full.json
+  bytes: 10387
+  sha256: 53c288ee41d9d6596b51592fde711c8a9833c4cea5294549afcc62037f869abc
+- path: fixtures/explore-empty.json
+  bytes: 129
+  sha256: 039aa2a38c7562a94d17b1b134d2d75f220e8a5df7d309e813f9b3bcf6923328
+- path: fixtures/explore-pieces.json
+  bytes: 1831
+  sha256: 5d5bc0ab91d136812e708eefbecbd0e2ed3d77ee3fc5ee659fd5c3d0fb314774
 features:
 - id: foundations
   document: foundations.yaml
@@ -174,6 +193,14 @@ features:
   depends_on:
   - foundations
   - piece
+- id: explore
+  document: screens/explore.yaml
+  status: draft
+  backend_status: production_verified
+  ios_status: pending_integration
+  depends_on:
+  - foundations
+  - piece
 consumer_rules:
 - Read README.md, the concrete OpenAPI operations and examples/PianoLITV2Client.swift
   for the connection procedure.
@@ -203,7 +230,16 @@ consumer_rules:
 - For the Collections tab use the dedicated catalog and detail endpoints with the
   same v2 bearer. See examples/collections.md for the membership lock, piece navigation
   and removed Follow a path flow.
+- For the native Explore tab use GET /explore and GET /explore/pieces with the same
+  bearer. Follow typed targets and resolve Harmony playback through piece detail.
 changelog:
+- revision: 2026-11-17.1
+  changes:
+  - Added authenticated Explore feed and paginated tag and highlights results.
+  - Added typed destinations for Explore sections, Swift decoders and full, empty
+    and results fixtures.
+  - Verified the backend in production, including the installed app's legacy Explore
+    response.
 - revision: 2026-11-14.1
   changes:
   - Added nullable duration_seconds to v2 piece summaries, including Collections rows.
@@ -300,4 +336,4 @@ changelog:
   - Established the handoff format, shared API proposals and compatibility boundaries.
   - Inventoried Discover against the current web implementation.
   - No runtime endpoints, migrations, Swift changes or deployment in this revision.
-base_path: revisions/2026-11-14.1/
+base_path: revisions/2026-11-17.1/

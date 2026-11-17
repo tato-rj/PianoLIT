@@ -1,5 +1,10 @@
 # PianoLIT iOS v2 connection
 
+Revision **2026-11-17.1** adds the authenticated Explore feed and paginated
+results for tags, periods, levels and past highlights. See
+[Explore integration](examples/explore.md) for typed destinations, Harmony
+access, Swift methods and JSON samples.
+
 Revision **2026-11-14.1** adds `duration_seconds` to v2 piece summaries. It
 gives Collections rows the duration of the full recording in whole seconds.
 Production deployment and catalogue backfill are pending.
@@ -175,7 +180,7 @@ The Swift developer can fetch hash-verified files with:
 ```sh
 python scripts/api-handoff.py fetch \
   --url https://pianolit.com/api-handoff/v2/manifest.yaml \
-  --revision 2026-11-14.1 --output /path/to/ios-repository/BackendHandoff
+  --revision 2026-11-17.1 --output /path/to/ios-repository/BackendHandoff
 ```
 
 This fetch copies documentation/examples, not an installed network connection.

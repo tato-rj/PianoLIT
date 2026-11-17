@@ -1,6 +1,6 @@
 schema_version: 1
-revision: 2026-11-14.1
-updated_on: '2026-11-14'
+revision: 2026-11-17.1
+updated_on: '2026-11-17'
 title: PianoLIT iOS v2 handoff
 status: draft
 purpose: Development instructions for the backend and iOS teams; not app runtime configuration.
@@ -28,7 +28,10 @@ runtime:
     Revision 2026-11-11.2 was also production verified for book order, cover assets,
     availability, weekly suggestion order, catalog access and ordered category
     assignments. The new piece duration field is implemented locally. Production
-    deployment and duration backfill are pending. Native acceptance remains pending.'
+    deployment and duration backfill are pending. Explore feed and filtered results were
+    production verified on 2026-11-17, including the legacy route, bearer errors, tag
+    matches, highlights ordering and Harmony access through piece detail. Native
+    acceptance remains pending.'
 entrypoints:
   instructions: README.md
   foundations: foundations.yaml
@@ -45,6 +48,8 @@ entrypoints:
   favorite_examples: examples/favorite-folders.md
   collections: screens/collections.yaml
   collections_examples: examples/collections.md
+  explore: screens/explore.yaml
+  explore_examples: examples/explore.md
 files:
 - path: README.md
 - path: foundations.yaml
@@ -74,6 +79,11 @@ files:
 - path: fixtures/collections-detail.json
 - path: fixtures/collections-empty.json
 - path: fixtures/collections-locked.json
+- path: screens/explore.yaml
+- path: examples/explore.md
+- path: fixtures/explore-full.json
+- path: fixtures/explore-empty.json
+- path: fixtures/explore-pieces.json
 features:
 - id: foundations
   document: foundations.yaml
@@ -118,6 +128,14 @@ features:
   depends_on:
   - foundations
   - piece
+- id: explore
+  document: screens/explore.yaml
+  status: draft
+  backend_status: production_verified
+  ios_status: pending_integration
+  depends_on:
+  - foundations
+  - piece
 consumer_rules:
 - Read README.md, the concrete OpenAPI operations and examples/PianoLITV2Client.swift
   for the connection procedure.
@@ -147,7 +165,14 @@ consumer_rules:
 - For the Collections tab use the dedicated catalog and detail endpoints with the
   same v2 bearer. See examples/collections.md for the membership lock, piece
   navigation and removed Follow a path flow.
+- For the native Explore tab use GET /explore and GET /explore/pieces with the
+  same bearer. Follow typed targets and resolve Harmony playback through piece detail.
 changelog:
+- revision: 2026-11-17.1
+  changes:
+  - Added authenticated Explore feed and paginated tag and highlights results.
+  - Added typed destinations for Explore sections, Swift decoders and full, empty and results fixtures.
+  - Verified the backend in production, including the installed app's legacy Explore response.
 - revision: 2026-11-14.1
   changes:
   - Added nullable duration_seconds to v2 piece summaries, including Collections rows.

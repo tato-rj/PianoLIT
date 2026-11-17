@@ -1,0 +1,29 @@
+id: explore
+title: Explore
+status: draft
+backend_status: production_verified
+ios_status: pending_integration
+routes:
+  feed: GET /api/v2/explore
+  results: GET /api/v2/explore/pieces
+  piece: GET /api/v2/pieces/{id}
+legacy: GET /api/explore remains available for installed app versions.
+sections:
+  - {id: categories, item: category, destination: explore_results}
+  - {id: highlights, item: piece, destination: piece, action: explore_results}
+  - {id: originals, item: original, destination: article}
+  - {id: periods, item: period, destination: explore_results}
+  - {id: levels, item: level, destination: explore_results}
+  - {id: featured_composer, item: composer, destination: composer_profile}
+  - {id: harmony, item: harmony_lesson, destination: piece_lesson}
+integration:
+  - Reuse the existing v2 bearer session and standard envelope.
+  - Preserve section order and skip missing or unsupported section kinds.
+  - Use repeated tag_ids[] for selected tags and follow next_page.
+  - Resolve Harmony videos by ID from piece detail and honor its media mode.
+  - Originals and composer profile use public web destinations pending dedicated native detail contracts.
+examples:
+  guide: examples/explore.md
+  full: fixtures/explore-full.json
+  empty: fixtures/explore-empty.json
+  results: fixtures/explore-pieces.json

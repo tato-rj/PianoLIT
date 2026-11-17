@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: PianoLIT mobile API v2 — Discover, Collections, piece detail, favorite folders and Find my match
-  version: 1.6.0
+  title: PianoLIT mobile API v2 — Discover, Explore, Collections, piece detail, favorite folders and Find my match
+  version: 1.7.0
   description: Independent v2 login and Discover. Web and v2 share App\Services\Discover\Feed.
     Legacy /api routes remain supported indefinitely. Deployment/native verification
     is recorded in the manifest; downloading this specification does not authenticate
@@ -14,17 +14,91 @@ info:
     Collections uses the shared web catalog, book series, weekly selections and categories with native bearer access.
 servers:
 - url: https://pianolit.com/api/v2
-  description: Login, Discover, confirmed piece-open history, piece detail and Collections
-    are live. Collections was verified on 2026-11-11. Match-tour activation, expanded
+  description: Login, Discover, confirmed piece-open history, piece detail, Collections and Explore
+    are live. Explore was verified on 2026-11-17. Match-tour activation, expanded
     composer-pool acceptance and native/staging verification remain separate.
 security:
 - MobileBearer: []
 x-handoff:
-  revision: 2026-11-14.1
+  revision: 2026-11-17.1
   status: draft
   implemented: true
   native_integration: pending
 paths:
+  /explore:
+    get:
+      operationId: getExploreV2
+      summary: Load the ordered Explore sections
+      description: Empty sections are omitted. Both the feed and destination lists use the existing bearer session.
+      responses:
+        '200':
+          description: Ordered sections with typed items. An empty feed returns sections [].
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExploreResponse'
+        '401':
+          $ref: '#/components/responses/CollectionUnauthenticated'
+        '429':
+          $ref: '#/components/responses/CollectionRateLimited'
+        '500':
+          $ref: '#/components/responses/CollectionServerError'
+  /explore/pieces:
+    get:
+      operationId: listExplorePiecesV2
+      summary: Load the matching pieces for selected Explore tags or past highlights
+      description: >-
+        Within one tag type the selection matches any selected tag. Across tag types
+        it must match each group. Level and sublevel are one type for this purpose.
+        Catalogue results are ordered by creation date then piece ID, both descending.
+        Highlights are ordered by highlight date then piece ID, both descending,
+        and exclude the current Free Pick.
+      parameters:
+      - name: scope
+        in: query
+        schema:
+          type: string
+          enum: [catalogue, highlights]
+          default: catalogue
+      - name: tag_ids[]
+        in: query
+        style: form
+        explode: true
+        description: Repeat tag_ids[] for each selected ID. Catalogue requires at least one. Highlights accepts optional tag filters.
+        schema:
+          type: array
+          minItems: 1
+          maxItems: 12
+          uniqueItems: true
+          items:
+            type: string
+            pattern: '^[1-9][0-9]{0,19}$'
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          default: 1
+      responses:
+        '200':
+          description: Up to 24 matching piece summaries, with a nullable next page number.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplorePiecesResponse'
+        '401':
+          $ref: '#/components/responses/CollectionUnauthenticated'
+        '422':
+          description: Invalid scope, page, tag IDs or tag selection (invalid_request).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          $ref: '#/components/responses/CollectionRateLimited'
+        '500':
+          $ref: '#/components/responses/CollectionServerError'
   /collections:
     get:
       operationId: listCollectionsV2
@@ -1206,6 +1280,8 @@ components:
           - composers
           - catalogue
           - highlights
+          - article
+          - composer_profile
         id:
           type: string
           nullable: true
@@ -1270,6 +1346,224 @@ components:
               $ref: '#/components/schemas/UtcInstant'
             user:
               $ref: '#/components/schemas/UserSummary'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ExploreResultsTarget:
+      type: object
+      required: [kind, scope, tag_ids]
+      properties:
+        kind:
+          type: string
+          enum: [explore_results]
+        scope:
+          type: string
+          enum: [catalogue, highlights]
+        tag_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+        label:
+          type: string
+          description: Button label. Included on the Highlights section action.
+    ExploreFacet:
+      type: object
+      required: [kind, id, name, piece_count, target]
+      properties:
+        kind:
+          type: string
+        id:
+          $ref: '#/components/schemas/Identifier'
+        name:
+          type: string
+        piece_count:
+          type: integer
+          minimum: 0
+        target:
+          $ref: '#/components/schemas/ExploreResultsTarget'
+    ExploreTag:
+      allOf:
+      - $ref: '#/components/schemas/ExploreFacet'
+      - type: object
+        properties:
+          kind:
+            type: string
+            enum: [tag]
+    ExploreCategory:
+      type: object
+      required: [kind, id, name, tags]
+      properties:
+        kind:
+          type: string
+          enum: [category]
+        id:
+          type: string
+          enum: [technique, mood, genre]
+        name:
+          type: string
+        tags:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ExploreTag'
+    ExplorePeriod:
+      allOf:
+      - $ref: '#/components/schemas/ExploreFacet'
+      - type: object
+        required: [artwork_url]
+        properties:
+          kind:
+            type: string
+            enum: [period]
+          artwork_url:
+            type: string
+            format: uri
+            nullable: true
+    ExploreLevel:
+      allOf:
+      - $ref: '#/components/schemas/ExploreFacet'
+      - type: object
+        properties:
+          kind:
+            type: string
+            enum: [level]
+    ExploreOriginal:
+      type: object
+      required: [kind, id, title, description, artwork_url, target]
+      properties:
+        kind:
+          type: string
+          enum: [original]
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        artwork_url:
+          type: string
+          format: uri
+          nullable: true
+        target:
+          allOf:
+          - $ref: '#/components/schemas/Target'
+          - type: object
+            properties:
+              kind:
+                type: string
+                enum: [article]
+    ExploreFeaturedComposer:
+      allOf:
+      - $ref: '#/components/schemas/ComposerProfile'
+      - type: object
+        required: [curiosity]
+        properties:
+          curiosity:
+            type: string
+            nullable: true
+          target:
+            allOf:
+            - $ref: '#/components/schemas/Target'
+            - type: object
+              properties:
+                kind:
+                  type: string
+                  enum: [composer_profile]
+    ExploreHarmony:
+      type: object
+      required: [kind, id, title, composer, description, artwork_url, access, target]
+      properties:
+        kind:
+          type: string
+          enum: [harmony_lesson]
+        id:
+          $ref: '#/components/schemas/Identifier'
+        title:
+          type: string
+        composer:
+          $ref: '#/components/schemas/ComposerSummary'
+        description:
+          type: string
+          nullable: true
+        artwork_url:
+          type: string
+          format: uri
+        access:
+          $ref: '#/components/schemas/PieceNativeAccess'
+        target:
+          type: object
+          required: [kind, piece_id, video_id]
+          properties:
+            kind:
+              type: string
+              enum: [piece_lesson]
+            piece_id:
+              $ref: '#/components/schemas/Identifier'
+            video_id:
+              $ref: '#/components/schemas/Identifier'
+    ExploreSection:
+      type: object
+      required: [id, kind, title, items]
+      properties:
+        id:
+          type: string
+          description: Stable section ID. Currently the same as kind.
+        kind:
+          type: string
+          enum: [categories, highlights, originals, periods, levels, featured_composer, harmony]
+        title:
+          type: string
+        items:
+          type: array
+          minItems: 1
+          description: Item type corresponds to the section kind, in the order listed in the kind enum.
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/ExploreCategory'
+            - $ref: '#/components/schemas/PieceSummary'
+            - $ref: '#/components/schemas/ExploreOriginal'
+            - $ref: '#/components/schemas/ExplorePeriod'
+            - $ref: '#/components/schemas/ExploreLevel'
+            - $ref: '#/components/schemas/ExploreFeaturedComposer'
+            - $ref: '#/components/schemas/ExploreHarmony'
+        action:
+          $ref: '#/components/schemas/ExploreResultsTarget'
+    ExploreResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [sections]
+          properties:
+            sections:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExploreSection'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ExplorePiecesResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [pieces, page, next_page]
+          properties:
+            pieces:
+              type: array
+              maxItems: 24
+              items:
+                $ref: '#/components/schemas/PieceSummary'
+            page:
+              type: integer
+              minimum: 1
+              maximum: 10000
+            next_page:
+              type: integer
+              minimum: 2
+              maximum: 10000
+              nullable: true
         meta:
           $ref: '#/components/schemas/ResponseMeta'
     CollectionCard:
@@ -2255,6 +2549,33 @@ components:
         copyright:
           type: string
           nullable: true
+    ComposerProfile:
+      allOf:
+      - $ref: '#/components/schemas/ComposerSummary'
+      - type: object
+        required: [lifespan, born_year, died_year, country]
+        properties:
+          lifespan:
+            type: string
+            nullable: true
+          born_year:
+            type: integer
+            nullable: true
+          died_year:
+            type: integer
+            nullable: true
+          country:
+            type: object
+            nullable: true
+            required: [id, name, flag_code]
+            properties:
+              id:
+                $ref: '#/components/schemas/Identifier'
+              name:
+                type: string
+              flag_code:
+                type: string
+                nullable: true
     PiecePageHeader:
       allOf:
       - $ref: '#/components/schemas/PieceSummary'
@@ -2263,39 +2584,7 @@ components:
         - composer
         properties:
           composer:
-            allOf:
-            - $ref: '#/components/schemas/ComposerSummary'
-            - type: object
-              required:
-              - lifespan
-              - born_year
-              - died_year
-              - country
-              properties:
-                lifespan:
-                  type: string
-                  nullable: true
-                born_year:
-                  type: integer
-                  nullable: true
-                died_year:
-                  type: integer
-                  nullable: true
-                country:
-                  type: object
-                  required:
-                  - id
-                  - name
-                  - flag_code
-                  properties:
-                    id:
-                      $ref: '#/components/schemas/Identifier'
-                    name:
-                      type: string
-                    flag_code:
-                      type: string
-                      nullable: true
-                  nullable: true
+            $ref: '#/components/schemas/ComposerProfile'
     PieceMetadata:
       type: object
       required:

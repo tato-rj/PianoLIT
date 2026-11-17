@@ -1,0 +1,260 @@
+{
+    "data": {
+        "sections": [
+            {
+                "id": "categories",
+                "kind": "categories",
+                "title": "Categories",
+                "items": [
+                    {
+                        "kind": "category",
+                        "id": "technique",
+                        "name": "Technique",
+                        "tags": [
+                            {
+                                "kind": "tag",
+                                "id": "1",
+                                "name": "Arpeggios",
+                                "piece_count": 3,
+                                "target": {
+                                    "kind": "explore_results",
+                                    "scope": "catalogue",
+                                    "tag_ids": [
+                                        "1"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "category",
+                        "id": "mood",
+                        "name": "Mood",
+                        "tags": [
+                            {
+                                "kind": "tag",
+                                "id": "2",
+                                "name": "Calm",
+                                "piece_count": 3,
+                                "target": {
+                                    "kind": "explore_results",
+                                    "scope": "catalogue",
+                                    "tag_ids": [
+                                        "2"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "category",
+                        "id": "genre",
+                        "name": "Genre",
+                        "tags": [
+                            {
+                                "kind": "tag",
+                                "id": "3",
+                                "name": "Folk",
+                                "piece_count": 3,
+                                "target": {
+                                    "kind": "explore_results",
+                                    "scope": "catalogue",
+                                    "tag_ids": [
+                                        "3"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "highlights",
+                "kind": "highlights",
+                "title": "Highlights",
+                "items": [
+                    {
+                        "kind": "piece",
+                        "id": "1",
+                        "title": "Morning study",
+                        "featured_title": "Morning study",
+                        "subtitle": "E. Composer",
+                        "catalogue": "Op.1",
+                        "composer": {
+                            "kind": "composer",
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.test/storage/fixtures/composer.jpg",
+                            "biography": "A composer biography.",
+                            "piece_count": 3,
+                            "target": {
+                                "kind": "composer_pieces",
+                                "id": "1",
+                                "query": null,
+                                "web_url": "https://my.example.test/search?search=Example%20Composer&model=App%5CComposer"
+                            }
+                        },
+                        "artwork_url": "https://example.test/storage/fixtures/study.jpg",
+                        "difficulty": "elementary",
+                        "is_new": true,
+                        "is_free_pick": false,
+                        "duration_seconds": null,
+                        "media": {
+                            "performance": false,
+                            "synthesia": false,
+                            "tutorial": true,
+                            "audio": false,
+                            "score": false
+                        },
+                        "target": {
+                            "kind": "piece",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "https://my.example.test/pieces/1"
+                        }
+                    }
+                ],
+                "action": {
+                    "kind": "explore_results",
+                    "scope": "highlights",
+                    "tag_ids": [],
+                    "label": "View all"
+                }
+            },
+            {
+                "id": "originals",
+                "kind": "originals",
+                "title": "Originals",
+                "items": [
+                    {
+                        "kind": "original",
+                        "id": "1",
+                        "title": "A piano study",
+                        "description": "A practice guide.",
+                        "artwork_url": "https://example.test/storage/fixtures/article.jpg",
+                        "target": {
+                            "kind": "article",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "https://blog.example.test/a-piano-study/app"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "periods",
+                "kind": "periods",
+                "title": "Periods & Styles",
+                "items": [
+                    {
+                        "kind": "period",
+                        "id": "4",
+                        "name": "Romantic",
+                        "piece_count": 3,
+                        "target": {
+                            "kind": "explore_results",
+                            "scope": "catalogue",
+                            "tag_ids": [
+                                "4"
+                            ]
+                        },
+                        "artwork_url": "https://example.test/images/backgrounds/periods/romantic/04%202.jpg"
+                    }
+                ]
+            },
+            {
+                "id": "levels",
+                "kind": "levels",
+                "title": "Levels",
+                "items": [
+                    {
+                        "kind": "level",
+                        "id": "5",
+                        "name": "Elementary",
+                        "piece_count": 3,
+                        "target": {
+                            "kind": "explore_results",
+                            "scope": "catalogue",
+                            "tag_ids": [
+                                "5"
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "featured_composer",
+                "kind": "featured_composer",
+                "title": "Featured composer",
+                "items": [
+                    {
+                        "kind": "composer",
+                        "id": "1",
+                        "name": "Example Composer",
+                        "short_name": "E. Composer",
+                        "portrait_url": "https://example.test/storage/fixtures/composer.jpg",
+                        "biography": "A composer biography.",
+                        "piece_count": 3,
+                        "target": {
+                            "kind": "composer_profile",
+                            "id": "1",
+                            "query": null,
+                            "web_url": "https://my.example.test/composers/1"
+                        },
+                        "lifespan": "Sep 13, 1819 - May 20, 1896",
+                        "born_year": 1819,
+                        "died_year": 1896,
+                        "country": {
+                            "id": "1",
+                            "name": "quaerat",
+                            "flag_code": null
+                        },
+                        "curiosity": "A short profile note."
+                    }
+                ]
+            },
+            {
+                "id": "harmony",
+                "kind": "harmony",
+                "title": "Harmony",
+                "items": [
+                    {
+                        "kind": "harmony_lesson",
+                        "id": "1",
+                        "title": "Morning study Op.1",
+                        "composer": {
+                            "kind": "composer",
+                            "id": "1",
+                            "name": "Example Composer",
+                            "short_name": "E. Composer",
+                            "portrait_url": "https://example.test/storage/fixtures/composer.jpg",
+                            "biography": "A composer biography.",
+                            "piece_count": 3,
+                            "target": {
+                                "kind": "composer_pieces",
+                                "id": "1",
+                                "query": null,
+                                "web_url": "https://my.example.test/search?search=Example%20Composer&model=App%5CComposer"
+                            }
+                        },
+                        "description": "Explore the opening harmony.",
+                        "artwork_url": "https://example.test/storage/fixtures/study.jpg",
+                        "access": {
+                            "full_media": false,
+                            "basis": "membership_required"
+                        },
+                        "target": {
+                            "kind": "piece_lesson",
+                            "piece_id": "1",
+                            "video_id": "1"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "meta": {
+        "request_id": "00000000-0000-4000-8000-000000004001"
+    }
+}
