@@ -80,13 +80,27 @@ class DiscoverResponse
         ];
     }
 
-    private function composer(Composer $composer): array
+    public function composer(Composer $composer): array
     {
         return ['kind' => 'composer', 'id' => (string) $composer->id, 'name' => $composer->name,
             'short_name' => $composer->short_name, 'portrait_url' => $composer->cover_image ?: asset('images/misc/placeholder-image.png'),
             'biography' => Str::limit(trim(strip_tags($composer->biography ?: $composer->curiosity ?: 'Explore this composer’s piano repertoire.')), 180),
             'piece_count' => (int) $composer->pieces_count,
             'target' => $this->target('composer_pieces', route('webapp.search.results', ['search' => $composer->name, 'model' => Composer::class]), (string) $composer->id),
+        ];
+    }
+
+    public function composerProfileFields(Composer $composer): array
+    {
+        return [
+            'lifespan' => $composer->lifespan,
+            'born_year' => $composer->born_in,
+            'died_year' => $composer->died_in,
+            'country' => $composer->country ? [
+                'id' => (string) $composer->country->id,
+                'name' => $composer->country->name,
+                'flag_code' => $composer->country->flag_code,
+            ] : null,
         ];
     }
 

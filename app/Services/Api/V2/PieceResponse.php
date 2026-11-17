@@ -19,17 +19,8 @@ class PieceResponse
         $header = $summary->piece($piece);
         $header['title'] = $piece->medium_name;
         $header['artwork_url'] = Artwork::forPiece($piece);
-        $header['composer'] = array_merge($header['composer'], [
-            'biography' => (string) $piece->composer->biography,
-            'lifespan' => $piece->composer->lifespan,
-            'born_year' => $piece->composer->born_in,
-            'died_year' => $piece->composer->died_in,
-            'country' => $piece->composer->country ? [
-                'id' => (string) $piece->composer->country->id,
-                'name' => $piece->composer->country->name,
-                'flag_code' => $piece->composer->country->flag_code,
-            ] : null,
-        ]);
+        $header['composer']['biography'] = (string) $piece->composer->biography;
+        $header['composer'] += $summary->composerProfileFields($piece->composer);
 
         $scoreFile = $piece->isPublicDomain && $piece->hasScore(true);
         $pdfUrl = $scoreFile ? $this->url($piece->score) : null;
