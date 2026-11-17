@@ -150,7 +150,8 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         $this->actingAs(Model::withoutEvents(function () { return create(User::class); }), 'web');
         $row['content'][1]->audio_path = null;
         $row['content'][1]->score_path = null;
-        $html = view('webapp.discover.rows.gallery', compact('row'))->render();
+        $html = view('webapp.discover.rows.gallery', ['row' => $row, 'errors' => new \Illuminate\Support\ViewErrorBag])->render();
+        $this->assertStringContainsString('Pieces you might like.', $html);
         $this->assertSame(2, substr_count($html, 'class="discover-compact-card discover-piece-link'));
         $this->assertSame(1, substr_count($html, 'icon-headphones'));
         $this->assertSame(1, substr_count($html, 'icon-file-text'));

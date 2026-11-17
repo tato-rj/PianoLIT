@@ -668,7 +668,9 @@ class MatchTourTest extends ReviewTestCase
         $quiz->shouldReceive('matchContext')->with($this->pieces[0])->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => ['calm'], 'matchedTags' => ['calm']]);
         $this->app->instance(MatchQuiz::class, $quiz);
         $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk()
-            ->assertDontSee('data-submit="favorite"', false)->assertDontSee('match-confetti', false);
+            ->assertDontSee('data-submit="favorite"', false)->assertDontSee('match-confetti', false)
+            ->assertSee('Use Intermediate for Discover');
+        $this->assertDatabaseCount('discover_preferences', 0);
         preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
         $result = json_decode($matches[1], true);
         $this->assertLessThanOrEqual(4, count($result['recommendations']));

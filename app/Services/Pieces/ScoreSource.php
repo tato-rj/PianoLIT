@@ -12,12 +12,6 @@ class ScoreSource
     public const EXTERNAL = 'external';
     public const UNKNOWN = 'unknown';
 
-    public const LABELS = [
-        self::PIANOLIT => 'PianoLIT eScore',
-        self::EXTERNAL => 'External edition',
-        self::UNKNOWN => 'Unknown',
-    ];
-
     private const FOOTER = 'PianoLIT eScore';
     private const MAX_BYTES = 50 * 1024 * 1024;
 

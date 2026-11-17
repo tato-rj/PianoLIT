@@ -309,6 +309,22 @@ class AdminPiecesTableTest extends ReviewTestCase
         $this->assertSame([$this->pieces[1]->id], $this->directory(['search' => 'BWV 167'])->assertOk()->viewData('pieces')->pluck('id')->all());
     }
 
+    public function test_directory_sorts_catalogue_numbers_and_subnumbers_and_keeps_blank_cells_last()
+    {
+        foreach ([['10', '2'], ['2', '10'], ['2', '2']] as $index => [$catalogue, $number]) {
+            $this->pieces[$index]->updateQuietly(['catalogue_name' => 'Op.', 'catalogue_number' => $catalogue, 'collection_number' => $number]);
+        }
+        $this->pieces[3]->updateQuietly(['catalogue_name' => null, 'catalogue_number' => null, 'collection_number' => null]);
+        $this->pieces->push(Model::withoutEvents(fn () => create(Piece::class, ['catalogue_name' => 'BWV', 'catalogue_number' => '167', 'collection_number' => null])));
+
+        foreach (['asc' => [4, 2, 1, 0, 3], 'desc' => [0, 1, 2, 4, 3]] as $direction => $indices) {
+            $response = $this->directory(['sort' => 'catalogue_'.$direction])->assertOk()
+                ->assertSee('aria-sort="'.($direction === 'asc' ? 'ascending' : 'descending').'"', false)
+                ->assertSee('?sort=catalogue_'.($direction === 'asc' ? 'desc' : 'asc'), false);
+            $this->assertSame(array_map(fn ($index) => $this->pieces[$index]->id, $indices), $response->viewData('pieces')->pluck('id')->all());
+        }
+    }
+
     public function test_directory_query_count_stays_constant_without_media_or_activity_serialization()
     {
         Model::withoutEvents(function () {

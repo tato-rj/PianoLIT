@@ -24,7 +24,7 @@ class ApiV2DiscoverTest extends ReviewTestCase
             $this->user = create(User::class, ['email' => 'native-v2@example.test', 'password' => Hash::make('same-existing-password')]);
             $this->other = create(User::class);
             $composer = create(Composer::class, ['name' => 'Shared Composer', 'cover_path' => 'fixture.jpg']);
-            $this->piece = create(Piece::class, ['composer_id' => $composer->id, 'name' => 'Shared Discover piece', 'cover_path' => 'fixture.jpg', 'highlighted_at' => now()->subWeek()]);
+            $this->piece = create(Piece::class, ['composer_id' => $composer->id, 'name' => 'Shared Discover piece', 'score_path' => 'fixture.pdf', 'cover_path' => 'fixture.jpg', 'highlighted_at' => now()->subWeek()]);
             $this->piece->tags()->attach(create(Tag::class, ['type' => 'level', 'name' => 'intermediate']));
         });
         $this->token = app(Tokens::class)->issue($this->user)['access_token'];
@@ -101,6 +101,8 @@ class ApiV2DiscoverTest extends ReviewTestCase
 
     public function test_web_and_v2_receive_the_same_sections_and_piece_ids_with_shared_personalization()
     {
+        $unseen = Model::withoutEvents(fn () => create(Piece::class, ['composer_id' => $this->piece->composer_id,
+            'score_path' => 'other.pdf', 'highlighted_at' => null]));
         app(RecentlyViewedPieces::class)->record($this->user, $this->piece);
         $cached = serialize(Cache::get('app.discover'.Api::WEB_DISCOVER_CACHE_SUFFIX));
         $this->piece->fresh()->updateQuietly(['audio_path' => 'fixtures/full.mp3', 'audio_duration_seconds' => 274]);
@@ -111,6 +113,7 @@ class ApiV2DiscoverTest extends ReviewTestCase
         $this->assertSame([2, 10], array_column($sections['levels']['groups'][0]['items'], 'number'));
         $this->assertSame(['rcm', 'abrsm', 'suzuki'], array_column($sections['levels']['groups'], 'id'));
         $this->assertSame([(string) $this->piece->id], array_column($sections['recently_viewed']['items'], 'id'));
+        $this->assertSame([(string) $unseen->id], array_column($sections['for_you']['items'], 'id'));
         $this->assertGuest('web');
         $this->assertSame($cached, serialize(Cache::get('app.discover'.Api::WEB_DISCOVER_CACHE_SUFFIX)));
         $this->actingAs($this->user, 'web');

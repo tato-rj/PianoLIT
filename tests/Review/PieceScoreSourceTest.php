@@ -94,7 +94,10 @@ class PieceScoreSourceTest extends ReviewTestCase
         foreach ([$piece, $external, $unknown] as $scorePiece) {
             $cell = $xpath->query('//button[@data-freepick-piece="'.$scorePiece->id.'"]/ancestor::tr/td[last()-1]')->item(0);
             $link = $xpath->query('./a', $cell)->item(0);
-            $this->assertSame($scorePiece->id === $piece->id ? 'eScore' : 'External edition', trim($link->textContent));
+            $isEscore = $scorePiece->id === $piece->id;
+            $this->assertSame($isEscore ? 'eScore' : 'External', trim($link->textContent));
+            $this->assertSame(!$isEscore, str_contains($cell->getAttribute('class'), 'opacity-6'));
+            $this->assertCount($isEscore ? 0 : 1, $xpath->query('.//svg[@data-lucide-name="square-arrow-out-up-right"]', $link));
             $this->assertSame(storage($scorePiece->score_path), $link->getAttribute('href'));
             $this->assertSame('_blank', $link->getAttribute('target'));
             $this->assertSame('noopener noreferrer', $link->getAttribute('rel'));

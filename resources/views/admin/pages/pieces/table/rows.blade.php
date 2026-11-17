@@ -29,15 +29,18 @@
         @endif
         @include('admin.pages.pieces.table.scheduled-date')
     </td>
-    <td class="text-nowrap">
-        @if(trim((string) $item->score_path) !== '')
-            @php($isEscore = $item->score_source === \App\Services\Pieces\ScoreSource::PIANOLIT)
+    @php
+        $hasScore = trim((string) $item->score_path) !== '';
+        $isEscore = $item->score_source === \App\Services\Pieces\ScoreSource::PIANOLIT;
+    @endphp
+    <td class="text-nowrap{{ $hasScore && !$isEscore ? ' opacity-6' : '' }}">
+        @if($hasScore)
             <a class="text-reset" href="{{ $item->score }}" target="_blank" rel="noopener noreferrer"
-               aria-label="{{ $isEscore ? 'eScore' : 'External edition' }} for {{ $item->long_name }} (opens in a new tab)">
+               aria-label="{{ $isEscore ? 'eScore' : 'External score' }} for {{ $item->long_name }} (opens in a new tab)">
                 @if($isEscore)
                     @icon('pianolit', ['mr' => 1, 'color' => 'primary'])eScore
                 @else
-                    External edition
+                    @icon('square-arrow-out-up-right', ['mr' => 1])External
                 @endif
             </a>
         @endif

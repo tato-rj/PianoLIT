@@ -21,6 +21,15 @@ module.exports = async function () {
             setInterval(callback, delay) { intervals.push({callback, delay}); },
             setTimeout(callback) { callback(); }
         };
+        if (options.recommendation) {
+            doc.querySelectorAll = selector => selector === '[data-recommendation-piece]' ? [options.recommendation] : [];
+            win.IntersectionObserver = class {
+                constructor(callback) { handlers.intersection = callback; }
+                observe() {}
+                unobserve() {}
+                disconnect() {}
+            };
+        }
         if (options.jquery) {
             win.jQuery = () => ({on(name, callback) { if (name.includes('shown.bs.modal')) handlers['jquery:panels'] = callback; }});
             win.jQuery.ajaxPrefilter = () => {};
@@ -72,6 +81,25 @@ module.exports = async function () {
     assert.strictEqual(cards.queued().filter(event => event.type === 'click').pop().metadata.target, '', 'Buttons without a destination do not invent a piece link');
     cards.handlers['doc:click']({target: {closest: () => Object.assign({}, link, {textContent: 'External link', getAttribute: name => name === 'href' ? 'https://external.example/pieces/178' : null})}});
     assert.strictEqual(cards.queued().filter(event => event.type === 'click').pop().metadata.label, 'External link', 'An external path does not identify a PianoLIT piece');
+    const recAttrs = {'href': '/pieces/178', 'data-recommendation-piece': '178', 'data-recommendation-position': '2',
+        'data-recommendation-version': 'musical-v1', 'data-recommendation-cohort': 'recent_views'};
+    const recCard = Object.assign(pieceLink(recAttrs), {hasAttribute: key => key in recAttrs});
+    const rec = fixture(new Map(), {recommendation: recCard});
+    const intersect = ratio => rec.handlers.intersection([{target: recCard, isIntersecting: true, intersectionRatio: ratio}]);
+    intersect(0.2);
+    rec.win.document.visibilityState = 'hidden'; intersect(1);
+    assert(!rec.queued().some(event => event.type === 'recommendation_seen'));
+    rec.win.document.visibilityState = 'visible'; intersect(0.7); intersect(1);
+    const impressions = rec.queued().filter(event => event.type === 'recommendation_seen');
+    assert.strictEqual(impressions.length, 1);
+    assert.deepStrictEqual(impressions[0].metadata, {section: 'for_you', piece_id: 178, position: 2,
+        ranking_version: 'musical-v1', cohort: 'recent_views'});
+    const recClick = {target: {closest: () => recCard}};
+    rec.handlers['doc:click'](recClick);
+    rec.handlers.click(Object.assign({defaultPrevented: true}, recClick));
+    assert(!rec.queued().some(event => event.type === 'click'), 'A canceled drag cannot be counted as a recommendation click');
+    rec.handlers.click(recClick);
+    assert.strictEqual(rec.queued().filter(event => event.type === 'click' && event.metadata.section === 'for_you').length, 1);
     const forms = fixture(), fields = {};
     const form = {id: 'synthesia-request-form', action: '/users/synthesia-requests/42', method: 'POST', closest: () => null,
         querySelector(selector) { const match = selector.match(/name="([^"]+)"/); return match ? fields[match[1]] || null : null; },

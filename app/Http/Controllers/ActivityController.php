@@ -21,7 +21,7 @@ class ActivityController extends Controller
             'page_token' => 'required|string|max:4096',
             'events' => 'required|array|min:1|max:'.config('activity.batch_size'),
             'events.*.id' => 'required|uuid|distinct',
-            'events.*.type' => ['required', Rule::in(['page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_leave', 'page_restore', 'click', 'filter_change', 'filters_apply', 'search_submit', 'form_submit', 'section_open', 'section_close', 'tab_open', 'media_play', 'media_pause', 'media_end', 'media_seek', 'media_progress', 'media_error', 'media_rate', 'score_opened', 'score_progress', 'score_page', 'premium_restriction', 'premium_opened', 'registration_started', 'checkout_started', 'match_completed'])],
+            'events.*.type' => ['required', Rule::in(['page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_leave', 'page_restore', 'click', 'filter_change', 'filters_apply', 'search_submit', 'form_submit', 'section_open', 'section_close', 'tab_open', 'media_play', 'media_pause', 'media_end', 'media_seek', 'media_progress', 'media_error', 'media_rate', 'score_opened', 'score_progress', 'score_page', 'premium_restriction', 'premium_opened', 'registration_started', 'checkout_started', 'match_completed', 'recommendation_seen'])],
             'events.*.elapsed_ms' => 'required|integer|min:0|max:86400000',
             'events.*.sequence' => 'required|integer|min:1|max:1000000',
             'events.*.metadata' => 'sometimes|array',
@@ -32,6 +32,9 @@ class ActivityController extends Controller
             'events.*.metadata.selected' => 'nullable|boolean',
             'events.*.metadata.filters' => 'nullable|array',
             'events.*.metadata.search' => 'nullable|string|max:300',
+            'events.*.metadata.position' => 'sometimes|integer|min:1|max:6',
+            'events.*.metadata.ranking_version' => 'sometimes|string|max:32|regex:/^[a-z0-9-]+$/',
+            'events.*.metadata.cohort' => 'sometimes|in:favorites,recent_views,no_history,other_signals',
             'events.*.metadata.media_kind' => 'nullable|in:audio,video',
             'events.*.metadata.media_id' => 'nullable|string|max:300',
             'events.*.metadata.position_seconds' => 'nullable|numeric|min:0|max:604800',
@@ -64,6 +67,12 @@ class ActivityController extends Controller
         }
         $identities = [];
         foreach (array_merge($parts, $qualification) as $part) foreach ($part['events'] as $event) {
+            $meta = $event['metadata'] ?? [];
+            if ($event['type'] === 'recommendation_seen' || ($meta['section'] ?? '') === 'for_you') {
+                abort_unless($part['page']->user_id && in_array($part['page']->route_name, ['webapp.discover', 'webapp.welcome'], true)
+                    && in_array($event['type'], ['recommendation_seen', 'click'], true) && ($meta['section'] ?? '') === 'for_you'
+                    && isset($meta['piece_id'], $meta['position'], $meta['ranking_version'], $meta['cohort']), 422);
+            }
             if (isset($identities[$event['id']])) abort_unless($identities[$event['id']]['page'] === $part['page']->id && $identities[$event['id']]['event'] == $event, 422);
             $identities[$event['id']] = ['page' => $part['page']->id, 'event' => $event];
             abort_if(strlen(json_encode($event['metadata'] ?? [])) > 8000, 422);

@@ -154,9 +154,36 @@
         });
         return filters;
     }
-    doc.addEventListener('click', function (event) {
+    function recommendationData(card) {
+        return {section: 'for_you', piece_id: Number(card.getAttribute('data-recommendation-piece')),
+            position: Number(card.getAttribute('data-recommendation-position')), cohort: card.getAttribute('data-recommendation-cohort'),
+            ranking_version: card.getAttribute('data-recommendation-version')};
+    }
+    var cards = doc.querySelectorAll('[data-recommendation-piece]');
+    if (cards.length && win.IntersectionObserver) {
+        var observed = new Set();
+        function observeVisibleCards() {
+            observer.disconnect();
+            if (doc.visibilityState !== 'hidden') cards.forEach(function (card) {
+                if (!observed.has(card)) observer.observe(card);
+            });
+        }
+        var observer = new win.IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (doc.visibilityState === 'hidden' || !entry.isIntersecting || entry.intersectionRatio < 0.5 || observed.has(entry.target)) return;
+                record('recommendation_seen', recommendationData(entry.target));
+                observed.add(entry.target);
+                observer.unobserve(entry.target);
+            });
+        }, {threshold: [0.5]});
+        observeVisibleCards();
+        doc.addEventListener('visibilitychange', observeVisibleCards);
+    }
+    function trackClick(event, recommendation) {
         var element = event.target.closest && event.target.closest('a,button,summary,[role="button"],[data-url],[data-search-value],[data-search-apply],[data-erase],.tag,.recent-query');
         if (!element || element.closest('[data-activity-ignore]')) return;
+        var card = element.hasAttribute('data-recommendation-piece');
+        if (card !== recommendation || (card && event.defaultPrevented)) return;
         // The actual panel/toggle event describes these gestures once.
         var toggle = element.getAttribute('data-bs-toggle');
         if (element.tagName === 'SUMMARY' || (win.jQuery && ['tab', 'pill', 'modal', 'offcanvas'].indexOf(toggle) !== -1
@@ -182,10 +209,13 @@
                 control = level ? 'match_level_confirm' : 'match_preference_confirm';
             } else if (tour && element.hasAttribute('data-select-level')) control = 'match_level_piece';
             else if (tour && choice !== null && /^\d+$/.test(choice)) piece = choice;
-            var click = record('click', {label: label(element, destinationPiece), navigation: win.location.pathname.slice(0, 100), control: control, section: section, target: target, value: choice === null ? undefined : choice.slice(0, 300), piece_id: destinationPiece || (piece && /^\d+$/.test(piece) ? Number(piece) : (section ? undefined : config.pieceId))});
+            var click = record('click', Object.assign({label: label(element, destinationPiece), navigation: win.location.pathname.slice(0, 100), control: control, section: section, target: target, value: choice === null ? undefined : choice.slice(0, 300), piece_id: destinationPiece || (piece && /^\d+$/.test(piece) ? Number(piece) : (section ? undefined : config.pieceId))}, card ? recommendationData(element) : {}));
             lastClick = click && element.form && element.type === 'submit' ? {form: element.form, element: element, event: click} : null;
         }
-    }, true);
+    }
+    doc.addEventListener('click', function (event) { trackClick(event, false); }, true);
+    // A horizontal drag can cancel the link between capture and bubbling.
+    if (cards.length) win.addEventListener('click', function (event) { trackClick(event, true); });
     doc.addEventListener('change', function (event) {
         var input = event.target;
         if (!input.closest('#search-controls-form') || !/^(checkbox|radio|range)$/.test(input.type)) return;

@@ -11,20 +11,21 @@ class SimilarPieces
 {
     // IDs describe storage, not musical difficulty. Accept both split level tags
     // and the older base-level + sublevel representation.
-    private const LEVELS = [
+    public const LEVELS = [
         'elementary' => 0, 'early beginner' => 0.75, 'beginner' => 1,
         'late beginner' => 1.25, 'early intermediate' => 1.75,
         'intermediate' => 2, 'late intermediate' => 2.25, 'advanced' => 3,
     ];
-    private const WEIGHTS = [
-        'mood' => 4, 'genre' => 3, 'technique' => 2, 'ranking' => 1,
+    public const MUSICAL_WEIGHTS = ['mood' => 4, 'genre' => 3, 'technique' => 2];
+    private const WEIGHTS = self::MUSICAL_WEIGHTS + [
+        'ranking' => 1,
         'season' => 1, 'period' => 1, 'length' => 1,
     ];
 
     public function forPiece(Piece $piece, ?int $limit = null): Collection
     {
         $piece->loadMissing('tags');
-        $musicalIds = $piece->tags->whereIn('type', ['mood', 'genre', 'technique'])->pluck('id')->all();
+        $musicalIds = $piece->tags->whereIn('type', array_keys(self::MUSICAL_WEIGHTS))->pluck('id')->all();
         if (!$musicalIds || ($limit !== null && $limit <= 0)) return new Collection;
 
         $sourceLevel = $this->level($piece);

@@ -139,6 +139,22 @@ Piece-navigation titles show Selected followed by the existing medium piece name
 
 Saved favorites/folders use existing tables. Annotations select identifiers/revisions/dates instead of private marks. Music links existing piece administration and can filter saved pieces by the person's actual folder. Saved state is not emitted as past interactions. Account tabs link existing membership/history management and never call Apple/Stripe remotely during rendering.
 
+## Discover recommendations
+
+The website and authenticated v2 Discover share one account-specific list. The website shows the first four of up to six pieces. New accounts start with an editorial mix that favors highlights and varies the composer. Candidates need an existing public piece page with content. The website and v2 continue to apply their own media access rules.
+
+Each distinct owned favorite contributes four votes to its musical traits, including an account's unfiled favorites. A recent open starts at one vote, halves every 14 days, and expires after 42 days. The 12 pieces displayed in Recently viewed are always excluded from the recommendations. The 24 most recently marked scores with saved markings in the past 90 days contribute five votes each. The selector reads piece IDs and dates. An empty set of markings contributes nothing.
+
+Signed-in web playback contributes up to two votes per piece, with the same age decay as opens. Performance video, Synthesia video and audio use the same rule. A single browser observation must show at least 20 seconds played and 15 distinct seconds covered. The selector uses the latest qualifying observation per piece, up to 24 pieces, refreshed every five minutes. Multiple progress events and contributions from several sources for one piece use its strongest vote. Native v2 contributes confirmed piece opens. Native player timing requires separate instrumentation.
+
+Mood, genre and technique guide the musical matches. Repeated composer interest helps order them. The selector gives nearby difficulty a preference using saved favorites and marked scores. A playing level explicitly chosen under **For you → Playing level** or saved from a web Match tour result takes precedence. Selecting **No preference** clears the setting. Playback and casual opens contribute only to musical interest. Eligible unsaved pieces from different composers and collections receive priority among close matches. Shared catalog traits refresh daily or with the existing Discover refresh. Personal results are cached separately by account and reflect changes to the account's signals.
+
+On the website a card records one exposure per page when at least half of it enters the visible viewport. A click from that row carries the same piece, position, ranking version and account-history group. Scroll drags that cancel navigation do not record recommendation clicks. The shared collector applies its normal session, account, exclusion, retry and visit-qualification rules.
+
+Run `php artisan discover:recommendation-outcomes --days=28` for aggregate website outcomes. Each group reports distinct exposed accounts, accounts that clicked, accounts with a confirmed web save of an exposed piece within seven days, and accounts that saved after clicking that same card on that page. Save rate is the third count divided by the first. The report uses complete UTC exposure days with a full seven-day follow-up. An account can appear in more than one group when its history changes. Historical traffic before instrumented exposures cannot supply a baseline. A rate comparison by version describes observed behavior and requires a controlled comparison to establish lift.
+
+Install `2026_11_17_170000_create_discover_preferences.php` before deploying the matching PHP, templates, activity script and asset manifest. The preference belongs to the account and cascades on deletion. This release requires no background job.
+
 ## Separate Swift integration — pending
 
 No Swift sources or existing versioned API YAML were found. The current API's submitted user_id middleware is **not trustworthy authentication** and is not used for richer ingestion or trusted journey tokens. Deployed iOS requests continue compatible SQL logging with unverified identity and no fabricated visits. Independent mobile authentication remains a prerequisite; no new endpoint accepts arbitrary mobile user/visit IDs.

@@ -23,6 +23,7 @@ class PiecesTable
     const SORTS = [
         'updated_desc' => 'Updated · newest', 'updated_asc' => 'Updated · oldest',
         'name_asc' => 'Piece · A–Z', 'name_desc' => 'Piece · Z–A',
+        'catalogue_asc' => 'Catalogue · ascending', 'catalogue_desc' => 'Catalogue · descending',
         'composer_asc' => 'Composer · A–Z', 'composer_desc' => 'Composer · Z–A',
         'tags_desc' => 'Tags · most', 'tags_asc' => 'Tags · fewest',
         'level_asc' => 'Level · easiest', 'level_desc' => 'Level · hardest',
@@ -43,7 +44,6 @@ class PiecesTable
             'itunes' => 'sometimes|string|max:255',
             'videos' => 'sometimes|string|max:255',
             'score_path' => 'sometimes|string|max:255',
-            'filter_score_source' => ['nullable', 'string', Rule::in(array_keys(ScoreSource::LABELS))],
             'audio_path' => 'sometimes|string|max:255',
             'is_free' => 'sometimes|string|max:255',
         ]);
@@ -100,20 +100,21 @@ class PiecesTable
             else $query->where('pieces.'.$column, $filters[$column]);
         }
         $this->applyFilters($query, $filters);
-        if ($source = $filters['filter_score_source'] ?? null) {
-            $query->whereNotNull('pieces.score_path')->where('pieces.score_path', '!=', '');
-            $query->where(function ($query) use ($source) {
-                $query->where('pieces.score_source', $source);
-                if ($source === ScoreSource::UNKNOWN) {
-                    $query->orWhereNull('pieces.score_source');
-                }
-            });
-        }
         if (isset($filters['is_free'])) $query->free(filter_var($filters['is_free'], FILTER_VALIDATE_BOOLEAN));
         [$sort, $direction] = explode('_', $filters['sort']);
         $columns = ['name' => 1, 'composer' => 2, 'tags' => 3, 'level' => 4, 'highlight' => 5];
         if ($sort === 'updated') {
             $query->orderBy('pieces.updated_at', $direction);
+        } elseif ($sort === 'catalogue') {
+            $catalogueType = "NULLIF(TRIM(pieces.catalogue_name), '')";
+            $catalogueNumber = "NULLIF(TRIM(pieces.catalogue_number), '')";
+            $collectionNumber = "NULLIF(TRIM(pieces.collection_number), '')";
+            $query->orderByRaw("COALESCE($catalogueType, $catalogueNumber, $collectionNumber) IS NULL")
+                ->orderBy(DB::raw("LOWER(CASE WHEN pieces.catalogue_name = 'Op.' THEN 'Opus' ELSE $catalogueType END)"), $direction)
+                ->orderBy(DB::raw("CAST($catalogueNumber AS UNSIGNED)"), $direction)
+                ->orderBy(DB::raw($catalogueNumber), $direction)
+                ->orderBy(DB::raw("CAST($collectionNumber AS UNSIGNED)"), $direction)
+                ->orderBy(DB::raw($collectionNumber), $direction);
         } elseif ($sort === 'score') {
             $ranks = $direction === 'asc' ? [0, 1] : [1, 0];
             $query->orderByRaw("CASE WHEN COALESCE(TRIM(pieces.score_path), '') = '' THEN 2 WHEN pieces.score_source = ? THEN ? ELSE ? END",

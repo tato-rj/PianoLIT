@@ -52,6 +52,24 @@ class ActivityHistoryTest extends ReviewTestCase
         return ['id' => (string) Str::uuid(), 'type' => $type, 'elapsed_ms' => $offset, 'sequence' => 1, 'metadata' => $metadata];
     }
 
+    public function test_recommendation_impressions_belong_to_a_signed_in_discover_page()
+    {
+        $this->actingAs($this->user(), 'web');
+        $page = $this->open();
+        $payload = ['page_token' => Crypt::encryptString($page->id), 'events' => [
+            $this->event('recommendation_seen', 10, ['section' => 'for_you', 'piece_id' => 8,
+                'position' => 1, 'ranking_version' => 'musical-v1', 'cohort' => 'recent_views']),
+        ]];
+        $this->withExceptionHandling()->postJson('/activity/events', $payload)->assertStatus(422);
+        DB::table('activity_pages')->where('id', $page->id)->update(['route_name' => 'webapp.discover']);
+        $this->postJson('/activity/events', $payload)->assertNoContent();
+        $this->postJson('/activity/events', $payload)->assertNoContent();
+        $rows = DB::table('activity_events')->where('type', 'recommendation_seen')->get();
+        $this->assertCount(1, $rows);
+        $this->assertEquals($page->user_id, $rows[0]->user_id);
+        $this->assertSame(1, json_decode($rows[0]->metadata, true)['position']);
+    }
+
     public function test_guest_and_signed_in_page_views_use_sql_and_never_write_redis()
     {
         $page = $this->open();

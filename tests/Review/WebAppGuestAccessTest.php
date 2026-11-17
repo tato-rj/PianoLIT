@@ -230,6 +230,8 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->postJson(route('webapp.users.favorites.update', $this->piece), ['user_id' => 999])->assertOk();
         $this->assertDatabaseHas('favorites', ['user_id' => 1, 'piece_id' => $this->piece->id]);
         $this->assertDatabaseMissing('favorites', ['user_id' => 999]);
+        // The saved/opened piece is excluded. Give Discover another playable candidate.
+        $this->freePiece->updateQuietly(['score_path' => 'free-pick.pdf']);
         $this->get(route('webapp.discover', ['user_id' => 999]))->assertOk()->assertSee('For you');
     }
 

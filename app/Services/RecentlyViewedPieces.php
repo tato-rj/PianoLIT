@@ -21,13 +21,13 @@ class RecentlyViewedPieces
     public function forUser(User $user)
     {
         if (\App\Activity\ExcludedAccounts::user($user)) return collect();
-        return Piece::select('pieces.*')
+        return Piece::select('pieces.*', 'recent.viewed_at as last_opened_at')
             ->join('recently_viewed_pieces as recent', 'recent.piece_id', '=', 'pieces.id')
             ->where('recent.user_id', $user->id)
             ->with('tags')
             ->orderByDesc('recent.viewed_at')
             ->orderByDesc('pieces.id')
             ->limit(12)
-            ->get();
+            ->get()->makeHidden('last_opened_at');
     }
 }

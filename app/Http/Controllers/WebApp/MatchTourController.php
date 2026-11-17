@@ -40,6 +40,11 @@ class MatchTourController extends Controller
         // Reuse shared-mood recommendations at the match's exact difficulty; period can vary.
         $recommendations = $tour->recommendations($piece);
         if ($recommendations->count() < 2) $recommendations = collect();
-        return view('webapp.tour.result', compact('piece', 'recommendations', 'explanation'));
+        $discoverLevel = null;
+        if (auth('web')->check() && app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user())
+            && ($answers['playingLevel'] !== null || $answers['reading'][0] !== null)) {
+            $discoverLevel = $tour->level($answers['reading'], null, $answers['playingLevel']);
+        }
+        return view('webapp.tour.result', compact('piece', 'recommendations', 'explanation', 'discoverLevel'));
     }
 }

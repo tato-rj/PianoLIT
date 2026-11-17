@@ -14,15 +14,13 @@
         'hidden' => array_intersect_key($filters, array_flip(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'])),
         'search' => ['label' => 'Find a piece', 'placeholder' => 'Piece, composer, catalogue, tag or ID'],
         'filters' => [
-            ['name' => 'filter_score_source', 'label' => 'Score source', 'options' => ['' => 'All sources'] + \App\Services\Pieces\ScoreSource::LABELS],
             ['type' => 'checkbox-menu', 'name' => 'missing_content', 'label' => 'Missing content', 'allowEmpty' => true,
-                'options' => \App\Services\Admin\PiecesTable::MISSING_CONTENT_FILTERS,
-                'description' => 'Matches all selected options. Moments apply to performance videos only.'],
+                'options' => \App\Services\Admin\PiecesTable::MISSING_CONTENT_FILTERS],
         ],
         'sorts' => array_diff_key(\App\Services\Admin\PiecesTable::SORTS, array_flip(['tags_asc', 'tags_desc'])),
         'columns' => [
             ['label' => 'Piece', 'sort' => ['asc' => 'name_asc', 'desc' => 'name_desc']],
-            ['label' => 'Catalogue'],
+            ['label' => 'Catalogue', 'sort' => ['asc' => 'catalogue_asc', 'desc' => 'catalogue_desc']],
             ['label' => 'Composer', 'sort' => ['asc' => 'composer_asc', 'desc' => 'composer_desc']],
             ['label' => 'Level', 'sort' => ['asc' => 'level_asc', 'desc' => 'level_desc']],
             ['label' => 'Highlighted', 'sort' => ['asc' => 'highlight_asc', 'desc' => 'highlight_desc']],

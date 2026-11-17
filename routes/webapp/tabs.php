@@ -6,6 +6,8 @@ Route::namespace('WebApp')->group(function() {
 
 	Route::get('', 'TabsController@discover')->name('discover');
 
+	Route::post('discover/playing-level', 'DiscoverLevelController@update')->middleware('auth:web')->name('discover.level');
+
 	Route::get('welcome', 'TabsController@discover')->name('welcome');
 
 	Route::get('tour', 'TabsController@tour')->name('tour');

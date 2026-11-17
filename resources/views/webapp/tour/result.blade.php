@@ -8,6 +8,13 @@
             <p>{{ $explanation }}</p>
         </div>
     @endif
+    @if(!empty($discoverLevel))
+        <form method="POST" action="{{ route('webapp.discover.level') }}">
+            @csrf
+            <input type="hidden" name="playing_level" value="{{ $discoverLevel }}">
+            @button(['label' => 'Use '.ucfirst($discoverLevel).' for Discover', 'submit' => true, 'styles' => ['theme' => 'link']])
+        </form>
+    @endif
     <div class="match-result-actions">
         @button(['href' => route('webapp.pieces.show', $piece), 'label' => 'View piece →', 'styles' => ['theme' => 'primary'], 'classes' => 'match-primary'])
         @if($hasRecommendations)

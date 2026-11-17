@@ -5,7 +5,6 @@ namespace App\Services\Discover;
 use App\{Piece, User};
 use App\Api\Api;
 use App\Services\RecentlyViewedPieces;
-use Illuminate\Support\Facades\{Cache, Redis};
 
 /** Content selection shared by browser Discover and native v2; never legacy iOS. */
 class Feed
@@ -32,10 +31,13 @@ class Feed
         });
 
         if ($user && $personalize) {
-            $suggestions = $this->suggestions($user);
-            $api->order(3)->withAttributes($suggestions, ['type' => 'piece', 'source' => route('api.pieces.find')]);
-            $rows->splice(3, 0, [['title' => 'For you', 'row' => 'gallery', 'type' => 'piece', 'content' => $suggestions]]);
             $pieces = app(RecentlyViewedPieces::class)->forUser($user);
+            $level = Recommendations::playingLevel($user);
+            $selection = app(Recommendations::class)->forUser($user, $pieces, $level);
+            $suggestions = $selection['pieces'];
+            $api->order(3)->withAttributes($suggestions, ['type' => 'piece', 'source' => route('api.pieces.find')]);
+            $rows->splice(3, 0, [['title' => 'For you', 'row' => 'gallery', 'type' => 'piece', 'content' => $suggestions,
+                'playing_level' => $level, 'cohort' => $selection['cohort']]]);
             if ($pieces->isNotEmpty()) {
                 $api->order(2)->withAttributes($pieces, ['type' => 'piece', 'source' => route('api.pieces.find')]);
                 $position = $rows->search(function ($row) { return $row['title'] === 'Latest pieces'; });
@@ -55,22 +57,5 @@ class Feed
             });
             return $row;
         });
-    }
-
-    private function suggestions(User $user)
-    {
-        $user->loadMissing('favorites.tags');
-        // Cache only IDs, separately for each account and favorites/tag state.
-        // The shared admin refresh, Free Pick rotation and daily TTL invalidate it.
-        $state = $user->favorites->map(function ($piece) {
-            return [$piece->id, $piece->tags->pluck('id')->sort()->values()->all()];
-        })->sortBy(0)->values()->all();
-        $prefix = Redis::get('app.discover') ?: 'app.discover';
-        $key = Api::freePickCacheKey('discover.personal.v2:'.$prefix.':'.$user->id.':'.hash('sha256', json_encode($state)));
-        $ids = Cache::remember($key, days(1), function () use ($user) {
-            return $user->suggestions(20)->shuffle()->take(6)->pluck('id')->values()->all();
-        });
-        $pieces = Piece::with(['tags', 'composer'])->whereIn('id', $ids)->get()->keyBy('id');
-        return collect($ids)->map(function ($id) use ($pieces) { return $pieces->get($id); })->filter()->values();
     }
 }
