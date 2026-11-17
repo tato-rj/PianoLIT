@@ -99,14 +99,12 @@ the saved totals. The scoped 5 p.m. New York cron is installed in the owner's
 crontab. The first unattended run is pending. Private backups of the previous
 environment and crontab are in `storage/app/private`.
 
-## Views in Admin → Pieces
+## Piece views in Analytics → Pieces
 
-The **Views** column displays and sorts by saved GA4 web views plus recorded
-iOS views, using the same totals as **All views** in Analytics → Pieces. The
-web total covers the exact piece page on `my.pianolit.com` from July 26, 2023
+**All views** combines saved GA4 web views and recorded iOS views. The web
+total covers the exact piece page on `my.pianolit.com` from July 26, 2023
 through yesterday in New York. See [Repertoire analytics](PIECE_ANALYTICS.md)
-for the iOS sources. A saved zero is shown as zero. **Unavailable** means
-neither source has a recorded total for that piece.
+for the iOS sources.
 
 The sync reuses the existing reporting credential. It replaces saved totals
 daily and keeps them when GA requests fail. Install

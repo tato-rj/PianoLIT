@@ -83,14 +83,29 @@ class PieceScoreSourceTest extends ReviewTestCase
     public function test_score_source_is_read_only_in_the_directory_and_absent_from_the_editor_form()
     {
         $piece = $this->piece('Branded piece', ['score_path' => 'scores/edition.pdf', 'score_source' => 'pianolit']);
+        $external = $this->piece('External piece', ['score_path' => 'scores/external.pdf', 'score_source' => 'external']);
+        $unknown = $this->piece('Unidentified piece', ['score_path' => 'scores/unknown.pdf']);
+        $withoutScore = $this->piece('Missing score');
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
-        $response = $this->get(route('admin.pieces.index', ['filter_score_source' => 'pianolit']))->assertOk();
+        $response = $this->get(route('admin.pieces.index'))->assertOk();
         $document = new \DOMDocument;
         @$document->loadHTML($response->getContent());
         $xpath = new \DOMXPath($document);
-        $row = $xpath->query('//button[@data-freepick-piece="'.$piece->id.'"]/ancestor::tr')->item(0);
-        $this->assertStringContainsString('PianoLIT eScore', $row->textContent);
-        $this->assertCount(0, $xpath->query('.//form', $row));
+        foreach ([$piece, $external, $unknown] as $scorePiece) {
+            $cell = $xpath->query('//button[@data-freepick-piece="'.$scorePiece->id.'"]/ancestor::tr/td[last()-1]')->item(0);
+            $link = $xpath->query('./a', $cell)->item(0);
+            $this->assertSame($scorePiece->id === $piece->id ? 'eScore' : 'External edition', trim($link->textContent));
+            $this->assertSame(storage($scorePiece->score_path), $link->getAttribute('href'));
+            $this->assertSame('_blank', $link->getAttribute('target'));
+            $this->assertSame('noopener noreferrer', $link->getAttribute('rel'));
+            $this->assertCount(0, $xpath->query('.//form', $cell));
+        }
+        $brandedCell = $xpath->query('//button[@data-freepick-piece="'.$piece->id.'"]/ancestor::tr/td[last()-1]')->item(0);
+        $this->assertCount(1, $xpath->query('.//i[contains(@class, "text-primary")]/svg[@data-icon-name="pianolit"]', $brandedCell));
+        $this->assertCount(0, $xpath->query('./a[contains(@class, "text-primary")]', $brandedCell));
+        $emptyCell = $xpath->query('//button[@data-freepick-piece="'.$withoutScore->id.'"]/ancestor::tr/td[last()-1]')->item(0);
+        $this->assertSame('', trim($emptyCell->textContent));
+        $this->assertCount(0, $xpath->query('./a', $emptyCell));
         $this->get(route('admin.pieces.edit', $piece))->assertOk()->assertSee('name="score"', false)
             ->assertDontSee('Edit score source')->assertDontSee('name="score_source"', false);
 

@@ -6,7 +6,6 @@ use App\{Admin, Composer, Favorite, Piece, Tag, Tutorial, User};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\Factory;
 use Illuminate\Support\Facades\{DB, Http};
-use Illuminate\Support\Str;
 
 class AdminPiecesTableTest extends ReviewTestCase
 {
@@ -66,19 +65,21 @@ class AdminPiecesTableTest extends ReviewTestCase
         $html = $this->get(route('admin.pieces.index'))->assertOk()->getContent();
         preg_match('/<table[^>]*id="pieces-table".*?<\/table>/s', $html, $table);
         preg_match_all('/<th\b[^>]*>(.*?)<\/th>/s', $table[0], $headers);
-        foreach (['ID', 'Piece', 'Composer', 'Level', 'Highlighted', 'Favorited', 'Views', 'Score source', 'Actions'] as $i => $label) {
+        $this->assertCount(7, $headers[1]);
+        foreach (['Piece', 'Catalogue', 'Composer', 'Level', 'Highlighted', 'Score source', 'Actions'] as $i => $label) {
             $this->assertStringContainsString($label, strip_tags($headers[1][$i]));
         }
-        $this->assertStringNotContainsString('Web views', strip_tags($headers[1][6]));
+        foreach (['id_asc', 'id_desc', 'favorites_asc', 'favorites_desc', 'views_asc', 'views_desc'] as $sort) {
+            $this->assertStringNotContainsString('value="'.$sort.'"', $html);
+        }
         $this->assertStringNotContainsString('cdn.datatables.net', $html);
         $this->assertStringContainsString('class="admin-table__table admin-pieces-table"', $html);
-        foreach (['without_videos', 'without_moments', 'without_synthesia', 'without_pianolit_escore'] as $filter) {
-            preg_match('/<input[^>]*name="'.$filter.'"[^>]*>/', $html, $input);
+        $this->assertStringContainsString('data-checkbox-menu-summary>None selected</span>', $html);
+        foreach (\App\Services\Admin\PiecesTable::MISSING_CONTENT_FILTERS as $filter => $label) {
+            preg_match('/<input[^>]*name="missing_content\[\]"[^>]*value="'.$filter.'"[^>]*>/', $html, $input);
             $this->assertNotEmpty($input);
             $this->assertStringNotContainsString('checked', $input[0]);
-        }
-        foreach (['Missing video', 'Missing moments', 'Missing synthesia', 'Missing PianoLIT eScore'] as $label) {
-            $this->assertStringContainsString('>'.$label.'</label>', $html);
+            $this->assertStringContainsString('>'.$label.'</span>', $html);
         }
         $row = $this->table(['order' => [['column' => 0, 'dir' => 'asc']]])->assertOk()->json('data.0');
         $this->assertEqualsCanonicalizing(['id', 'name', 'composer', 'tags', 'level', 'ranking', 'favorited', 'actions'], array_keys($row));
@@ -189,24 +190,34 @@ class AdminPiecesTableTest extends ReviewTestCase
         return $this->get(route('admin.pieces.index', $parameters));
     }
 
-    public function test_missing_pianolit_escore_includes_external_unknown_and_absent_pdfs()
+    public function test_score_source_sorts_by_display_label_and_missing_escore_filters_external_unknown_and_absent_pdfs()
     {
         $this->pieces[0]->updateQuietly(['score_source' => 'pianolit', 'score_path' => 'scores/pianolit.pdf']);
         $this->pieces[1]->updateQuietly(['score_source' => 'external', 'score_path' => 'scores/external.pdf']);
         $this->pieces[2]->updateQuietly(['score_path' => 'scores/unknown.pdf']);
         $this->pieces[3]->updateQuietly(['score_source' => 'pianolit', 'score_path' => null]);
 
-        $filters = ['without_pianolit_escore' => 1];
+        $filters = ['missing_content' => ['without_pianolit_escore']];
         $expected = $this->pieces->slice(1)->pluck('id')->all();
         $this->assertEqualsCanonicalizing($expected, $this->directory($filters)->assertOk()->viewData('pieces')->pluck('id')->all());
-        $this->assertEqualsCanonicalizing($expected, $this->ids($filters));
+        $this->assertEqualsCanonicalizing($expected, $this->ids(['without_pianolit_escore' => 1]));
+        $selected = ['without_pianolit_escore', 'without_videos'];
+        $response = $this->directory(['missing_content' => $selected])->assertOk()->assertSee('data-checkbox-menu-summary>2 selected</span>', false);
         $this->assertEqualsCanonicalizing([$this->pieces[2]->id, $this->pieces[3]->id],
-            $this->directory($filters + ['without_videos' => 1])->assertOk()->viewData('pieces')->pluck('id')->all());
+            $response->viewData('pieces')->pluck('id')->all());
+        preg_match_all('/<input[^>]*name="missing_content\[\]"[^>]*value="([^"]+)"[^>]*\bchecked\b[^>]*>/', $response->getContent(), $checked);
+        $this->assertEqualsCanonicalizing($selected, $checked[1]);
+
+        foreach (['score_asc' => ['ascending', 'score_desc', [0, 2, 1, 3]], 'score_desc' => ['descending', 'score_asc', [2, 1, 0, 3]]] as $sort => [$direction, $nextSort, $indices]) {
+            $response = $this->directory(['sort' => $sort])->assertOk()
+                ->assertSee('aria-sort="'.$direction.'"', false)->assertSee('?sort='.$nextSort, false);
+            $this->assertSame(array_map(fn ($index) => $this->pieces[$index]->id, $indices), $response->viewData('pieces')->pluck('id')->all());
+        }
     }
 
     public function test_directory_filters_sorts_and_paginates_the_complete_query()
     {
-        foreach (['id', 'name', 'composer', 'tags', 'level', 'highlight', 'favorites', 'updated'] as $column) {
+        foreach (['name', 'composer', 'tags', 'level', 'highlight', 'updated'] as $column) {
             foreach (['asc', 'desc'] as $direction) {
                 $parameters = ['sort' => $column.'_'.$direction];
                 $page = $this->directory($parameters)->assertOk()->viewData('pieces');
@@ -215,7 +226,7 @@ class AdminPiecesTableTest extends ReviewTestCase
                     $expected = $this->pieces->pluck('id')->all();
                     if ($direction === 'desc') $expected = array_reverse($expected);
                 } else {
-                    $legacyColumn = array_search($column, ['id', 'name', 'composer', 'tags', 'level', 'highlight', 'favorites']);
+                    $legacyColumn = array_search($column, ['id', 'name', 'composer', 'tags', 'level', 'highlight']);
                     $expected = $this->ids(['order' => [['column' => $legacyColumn, 'dir' => $direction]]]);
                 }
                 $this->assertSame($expected, $page->pluck('id')->all());
@@ -237,45 +248,17 @@ class AdminPiecesTableTest extends ReviewTestCase
                 $piece->tags()->attach($this->pieces[0]->tags->pluck('id'));
             }
         });
-        $filters = ['search' => 'Directory', 'sort' => 'name_asc', 'per_page' => 12, 'without_synthesia' => 1, 'page' => 2];
+        $filters = ['search' => 'Directory', 'sort' => 'name_asc', 'per_page' => 12, 'missing_content' => ['without_synthesia'], 'page' => 2];
         $response = $this->directory($filters)->assertOk()->assertSee('Showing 13–24 of 25 results');
         $this->assertSame('Directory 12', $response->viewData('pieces')->first()->name);
-        $this->assertStringContainsString('without_synthesia=1', $response->viewData('pieces')->url(3));
+        $this->assertStringContainsString('missing_content%5B0%5D=without_synthesia', $response->viewData('pieces')->url(3));
         $this->assertSame(12, $this->directory()->viewData('pieces')->perPage());
         foreach ([24, 48, 96] as $size) $this->assertSame($size, $this->directory(['per_page' => $size])->viewData('pieces')->perPage());
 
-        $ids = DB::table('pieces')->where('name', 'like', 'Directory %')->orderBy('id')->pluck('id');
-        $views = [$ids[0] => 0, $ids[1] => 2, $ids[23] => 15, $ids[24] => 15];
-        foreach ($views as $id => $count) {
-            DB::table('piece_web_view_counts')->insert(['piece_id' => $id, 'views' => $count, 'reported_through' => '2026-11-10']);
-        }
-        DB::table('piece_views')->insert(['piece_id' => $ids[23], 'user_id' => 987654, 'created_at' => '2023-06-07 12:00:00']);
-        DB::table('activity_events')->insert([
-            'event_id' => (string) Str::uuid(), 'user_id' => 987654, 'platform' => 'app',
-            'source' => 'redis', 'type' => 'legacy_request', 'url' => '/api/pieces/find',
-            'metadata' => json_encode(['data' => ['search' => (string) $ids[23]]]),
-            'occurred_at' => '2023-06-08 12:00:00', 'received_at' => now(),
-        ]);
-        DB::table('activity_events')->insert([
-            'event_id' => (string) Str::uuid(), 'user_id' => 987654, 'platform' => 'app',
-            'source' => 'server', 'type' => 'piece_opened', 'resource_type' => 'piece', 'resource_id' => (string) $ids[22],
-            'occurred_at' => now(), 'received_at' => now(),
-        ]);
-        $views[$ids[23]] = 17;
-        $views[$ids[22]] = 1;
-        $defaultSort = $this->directory(['search' => 'Directory', 'sort' => 'name_desc'])->assertOk()->viewData('pieceViews');
-        $this->assertSame(17, $defaultSort[$ids[23]]);
-        $this->assertSame(1, $defaultSort[$ids[22]]);
-        $unavailable = $ids->diff(array_keys($views))->reverse()->values()->all();
-        foreach ([
-            'views_asc' => [$ids[0], $ids[22], $ids[1], $ids[24], $ids[23]],
-            'views_desc' => [$ids[23], $ids[24], $ids[1], $ids[22], $ids[0]],
-        ] as $sort => $ranked) {
-            foreach (array_chunk(array_merge($ranked, $unavailable), 12) as $index => $expected) {
-                $response = $this->directory(['search' => 'Directory', 'sort' => $sort, 'page' => $index + 1])->assertOk();
-                $this->assertSame($expected, $response->viewData('pieces')->pluck('id')->all());
-                $this->assertEquals(array_intersect_key($views, array_flip($expected)), $response->viewData('pieceViews'));
-            }
+        foreach (['id_asc', 'favorites_desc', 'views_desc'] as $sort) {
+            $response = $this->directory(['search' => 'Directory', 'sort' => $sort])->assertOk();
+            $this->assertSame('updated_desc', $response->viewData('filters')['sort']);
+            $this->assertStringNotContainsString('sort='.$sort, $response->viewData('pieces')->url(2));
         }
     }
 
@@ -291,15 +274,39 @@ class AdminPiecesTableTest extends ReviewTestCase
         $link = $xpath->query('//table[@id="pieces-table"]//a[@href="'.route('webapp.pieces.show', $piece).'"]')->item(0);
         $this->assertSame('_blank', $link->getAttribute('target'));
         $this->assertSame('noopener noreferrer', $link->getAttribute('rel'));
-        $this->assertSame(1, $xpath->query('//form[@id="pieces-table-filters"]//input[@name="without_moments"]')->length);
+        $this->assertSame(1, $xpath->query('//form[@id="pieces-table-filters"]/div[@data-checkbox-menu]//input[@name="missing_content[]" and @value="without_moments"]')->length);
         $this->assertSame(1, $xpath->query('//table[@id="pieces-table"]//a[@href="'.route('admin.pieces.edit', $piece).'"]')->length);
         $this->directory(['search' => 'does-not-exist'])->assertOk()->assertSee('No matching pieces');
         $this->withExceptionHandling();
         foreach ([['search' => ['bad']], ['without_videos' => ['bad']], ['without_pianolit_escore' => ['bad']], ['sort' => 'password_asc'], ['page' => -1], ['per_page' => 1000]] as $invalid) {
             $this->getJson(route('admin.pieces.index', $invalid))->assertUnprocessable();
         }
+        foreach (['without_videos', ['unknown'], [['without_videos']], ['without_videos', 'without_videos']] as $invalid) {
+            $this->getJson(route('admin.pieces.index', ['missing_content' => $invalid]))->assertUnprocessable();
+        }
         auth()->guard('admin')->logout();
         $this->directory()->assertRedirect(route('admin.login.show'));
+    }
+
+    public function test_directory_shows_base_names_beside_catalogue_references()
+    {
+        $this->pieces[0]->updateQuietly(['name' => 'Andante grazioso', 'movement_number' => '1', 'key' => 'C minor',
+            'collection_name' => '6 Pieces for Piano 4-Hands', 'catalogue_name' => 'Op.', 'catalogue_number' => '23', 'collection_number' => '1']);
+        $this->pieces[1]->updateQuietly(['catalogue_name' => 'BWV', 'catalogue_number' => '167', 'collection_number' => null]);
+        $this->pieces[2]->updateQuietly(['catalogue_name' => 'Op. posth.', 'catalogue_number' => null, 'collection_number' => null]);
+        $this->pieces[3]->updateQuietly(['catalogue_name' => null, 'catalogue_number' => null, 'collection_number' => null]);
+
+        $document = new \DOMDocument;
+        @$document->loadHTML($this->directory()->assertOk()->getContent());
+        $xpath = new \DOMXPath($document);
+        foreach ([['1. Andante grazioso', 'Opus 23 no.1'], ['Alpha', 'BWV 167'], ['Bravo', 'Op. posth.'], ['Charlie', '']] as $index => [$name, $catalogue]) {
+            $piece = $this->pieces[$index];
+            $link = $xpath->query('//table[@id="pieces-table"]//a[@href="'.route('webapp.pieces.show', $piece).'"]')->item(0);
+            $this->assertSame($name, $link->textContent);
+            $this->assertSame($piece->long_name, $link->getAttribute('title'));
+            $this->assertSame($catalogue, $xpath->evaluate('normalize-space(ancestor::tr/td[2])', $link));
+        }
+        $this->assertSame([$this->pieces[1]->id], $this->directory(['search' => 'BWV 167'])->assertOk()->viewData('pieces')->pluck('id')->all());
     }
 
     public function test_directory_query_count_stays_constant_without_media_or_activity_serialization()
@@ -319,23 +326,23 @@ class AdminPiecesTableTest extends ReviewTestCase
             $queries = DB::getQueryLog(); DB::disableQueryLog();
             $counts[] = count($queries);
             $this->assertCount($size, $data['pieces']);
-            $this->assertCount(1, array_filter(array_column($queries, 'query'), fn ($sql) => strpos($sql, 'activity_events') !== false));
+            $this->assertDoesNotMatchRegularExpression('/"(?:favorites|activity_events|piece_views|piece_web_view_counts)"/', implode(' ', array_column($queries, 'query')));
             $videoQueries = array_values(array_filter(array_column($queries, 'query'), fn ($sql) => str_contains($sql, 'from "tutorials"')));
             $this->assertCount(1, $videoQueries);
             $this->assertStringContainsString('as "has_schedule_performance"', $videoQueries[0]);
             $this->assertStringContainsString('as "has_schedule_synthesia"', $videoQueries[0]);
         }
-        $this->assertSame([7, 7], $counts);
+        $this->assertSame([6, 6], $counts);
     }
 
-    public function test_piece_web_views_sync_replaces_the_web_share_of_directory_totals()
+    public function test_piece_web_views_sync_replaces_the_web_share_of_analytics_totals()
     {
         $this->travelTo(now('America/New_York')->setDate(2026, 11, 11)->setTime(17, 5));
         $piece = $this->pieces->first();
         $piece->views()->create(['user_id' => create(User::class)->id, 'created_at' => '2023-06-07 12:00:00']);
         $path = route('webapp.pieces.show', $piece, false);
-        $directory = $this->directory()->assertOk()->assertSeeText('Views')->assertSeeText('Unavailable');
-        $this->assertSame([$piece->id => 1], $directory->viewData('pieceViews'));
+        $analytics = $this->get(route('admin.analytics.pieces'))->assertOk();
+        $this->assertSame([$piece->id => 1], array_column($analytics->viewData('report')['views'], 'total', 'id'));
 
         $credentials = tempnam(sys_get_temp_dir(), 'piece-web-views-');
         try {
@@ -370,9 +377,9 @@ class AdminPiecesTableTest extends ReviewTestCase
                     && $filters[1]['filter']['inListFilter']['values'][0] === $path;
             });
 
-            $page = $this->directory()->assertOk()->assertSeeText('1,235')->assertDontSeeText('Unavailable');
-            $this->assertSame(1235, $page->viewData('pieceViews')[$piece->id]);
-            $this->assertSame(0, $page->viewData('pieceViews')[$this->pieces[1]->id]);
+            $analytics = $this->get(route('admin.analytics.pieces'))->assertOk()->assertSeeText('1,235');
+            $this->assertSame([$piece->id => 1235], array_column($analytics->viewData('report')['views'], 'total', 'id'));
+            $this->assertDatabaseHas('piece_web_view_counts', ['piece_id' => $this->pieces[1]->id, 'views' => 0]);
             $this->assertArrayNotHasKey('web_views', $this->table()->assertOk()->json('data.0'));
             Http::assertSentCount(2);
 
@@ -381,7 +388,8 @@ class AdminPiecesTableTest extends ReviewTestCase
             $this->assertDatabaseHas('piece_web_view_counts', ['piece_id' => $piece->id, 'views' => 1234, 'reported_through' => '2026-11-10']);
             $this->artisan('analytics:sync-piece-web-views')->assertExitCode(0);
             $this->assertDatabaseHas('piece_web_view_counts', ['piece_id' => $piece->id, 'views' => 1300, 'reported_through' => '2026-11-11']);
-            $this->assertSame(1301, $this->directory()->assertOk()->viewData('pieceViews')[$piece->id]);
+            $analytics = $this->get(route('admin.analytics.pieces'))->assertOk();
+            $this->assertSame([$piece->id => 1301], array_column($analytics->viewData('report')['views'], 'total', 'id'));
             $this->assertSame(1, $piece->views()->count());
         } finally {
             unlink($credentials);
@@ -418,7 +426,7 @@ class AdminPiecesTableTest extends ReviewTestCase
         Model::withoutEvents(function () {
             for ($i = 0; $i < 13; $i++) create(Piece::class, ['name' => 'Delete fixture', 'composer_id' => $this->pieces[0]->composer_id]);
         });
-        $filters = ['search' => 'Delete fixture', 'sort' => 'id_asc', 'without_videos' => 1, 'page' => 2];
+        $filters = ['search' => 'Delete fixture', 'sort' => 'name_asc', 'missing_content' => ['without_videos'], 'page' => 2];
         $target = $this->directory($filters)->viewData('pieces')->first();
         $this->withExceptionHandling()->deleteJson(route('admin.pieces.destroy', $target), ['sort' => 'invalid'])->assertUnprocessable();
         $this->assertDatabaseHas('pieces', ['id' => $target->id]);

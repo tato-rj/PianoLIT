@@ -13,34 +13,26 @@
         'action' => route('admin.pieces.index'), 'state' => $filters,
         'hidden' => array_intersect_key($filters, array_flip(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'])),
         'search' => ['label' => 'Find a piece', 'placeholder' => 'Piece, composer, catalogue, tag or ID'],
-        'filters' => [['name' => 'filter_score_source', 'label' => 'Score source', 'options' => ['' => 'All sources'] + \App\Services\Pieces\ScoreSource::LABELS]],
+        'filters' => [
+            ['name' => 'filter_score_source', 'label' => 'Score source', 'options' => ['' => 'All sources'] + \App\Services\Pieces\ScoreSource::LABELS],
+            ['type' => 'checkbox-menu', 'name' => 'missing_content', 'label' => 'Missing content', 'allowEmpty' => true,
+                'options' => \App\Services\Admin\PiecesTable::MISSING_CONTENT_FILTERS,
+                'description' => 'Matches all selected options. Moments apply to performance videos only.'],
+        ],
         'sorts' => array_diff_key(\App\Services\Admin\PiecesTable::SORTS, array_flip(['tags_asc', 'tags_desc'])),
         'columns' => [
-            ['label' => 'ID', 'sort' => ['asc' => 'id_asc', 'desc' => 'id_desc']],
             ['label' => 'Piece', 'sort' => ['asc' => 'name_asc', 'desc' => 'name_desc']],
+            ['label' => 'Catalogue'],
             ['label' => 'Composer', 'sort' => ['asc' => 'composer_asc', 'desc' => 'composer_desc']],
             ['label' => 'Level', 'sort' => ['asc' => 'level_asc', 'desc' => 'level_desc']],
             ['label' => 'Highlighted', 'sort' => ['asc' => 'highlight_asc', 'desc' => 'highlight_desc']],
-            ['label' => 'Favorited', 'sort' => ['asc' => 'favorites_asc', 'desc' => 'favorites_desc']],
-            ['label' => 'Views', 'class' => 'text-end', 'sort' => ['asc' => 'views_asc', 'desc' => 'views_desc']],
-            ['label' => 'Score source'],
+            ['label' => 'Score source', 'sort' => ['asc' => 'score_asc', 'desc' => 'score_desc']],
             ['label' => 'Actions', 'hidden' => true],
         ],
         'tableClass' => 'admin-pieces-table',
         'emptyTitle' => 'No matching pieces',
         'emptyDescription' => 'Try another search or remove a missing-content filter.',
     ])
-        @slot('filterFields')
-            <fieldset class="w-100 mb-0">
-                <legend class="small text-muted mb-1">Missing content (temporary)</legend>
-                <div class="d-flex flex-wrap gap-3 small text-muted">
-                    @foreach(\App\Services\Admin\PiecesTable::MISSING_CONTENT_FILTERS as $filter => $label)
-                    @include('components.forms.checkbox', ['id' => 'pieces-filter-'.$filter, 'name' => $filter, 'value' => '1', 'label' => $label, 'checked' => !empty($filters[$filter]), 'classes' => 'mb-0'])
-                    @endforeach
-                </div>
-                <p class="small text-muted mt-1 mb-0">Matches all checked options. Moments apply to performance videos only.</p>
-            </fieldset>
-        @endslot
         @include('admin.pages.pieces.table.rows')
     @endcomponent
 </div></div>

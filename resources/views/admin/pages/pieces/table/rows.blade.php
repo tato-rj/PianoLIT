@@ -1,10 +1,15 @@
 @foreach($pieces as $item)
 <tr>
-    <td>{{ $item->id }}</td>
     <td class="admin-table__account">
-        <a class="admin-table__primary clamp-2" title="{{ $item->long_name }}" href="{{ route('webapp.pieces.show', $item) }}" target="_blank" rel="noopener noreferrer">{{ $item->long_name }}</a>
+        <a class="admin-table__primary clamp-2" title="{{ $item->long_name }}" href="{{ route('webapp.pieces.show', $item) }}" target="_blank" rel="noopener noreferrer">{{ $item->basename() }}</a>
         @if(!$item->hasAudio())
         <small><a href="{{ youtube($item->long_name.' by '.optional($item->composer)->name) }}" target="_blank" rel="noopener noreferrer">Find a recording @icon('external-link', ['mr' => 0, 'classes' => 'icon-size-xs'])</a></small>
+        @endif
+    </td>
+    <td class="text-nowrap">
+        {{ trim($item->catalogue_full_name.' '.$item->catalogue_number) }}
+        @if(filled($item->collection_number))
+            no.{{ trim($item->collection_number) }}
         @endif
     </td>
     <td class="text-nowrap">@include('components.music.composer-label', ['composer' => $item->composer])</td>
@@ -24,19 +29,17 @@
         @endif
         @include('admin.pages.pieces.table.scheduled-date')
     </td>
-    <td>{{ number_format($item->favorites_count) }}</td>
-    <td class="text-end text-nowrap">
-        @if(isset($pieceViews[$item->id]))
-            {{ number_format($pieceViews[$item->id]) }}
-        @else
-            <span class="text-muted">Unavailable</span>
-        @endif
-    </td>
     <td class="text-nowrap">
-        @if(trim((string) $item->score_path) === '')
-            <span class="text-muted">No PDF</span>
-        @else
-            {{ \App\Services\Pieces\ScoreSource::LABELS[$item->score_source] ?? 'Unknown' }}
+        @if(trim((string) $item->score_path) !== '')
+            @php($isEscore = $item->score_source === \App\Services\Pieces\ScoreSource::PIANOLIT)
+            <a class="text-reset" href="{{ $item->score }}" target="_blank" rel="noopener noreferrer"
+               aria-label="{{ $isEscore ? 'eScore' : 'External edition' }} for {{ $item->long_name }} (opens in a new tab)">
+                @if($isEscore)
+                    @icon('pianolit', ['mr' => 1, 'color' => 'primary'])eScore
+                @else
+                    External edition
+                @endif
+            </a>
         @endif
     </td>
     <td>

@@ -2309,6 +2309,8 @@ audio.addEventListener('error', resetClipIcons);
       root.dataset.checkboxMenuReady = 'true';
       var form = root.closest('form'),
         trigger = root.querySelector('[data-bs-toggle="dropdown"]');
+      var allowEmpty = root.hasAttribute('data-allow-empty'),
+        selectAll = root.querySelector('[data-checkbox-menu-all]');
       var text = root.querySelector('[data-checkbox-menu-summary]'),
         error = root.querySelector('[data-checkbox-menu-error]');
       var options = Array.prototype.slice.call(root.querySelectorAll('[data-checkbox-menu-option]'));
@@ -2319,10 +2321,10 @@ audio.addEventListener('error', resetClipIcons);
       }
       function update() {
         var checked = selected();
-        text.textContent = checked.length === options.length ? root.dataset.allLabel : checked.map(function (option) {
+        if (allowEmpty) text.textContent = checked.length ? checked.length + ' selected' : 'None selected';else text.textContent = checked.length === options.length ? root.dataset.allLabel : checked.map(function (option) {
           return option.dataset.label;
         }).join(' + ') || 'Choose options';
-        if (checked.length) {
+        if (allowEmpty || checked.length) {
           error.hidden = true;
           options.forEach(function (option) {
             option.removeAttribute('aria-invalid');
@@ -2332,13 +2334,13 @@ audio.addEventListener('error', resetClipIcons);
       options.forEach(function (option) {
         option.addEventListener('change', update);
       });
-      root.querySelector('[data-checkbox-menu-all]').addEventListener('click', function () {
+      if (selectAll) selectAll.addEventListener('click', function () {
         options.forEach(function (option) {
           option.checked = true;
         });
         update();
       });
-      if (form) form.addEventListener('submit', function (event) {
+      if (form && !allowEmpty) form.addEventListener('submit', function (event) {
         if (selected().length) return;
         event.preventDefault();
         error.hidden = false;

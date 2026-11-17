@@ -3,7 +3,6 @@
 namespace App\Services\Admin;
 
 use App\{Composer, Piece};
-use App\Analytics\PieceViewCounts;
 use App\Services\Pieces\ScoreSource;
 use App\Support\AdminTableFilters;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,19 +22,23 @@ class PiecesTable
 
     const SORTS = [
         'updated_desc' => 'Updated · newest', 'updated_asc' => 'Updated · oldest',
-        'id_desc' => 'ID · highest', 'id_asc' => 'ID · lowest',
         'name_asc' => 'Piece · A–Z', 'name_desc' => 'Piece · Z–A',
         'composer_asc' => 'Composer · A–Z', 'composer_desc' => 'Composer · Z–A',
         'tags_desc' => 'Tags · most', 'tags_asc' => 'Tags · fewest',
         'level_asc' => 'Level · easiest', 'level_desc' => 'Level · hardest',
         'highlight_desc' => 'Highlighted · newest', 'highlight_asc' => 'Highlighted · oldest',
-        'favorites_desc' => 'Favorited · most', 'favorites_asc' => 'Favorited · fewest',
-        'views_desc' => 'Views · most', 'views_asc' => 'Views · fewest',
+        'score_asc' => 'Score source · A–Z', 'score_desc' => 'Score source · Z–A',
     ];
 
     public function filters(Request $request)
     {
-        return AdminTableFilters::fromRequest($request, self::SORTS, 'updated_desc', $this->missingContentRules() + [
+        if (in_array($request->input('sort'), ['id_asc', 'id_desc', 'favorites_asc', 'favorites_desc', 'views_asc', 'views_desc'], true)) {
+            $request->merge(['sort' => null]);
+        }
+
+        $filters = AdminTableFilters::fromRequest($request, self::SORTS, 'updated_desc', $this->missingContentRules() + [
+            'missing_content' => 'sometimes|array|max:4',
+            'missing_content.*' => ['required', 'string', Rule::in(array_keys(self::MISSING_CONTENT_FILTERS)), 'distinct'],
             'creator_id' => 'sometimes|integer|min:1',
             'itunes' => 'sometimes|string|max:255',
             'videos' => 'sometimes|string|max:255',
@@ -44,6 +47,14 @@ class PiecesTable
             'audio_path' => 'sometimes|string|max:255',
             'is_free' => 'sometimes|string|max:255',
         ]);
+
+        $selected = $filters['missing_content'] ?? $this->legacyMissingContent($filters);
+        unset($filters['missing_content']);
+        $filters = array_diff_key($filters, self::MISSING_CONTENT_FILTERS);
+        if ($selected) {
+            $filters['missing_content'] = array_values($selected);
+        }
+        return $filters;
     }
 
     public function get(Request $request)
@@ -52,15 +63,8 @@ class PiecesTable
         $pieces = $this->withScheduleMedia($this->query($filters))->paginate($filters['per_page'], ['*'], 'page', $filters['page'] ?? 1)
             ->appends(AdminTableFilters::query(array_diff_key($filters, ['page' => true]), 'updated_desc'));
         $returnFilters = AdminTableFilters::query($filters, 'updated_desc');
-        if (in_array($filters['sort'], ['views_desc', 'views_asc'], true)) {
-            // Display the same totals used for ordering, even if new views arrive.
-            $pieceViews = $pieces->getCollection()->pluck('combined_views', 'id')
-                ->filter(fn ($views) => $views !== null)->all();
-        } else {
-            $pieceViews = app(PieceViewCounts::class)->forPieces($pieces->getCollection()->modelKeys());
-        }
 
-        return compact('pieces', 'filters', 'returnFilters', 'pieceViews');
+        return compact('pieces', 'filters', 'returnFilters');
     }
 
     public function withScheduleMedia(Builder $query): Builder
@@ -86,9 +90,8 @@ class PiecesTable
     public function query(array $filters)
     {
         // Override unrelated model counts; render loaded fields without serializing appends.
-        $query = Piece::select('pieces.*')->withCount(['tags', 'favorites' => function ($query) {
-            \App\Activity\ExcludedAccounts::owned($query, 'favorites.user_id');
-        }])->with(['tags', 'composer' => function ($query) { $query->select('id', 'name', 'cover_path'); }]);
+        $query = Piece::select('pieces.*')->withCount('tags')
+            ->with(['tags', 'composer' => function ($query) { $query->select('id', 'name', 'cover_path'); }]);
         $query->selectSub(\App\FreePick::select('scheduled_at')->whereColumn('piece_id', 'pieces.id')
             ->whereNull('retired_at')->where('scheduled_at', '>', now('UTC'))->orderBy('scheduled_at')->limit(1), 'next_freepick_at');
         foreach (['creator_id', 'itunes', 'videos', 'score_path', 'audio_path'] as $column) {
@@ -108,14 +111,13 @@ class PiecesTable
         }
         if (isset($filters['is_free'])) $query->free(filter_var($filters['is_free'], FILTER_VALIDATE_BOOLEAN));
         [$sort, $direction] = explode('_', $filters['sort']);
-        $columns = ['id' => 0, 'name' => 1, 'composer' => 2, 'tags' => 3, 'level' => 4, 'highlight' => 5, 'favorites' => 6];
+        $columns = ['name' => 1, 'composer' => 2, 'tags' => 3, 'level' => 4, 'highlight' => 5];
         if ($sort === 'updated') {
             $query->orderBy('pieces.updated_at', $direction);
-        } elseif ($sort === 'views') {
-            $query->leftJoinSub(app(PieceViewCounts::class)->counts(), 'piece_view_totals', 'piece_view_totals.piece_id', '=', 'pieces.id')
-                ->addSelect('piece_view_totals.total as combined_views')->withCasts(['combined_views' => 'integer'])
-                ->orderByRaw('CASE WHEN piece_view_totals.total IS NULL THEN 1 ELSE 0 END')
-                ->orderBy('piece_view_totals.total', $direction);
+        } elseif ($sort === 'score') {
+            $ranks = $direction === 'asc' ? [0, 1] : [1, 0];
+            $query->orderByRaw("CASE WHEN COALESCE(TRIM(pieces.score_path), '') = '' THEN 2 WHEN pieces.score_source = ? THEN ? ELSE ? END",
+                [ScoreSource::PIANOLIT, ...$ranks]);
         } else {
             $this->orderColumn($query, $columns[$sort], $direction);
         }
@@ -174,7 +176,10 @@ class PiecesTable
             ->whitelist([])
             ->addColumn('composer', function ($piece) { return ['short_name' => $piece->composer->short_name]; })
             ->filter(function ($query) use ($request) {
-                $this->applyFilters($query, $request->only(array_keys(self::MISSING_CONTENT_FILTERS)) + ['search' => trim((string) $request->input('search.value', ''))]);
+                $this->applyFilters($query, [
+                    'missing_content' => $this->legacyMissingContent($request->only(array_keys(self::MISSING_CONTENT_FILTERS))),
+                    'search' => trim((string) $request->input('search.value', '')),
+                ]);
             })
             ->order(function ($query) use ($request) {
                 $ordered = false;
@@ -201,6 +206,11 @@ class PiecesTable
         return array_fill_keys(array_keys(self::MISSING_CONTENT_FILTERS), 'sometimes|boolean');
     }
 
+    private function legacyMissingContent(array $filters): array
+    {
+        return array_keys(array_filter(array_intersect_key($filters, self::MISSING_CONTENT_FILTERS)));
+    }
+
     private function performance($videos)
     {
         return $videos->where(fn ($videos) => $videos->where('type', 'Performance')->orWhere('category', 'performance'));
@@ -213,15 +223,16 @@ class PiecesTable
 
     protected function applyFilters($query, array $filters)
     {
-        if (!empty($filters['without_videos'])) $query->whereDoesntHave('tutorials', fn ($videos) => $this->performance($videos));
-        if (!empty($filters['without_moments'])) {
+        $missing = array_fill_keys($filters['missing_content'] ?? [], true);
+        if (isset($missing['without_videos'])) $query->whereDoesntHave('tutorials', fn ($videos) => $this->performance($videos));
+        if (isset($missing['without_moments'])) {
             $query->whereHas('tutorials', fn ($videos) => $this->performance($videos))
                 ->whereDoesntHave('tutorials', fn ($videos) => $this->performance($videos)->whereHas('moments'));
         }
-        if (!empty($filters['without_synthesia'])) {
+        if (isset($missing['without_synthesia'])) {
             $query->whereDoesntHave('tutorials', fn ($videos) => $this->synthesia($videos));
         }
-        if (!empty($filters['without_pianolit_escore'])) {
+        if (isset($missing['without_pianolit_escore'])) {
             $query->where(function ($query) {
                 $query->whereNull('pieces.score_source')->orWhere('pieces.score_source', '!=', ScoreSource::PIANOLIT)
                     ->orWhereNull('pieces.score_path')->orWhereRaw("TRIM(pieces.score_path) = ''");

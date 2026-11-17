@@ -170,7 +170,7 @@ class FreePickScheduleTest extends ReviewTestCase
 
     public function test_admin_schedule_preserves_filters_uses_route_identity_and_restores_validation_modal()
     {
-        $parameters = ['piece' => $this->first, 'search' => $this->first->name, 'sort' => 'id_asc', 'without_pianolit_escore' => 1];
+        $parameters = ['piece' => $this->first, 'search' => $this->first->name, 'sort' => 'name_asc', 'missing_content' => ['without_pianolit_escore']];
         $this->post(route('admin.pieces.schedule', $parameters), ['mode' => 'now', 'piece_id' => $this->second->id])
             ->assertRedirect(route('admin.pieces.index', array_diff_key($parameters, ['piece' => true])));
         $this->assertTrue($this->first->is_free);
