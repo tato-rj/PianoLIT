@@ -37,7 +37,7 @@ class Feed
             $suggestions = $selection['pieces'];
             $api->order(3)->withAttributes($suggestions, ['type' => 'piece', 'source' => route('api.pieces.find')]);
             $rows->splice(3, 0, [['title' => 'For you', 'row' => 'gallery', 'type' => 'piece', 'content' => $suggestions,
-                'playing_level' => $level, 'cohort' => $selection['cohort']]]);
+                'cohort' => $selection['cohort']]]);
             if ($pieces->isNotEmpty()) {
                 $api->order(2)->withAttributes($pieces, ['type' => 'piece', 'source' => route('api.pieces.find')]);
                 $position = $rows->search(function ($row) { return $row['title'] === 'Latest pieces'; });

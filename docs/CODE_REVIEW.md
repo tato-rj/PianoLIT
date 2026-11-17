@@ -1,5 +1,10 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-17 — Show six pieces in Discover’s For you row (P3, implemented locally)
+
+- Removed the Playing level control from the web Discover row and let the template render all six shared recommendations when available. The Match tour can save the account preference and returns to Discover.
+- All 21 focused checks pass with 246 assertions. Chrome at 390 and 1440 pixels verified that the rail scrolls to the sixth card, records its impression and fits the viewport. Production deployment is pending.
+
 ### 2026-11-17 — Personalize Discover with saved pieces, recent opens and playback (P2, implemented locally)
 
 - Web and iOS v2 now share `Discover/Recommendations`. Each distinct favorite contributes once. Confirmed recent opens, sustained web video and audio playback, and recently marked scores also contribute. Related pieces can come from the eligible public repertoire. The web row says “Pieces you might like.” Discover and the web Match tour offer an optional playing level. The level applies to both clients.

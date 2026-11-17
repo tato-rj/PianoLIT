@@ -21,7 +21,7 @@ class DiscoverLevelController extends Controller
             DB::table('discover_preferences')->upsert([['user_id' => $user->id, 'playing_level' => $data['playing_level']]],
                 ['user_id'], ['playing_level']);
         }
-        return redirect()->to(route('webapp.discover').'#discover-playing-level')
+        return redirect()->route('webapp.discover')
             ->with('status', $data['playing_level'] ? 'Your playing level has been saved.' : 'Your playing level has been cleared.');
     }
 }

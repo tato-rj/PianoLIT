@@ -143,30 +143,36 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         }
     }
 
-    public function test_for_you_requires_a_web_account_and_omits_unavailable_media()
+    public function test_for_you_shows_six_recommendations_without_a_playing_level_control()
     {
-        $row = ['title' => 'For you', 'type' => 'piece', 'content' => PieceCards::load($this->pieces->take(1)->push($this->pieces->last()), false)];
+        $row = ['title' => 'For you', 'type' => 'piece', 'content' => PieceCards::load($this->pieces->take(5)->push($this->pieces->last()), false)];
         $this->assertStringNotContainsString('for-you-heading', view('webapp.discover.rows.gallery', compact('row'))->render());
         $this->actingAs(Model::withoutEvents(function () { return create(User::class); }), 'web');
         $row['content'][1]->audio_path = null;
         $row['content'][1]->score_path = null;
-        $html = view('webapp.discover.rows.gallery', ['row' => $row, 'errors' => new \Illuminate\Support\ViewErrorBag])->render();
+        $html = view('webapp.discover.rows.gallery', compact('row'))->render();
         $this->assertStringContainsString('Pieces you might like.', $html);
-        $this->assertSame(2, substr_count($html, 'class="discover-compact-card discover-piece-link'));
-        $this->assertSame(1, substr_count($html, 'icon-headphones'));
-        $this->assertSame(1, substr_count($html, 'icon-file-text'));
+        $this->assertStringNotContainsString('Playing level', $html);
+        $this->assertSame(6, substr_count($html, 'class="discover-compact-card discover-piece-link'));
+        $this->assertSame(5, substr_count($html, 'icon-headphones'));
+        $this->assertSame(5, substr_count($html, 'icon-file-text'));
         $this->assertSame(1, substr_count($html, 'icon-video'));
-        $this->assertSame(2, substr_count($html, 'icon-flame'));
+        $this->assertSame(6, substr_count($html, 'icon-flame'));
         $dom = new \DOMDocument;
         @$dom->loadHTML($html);
-        $media = (new \DOMXPath($dom))->query('//ul[@aria-label="Available media"]');
+        $xpath = new \DOMXPath($dom);
+        $media = $xpath->query('//ul[@aria-label="Available media"]');
         foreach ($media as $icons) {
             $this->assertSame('', trim($icons->textContent));
             foreach ($icons->getElementsByTagName('i') as $icon) {
                 $this->assertSame($icon->getAttribute('title'), $icon->getAttribute('aria-label'));
             }
         }
-        foreach ($row['content'] as $piece) $this->assertStringContainsString(route('webapp.pieces.show', $piece), $html);
+        $links = $xpath->query('//a[@data-recommendation-position]');
+        foreach ($row['content'] as $index => $piece) {
+            $this->assertSame((string) ($index + 1), $links[$index]->getAttribute('data-recommendation-position'));
+            $this->assertSame(route('webapp.pieces.show', $piece), $links[$index]->getAttribute('href'));
+        }
         $row['content'] = [];
         $this->assertStringNotContainsString('for-you-heading', view('webapp.discover.rows.gallery', compact('row'))->render());
     }

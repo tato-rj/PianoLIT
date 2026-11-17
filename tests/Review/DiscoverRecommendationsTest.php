@@ -144,7 +144,7 @@ class DiscoverRecommendationsTest extends ReviewTestCase
         $this->assertContains($emptyMarks->id, $ids);
         $this->actingAs($this->user, 'web');
         $url = route('webapp.discover.level');
-        $this->post($url, ['playing_level' => 'beginner', 'user_id' => $this->user->id + 1])->assertRedirect();
+        $this->post($url, ['playing_level' => 'beginner', 'user_id' => $this->user->id + 1])->assertRedirect(route('webapp.discover'));
         $this->assertSame($beginner->id, $this->ids()[0]);
         $this->withExceptionHandling()->post($url, ['playing_level' => 'bogus'])->assertSessionHasErrors('playing_level');
         $this->assertSame('beginner', Recommendations::playingLevel($this->user));
