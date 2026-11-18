@@ -7,8 +7,11 @@
     $magnitude = pow(10, floor(log10($rawStep)));
     $step = (int) (ceil($rawStep / $magnitude) * $magnitude);
     $maximum = $step * 4;
-    $seriesWidth = max(28, strlen(number_format($peak)) * 10 + 8);
-    $groupWidth = max(84, $seriesWidth * count($series) + 16);
+    $dayCount = count($trend);
+    $visibleDays = 10;
+    $canvasWidth = max(100, 100 * $dayCount / $visibleDays);
+    $seriesWidth = max(22, strlen(number_format($peak)) * 9 + 4);
+    $dayWidth = max(64, $seriesWidth * count($series) + 8);
 @endphp
 <div class="ua-chart">
     <div class="ua-chart-unit" aria-hidden="true">Count</div>
@@ -19,7 +22,7 @@
             @endfor
         </div>
         <div class="ua-chart-scroll" data-daily-activity-scroll tabindex="0" role="region" aria-label="Daily activity by date: {{ $seriesDescription }}. Scroll horizontally to see all dates.">
-            <div class="ua-chart-canvas" style="--ua-chart-width:{{ count($trend) * ($groupWidth + 16) - 16 }}px; --ua-chart-series-width:{{ $seriesWidth }}px">
+            <div class="ua-chart-canvas" style="--ua-chart-width:{{ $canvasWidth }}%; --ua-chart-min-width:{{ $dayCount * $dayWidth }}px">
                 <div class="ua-chart-grid" aria-hidden="true">
                     @for($tick = 0; $tick <= 4; $tick++)
                     <span style="bottom:{{ $tick * 25 }}%"></span>

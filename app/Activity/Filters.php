@@ -10,13 +10,14 @@ use App\Support\AdminDateRanges;
 class Filters
 {
     const PLATFORMS = ['webapp' => 'Web app', 'app' => 'iOS'];
+    const DEFAULT_ACTIVITY_RANGE = 'all';
 
     public $start;
     public $end;
     public $values;
     public $platforms;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, $defaultRange = '7')
     {
         $this->values = $request->validate([
             'range' => 'nullable|string|in:'.implode(',', array_merge(array_keys(AdminDateRanges::LABELS), ['30'])),
@@ -25,7 +26,7 @@ class Filters
             'platform.*' => 'nullable|string|in:web,webapp,app|distinct',
             'audience' => 'nullable|in:all,registered,anonymous',
         ]);
-        $this->values = array_merge(['range' => '7', 'platform' => 'all', 'audience' => 'registered'], array_filter($this->values, function ($value) { return $value !== null; }));
+        $this->values = array_merge(['range' => $defaultRange, 'platform' => 'all', 'audience' => 'registered'], array_filter($this->values, function ($value) { return $value !== null; }));
         // Accept existing scalar URLs and the checkbox menu's array (including
         // its empty sentinel so an unchecked menu cannot silently mean All).
         $selected = $this->values['platform'];

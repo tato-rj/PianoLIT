@@ -29,7 +29,10 @@
                                 <span class="admin-chart-count">{{ number_format($day['total']) }}</span>
                             </span>
                         </div>
-                        <span class="admin-chart-date" aria-hidden="true"><span>{{ explode(' ', $day['date'])[0] }}</span> <span>{{ explode(' ', $day['date'])[1] }}</span></span>
+                        <span class="admin-chart-date" aria-hidden="true">
+                            <span class="d-block">{{ $day['weekday'] }}</span>
+                            <span>{{ explode(' ', $day['date'])[0] }}</span> <span>{{ explode(' ', $day['date'])[1] }}</span>
+                        </span>
                     </li>
                     @endforeach
                 </ol>

@@ -39,12 +39,18 @@ class AdminDateRangeTest extends ReviewTestCase
         $this->travelTo(carbon('2026-10-13 12:00:00'));
         $user = Model::withoutEvents(function () { return create(User::class); });
         $this->actingAs(create(Admin::class), 'admin');
-        foreach ([route('admin.analytics.users'), route('admin.analytics.users.insights'), route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits'])] as $url) {
+        foreach ([
+            [route('admin.analytics.users'), 'all'],
+            [route('admin.analytics.users.insights'), '7'],
+            [route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']), '7'],
+        ] as [$url, $defaultRange]) {
             $response = $this->get($url)->assertOk()->assertSee('This month')->assertSee('Last month')->assertSee('All history')->assertDontSee('Last 30 days')->assertDontSee('Select “Custom dates”');
             $document = new \DOMDocument; @$document->loadHTML($response->getContent()); $xpath = new \DOMXPath($document);
             $widget = $xpath->query('//details[@data-admin-date-range]')->item(0);
             $this->assertNotNull($widget);
             $this->assertSame('range', $widget->getAttribute('data-period-name'));
+            $this->assertSame($defaultRange, $widget->getAttribute('data-current-preset'));
+            $this->assertSame($defaultRange, $widget->getAttribute('data-default-preset'));
             $this->assertFalse($widget->hasAttribute('data-max-days'));
             $this->assertSame(7, $xpath->query('.//button[@data-date-preset]', $widget)->length);
             $this->assertSame(['Today', 'Yesterday', 'Last 7 days', 'This month', 'Last month', 'All history', 'Custom range'], array_map(function ($button) { return trim($button->textContent); }, iterator_to_array($xpath->query('.//button[@data-date-preset]', $widget))));

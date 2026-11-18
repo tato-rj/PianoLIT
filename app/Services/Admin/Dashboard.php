@@ -33,7 +33,7 @@ class Dashboard
         $trend = [];
         for ($i = 0; $i < $days; $i++) {
             $date = $start->copy()->addDays($i);
-            $trend[] = ['date' => $date->format('M j'), 'label' => $date->format('l, F j'),
+            $trend[] = ['weekday' => $date->format('D'), 'date' => $date->format('M j'), 'label' => $date->format('l, F j'),
                 'total' => (int) $current->where('date', $date->toDateString())->sum('total')];
         }
 

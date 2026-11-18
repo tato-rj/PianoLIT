@@ -18,7 +18,7 @@ class UserAnalyticsController extends Controller
 
     public function index(Request $request, Queries $queries)
     {
-        $filters = new Filters($request);
+        $filters = new Filters($request, Filters::DEFAULT_ACTIVITY_RANGE);
         $visitSort = new VisitSort($request);
         $iosOnly = $filters->platforms === ['app'];
         $appActivity = $filters->includesPlatform('app') ? $queries->appRequestSummary($filters) : null;

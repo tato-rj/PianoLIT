@@ -55,6 +55,7 @@ class AdminDashboardTest extends ReviewTestCase
         $this->assertSame(1, $data['previous']);
         $this->assertEquals(400, $data['change']);
         $this->assertSame([0, 0, 5], array_column($data['trend'], 'total'));
+        $this->assertSame(['Sat', 'Sun', 'Mon'], array_column($data['trend'], 'weekday'));
         $this->assertSame(1, $data['activeUsers']);
         $this->assertSame([$first->id], $data['engagedUsers']->pluck('id')->all());
         $this->assertSame([2], $data['engagedUsers']->pluck('events_count')->all());
@@ -71,7 +72,8 @@ class AdminDashboardTest extends ReviewTestCase
         $this->assertSame(3, $data['days']);
         $this->assertSame('all', $data['platform']);
         $response->assertSee(e(route('admin.home', ['days' => 30, 'platform' => 'all'])), false)
-            ->assertSee(e(route('admin.home', ['days' => 3, 'platform' => 'webapp'])), false);
+            ->assertSee(e(route('admin.home', ['days' => 3, 'platform' => 'webapp'])), false)
+            ->assertSeeInOrder(['<span class="d-block">Mon</span>', '<span>Oct</span> <span>12</span>'], false);
         $this->assertSame(1, app(Dashboard::class)->data(7, 'app')['total']);
         $this->assertCount(0, app(Dashboard::class)->data(7, 'app')['engagedUsers']);
         $this->withExceptionHandling();

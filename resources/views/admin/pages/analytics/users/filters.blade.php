@@ -5,7 +5,7 @@
     @unless(!empty($profileFilters))
     @include('admin.components.filters.select', ['label' => 'Audience', 'name' => 'audience', 'options' => ['all' => 'Everyone', 'registered' => 'Registered', 'anonymous' => 'Anonymous'], 'value' => $filters->values['audience']])
     @endunless
-    @include('admin.components.filters.date-range', ['label' => 'Custom range', 'fieldLabel' => 'Dates', 'showLabel' => true, 'periodName' => 'range', 'selectedPreset' => $filters->values['range'], 'from' => $filters->values['from'] ?? '', 'to' => $filters->values['to'] ?? '', 'defaultPreset' => '7', 'requireBoth' => true])
+    @include('admin.components.filters.date-range', ['label' => 'Custom range', 'fieldLabel' => 'Dates', 'showLabel' => true, 'periodName' => 'range', 'selectedPreset' => $filters->values['range'], 'from' => $filters->values['from'] ?? '', 'to' => $filters->values['to'] ?? '', 'defaultPreset' => $defaultPreset ?? '7', 'requireBoth' => true])
     @slot('note')
     <span class="admin-filter-note admin-filter-note--end">@if($filters->start){{ $filters->start->format('M j, Y') }} – {{ $filters->end->copy()->subDay()->format('M j, Y') }}@else All history @endif</span>
     @endslot

@@ -198,7 +198,8 @@
     }
     .ua-chart-canvas {
         position: relative;
-        min-width: var(--ua-chart-width);
+        width: var(--ua-chart-width);
+        min-width: var(--ua-chart-min-width);
     }
     .ua-chart-grid {
         position: absolute;
@@ -219,7 +220,6 @@
     }
     .ua-chart-bars {
         display: flex;
-        gap: 16px;
         margin: 0;
         padding: 0;
         list-style: none;
@@ -231,19 +231,19 @@
     }
     .ua-chart-group {
         display: flex;
-        justify-content: center;
-        gap: 0px;
+        padding-inline: 4px;
     }
     .ua-chart-track {
         display: flex;
         align-items: flex-end;
         justify-content: center;
         height: var(--ua-chart-height);
-        flex: 0 0 var(--ua-chart-series-width);
+        flex: 1 1 0;
+        min-width: 0;
     }
     .ua-chart-bar {
         position: relative;
-        width: 22px;
+        width: min(22px, calc(100% - 4px));
         border-radius: 12px 12px 0 0;
         background: linear-gradient(0deg, var(--ua-series-fill), var(--ua-series-light));
     }
