@@ -10,17 +10,24 @@ use App\Support\AdminDateRanges;
 class Filters
 {
     const PLATFORMS = ['webapp' => 'Web app', 'app' => 'iOS'];
-    const DEFAULT_ACTIVITY_RANGE = 'all';
+    const DEFAULT_ACTIVITY_RANGE = '10';
 
     public $start;
     public $end;
     public $values;
     public $platforms;
+    public $defaultRange;
+    public $rangeLabels;
 
     public function __construct(Request $request, $defaultRange = '7')
     {
+        $this->defaultRange = $defaultRange;
+        $this->rangeLabels = AdminDateRanges::LABELS;
+        if ($defaultRange === self::DEFAULT_ACTIVITY_RANGE) {
+            $this->rangeLabels = [self::DEFAULT_ACTIVITY_RANGE => 'Last 10 days'] + $this->rangeLabels;
+        }
         $this->values = $request->validate([
-            'range' => 'nullable|string|in:'.implode(',', array_merge(array_keys(AdminDateRanges::LABELS), ['30'])),
+            'range' => 'nullable|string|in:'.implode(',', array_merge(array_keys($this->rangeLabels), ['30'])),
             'from' => 'nullable|date_format:Y-m-d', 'to' => 'nullable|date_format:Y-m-d|after_or_equal:from',
             'platform' => is_array($request->input('platform')) ? 'array|min:1|max:4' : 'nullable|string|in:all,web,webapp,app',
             'platform.*' => 'nullable|string|in:web,webapp,app|distinct',

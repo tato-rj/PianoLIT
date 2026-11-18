@@ -21,7 +21,7 @@
             <span style="bottom:{{ $tick * 25 }}%">{{ number_format($tick * $step) }}</span>
             @endfor
         </div>
-        <div class="ua-chart-scroll" data-daily-activity-scroll tabindex="0" role="region" aria-label="Daily activity by date: {{ $seriesDescription }}. Scroll horizontally to see all dates.">
+        <div class="ua-chart-scroll" data-daily-activity-scroll tabindex="0" role="region" aria-label="Daily activity by date: {{ $seriesDescription }}. Scroll horizontally if needed to see all dates.">
             <div class="ua-chart-canvas" style="--ua-chart-width:{{ $canvasWidth }}%; --ua-chart-min-width:{{ $dayCount * $dayWidth }}px">
                 <div class="ua-chart-grid" aria-hidden="true">
                     @for($tick = 0; $tick <= 4; $tick++)
@@ -50,5 +50,5 @@
         </div>
     </div>
     <div class="ua-chart-x" aria-hidden="true">Date</div>
-    <p class="ua-chart-hint">Swipe or scroll horizontally to see all dates.</p>
+    <p class="ua-chart-hint">Swipe or scroll horizontally if needed to see all dates.</p>
 </div>

@@ -3,7 +3,7 @@
 <div class="content-wrapper"><div class="container-fluid ua">
     @include('admin.components.page.title', ['breadcrumbs' => [['label' => 'User analytics', 'url' => route('admin.analytics.users')]], 'breadcrumbLabel' => 'Activity', 'title' => 'User analytics', 'subtitle' => 'Web-app journeys, media, saved music and iOS activity.'])
     @include('admin.pages.analytics.users.nav', ['active' => 'activity'])
-    @include('admin.pages.analytics.users.filters', ['defaultPreset' => \App\Activity\Filters::DEFAULT_ACTIVITY_RANGE])
+    @include('admin.pages.analytics.users.filters')
     <div class="ua-metrics {{ $iosOnly ? 'ua-metrics-three' : ($appActivity ? 'ua-metrics-six' : '') }}">
         @foreach($metrics as $label => $value)
         <article class="ua-card ua-metric"><span>{{ $label }}</span><strong>{{ number_format($value) }}</strong>@if($label === 'Reported accounts')<small>Submitted identity · unverified</small>@endif</article>

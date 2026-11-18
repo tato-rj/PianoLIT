@@ -40,7 +40,7 @@ class AdminDateRangeTest extends ReviewTestCase
         $user = Model::withoutEvents(function () { return create(User::class); });
         $this->actingAs(create(Admin::class), 'admin');
         foreach ([
-            [route('admin.analytics.users'), 'all'],
+            [route('admin.analytics.users'), '10'],
             [route('admin.analytics.users.insights'), '7'],
             [route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']), '7'],
         ] as [$url, $defaultRange]) {
@@ -52,8 +52,9 @@ class AdminDateRangeTest extends ReviewTestCase
             $this->assertSame($defaultRange, $widget->getAttribute('data-current-preset'));
             $this->assertSame($defaultRange, $widget->getAttribute('data-default-preset'));
             $this->assertFalse($widget->hasAttribute('data-max-days'));
-            $this->assertSame(7, $xpath->query('.//button[@data-date-preset]', $widget)->length);
-            $this->assertSame(['Today', 'Yesterday', 'Last 7 days', 'This month', 'Last month', 'All history', 'Custom range'], array_map(function ($button) { return trim($button->textContent); }, iterator_to_array($xpath->query('.//button[@data-date-preset]', $widget))));
+            $labels = ['Today', 'Yesterday', 'Last 7 days', 'This month', 'Last month', 'All history', 'Custom range'];
+            if ($defaultRange === '10') array_unshift($labels, 'Last 10 days');
+            $this->assertSame($labels, array_map(function ($button) { return trim($button->textContent); }, iterator_to_array($xpath->query('.//button[@data-date-preset]', $widget))));
             $this->assertSame(1, $xpath->query('.//input[@type="hidden" and @name="from"]', $widget)->length);
             $this->assertSame(1, $xpath->query('.//input[@type="hidden" and @name="to"]', $widget)->length);
             $this->assertSame(0, $xpath->query('.//input[@type="date" and @name]', $widget)->length, 'Draft edits do not become submitted filters until applied.');
@@ -119,6 +120,14 @@ class AdminDateRangeTest extends ReviewTestCase
             DB::table('activity_events')->insert(['event_id' => (string) Str::uuid(), 'visit_id' => $oldVisit, 'user_id' => $user->id, 'platform' => 'webapp', 'type' => $type, 'source' => $source, 'occurred_at' => $at, 'received_at' => now(), 'metadata' => '{}']);
         }
         $this->actingAs(create(Admin::class), 'admin');
+        $default = $this->get(route('admin.analytics.users'))->assertOk();
+        $this->assertSame(10, substr_count($default->getContent(), 'class="ua-chart-column"'));
+        $defaultTrend = $default->viewData('trend');
+        $this->assertSame('2026-10-04', $defaultTrend[0]['day']);
+        $this->assertSame('2026-10-13', end($defaultTrend)['day']);
+        $this->assertSame(1, $default->viewData('metrics')['Visits']);
+        $this->assertSame(0, $default->viewData('metrics')['iOS requests']);
+        $this->get(route('admin.analytics.users', ['range' => '10']))->assertOk()->assertViewHas('trend', $defaultTrend);
         $parameters = ['range' => 'all', 'history' => 1, 'visit_sort' => 'date', 'visit_order' => 'asc'];
         $response = $this->get(route('admin.analytics.users', $parameters))->assertOk()->assertDontSee('Last 30 days');
         $this->assertNull($response->viewData('filters')->start);

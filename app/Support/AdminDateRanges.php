@@ -16,6 +16,7 @@ class AdminDateRanges
             case 'today': return [$today->copy(), $today];
             case 'yesterday': return [$today->copy()->subDay(), $today->copy()->subDay()];
             case '7': return [$today->copy()->subDays(6), $today];
+            case '10': return [$today->copy()->subDays(9), $today];
             case '30': return [$today->copy()->subDays(29), $today];
             case 'this_month': return [$today->copy()->startOfMonth(), $today];
             case 'last_month': return [$today->copy()->startOfMonth()->subMonth(), $today->copy()->startOfMonth()->subDay()];
@@ -24,10 +25,10 @@ class AdminDateRanges
         throw new \InvalidArgumentException('Unknown date preset.');
     }
 
-    public static function presets()
+    public static function presets(array $labels = self::LABELS)
     {
         $presets = [];
-        foreach (self::LABELS as $key => $label) {
+        foreach ($labels as $key => $label) {
             if ($key === 'custom') continue;
             [$from, $to] = self::bounds($key);
             $presets[$key] = ['label' => $label, 'from' => $from ? $from->toDateString() : '', 'to' => $key === 'all' ? '' : $to->toDateString()];

@@ -1,6 +1,6 @@
 @php
     $dateId = 'admin-date-range-'.\Illuminate\Support\Str::uuid();
-    $datePresets = \App\Support\AdminDateRanges::presets();
+    $datePresets = \App\Support\AdminDateRanges::presets($presetLabels ?? \App\Support\AdminDateRanges::LABELS);
     $dateFrom = $from ?? '';
     $dateTo = $to ?? '';
     $dateLabel = $label ?? 'Custom range';
