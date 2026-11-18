@@ -118,6 +118,44 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertSame(0, $q->visits($this->filters(['range' => 'today', 'audience' => 'anonymous']))->count());
     }
 
+    public function test_returning_visitors_match_earlier_visits_by_effective_identity()
+    {
+        $prior = '2026-10-11 10:00:00';
+        $today = '2026-10-12 10:00:00';
+        $link = function ($visit, $account) {
+            DB::table('activity_visit_links')->insert(['visit_id' => $visit, 'user_id' => $account->id,
+                'linked_at_utc' => now(), 'reason' => 'login']);
+        };
+
+        $linkedBefore = $this->account();
+        $link($this->visit(null, $prior), $linkedBefore);
+        $this->visit($linkedBefore, $today);
+        $directBefore = $this->account();
+        $this->visit($directBefore, $prior, 'web');
+        $link($this->visit(null, $today), $directBefore);
+
+        $directOwner = $this->account();
+        $otherAccount = $this->account();
+        $link($this->visit($directOwner, $prior), $otherAccount);
+        $this->visit($otherAccount, $today);
+
+        $returningGuest = (string) Str::uuid();
+        $this->visit(null, $prior, 'webapp', $returningGuest);
+        $this->visit(null, $today, 'webapp', $returningGuest);
+        $previouslyLinkedGuest = (string) Str::uuid();
+        $link($this->visit(null, $prior, 'webapp', $previouslyLinkedGuest), $directBefore);
+        $this->visit(null, $today, 'webapp', $previouslyLinkedGuest);
+        $sameTimeGuest = (string) Str::uuid();
+        $this->visit(null, $today, 'webapp', $sameTimeGuest);
+        $this->visit(null, $today, 'webapp', $sameTimeGuest);
+
+        $this->actingAs(create(Admin::class), 'admin');
+        foreach (['all' => 3, 'registered' => 2, 'anonymous' => 1] as $audience => $expected) {
+            $response = $this->get(route('admin.analytics.users', ['range' => 'today', 'audience' => $audience]))->assertOk();
+            $this->assertSame($expected, (int) $response->viewData('metrics')['Returning visitors']);
+        }
+    }
+
     public function test_journey_orders_actions_by_occurrence_not_receipt_and_does_not_invent_page_associations()
     {
         $visit = $this->visit(); $page = $this->page($visit);

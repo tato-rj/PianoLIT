@@ -127,10 +127,19 @@ class Queries
     public function metrics(Filters $filters)
     {
         $visits = $this->visits($filters);
-        $returning = (clone $visits)->whereExists(function ($previous) {
-            $previous->selectRaw('1')->from('activity_visits as previous')->leftJoin('activity_visit_links as pl', 'pl.visit_id', '=', 'previous.id')
-                ->whereRaw(self::identity('previous', 'pl').' = '.self::identity())
-                ->whereColumn('previous.started_at', '<', 'v.started_at');
+        $earlier = DB::table('activity_visits as previous')->selectRaw('1')
+            ->whereColumn('previous.started_at', '<', 'v.started_at');
+        $returning = (clone $visits)->where(function ($query) use ($earlier) {
+            // Keep the historical lookup on indexed columns. Comparing the
+            // formatted identities makes each new visitor scan prior visits.
+            $account = DB::raw(self::account());
+            $direct = (clone $earlier)->whereColumn('previous.user_id', '=', $account);
+            $linked = (clone $earlier)->join('activity_visit_links as pl', 'pl.visit_id', '=', 'previous.id')
+                ->whereColumn('pl.user_id', '=', $account)->whereNull('previous.user_id');
+            $anonymous = (clone $earlier)->leftJoin('activity_visit_links as pl', 'pl.visit_id', '=', 'previous.id')
+                ->whereColumn('previous.visitor_id', 'v.visitor_id')->whereNull('v.user_id')->whereNull('l.user_id')
+                ->whereNull('previous.user_id')->whereNull('pl.visit_id');
+            $query->addWhereExistsQuery($direct)->addWhereExistsQuery($linked, 'or')->addWhereExistsQuery($anonymous, 'or');
         });
         return [
             'Unique visitors' => (clone $visits)->selectRaw('COUNT(DISTINCT '.self::identity().') as total')->value('total'),
