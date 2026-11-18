@@ -10,8 +10,8 @@
     $dayCount = count($trend);
     $visibleDays = 10;
     $canvasWidth = max(100, 100 * $dayCount / $visibleDays);
-    $seriesWidth = max(22, strlen(number_format($peak)) * 9 + 4);
-    $dayWidth = max(64, $seriesWidth * count($series) + 8);
+    $seriesWidth = max(22, strlen(number_format($peak)) * 10 + 2);
+    $dayWidth = max(64, $seriesWidth * count($series) + 12);
 @endphp
 <div class="ua-chart">
     <div class="ua-chart-unit" aria-hidden="true">Count</div>
