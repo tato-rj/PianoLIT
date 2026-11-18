@@ -158,7 +158,7 @@ class Queries
         $days = [];
         for ($day = $start->copy(); $day->lt($filters->end); $day->addDay()) {
             $key = $day->toDateString();
-            $days[] = ['day' => $key, 'date' => $day->format('M j'), 'total' => (int) ($rows[$key]->total ?? 0),
+            $days[] = ['day' => $key, 'weekday' => $day->format('D'), 'date' => $day->format('M j'), 'total' => (int) ($rows[$key]->total ?? 0),
                 'pieces' => (int) ($pieces[$key]->total ?? 0), 'media_starts' => (int) ($media[$key]->total ?? 0), 'ios_requests' => (int) ($app[$key]->total ?? 0)];
         }
         return $days;

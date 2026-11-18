@@ -59,6 +59,7 @@ class DailyActivityChartTest extends ReviewTestCase
         $this->assertSame([1, 2, 0], array_column($trend, 'pieces'));
         $this->assertSame([1, 2, 0], array_column($trend, 'media_starts'));
         $this->assertSame(['2026-10-11', '2026-10-12', '2026-10-13'], array_column($trend, 'day'));
+        $this->assertSame(['Sun', 'Mon', 'Tue'], array_column($trend, 'weekday'));
         $metrics = $queries->metrics($filters);
         foreach (['total' => 'Visits', 'pieces' => 'Pieces opened', 'media_starts' => 'Media starts'] as $key => $label) {
             $this->assertSame((int) $metrics[$label], array_sum(array_column($trend, $key)));
@@ -87,12 +88,14 @@ class DailyActivityChartTest extends ReviewTestCase
 
     public function test_chart_shares_one_scale_and_renders_exact_values_for_all_series_including_zero_days()
     {
-        $trend = [['day' => '2026-10-12', 'date' => 'Oct 12', 'total' => 7, 'pieces' => 23, 'media_starts' => 19],
-            ['day' => '2026-10-13', 'date' => 'Oct 13', 'total' => 0, 'pieces' => 0, 'media_starts' => 0]];
+        $trend = [['day' => '2026-10-12', 'weekday' => 'Mon', 'date' => 'Oct 12', 'total' => 7, 'pieces' => 23, 'media_starts' => 19],
+            ['day' => '2026-10-13', 'weekday' => 'Tue', 'date' => 'Oct 13', 'total' => 0, 'pieces' => 0, 'media_starts' => 0]];
         $html = view('admin.pages.analytics.users.daily-activity-chart', compact('trend'))->render();
         $document = new \DOMDocument; @$document->loadHTML($html); $xpath = new \DOMXPath($document);
         $bars = $xpath->query('//div[contains(@class,"ua-chart-bar ")]');
         $this->assertCount(6, $bars);
+        $this->assertStringContainsString('Mon<br>Oct 12', $html);
+        $this->assertStringContainsString('Tue<br>Oct 13', $html);
         foreach ([7, 23, 19, 0, 0, 0] as $index => $value) $this->assertSame('height:'.($value / 24 * 100).'%', $bars[$index]->getAttribute('style'));
         $this->assertStringContainsString('Pieces opened: 23, Media starts: 19', $html);
         $this->assertStringContainsString('>Count</div>', $html);

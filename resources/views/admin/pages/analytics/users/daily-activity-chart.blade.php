@@ -29,17 +29,17 @@
                     @foreach($trend as $day)
                     @php($dayDescriptions = [])
                     @foreach($series as $key => [$label, $tone])@php($dayDescriptions[] = $label.': '.number_format($day[$key]))@endforeach
-                    <li class="ua-chart-column" aria-label="{{ $day['day'] }} · {{ implode(', ', $dayDescriptions) }}">
+                    <li class="ua-chart-column" aria-label="{{ $day['weekday'] }}, {{ $day['day'] }} · {{ implode(', ', $dayDescriptions) }}">
                         <div class="ua-chart-group" aria-hidden="true">
                             @foreach($series as $key => [$label, $tone])
-                            <div class="ua-chart-track" title="{{ $day['day'] }} · {{ $label }}: {{ number_format($day[$key]) }}">
+                            <div class="ua-chart-track" title="{{ $day['weekday'] }}, {{ $day['day'] }} · {{ $label }}: {{ number_format($day[$key]) }}">
                                 <div class="ua-chart-bar ua-chart-series--{{ $tone }}" style="height:{{ $day[$key] / $maximum * 100 }}%">
                                     <span class="ua-chart-count">{{ number_format($day[$key]) }}</span>
                                 </div>
                             </div>
                             @endforeach
                         </div>
-                        <span class="ua-chart-date" aria-hidden="true">{{ $day['date'] }}</span>
+                        <span class="ua-chart-date" aria-hidden="true">{{ $day['weekday'] }}<br>{{ $day['date'] }}</span>
                     </li>
                     @endforeach
                 </ol>

@@ -141,7 +141,7 @@ class AdminDateRangeTest extends ReviewTestCase
         $filters = new Filters(Request::create('/', 'GET', ['range' => 'all', 'from' => '2026-10-01', 'to' => '2026-10-02']));
         $this->assertArrayNotHasKey('from', $filters->values);
         $this->assertArrayNotHasKey('to', $filters->values);
-        $this->assertSame([['day' => '2026-10-13', 'date' => 'Oct 13', 'total' => 0, 'pieces' => 0, 'media_starts' => 0, 'ios_requests' => 0]], (new Queries)->trend($filters));
+        $this->assertSame([['day' => '2026-10-13', 'weekday' => 'Tue', 'date' => 'Oct 13', 'total' => 0, 'pieces' => 0, 'media_starts' => 0, 'ios_requests' => 0]], (new Queries)->trend($filters));
         $this->actingAs(create(Admin::class), 'admin');
         $this->get(route('admin.analytics.users', ['range' => 'all']))->assertOk()->assertSee('All history')->assertDontSee('NAN');
         $response = $this->get(route('admin.analytics.users', ['range' => '30']))->assertOk()->assertDontSee('Last 30 days');
