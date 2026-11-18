@@ -44,7 +44,8 @@
                     <div class="form-group">
                         <div class="checkbox">
                             <label class="text-dark">
-                                <input class="form-check-input" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
+                                <input type="hidden" name="remember" value="0">
+                                <input class="form-check-input" type="checkbox" name="remember" value="1" {{ old('remember', true) ? 'checked' : '' }}> Keep me signed in on this device
                             </label>
                         </div>
                     </div>

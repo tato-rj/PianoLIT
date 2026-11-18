@@ -1,5 +1,11 @@
 # PianoLIT code review — 2026-09-22
 
+### 2026-11-17 — Keep admins signed in after the idle session expires (P2)
+
+- Chrome retained a parent-domain admin remember cookie and a newer host-only cookie under the same name. A disposable Chrome profile sent the older cookie first. With an expired session and a stale older cookie, the original admin guard redirected a protected request to login.
+- `Auth/AdminSessionGuard`, the auth configuration and `AuthServiceProvider` give admin its own host-only remember cookie and preserve the active session key. The admin login controller and form now honor the selected-by-default device preference. Laravel keeps the existing token checks, duration and logout revocation. The change requires no migration.
+- The isolated session, admin notification and Google/Apple authentication suites passed 124 tests with 1,439 assertions. Coverage includes the duplicate-cookie case, existing admin sessions, opt-out, logout and isolation from public accounts. Chrome accepted the new HTTPS cookie and omitted it on a sibling host. The affected browser receives the new cookie at its next remembered sign-in.
+
 ### 2026-11-17 — Show six pieces in Discover’s For you row (P3, implemented locally)
 
 - Removed the Playing level control from the web Discover row and let the template render all six shared recommendations when available. The Match tour can save the account preference and returns to Discover.

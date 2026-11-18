@@ -1,6 +1,6 @@
 # Shared browser sessions
 
-Implemented locally on 2026-10-24. Production has not been connected to, configured or deployed. This uses the existing Laravel users, password broker and server-side sessions; no identity server, new database, migration or package is required.
+Implemented locally on 2026-10-24. Production shared web sessions were confirmed enabled on 2026-11-17. The hubs use the existing Laravel users, password broker and server-side sessions.
 
 ## Behavior
 
@@ -10,13 +10,17 @@ The first visit after enabling uses a new session-cookie name. Users sign in onc
 
 Administration keeps its original host-only session, CSRF token and `admin` guard. Public login/logout does not authenticate or log out an administrator. Authorized admin impersonation opens a separate public web session without copying admin session data.
 
+The admin login form selects **Keep me signed in on this device** by default. The admin guard issues a dedicated host-only remember cookie when selected. Existing signed-in sessions keep their original session key. An administrator returning with only the old remember cookie signs in once to receive the new one. Logging out expires the new cookie and rotates the Laravel remember token.
+
+Deploy `config/auth.php` with the admin guard. Rebuild the Laravel configuration cache on installations that use it so the `admin-session` driver takes effect.
+
 Login, registration, recovery, provider/account-choice views, provider verification and account records remain the existing Laravel implementation. Google/Apple keep their existing supported entry hosts and callback addresses; successful login now shares the session instead of transferring it to a second session. Apple's cross-site callback POST remains stateless, with the original state-checked GET completion. This change does not enable a provider disabled in the environment, add email verification, or alter provider-console settings.
 
 `/api/*` and native registration retain their original guard, cookies and JSON contracts. The installed iOS app does not adopt browser session sharing and requires no change for this feature.
 
 ## Configuration
 
-The feature defaults to **off** in source. These values are enabled only in the local `.env`:
+The feature defaults to **off** in source. The local settings are:
 
 ```dotenv
 SHARED_WEB_SESSIONS=true
@@ -37,7 +41,8 @@ No new provider credentials, tunnel, DNS change or purchased service is needed. 
 | --- | --- | --- |
 | `pianolit_web_session_v1` | Parent domain, `/`, HttpOnly, SameSite=Lax | Shared public/web-app Laravel session |
 | `pianolit_web_remember_v1` | Parent domain, `/`, HttpOnly, SameSite=Lax | Existing Laravel remember-me behavior |
-| Original session/admin remember cookies | Original host-only scope | Independent admin/native behavior |
+| Original session cookie | Host-only | Existing admin and native sessions |
+| `__Host-pianolit_admin_remember_v1` | Admin host, `/`, Secure, HttpOnly, SameSite=Lax | Persistent admin sign-in. Local HTTP uses `pianolit_admin_remember_v1`. |
 | `XSRF-TOKEN` | Host-only | Same-host form/AJAX CSRF compatibility |
 | Campaign/analytics and other queued cookies | Host-only | Preserve existing host-specific consent/attribution boundaries |
 

@@ -68,7 +68,10 @@ class SharedWebSessionTest extends ReviewTestCase
         foreach ($this->jar as $entry) {
             $cookie = $entry['cookie'];
             if (($entry['host'] === $host || ($cookie->getDomain() && ($host === ltrim($cookie->getDomain(), '.') || substr($host, -strlen($cookie->getDomain()) - 1) === '.'.$cookie->getDomain())))
-                && (!$cookie->getExpiresTime() || $cookie->getExpiresTime() > time())) $cookies[$cookie->getName()] = $cookie->getValue();
+                && (!$cookie->getExpiresTime() || $cookie->getExpiresTime() > time())) {
+                // For equal paths the browser sends the older cookie first. PHP keeps the first value for a name.
+                $cookies[$cookie->getName()] ??= $cookie->getValue();
+            }
         }
         $scheme = ($headers['HTTPS'] ?? null) === 'on' ? 'https' : 'http';
         $response = $this->call($method, $scheme.'://'.$host.$path, $data, $cookies, [], $headers + ['HTTP_ACCEPT' => 'text/html', 'HTTP_REFERER' => $scheme.'://'.$host.'/']);
@@ -164,6 +167,83 @@ class SharedWebSessionTest extends ReviewTestCase
         $this->browser('GET', 'pianolit.test', '/_shared/probe')->assertJsonPath('web', $user->id)->assertJsonPath('admin', null);
         $this->browser('POST', 'admin.pianolit.test', '/logout', ['_token' => $probe->json('csrf')])->assertRedirect();
         $this->browser('GET', 'pianolit.test', '/_shared/probe')->assertJsonPath('web', $user->id);
+    }
+
+    public function test_remembered_admin_returns_after_session_expiry_with_an_older_parent_domain_cookie()
+    {
+        $host = 'admin.pianolit.test';
+        $https = ['HTTPS' => 'on'];
+        $admin = create(Admin::class, ['password' => Hash::make('test-password'), 'remember_token' => null]);
+        $login = ['email' => $admin->email, 'password' => 'test-password', 'remember' => '1'];
+        $driver = config('auth.guards.admin.driver');
+        config(['auth.guards.admin.driver' => 'session']);
+        $csrf = $this->browser('GET', $host, '/_shared/probe', [], $https)->json('csrf');
+        $legacy = $this->browser('POST', $host, '/login', $login + ['_token' => $csrf], $https)->assertRedirect();
+        $oldCookie = collect($legacy->headers->getCookies())->first(function ($cookie) {
+            return $cookie->getName() === auth('admin')->getRecallerName();
+        });
+
+        config(['auth.guards.admin.driver' => $driver]);
+        $signedIn = $this->jar;
+        $oldParentCookie = ['pianolit.test|/|'.$oldCookie->getName() => ['host' => null, 'cookie' => $oldCookie->withDomain('pianolit.test')]];
+        $this->jar = $oldParentCookie;
+        $this->browser('GET', $host, '/_shared/probe', [], $https)->assertJsonPath('admin', null);
+        $this->browser('GET', 'my.pianolit.test', '/_shared/probe', [], $https)->assertJsonPath('admin', null);
+
+        $this->jar = $signedIn;
+        $session = $this->browser('GET', $host, '/_shared/probe', [], $https)->assertJsonPath('admin', $admin->id);
+        $this->assertFalse(auth('admin')->viaRemember());
+        $this->browser('POST', $host, '/logout', ['_token' => $session->json('csrf')], $https)->assertRedirect();
+        $this->jar = $oldParentCookie;
+
+        $csrf = $this->browser('GET', $host, '/_shared/probe', [], $https)->json('csrf');
+        $current = $this->browser('POST', $host, '/login', $login + ['_token' => $csrf], $https)->assertRedirect();
+        $session = $this->browser('GET', $host, '/_shared/probe', [], $https)->assertJsonPath('admin', $admin->id);
+        File::delete($this->directory.'/sessions/'.$session->json('id'));
+        unset($this->jar[$host.'|/|'.config('session.cookie')]);
+
+        $this->withExceptionHandling();
+        $this->browser('GET', $host, '/notifications', [], $https)->assertOk();
+        $this->assertTrue(auth('admin')->viaRemember());
+
+        $cookie = collect($current->headers->getCookies())->first(function ($cookie) {
+            return $cookie->getName() === auth('admin')->getRecallerName();
+        });
+        $this->assertNotSame($oldCookie->getName(), $cookie->getName());
+        $this->assertStringStartsWith('__Host-', $cookie->getName());
+        $this->assertNull($cookie->getDomain());
+        $this->assertSame('/', $cookie->getPath());
+        $this->assertTrue($cookie->isSecure());
+        $this->assertTrue($cookie->isHttpOnly());
+        $this->assertSame('lax', $cookie->getSameSite());
+        $this->assertGreaterThan(time() + 86400, $cookie->getExpiresTime());
+        $this->browser('GET', 'my.pianolit.test', '/_shared/probe', [], $https)->assertJsonPath('admin', null);
+
+        $csrf = $this->browser('GET', $host, '/_shared/probe', [], $https)->json('csrf');
+        $logout = $this->browser('POST', $host, '/logout', ['_token' => $csrf], $https)->assertRedirect();
+        $expired = collect($logout->headers->getCookies())->first(function ($item) use ($cookie) {
+            return $item->getName() === $cookie->getName();
+        });
+        $this->assertTrue($expired->isSecure());
+        $this->assertNull($expired->getDomain());
+        $this->assertLessThan(time(), $expired->getExpiresTime());
+        $this->browser('GET', $host, '/notifications', [], $https)->assertRedirect('https://'.$host.'/login');
+    }
+
+    public function test_admin_can_turn_off_persistent_sign_in()
+    {
+        $host = 'admin.pianolit.test';
+        $this->browser('GET', $host, '/login')->assertOk()->assertSee('name="remember" value="1" checked', false);
+        $admin = create(Admin::class, ['password' => Hash::make('test-password')]);
+        $csrf = $this->browser('GET', $host, '/_shared/probe')->json('csrf');
+        $response = $this->browser('POST', $host, '/login', [
+            'email' => $admin->email, 'password' => 'test-password', 'remember' => '0', '_token' => $csrf,
+        ])->assertRedirect();
+        $response->assertCookieMissing(auth('admin')->getRecallerName());
+        $this->browser('GET', $host, '/_shared/probe')->assertJsonPath('admin', $admin->id);
+        unset($this->jar[$host.'|/|'.config('session.cookie')]);
+        $this->withExceptionHandling();
+        $this->browser('GET', $host, '/notifications')->assertRedirect('http://'.$host.'/login');
     }
 
     public function test_mobile_password_and_registration_contracts_keep_the_original_session_guard()

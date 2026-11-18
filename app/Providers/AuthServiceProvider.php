@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Auth\AdminSessionGuard;
+use App\Auth\SharedSessionGuard;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -39,13 +41,15 @@ class AuthServiceProvider extends ServiceProvider
             return new \App\Http\Middleware\StartWebSession($app['session'], function () use ($app) { return $app['cache']; });
         });
 
-        \Auth::extend('shared-web-session', function ($app, $name, $config) {
-            $guard = new \App\Auth\SharedSessionGuard($name, $app['auth']->createUserProvider($config['provider']), $app['session.store']);
-            $guard->setCookieJar($app['cookie']);
-            $guard->setDispatcher($app['events']);
-            $guard->setRequest($app->refresh('request', $guard, 'setRequest'));
-            return $guard;
-        });
+        foreach (['shared-web-session' => SharedSessionGuard::class, 'admin-session' => AdminSessionGuard::class] as $driver => $guardClass) {
+            \Auth::extend($driver, function ($app, $name, $config) use ($guardClass) {
+                $guard = new $guardClass($name, $app['auth']->createUserProvider($config['provider']), $app['session.store']);
+                $guard->setCookieJar($app['cookie']);
+                $guard->setDispatcher($app['events']);
+                $guard->setRequest($app->refresh('request', $guard, 'setRequest'));
+                return $guard;
+            });
+        }
 
         \Gate::before(function($user) {
             if ($user->role == 'manager')
