@@ -336,90 +336,36 @@ module.exports = async function () {
     assert.strictEqual(failed.state.step, 5); assert.strictEqual(failed.counter.value, 2);
     assert(failed.rendered && failed.finishedWaiting); assert(!failed.busy); assert(failureReported.includes('retry'));
 
-    // Media tools are requested only on demand; failures/timeouts permit retry.
-    const scripts = [], timers = new Map();
-    let timerId = 0;
+    // The server supplies a cropped image. Answers wait for that image to load.
+    const timers = new Map();
+    let timerId = 0, image, failures = 0;
     window.setTimeout = callback => { timers.set(++timerId, callback); return timerId; };
     window.clearTimeout = id => timers.delete(id);
-    window.document = {
-        createElement: tag => ({tag, remove() { this.removed = true; }}),
-        head: {appendChild(script) { scripts.push(script); }}
+    window.Image = class {
+        constructor() { image = this; this.naturalWidth = 900; this.naturalHeight = 360; }
+        removeAttribute() { this.src = ''; }
     };
-    const pdfFirst = window.MatchTour.loadPdf();
-    const pdfSecond = window.MatchTour.loadPdf();
-    assert.strictEqual(scripts.length, 1, 'Concurrent reading loads share one script');
-    scripts[0].onerror();
-    await assert.rejects(pdfFirst); await assert.rejects(pdfSecond);
-    assert(scripts[0].removed); assert.strictEqual(timers.size, 0);
-    const timedOut = window.MatchTour.loadPdf();
+    window.document = {createElement: () => ({setAttribute() {}, getContext: () => ({drawImage() {}})})};
+    const slot = {replaceChildren(canvas) { this.canvas = canvas; }, setAttribute() {}};
+    const buttons = [{disabled: true}, {disabled: true}];
+    const reader = {generation: 1, stage: {querySelector: () => slot, querySelectorAll: () => buttons},
+        scoreFailure() { failures++; }};
+    const show = () => Controller.prototype.showExcerpt.call(reader, {title: 'Score', composer: 'Composer', url: '/excerpt'}, 1);
+    show();
+    assert.strictEqual(image.src, '/excerpt');
+    assert(buttons.every(button => button.disabled));
+    image.onload();
+    assert.strictEqual(slot.canvas.height, 360);
+    assert(buttons.every(button => !button.disabled));
+    assert.strictEqual(timers.size, 0);
+    show();
     timers.values().next().value();
-    await assert.rejects(timedOut); assert(scripts[1].removed);
-    const retried = window.MatchTour.loadPdf();
-    const pdf = {GlobalWorkerOptions: {}, getDocument() { throw Error('Obsolete reading must not open a PDF'); }};
-    window.pdfjsLib = pdf; scripts[2].onload();
-    assert.strictEqual(await retried, pdf);
-    assert(pdf.GlobalWorkerOptions.workerSrc.endsWith('/pdf.worker.min.js'));
-    assert.strictEqual(await window.MatchTour.loadPdf(), pdf);
-    assert.strictEqual(scripts.length, 3, 'Successful library loads are reused');
-
-    // Back/restart during library loading must not fetch or replace an old score.
-    delete window.pdfjsLib;
-    // Use a fresh script context to exercise a pending first reading load.
-    const pendingWindow = Object.assign({}, window);
-    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/match-tour.js'), 'utf8'), {window: pendingWindow});
-    const reader = {state: {step: 1}, generation: 1, cancelScores: Controller.prototype.cancelScores, readingScore: () => ({title: 'Single score'}),
-        pdfTasks: new Set(), stage: {}, heading: () => '', pdfjs: null};
-    const reading = pendingWindow.MatchTour.Controller.prototype.reading.call(reader);
-    reader.generation++;
-    pendingWindow.pdfjsLib = pdf; scripts[3].onload();
-    await reading;
-    assert.strictEqual(reader.pdfTasks.size, 0);
-
-    // A title-heavy first page must yield its middle music, not the header.
-    const savedCreateElement = window.document.createElement;
-    let pageLoads = 0;
-    for (const [width, height] of [[700,1000], [1000,300]]) {
-        const canvases = [];
-        window.document.createElement = () => {
-            const canvas = {draws: [], setAttribute() {}, getContext() {
-                return {drawImage: (...args) => this.draws.push(args)};
-            }};
-            canvases.push(canvas); return canvas;
-        };
-        const slot = {setAttribute() {}, appendChild(canvas) { this.canvas = canvas; }};
-        const scoreAnswers = [{disabled: true}, {disabled: true}];
-        const scorer = {generation: 1, pdfTasks: new Set(), scoreExcerpts: new Map(), pdfjs: {
-            getDocument() { pageLoads++; return {destroy() {}, promise: Promise.resolve({getPage: () => Promise.resolve({
-                getViewport: () => ({width, height}), render: () => ({promise: Promise.resolve()})
-            })})}; }
-        }, stage: {querySelector: () => slot, querySelectorAll: selector => selector === '[data-choice]' ? scoreAnswers : []}, scoreFailure() { throw Error('Unexpected PDF failure'); }};
-        await Controller.prototype.score.call(scorer, {url: 'fixture.pdf', title: 'Title above notes', composer: 'Composer'}, 0, 1);
-        const [source, x, top, cropWidth, cropHeight] = canvases[1].draws[0];
-        assert.strictEqual(source, canvases[0]); assert.strictEqual(x, 0); assert.strictEqual(cropWidth, width);
-        assert(top >= 0 && top + cropHeight <= height, 'Portrait and landscape crops stay within the page');
-        assert(Math.abs(top + cropHeight / 2 - height / 2) <= 1, 'The excerpt includes the middle of the page');
-        if (height > width) assert(top > height * 0.25, 'Title/header area is excluded');
-        assert.strictEqual(slot.canvas.width, cropWidth); assert.strictEqual(slot.canvas.height, cropHeight);
-        assert(scoreAnswers.every(button => !button.disabled), 'One rendered excerpt enables both difficulty answers');
-        const loaded = pageLoads;
-        await Controller.prototype.score.call(scorer, {url: 'fixture.pdf', title: 'Title above notes', composer: 'Composer'}, 0, 1);
-        assert.strictEqual(pageLoads, loaded, 'Revisiting the excerpt reuses its cached crop');
-    }
-    window.document.createElement = savedCreateElement;
-
-    // Timeout includes page retrieval/rendering, and late pages cannot mutate the UI/cache.
-    let finishPage, destroyed = 0, scoreFailed = 0;
-    const hung = {generation: 1, pdfTasks: new Set(), scoreExcerpts: new Map(), pdfjs: {
-        getDocument() { return {destroy() { destroyed++; return Promise.reject(Error('Worker already stopped')); },
-            promise: Promise.resolve({getPage: () => new Promise(resolve => { finishPage = resolve; })})}; }
-    }, stage: {querySelector: () => ({})}, scoreFailure() { scoreFailed++; }};
-    const stalled = Controller.prototype.score.call(hung, {url: 'slow.pdf'}, 0, 1);
-    await Promise.resolve(); await Promise.resolve();
-    timers.values().next().value(); await stalled;
-    assert.strictEqual(scoreFailed, 1); assert.strictEqual(destroyed, 1);
-    finishPage({getViewport() { throw Error('A timed-out page must never render'); }});
-    await Promise.resolve(); await Promise.resolve();
-    assert.strictEqual(hung.scoreExcerpts.size, 0); assert.strictEqual(hung.pdfTasks.size, 0);
+    assert.strictEqual(failures, 1);
+    assert.strictEqual(image.onload, null);
+    show();
+    Controller.prototype.cancelScores.call(reader);
+    assert.strictEqual(image.src, '');
+    assert.strictEqual(image.onload, null);
     assert.strictEqual(timers.size, 0);
 
     // Every difficulty outcome and optional skip retains its intended level.

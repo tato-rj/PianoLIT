@@ -13,7 +13,7 @@
     </div>
     <div class="row g-3">
         @include('components.forms.upload.file', ['id' => 'piece-audio', 'name' => 'audio', 'label' => 'Audio · both hands', 'accept' => 'audio/*', 'currentUrl' => storage($piece->audio_path), 'currentLabel' => 'Open current audio', 'grid' => 'col-sm-6'])
-        @include('components.forms.upload.file', ['id' => 'piece-score-file', 'name' => 'score', 'label' => 'Score · PDF', 'accept' => '.pdf', 'currentUrl' => storage($piece->score_path), 'currentLabel' => 'Open current score', 'grid' => 'col-sm-6'])
+        @include('components.forms.upload.file', ['id' => 'piece-score-file', 'name' => 'score', 'label' => 'Score · PDF', 'accept' => '.pdf', 'currentUrl' => $piece->score_path ? route('admin.pieces.score-preview', $piece) : null, 'currentLabel' => 'Open current score', 'grid' => 'col-sm-6'])
     </div>
     <div class="d-flex justify-content-between align-items-center gap-3 mt-2">
         <span>Show this piece in the tour</span>

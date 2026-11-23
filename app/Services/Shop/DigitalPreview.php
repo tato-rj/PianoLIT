@@ -2,10 +2,11 @@
 
 namespace App\Services\Shop;
 
+use App\PDF\Poppler;
 use Illuminate\Support\Facades\{File, Log, Storage};
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\Process\{ExecutableFinder, Process};
+use Symfony\Component\Process\Process;
 
 class DigitalPreview
 {
@@ -21,7 +22,7 @@ class DigitalPreview
             $stage = 'size';
             if (Storage::disk('public')->size($path) > 50 * 1024 * 1024) throw new \RuntimeException('Oversized PDF');
             $stage = 'renderer';
-            $executable = $this->renderer();
+            $executable = Poppler::renderer();
             if (!$executable) throw new \RuntimeException('PDF renderer missing');
             $stage = 'workspace';
             File::makeDirectory($directory, 0700, true);
@@ -72,15 +73,5 @@ class DigitalPreview
         } finally {
             if (is_dir($directory)) File::deleteDirectory($directory);
         }
-    }
-
-    private function renderer(): ?string
-    {
-        // A cache built before this feature has no digital-media configuration yet.
-        $name = config('digital-media.pdftoppm') ?: 'pdftoppm';
-        // Symfony's legacy finder accepts command names, not absolute paths.
-        if (strpos($name, '/') !== false) return is_file($name) && is_executable($name) ? $name : null;
-        // PHP-FPM commonly clears PATH. Include standard Linux locations explicitly.
-        return app(ExecutableFinder::class)->find($name, null, ['/usr/local/bin', '/usr/bin', '/bin', '/opt/homebrew/bin']);
     }
 }

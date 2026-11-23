@@ -98,7 +98,7 @@ class PieceScoreSourceTest extends ReviewTestCase
             $this->assertSame($isEscore ? 'eScore' : 'External', trim($link->textContent));
             $this->assertSame(!$isEscore, str_contains($cell->getAttribute('class'), 'opacity-6'));
             $this->assertCount($isEscore ? 0 : 1, $xpath->query('.//svg[@data-lucide-name="square-arrow-out-up-right"]', $link));
-            $this->assertSame(storage($scorePiece->score_path), $link->getAttribute('href'));
+            $this->assertSame(route('admin.pieces.score-preview', $scorePiece), $link->getAttribute('href'));
             $this->assertSame('_blank', $link->getAttribute('target'));
             $this->assertSame('noopener noreferrer', $link->getAttribute('rel'));
             $this->assertCount(0, $xpath->query('.//form', $cell));

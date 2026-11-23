@@ -35,9 +35,11 @@ unchanged. No broad PDF.js upgrade or source-PDF recompression is involved.
 The editor also resets its detached render buffer to zero dimensions after
 success or failure, releasing backing memory between page turns and zooms.
 
-The local renderer applies to full web scores, blurred first-page previews and
-web printing on piece pages. PDF bytes, original URLs, downloads, PDF.js
-fingerprints, account-owned annotations and mobile delivery are unchanged.
+The local PDF.js renderer applies to authorized full scores and web printing.
+Restricted readers now receive a small server-rendered JPEG of page one.
+The web reader and download use permission-checked URLs. PDF bytes, PDF.js
+fingerprints, account-owned annotations and legacy mobile delivery are unchanged.
+See [Web app access](WEBAPP_ACCESS.md#piece-score-files) for server configuration.
 Other PDF.js consumers retain their existing includes. Future library upgrades
 must verify scan rendering under a canvas cap and compatibility with existing
 annotation fingerprints; do not discard this fix without that check.

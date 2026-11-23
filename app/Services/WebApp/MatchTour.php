@@ -4,7 +4,7 @@ namespace App\Services\WebApp;
 
 use App\Piece;
 use Illuminate\Contracts\Encryption\DecryptException;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\{Crypt, URL};
 
 /** Shared questionnaire selection and adapter for the existing FindYourMatch Quiz. */
 class MatchTour
@@ -238,7 +238,10 @@ class MatchTour
                 ->orderByDesc('show_on_tour')->orderBy('id')->first();
             $scores[$key] = $piece ? [
                 'id' => $piece->id, 'title' => $piece->name,
-                'composer' => $piece->composer->short_name, 'url' => storage($piece->score_path),
+                'composer' => $piece->composer->short_name,
+                'url' => URL::signedRoute('webapp.pieces.score.excerpt', [
+                    'piece' => $piece->id, 'version' => hash('sha256', $piece->score_path),
+                ]),
             ] : null;
         }
         return $scores;

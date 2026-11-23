@@ -39,26 +39,22 @@
         });
     }
 
-    async function renderScorePreview(container, pdfjs) {
+    function renderScorePreview(container) {
+        const image = container.querySelector('.score-preview-pages img');
         const status = container.querySelector('.score-preview-status');
-        const pages = container.querySelector('.score-preview-pages');
-        try {
-            const pdf = await pdfjs.getDocument({url: container.getAttribute('data-pdf-url')}).promise;
-            // Restricted viewers only see a blurred preview of the first page.
-            const page = await pdf.getPage(1);
-            const viewport = page.getViewport({scale: 1});
-            const canvas = container.ownerDocument.createElement('canvas');
-            canvas.className = 'w-100 d-block';
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            pages.appendChild(canvas);
-            await page.render({canvasContext: canvas.getContext('2d'), viewport: viewport}).promise;
-            page.cleanup();
+        function ready() {
             status.textContent = 'Preview of the first score page.';
-            container.querySelector('[data-page-label]').textContent = '1 / ' + pdf.numPages;
+            container.querySelector('[data-page-label]').textContent = 'Page 1';
             container.querySelector('[data-zoom-label]').textContent = root.matchMedia('(max-width: 767px)').matches ? '100%' : '75%';
-        } catch (error) {
+        }
+        function failed() {
             status.textContent = 'The score preview could not be loaded. Please try again later.';
+        }
+        if (image.complete) {
+            if (image.naturalWidth) ready(); else failed();
+        } else {
+            image.addEventListener('load', ready, {once: true});
+            image.addEventListener('error', failed, {once: true});
         }
     }
 

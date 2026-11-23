@@ -60,7 +60,19 @@ All signup/Premium dialogs share a concise body title, user/crown icon and a gre
 
 Blocked collection URLs return to the Collections directory and open the matching modal. Collection totals always count the full playable list (pieces with tutorials), matching directory counts; limited views separately show **Showing 3 of 12 pieces**, for example.
 
-These describe the web interface. Existing public file URLs and iOS behavior are unchanged.
+## Piece score files
+
+On the admin host, Repertoire, piece editors and collection editors link to an admin-session preview. Previously copied `/storage/app/score/…` links on admin also check that session. A signed-in customer without an admin session gets the admin login prompt.
+
+On the web-app host, the score reader checks the saved **Read the score** permission on each PDF request, including range requests. Download and print use the separate **Download & print** permission. Restricted readers receive a JPEG of page one with a maximum dimension of 64 pixels. Find your match receives only the center strip of page one through a signed excerpt URL. The preview uses Poppler and the tour crop uses GD. Generated images are cached for one day by file identity and size. A missing or unreadable source cannot fall back to the original. Full PDFs use private, no-store responses. Markings still use the original score identity.
+
+The legacy iOS app requests original files from the main site without a per-file credential. Anyone with a legacy delivery URL can still fetch it. The protection applies to the browser subdomains. Audio and video continue to follow their existing delivery rules.
+
+### Activate the Nginx score rule
+
+Deploy the matching application revision and versioned JavaScript, then install a root-owned copy of `support/nginx/browser-score-files.conf` in the Nginx snippets directory and include it at **server** scope in the active Nginx configuration serving the browser hubs. The rule passes the original request URI to the existing PHP front controller before static-file handling. It matches admin, my, shop, learn, games, blog and metronome. The main site and www keep static delivery. Preserve the existing FastCGI `REQUEST_URI` setting. No migration is required.
+
+Validate with `nginx -t`, reload Nginx and invalidate any existing shared-cache copies of those browser-host score paths if a cache is present. Verify an existing admin score in a fresh signed-out session and again as an admin. On my, verify the raw path returns 404, a restricted piece preview returns a tiny JPEG, and an entitled account can read the PDF. Check GET, HEAD and a byte range on the main host using an existing legacy score URL. The legacy response should still contain the original PDF bytes. Local Valet, the PHP development router and Apache have matching guards in the repository. Local verification is complete. Production activation is pending.
 
 ## Deployment
 

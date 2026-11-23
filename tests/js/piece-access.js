@@ -100,39 +100,21 @@ module.exports = async function () {
     const zoomLabel = {};
     let mobile = false;
     window.matchMedia = () => ({matches: mobile});
-    const canvases = [];
-    let rendered = 0;
-    let cleaned = 0;
-    const container = {
-        getAttribute: () => '/preview.pdf',
-        querySelector: selector => ({'.score-preview-status': status, '[data-page-label]': pageLabel,
-            '[data-zoom-label]': zoomLabel})[selector] || {appendChild: canvas => canvases.push(canvas)},
-        ownerDocument: {createElement: () => ({getContext: () => ({})})}
-    };
-    const pdfjs = {getDocument: () => ({promise: Promise.resolve({
-        numPages: 4,
-        async getPage(number) {
-            assert.strictEqual(number, 1, 'Only the first score page is requested');
-            return {
-                getViewport: () => ({width: 600, height: 800}),
-                render: () => ({promise: Promise.resolve().then(() => rendered++)}),
-                cleanup: () => cleaned++
-            };
-        }
-    })})};
-    await window.PieceAccess.renderScorePreview(container, pdfjs);
-    assert.strictEqual(canvases.length, 1, 'A multi-page score produces only one blurred preview page');
-    assert.strictEqual(rendered, 1);
-    assert.strictEqual(cleaned, 1);
-    assert.strictEqual(status.hidden, false, 'Preview status keeps the same row height as the editor');
+    const image = {complete: true, naturalWidth: 48};
+    const container = {querySelector: selector => ({'.score-preview-status': status,
+        '.score-preview-pages img': image, '[data-page-label]': pageLabel, '[data-zoom-label]': zoomLabel})[selector]};
+    window.PieceAccess.renderScorePreview(container);
     assert.strictEqual(status.textContent, 'Preview of the first score page.');
-    assert.strictEqual(pageLabel.textContent, '1 / 4');
+    assert.strictEqual(pageLabel.textContent, 'Page 1');
     assert.strictEqual(zoomLabel.textContent, '75%');
     mobile = true;
-    await window.PieceAccess.renderScorePreview(container, pdfjs);
-    assert.strictEqual(zoomLabel.textContent, '100%', 'Mobile preview matches the full viewer zoom');
-    status.hidden = false;
-    await window.PieceAccess.renderScorePreview(container, {getDocument: () => ({promise: Promise.reject(new Error('Missing PDF'))})});
+    image.complete = false;
+    const events = {};
+    image.addEventListener = (name, callback) => { events[name] = callback; };
+    window.PieceAccess.renderScorePreview(container);
+    events.load();
+    assert.strictEqual(zoomLabel.textContent, '100%');
+    events.error();
     assert(status.textContent.includes('could not be loaded'));
     console.log('Passed: media preview cutoff, seeking/replay, subscriber playback, first-page score preview.');
 };

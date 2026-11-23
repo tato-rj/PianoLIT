@@ -9,6 +9,10 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+    # Check access before the static-file shortcut on the browser hubs.
+    RewriteCond %{HTTP_HOST} ^(admin|my|shop|learn|games|blog|metronome)\. [NC]
+    RewriteRule "^storage(?: [234])?/app/score(?:/|$)" index.php [END,NC]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

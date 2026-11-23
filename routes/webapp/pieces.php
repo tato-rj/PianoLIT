@@ -18,7 +18,12 @@ Route::namespace('WebApp')->prefix('pieces')->name('pieces.')->group(function() 
     Route::get('{piece}/score/annotations', 'ScoreAnnotationsController@show')->middleware('auth:web')->name('score.annotations.show');
     Route::put('{piece}/score/annotations', 'ScoreAnnotationsController@update')->middleware('auth:web')->name('score.annotations.update');
 
-	Route::get('{piece}/score', 'PiecesController@score')->name('score');
+    Route::withoutMiddleware(['log.webapp', 'location.update'])->group(function () {
+        Route::get('{piece}/score', 'ScoreFilesController@download')->name('score');
+        Route::get('{piece}/score/read', 'ScoreFilesController@read')->name('score.read');
+        Route::get('{piece}/score/preview', 'ScoreFilesController@preview')->name('score.preview');
+        Route::get('{piece}/score/excerpt', 'ScoreFilesController@excerpt')->middleware('signed')->name('score.excerpt');
+    });
 
 	Route::get('{piece}/save-to', 'PiecesController@saveTo')->middleware('auth:web')->name('save-to');
 

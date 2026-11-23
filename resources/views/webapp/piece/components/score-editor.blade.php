@@ -1,5 +1,7 @@
 @php
     $scorePreview = isset($hasMediaAccess) && ! $hasMediaAccess;
+    $scoreVersion = hash('sha256', (string) $piece->score_path);
+    $scoreParameters = ['piece' => $piece, 'version' => $scoreVersion];
     $accessPolicy = app(\App\Services\WebApp\AccessPolicy::class);
     $scorePromptTarget = $accessPolicy->promptTarget(auth('web')->user(), 'score', $piece);
     $scoreUpgradeAttributes = 'data-access-action="score" data-bs-toggle="modal" data-bs-target="'.$scorePromptTarget.'"';
@@ -9,11 +11,13 @@
     $scoreDropdownAttributes = !$hasAnnotationAccess ? $scoreAnnotationAttributes : 'data-bs-toggle="dropdown" disabled';
     $metronomePreferences = app(\App\Services\WebApp\MetronomePreferences::class)->forUser(auth('web')->user());
 @endphp
-<div id="{{ $scorePreview ? 'score-preview' : 'score-editor' }}" class="score-editor {{ $scorePreview ? 'score-editor--preview' : '' }}" data-pdf-url="{{ storage($piece->score_path) }}"
+<div id="{{ $scorePreview ? 'score-preview' : 'score-editor' }}" class="score-editor {{ $scorePreview ? 'score-editor--preview' : '' }}"
+    @if(! $scorePreview) data-pdf-url="{{ route('webapp.pieces.score.read', $scoreParameters) }}"
+    @elseif($hasScoreExportAccess) data-pdf-url="{{ route('webapp.pieces.score', $piece) }}" @endif
     data-score-export-access="{{ $hasScoreExportAccess ? '1' : '0' }}"
     data-metronome-preferences='@json($metronomePreferences)'
     @auth('web') data-metronome-preferences-url="{{ route('webapp.metronome.preferences.update') }}" @endauth
-    data-score-version="{{ hash('sha256', $piece->score_path) }}"
+    data-score-version="{{ $scoreVersion }}"
     data-annotations-url="{{ $hasAnnotationAccess ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
     <div class="score-toolbar rounded-top" role="toolbar" aria-label="Score annotation tools">
         <div class="score-tools" role="group" aria-label="Drawing tools">
@@ -66,7 +70,7 @@
     <div class="score-scroll">
         <div class="score-sheet">
             @if($scorePreview)
-                <div class="score-preview-pages" aria-hidden="true"></div>
+                <div class="score-preview-pages" aria-hidden="true"><img class="d-block w-100" alt="" src="{{ route('webapp.pieces.score.preview', $scoreParameters) }}"></div>
                 <div class="score-preview-upgrade text-center">
                     @guest('web')
                         @if($accessPolicy->snapshot()['rules'][$piece->is_free ? 'free_pick' : 'regular']['score']['registered'] === 'available')
@@ -117,7 +121,7 @@
             @if(! $hasScoreExportAccess)
                 <button type="button" {!! $scoreExportAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span class="score-action-label">Download</span></button>
             @else
-            <a href="{{ storage($piece->score_path) }}" target="_blank" rel="noopener" class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span class="score-action-label">Download</span></a>
+            <a href="{{ route('webapp.pieces.score', $piece) }}" target="_blank" rel="noopener" class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span class="score-action-label">Download</span></a>
             @endif
             <button type="button" data-print class="score-action-button" title="Print all score pages with markings" @if(! $hasScoreExportAccess) {!! $scoreExportAttributes !!} @endif>@icon('printer', ['mr' => 0])<span class="score-action-label">Print</span></button>
             <button type="button" class="score-action-button score-metronome-button" aria-label="Metronome" title="Metronome" aria-expanded="false" aria-controls="score-metronome-panel">@icon('metronome', ['mr' => 0])</button>

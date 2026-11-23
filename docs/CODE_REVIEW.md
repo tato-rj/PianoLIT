@@ -8077,3 +8077,9 @@ Added the visible **Dates** label through the shared analytics filter partial an
 
 - **Request / change:** The clip page offered only an iOS download button and linked its logo to the main website. `media.clip` now keeps the player above two app links: Discover with the PianoLIT web app mark, and the shared Apple App Store badge. Both open separately so readers can return to the clip. The two clip routes, source video and timestamp behavior are unchanged. There is no site header or footer.
 - **Verification:** Isolated requests to both clip routes pass 14 assertions. Chromium checks with a disposable video verified seeking, playback and both destinations at 1,440, 800, 390 and 320 pixels wide, with no horizontal overflow. No migration, asset build or production deployment.
+
+### 2026-11-22 — Browser delivery of piece scores (P1)
+
+A copied admin storage link opened the original PDF in an incognito window. The web-app score preview and sight-reading tour also fetched whole PDFs. The admin, web reader and export routes now check the appropriate session or saved policy. Browser score previews use a small first-page JPEG and signed sight-reading excerpts use a center crop. The Nginx include and local static-file rules direct browser-host requests through Laravel. The original main-host URL remains available for legacy iOS clients that send plain media requests. See [Web app access](WEBAPP_ACCESS.md#piece-score-files).
+
+The 181 isolated score, access, administration, digital preview, tour and API tests passed with 6,712 assertions. Additional checks exercised the Nginx include on seven browser hosts, local Valet with an actual score, JavaScript preview handling and asset hashes. The native app itself was not run. Activation requires deploying the code and installing the Nginx include.

@@ -89,7 +89,7 @@ PieceAccess.installPreviewGuards(document, function (kind, media) {
     @endguest
 });
 const scorePreview = document.getElementById('score-preview');
-if (scorePreview) PieceAccess.renderScorePreview(scorePreview, pdfjsLib);
+if (scorePreview) PieceAccess.renderScorePreview(scorePreview);
 </script>
 @endif
 

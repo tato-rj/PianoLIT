@@ -35,7 +35,7 @@
     @endphp
     <td class="text-nowrap{{ $hasScore && !$isEscore ? ' opacity-6' : '' }}">
         @if($hasScore)
-            <a class="text-reset" href="{{ $item->score }}" target="_blank" rel="noopener noreferrer"
+            <a class="text-reset" href="{{ route('admin.pieces.score-preview', $item) }}" target="_blank" rel="noopener noreferrer"
                aria-label="{{ $isEscore ? 'eScore' : 'External score' }} for {{ $item->long_name }} (opens in a new tab)">
                 @if($isEscore)
                     @icon('pianolit', ['mr' => 1, 'color' => 'primary'])eScore

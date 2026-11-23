@@ -217,49 +217,9 @@
         }
     }
 
-    function excerptBounds(canvas) {
-        const height = Math.max(1, Math.min(canvas.height, Math.round(canvas.width * 0.4)));
-        return {top: Math.floor((canvas.height - height) / 2), height};
-    }
-
     const escape = value => String(value).replace(/[&<>"']/g, character => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[character]));
     const pause = duration => new Promise(resolve => root.setTimeout(resolve, duration));
 
-    const libraries = {};
-    function loadLibrary(name, url) {
-        if (root[name]) return Promise.resolve(root[name]);
-        if (libraries[name]) return libraries[name];
-        libraries[name] = new Promise((resolve, reject) => {
-            const script = root.document.createElement('script');
-            let settled = false;
-            const fail = () => {
-                if (settled) return;
-                settled = true;
-                script.onload = script.onerror = null;
-                root.clearTimeout(timer); script.remove(); delete libraries[name];
-                reject(new Error('Media tool unavailable'));
-            };
-            const timer = root.setTimeout(fail, 15000);
-            script.src = url;
-            script.async = true;
-            script.onerror = fail;
-            script.onload = () => {
-                if (!root[name]) { fail(); return; }
-                settled = true;
-                script.onload = script.onerror = null;
-                root.clearTimeout(timer);
-                resolve(root[name]);
-            };
-            root.document.head.appendChild(script);
-        });
-        return libraries[name];
-    }
-    function loadPdf() {
-        return loadLibrary('pdfjsLib', 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js').then(pdfjs => {
-            pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.worker.min.js';
-            return pdfjs;
-        });
-    }
     const quizStep = controller => controller.state.step - (controller.data && controller.data.levelPieces && controller.data.levelPieces.length ? 1 : 0);
     function progress(shell, section, suggestions, finding) {
         if (!shell) return;
@@ -276,16 +236,16 @@
         });
     }
     class Controller {
-        constructor(element, data, http, pdfjs, onRestart) {
+        constructor(element, data, http, onRestart) {
             this.onRestart = onRestart;
-            this.element = element; this.data = data; this.http = http; this.pdfjs = pdfjs;
+            this.element = element; this.data = data; this.http = http;
             this.state = new State(data.total, data.levelPieces || []); this.generation = 0; this.busy = false;
             this.stage = element.querySelector('[data-stage]'); this.error = element.querySelector('[data-error]');
             this.shell = element.closest('.match-tour-modal');
             this.reduced = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
             this.counter = new AnimatedCount(element.querySelector('[data-count]'), element.querySelector('[data-count-unit]'), null, this.reduced, value => this.countProgress(value));
             this.previews = new Previews(data.previewSeconds, message => this.report(message));
-            this.counter.set(data.total); this.pdfTasks = new Set(); this.scoreExcerpts = new Map();
+            this.counter.set(data.total); this.cancelScoreLoad = null;
             this.onClick = event => this.click(event);
             element.addEventListener('click', this.onClick);
             this.onPageHide = () => this.dispose();
@@ -312,12 +272,11 @@
             this.cancelScores();
         }
         cancelScores() {
-            this.pdfTasks.forEach(task => { Promise.resolve(task.destroy()).catch(() => {}); });
-            this.pdfTasks.clear();
+            if (this.cancelScoreLoad) this.cancelScoreLoad();
         }
         destroy() {
             this.dispose();
-            this.previews.destroy(); this.scoreExcerpts.clear();
+            this.previews.destroy();
             this.stage.querySelectorAll('audio,video').forEach(media => {
                 media.removeAttribute('src');
                 media.querySelectorAll('source').forEach(source => source.removeAttribute('src'));
@@ -485,63 +444,53 @@
             const scores = this.data.scores;
             return quizStep(this) === 1 ? scores.middle : this.state.answers.reading[0] ? scores.hard : (scores.beginner || scores.easy);
         }
-        async reading() {
+        reading() {
             const generation = ++this.generation, score = this.readingScore();
             this.cancelScores();
             this.stage.innerHTML = this.heading('Which feels easier to sight-read?', 'Imagine playing it for the first time at a slow pace.', quizStep(this) + ' of 2') +
                 '<article class="match-score-card match-score-single"><div class="match-score" data-score-slot="0" aria-busy="true"><p role="status">Opening score…</p></div></article>' +
                 '<div class="match-score-answers mt-3" role="group" aria-label="Sight-reading difficulty"><button type="button" class="btn btn-secondary match-score-choice" data-choice="yes" disabled>Easy for me</button><button type="button" class="btn btn-secondary match-score-choice" data-choice="no" disabled>Difficult for me</button></div>';
-            try {
-                if (!this.pdfjs) this.pdfjs = await loadPdf();
-                if (generation !== this.generation) return;
-                await this.score(score, 0, generation);
-            } catch (error) {
-                if (generation === this.generation) this.scoreFailure();
-            }
+            if (score && score.url) this.showExcerpt(score, generation);
+            else this.scoreFailure();
         }
         scoreFailure() {
             this.stage.querySelectorAll('.match-score').forEach(slot => { slot.setAttribute('aria-busy', 'false'); slot.innerHTML = '<p>The score could not be opened.</p>'; });
             this.report('The score preview could not be opened. Try again or skip this step.');
             if (!this.stage.querySelector('[data-score-retry]')) this.stage.insertAdjacentHTML('beforeend', '<div class="text-center"><button type="button" class="btn btn-secondary" data-score-retry>Retry score</button></div>');
         }
-        async score(score, index, generation) {
-            const slot = this.stage.querySelector('[data-score-slot="' + index + '"]');
-            let task, timer, abandoned = false;
-            try {
-                let cropped = this.scoreExcerpts.get(score.url);
-                if (!cropped) {
-                    task = this.pdfjs.getDocument({url: score.url}); this.pdfTasks.add(task);
-                    const render = async () => {
-                        const pdf = await task.promise;
-                        if (abandoned || generation !== this.generation) return;
-                        const page = await pdf.getPage(1);
-                        if (abandoned || generation !== this.generation) return;
-                        const viewport = page.getViewport({scale: 1.5}), canvas = root.document.createElement('canvas');
-                        canvas.width = viewport.width; canvas.height = viewport.height;
-                        await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
-                        if (abandoned || generation !== this.generation) return;
-                        const excerpt = excerptBounds(canvas);
-                        const crop = root.document.createElement('canvas'); crop.width = canvas.width; crop.height = excerpt.height;
-                        crop.getContext('2d').drawImage(canvas, 0, excerpt.top, canvas.width, excerpt.height, 0, 0, crop.width, crop.height);
-                        return crop;
-                    };
-                    // Bound the complete PDF operation, including getPage/render.
-                    cropped = await Promise.race([render(), new Promise((resolve, reject) => { timer = root.setTimeout(() => reject(new Error('Score timed out')), 15000); })]);
-                    if (!cropped || generation !== this.generation) return;
-                    this.scoreExcerpts.set(score.url, cropped);
-                }
+        showExcerpt(score, generation) {
+            const image = new root.Image();
+            const slot = this.stage.querySelector('[data-score-slot]');
+            const done = () => {
+                image.onload = image.onerror = null;
+                root.clearTimeout(timer);
+                this.cancelScoreLoad = null;
+            };
+            const failed = () => {
+                done();
+                image.removeAttribute('src');
+                if (generation === this.generation) this.scoreFailure();
+            };
+            const timer = root.setTimeout(failed, 15000);
+            this.cancelScoreLoad = () => {
+                done();
+                image.removeAttribute('src');
+            };
+            image.onerror = failed;
+            image.onload = () => {
+                done();
                 if (generation !== this.generation) return;
-                const copy = root.document.createElement('canvas'); copy.width = cropped.width; copy.height = cropped.height;
-                copy.getContext('2d').drawImage(cropped, 0, 0); copy.setAttribute('role', 'img');
-                copy.setAttribute('aria-label', 'Middle of score page: ' + score.title + ' by ' + score.composer);
-                slot.innerHTML = ''; slot.appendChild(copy); slot.setAttribute('aria-busy', 'false');
-                // Answer only after the actual excerpt is ready.
+                const canvas = root.document.createElement('canvas');
+                canvas.width = image.naturalWidth;
+                canvas.height = image.naturalHeight;
+                canvas.getContext('2d').drawImage(image, 0, 0);
+                canvas.setAttribute('role', 'img');
+                canvas.setAttribute('aria-label', 'Middle of score page: ' + score.title + ' by ' + score.composer);
+                slot.replaceChildren(canvas);
+                slot.setAttribute('aria-busy', 'false');
                 this.stage.querySelectorAll('[data-choice]').forEach(button => { button.disabled = false; });
-            } catch (error) { if (generation === this.generation) this.scoreFailure(); }
-            finally {
-                abandoned = true; root.clearTimeout(timer);
-                if (task && this.pdfTasks.delete(task)) Promise.resolve(task.destroy()).catch(() => {});
-            }
+            };
+            image.src = score.url;
         }
         showSuggestions(show) {
             const view = this.stage.querySelector('[data-recommendations-view]');
@@ -668,7 +617,7 @@
                 if (generation !== this.generation) return;
                 this.content.innerHTML = response.data.html;
                 if (response.data.tour.ready) {
-                    this.controller = new Controller(this.content.querySelector('#match-tour'), response.data.tour, this.http, undefined, () => this.load());
+                    this.controller = new Controller(this.content.querySelector('#match-tour'), response.data.tour, this.http, () => this.load());
                     if (this.shown) this.controller.focus();
                 }
             } catch (error) {
@@ -680,5 +629,5 @@
         }
     }
 
-    root.MatchTour = {Candidates, State, AnimatedCount, Previews, Controller, Launcher, level, loadPdf};
+    root.MatchTour = {Candidates, State, AnimatedCount, Previews, Controller, Launcher, level};
 })(typeof window !== 'undefined' ? window : globalThis);

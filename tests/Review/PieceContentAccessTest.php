@@ -53,6 +53,8 @@ class PieceContentAccessTest extends ReviewTestCase
             ->assertSee('id="score-preview"', false)->assertSee('score-preview-pages', false)
             ->assertSee('id="'.$prompt.'"', false)
             ->assertSee('/js/views/piece-access.js?id=', false)
+            ->assertSee(route('webapp.pieces.score.preview', $this->piece), false)
+            ->assertDontSee('data-pdf-url=', false)->assertDontSee($this->piece->score_path)
             ->assertSee('Download score')->assertDontSee('<embed', false)
             ->assertDontSee('id="score-editor"', false);
         $document = new \DOMDocument();
@@ -268,7 +270,7 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertSame(1, $download->length);
         $this->assertSame(1, $print->length);
         $this->assertSame($allowed ? 'a' : 'button', $download->item(0)->tagName);
-        $this->assertSame($allowed ? storage($this->piece->score_path) : '', $download->item(0)->getAttribute('href'));
+        $this->assertSame($allowed ? route('webapp.pieces.score', $this->piece) : '', $download->item(0)->getAttribute('href'));
         foreach ([$download->item(0), $print->item(0)] as $control) {
             $this->assertFalse($control->hasAttribute('disabled'));
             $this->assertSame($allowed ? '' : 'modal', $control->getAttribute('data-bs-toggle'));

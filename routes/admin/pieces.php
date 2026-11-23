@@ -1,6 +1,11 @@
 <?php
 
+Route::get('storage/app/score/{filename}', 'Admin\ScoreFilesController@show')
+    ->where('filename', '[^/\\\\\x00-\x1F]+\.[pP][dD][fF]')->name('pieces.score-file');
+
 Route::prefix('pieces')->name('pieces.')->group(function() {
+
+    Route::get('{piece}/score-file', 'Admin\ScoreFilesController@piece')->name('score-preview');
 
     Route::get('{piece}/videos/{tutorial}/moments', 'Admin\VideoMomentsController@edit')->name('videos.moments.edit');
     Route::put('{piece}/videos/{tutorial}/moments', 'Admin\VideoMomentsController@update')->name('videos.moments.update');

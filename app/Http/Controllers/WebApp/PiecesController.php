@@ -88,13 +88,4 @@ class PiecesController extends Controller
         
         return view('webapp.piece.components.saveto.index', compact(['piece', 'folders']))->render();        
     }
-
-    public function score(Piece $piece)
-    {
-        abort_unless($piece->score_path && $piece->isPublicDomain && $piece->hasWebMediaAccess(auth('web')->user(), 'exports'), 403);
-
-        $storage = \Storage::disk('public');
-
-        return $storage->download($piece->score_path);
-    }
 }
